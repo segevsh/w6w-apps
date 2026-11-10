@@ -23,10 +23,14 @@ import listUsers from "./actions/list-users.ts";
 import getCurrentUser from "./actions/get-current-user.ts";
 import listReports from "./actions/list-reports.ts";
 
+import newSheet from "./triggers/new-sheet.ts";
+import newOrUpdatedSheet from "./triggers/new-or-updated-sheet.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newSheet, newOrUpdatedSheet],
   actions: [
     // Sheet — the container everything else hangs off
     listSheets,

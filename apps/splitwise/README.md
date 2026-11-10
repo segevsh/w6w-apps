@@ -508,3 +508,21 @@ run rejected unless `passed + failed` equalled the known 220:
 | equal split accepts `group_id: 0` | killed |
 | `users__i__prop` → `users_i_prop` | killed, 12 failures |
 | `get-expense` rewritten to call `ctx.fetch` directly | killed at the client-bypass guard |
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-expense` — New Expense | poll | `list-expenses` | Each expense newly added to the account (deleted ones are skipped). |
+| `new-or-updated-expense` — New or Updated Expense | poll | `list-expenses` | Each expense that is added, edited or deleted (an edit is a new event). |
+
+Splitwise's `get_expenses` documents `updated_after` but no sort order and no created-time filter, so
+these are **since-filter** polls. Each check calls the `list-expenses` request
+`GET /get_expenses?updated_after=<previous check − 2 min>&limit=100&offset=<n>` and reads up to three
+pages; a window with more pages is resumed from the saved offset on the next check (the cursor only
+advances once the window is drained). `new-expense` keeps rows whose `created_at` falls inside the
+window and skips ones carrying `deleted_at`; `new-or-updated-expense` keys each event on
+`id:updated_at`. The first check reads nothing: it records the cursor and a floor (the time it ran), and an expense stamped before the floor is never emitted. The vendor's reference lists
+`updated_after` (`GET /get_expenses`, `limit` default 20, `offset` default 0).
+
+Vendor documentation: https://dev.splitwise.com/ (verified 2026-11-09).

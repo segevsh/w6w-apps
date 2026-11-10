@@ -86,6 +86,8 @@
  * flow end-to-end without one.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCategory from "./triggers/new-category.ts";
+import newOrUpdatedCategory from "./triggers/new-or-updated-category.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -116,6 +118,7 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 
 export default {
+  triggers: [newCategory, newOrUpdatedCategory],
   actions: [
     // Jobs
     jobList,
