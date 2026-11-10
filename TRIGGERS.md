@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 67, manual-webhook: 19, poll: 440, none: 157
+**Totals:** 683 apps — webhook-api: 67, manual-webhook: 19, poll: 453, none: 144
 
 ## webhook-api (67)
 
@@ -106,7 +106,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (440)
+## poll (453)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -199,20 +199,33 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/contentful | list-entries | new-entry | apps/contentful/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-entries |
 | apps/contentstack | list-assets | new-asset, new-or-updated-asset | apps/contentstack/README.md Triggers section (verified 2026-11-09) | hand | list-assets takes desc=created_at / desc=updated_at |
 | apps/crisp | list-conversations | new-conversation, new-or-updated-conversation | apps/crisp/README.md Triggers section (verified 2026-11-09) | hand | since-filter on filter_date_start (additive optional action param); new-conversation keeps created_at in window, dedupe by session_id; updated dedupes by session_id:updated_at |
+| apps/cursor | members-list | new-member | apps/cursor/README.md Triggers section (verified 2026-11-09) | hand | members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api) |
 | apps/databricks | catalog-list | job-run-finished | no | survey | AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker. |
 | apps/datadog | log-search | new-log | apps/datadog/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-search |
 | apps/dbtcloud | run-list | new-run | apps/dbtcloud/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action run-list |
 | apps/deel | contract-list | new-contract | apps/deel/README.md Triggers section (verified 2026-11-09) | hand | order_direction=desc (sort key not stated by the vendor reference; creation order assumed) |
+| apps/deepgram | request-list | new-request | apps/deepgram/README.md Triggers section (verified 2026-11-09) | hand | request-list filters by date only (start/end truncate to YYYY-MM-DD) and the OpenAPI documents no order: the trigger reads yesterday and today (UTC) at limit 1000 over up to 5 pages, snapshots ids, and errors loudly at 5000 or more requests across those two days (https://developers.deepgram.com/openapi.json) |
+| apps/deepl | glossary-list | new-glossary | apps/deepl/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/glossaries returns every glossary in one unpaginated response: bounded snapshot, emit added ids (https://developers.deepl.com/api-reference/glossaries) |
 | apps/deputy | employee-search | new-employee, new-or-updated-employee | apps/deputy/README.md Triggers section (verified 2026-11-09) | hand | QUERY sort Id desc / Modified desc |
 | apps/devin | session-list | new-session, new-or-updated-session | apps/devin/README.md Triggers section (verified 2026-11-09) | hand | since-filter created_after / updated_after (no sort), dedupe by session_id |
 | apps/dialpad | call-list | new-call | apps/dialpad/README.md Triggers section (verified 2026-11-09) | hand | call-list is documented reverse-chronological by call start time |
+| apps/dice | orders-list | new-order, new-return, new-ticket-transfer | apps/dice/README.md Triggers section (verified 2026-11-09) | hand | orders-list/returns-list/ticket-transfers-list each take a documented on-or-after filter (purchasedAfter/returnedAfter/transferredAfter); since-filter poll with id dedupe (https://partners-endpoint.dice.fm/graphql/docs/index.html) |
+| apps/diffbot | crawl-get | new-crawl-job | apps/diffbot/README.md Triggers section (verified 2026-11-09) | hand | crawl-get with no name lists every crawl/bulk job on the token: small bounded snapshot keyed by job name (https://docs.diffbot.com/reference/) |
 | apps/digistore24 | list-purchases | new-purchase | apps/digistore24/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-purchases |
 | apps/digitalocean | domain-record-list | new-domain-record | apps/digitalocean/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly |
+| apps/discord | list-messages | new-message | apps/discord/README.md Triggers section (verified 2026-11-09) | hand | Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages) |
 | apps/discourse | topic-list-latest | new-topic | apps/discourse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action topic-list-latest |
+| apps/dixa | agent-list | new-agent | apps/dixa/README.md Triggers section (verified 2026-11-09) | hand | agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) |
 | apps/docparser | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
+| apps/documenso | envelope-find | new-envelope | apps/documenso/README.md Triggers section (verified 2026-11-09) | hand | GET /envelope documents orderByDirection default desc with sole sort column createdAt, so page 1 is newest (https://app.documenso.com/api/v2/openapi.json); webhook upgrade also queued |
 | apps/document360 | workspace-article-list | new-article, new-or-updated-article | apps/document360/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash |
+| apps/documerge | document-list | new-document | apps/documerge/README.md Triggers section (verified 2026-11-09) | hand | the OpenAPI lists no pagination or filter parameters for GET /api/documents (parameters: []), so one response is treated as the whole collection: bounded snapshot (https://app.documerge.ai/api-docs/openapi.yaml) |
+| apps/docuseal | submitter-list | new-completed-submitter | apps/docuseal/README.md Triggers section (verified 2026-11-09) | hand | submitter-list takes documented completed_after filter; since-filter poll with id dedupe; submission-list has no date filter or documented order (https://www.docuseal.com/docs/api) |
 | apps/docusign | envelope-list | new-envelope, new-or-updated-envelope | apps/docusign/README.md Triggers section (verified 2026-11-09) | hand | order_by=created\|status_changed with order=desc and a 30-day from_date |
 | apps/donorbox | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
+| apps/drata | event-list | new-event | apps/drata/README.md Triggers section (verified 2026-11-09) | hand | event-list takes createdAtStartDate; since-filter poll with id dedupe (https://developers.drata.com/openapi/reference/v2/overview/) |
+| apps/drip | list-subscribers | new-subscriber | apps/drip/README.md Triggers section (verified 2026-11-09) | hand | list-subscribers takes documented subscribed_after (created after) filter; since-filter poll with id dedupe (https://developer.drip.com/#list-all-subscribers) |
+| apps/dropbox/dropbox | list-folder | new-file | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-09) | hand | list-folder on one named, non-recursive folder capped at 600 entries (fails loudly above): snapshot, emit added ids (https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder) |
 | apps/dropbox/dropbox-sign | signature-request-list | new-signature-request | apps/dropbox/dropbox-sign/README.md Triggers section (verified 2026-11-09) | hand | New Signature Request polls signature-request-list with the documented search filter created:[yesterday TO today] (UTC days) and dedupes by signature_request_id; sent/viewed/signed/declined callback events also exist (queued as an upgrade). |
 | apps/dub | customer-list | new-customer | apps/dub/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/duda | list-sites | new-site | apps/duda/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-sites |
@@ -551,7 +564,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (157)
+## none (144)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -564,23 +577,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/clockodo |  | apps/clockodo/README.md Triggers section (verified 2026-11-09) | hand | list-entries requires a time_since/time_until window over the entry's own time with no created/updated filter or sort, so back-dated entries never look new (https://www.clockodo.com/en/api/) |
 | apps/coda |  | apps/coda/README.md Triggers section (verified 2026-11-09) | hand | list-rows returns rows by creation time ascending unless sorted, with no descending order or created-since filter (https://coda.io/developers/apis/v1#operation/listRows) |
 | apps/coingecko |  | apps/coingecko/README.md Triggers section (verified 2026-11-09) | hand | list-coin-markets is a market-cap ranking, not a chronological record feed (https://docs.coingecko.com/reference/coins-markets) |
-| apps/creditrepaircloud |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/crunchbase |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/cursor |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/deepgram |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/deepl |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/deepseek |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/demio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dice |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/diffbot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/discord |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dixa |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/documenso |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/documerge |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/docuseal |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/drata |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/drip |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dropbox/dropbox |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/creditrepaircloud |  | apps/creditrepaircloud/README.md Triggers section (verified 2026-11-09) | hand | vendor API methods are only insertRecord/viewRecord/updateRecord/deleteRecord on one lead/client or affiliate; no list or search method exists to poll (https://app.creditrepaircloud.com/webapi/apimethods) |
+| apps/crunchbase |  | apps/crunchbase/README.md Triggers section (verified 2026-11-09) | hand | search actions take a caller query plus optional order, but a newest-first created_at/updated_at feed could not be verified: Crunchbase's field/search reference is JS-rendered and its OpenAPI was not retrievable 2026-11-09 (https://data.crunchbase.com/docs/using-the-api) |
+| apps/deepseek |  | apps/deepseek/README.md Triggers section (verified 2026-11-09) | hand | stateless chat/FIM completion API plus a static model list: no user records that change (https://api-docs.deepseek.com/api/list-models) |
+| apps/demio |  | no | hand | event-list returns only active events ordered by next session with no created-at order or since filter; participants-list needs a session id; vendor docs unreachable 2026-11-09 (https://developers.demio.com/) |
 | apps/edenai |  | apps/edenai/README.md Triggers section (verified 2026-11-09) | hand | async-job and file lists hold only the caller's own submitted jobs/uploads with no documented order or since filter; completion callbacks are a per-request webhook_receiver (signed, recorded in webhooks file), not an account subscription. |
 | apps/enrichlayer | company-employees | apps/enrichlayer/README.md Triggers section (verified 2026-11-09) | hand | each poll needs a per-company or per-school URL and spends enrichment credits; no account-wide record feed (https://enrichlayer.com/docs) |
 | apps/formidableforms |  | apps/formidableforms/README.md Triggers section (verified 2026-11-09) | hand | entries list documents no sort token, created-since semantics or page size (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/) |

@@ -1324,9 +1324,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "vendor API methods are only insertRecord/viewRecord/updateRecord/deleteRecord on one lead/client or affiliate; no list or search method exists to poll (https://app.creditrepaircloud.com/webapi/apimethods)",
+    "verified": "apps/creditrepaircloud/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/crisp",
@@ -1345,18 +1345,20 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "search actions take a caller query plus optional order, but a newest-first created_at/updated_at feed could not be verified: Crunchbase's field/search reference is JS-rendered and its OpenAPI was not retrievable 2026-11-09 (https://data.crunchbase.com/docs/using-the-api)",
+    "verified": "apps/crunchbase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cursor",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-member"
+    ],
+    "pollAction": "members-list",
+    "reason": "members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api)",
+    "verified": "apps/cursor/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/customerio",
@@ -1418,39 +1420,43 @@
   },
   {
     "path": "apps/deepgram",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-request"
+    ],
+    "pollAction": "request-list",
+    "reason": "request-list filters by date only (start/end truncate to YYYY-MM-DD) and the OpenAPI documents no order: the trigger reads yesterday and today (UTC) at limit 1000 over up to 5 pages, snapshots ids, and errors loudly at 5000 or more requests across those two days (https://developers.deepgram.com/openapi.json)",
+    "verified": "apps/deepgram/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/deepl",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-glossary"
+    ],
+    "pollAction": "glossary-list",
+    "reason": "GET /v2/glossaries returns every glossary in one unpaginated response: bounded snapshot, emit added ids (https://developers.deepl.com/api-reference/glossaries)",
+    "verified": "apps/deepl/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/deepseek",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless chat/FIM completion API plus a static model list: no user records that change (https://api-docs.deepseek.com/api/list-models)",
+    "verified": "apps/deepseek/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/demio",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "event-list returns only active events ordered by next session with no created-at order or since filter; participants-list needs a session id; vendor docs unreachable 2026-11-09 (https://developers.demio.com/)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/deputy",
@@ -1489,21 +1495,27 @@
   },
   {
     "path": "apps/dice",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-order",
+      "new-return",
+      "new-ticket-transfer"
+    ],
+    "pollAction": "orders-list",
+    "reason": "orders-list/returns-list/ticket-transfers-list each take a documented on-or-after filter (purchasedAfter/returnedAfter/transferredAfter); since-filter poll with id dedupe (https://partners-endpoint.dice.fm/graphql/docs/index.html)",
+    "verified": "apps/dice/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/diffbot",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-crawl-job"
+    ],
+    "pollAction": "crawl-get",
+    "reason": "crawl-get with no name lists every crawl/bulk job on the token: small bounded snapshot keyed by job name (https://docs.diffbot.com/reference/)",
+    "verified": "apps/diffbot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/digistore24",
@@ -1529,12 +1541,14 @@
   },
   {
     "path": "apps/discord",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "list-messages",
+    "reason": "Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages)",
+    "verified": "apps/discord/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/discourse",
@@ -1549,12 +1563,14 @@
   },
   {
     "path": "apps/dixa",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-agent"
+    ],
+    "pollAction": "agent-list",
+    "reason": "agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/)",
+    "verified": "apps/dixa/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/docparser",
@@ -1569,12 +1585,14 @@
   },
   {
     "path": "apps/documenso",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-envelope"
+    ],
+    "pollAction": "envelope-find",
+    "reason": "GET /envelope documents orderByDirection default desc with sole sort column createdAt, so page 1 is newest (https://app.documenso.com/api/v2/openapi.json); webhook upgrade also queued",
+    "verified": "apps/documenso/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/document360",
@@ -1590,21 +1608,25 @@
   },
   {
     "path": "apps/documerge",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-document"
+    ],
+    "pollAction": "document-list",
+    "reason": "the OpenAPI lists no pagination or filter parameters for GET /api/documents (parameters: []), so one response is treated as the whole collection: bounded snapshot (https://app.documerge.ai/api-docs/openapi.yaml)",
+    "verified": "apps/documerge/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/docuseal",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-completed-submitter"
+    ],
+    "pollAction": "submitter-list",
+    "reason": "submitter-list takes documented completed_after filter; since-filter poll with id dedupe; submission-list has no date filter or documented order (https://www.docuseal.com/docs/api)",
+    "verified": "apps/docuseal/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/docusign",
@@ -1631,30 +1653,36 @@
   },
   {
     "path": "apps/drata",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-event"
+    ],
+    "pollAction": "event-list",
+    "reason": "event-list takes createdAtStartDate; since-filter poll with id dedupe (https://developers.drata.com/openapi/reference/v2/overview/)",
+    "verified": "apps/drata/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/drip",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-subscriber"
+    ],
+    "pollAction": "list-subscribers",
+    "reason": "list-subscribers takes documented subscribed_after (created after) filter; since-filter poll with id dedupe (https://developer.drip.com/#list-all-subscribers)",
+    "verified": "apps/drip/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dropbox/dropbox",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-file"
+    ],
+    "pollAction": "list-folder",
+    "reason": "list-folder on one named, non-recursive folder capped at 600 entries (fails loudly above): snapshot, emit added ids (https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder)",
+    "verified": "apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dropbox/dropbox-sign",
