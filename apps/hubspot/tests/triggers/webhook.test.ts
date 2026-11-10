@@ -213,6 +213,18 @@ test("v3: the signature covers the method, the target URL and the body", async (
   );
 });
 
+test("requireV3: a v1-only delivery is refused, a valid v3 delivery still passes", async () => {
+  const body = bodyOf(notification("contact.creation"));
+  const strict = { signingSecret: SECRET, requireV3: true };
+  await assert.rejects(ingest("contact-created", v1Call(body), strict), /v3 signature is required/);
+  assert.equal((await ingest("contact-created", v3Call(body), strict)).length, 1);
+  assert.equal((await ingest("contact-created", v1Call(body))).length, 1);
+  assert.equal(
+    trigger("contact-created").params!.find((p) => p.key === "requireV3")!.type,
+    "boolean",
+  );
+});
+
 test("v1: only signature version v1 is accepted", async () => {
   const body = bodyOf(notification("contact.creation"));
   for (const version of ["v2", undefined]) {

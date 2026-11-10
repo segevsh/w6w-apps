@@ -41,6 +41,8 @@ export interface WebhookParams {
   events?: string;
   /** Property-change triggers: comma-separated property names; empty = all. */
   properties?: string;
+  /** Refuse a delivery that is not signed with the timestamped v3 scheme. */
+  requireV3?: boolean;
 }
 
 export interface WebhookState {
@@ -71,6 +73,16 @@ const SIGNING_SECRET_PARAM: Param = {
   required: true,
   hint:
     "The client secret of the HubSpot app that sends the webhooks: a legacy private app's Auth tab, Show secret; a public app's Auth tab, Client secret. HubSpot signs every delivery with it; a delivery that does not verify is refused.",
+};
+
+const REQUIRE_V3_PARAM: Param = {
+  key: "requireV3",
+  label: "Require the v3 signature",
+  type: "boolean",
+  default: false,
+  advanced: true,
+  hint:
+    "Accept only deliveries signed with HubSpot's timestamped v3 signature, which rejects a replay older than five minutes. Leave off if your app only sends the older v1 signature.",
 };
 
 const EVENTS_PARAM: Param = {
@@ -170,6 +182,7 @@ export async function verifyHubSpotSignature(
   signingSecret: unknown,
   callbackUrl: unknown,
   nowMs: number = Date.now(),
+  requireV3 = false,
 ): Promise<string> {
   const secret = requireSecret(signingSecret);
   const body = requireRawBody(raw);
@@ -197,6 +210,9 @@ export async function verifyHubSpotSignature(
       throw new Error("HubSpot delivery refused: the signature does not match.");
     }
     return body;
+  }
+  if (requireV3) {
+    throw new Error("HubSpot delivery refused: the v3 signature is required and was not sent.");
   }
   const v1 = header(raw, "x-hubspot-signature");
   if (!v1) throw new Error("HubSpot delivery refused: the signature headers are missing.");
@@ -253,7 +269,7 @@ export interface HubSpotWebhookSpec {
 export function hubspotWebhookTrigger(
   spec: HubSpotWebhookSpec,
 ): TriggerDefinition<WebhookParams, HubSpotWebhookEvent, WebhookState> {
-  const params: Param[] = [SIGNING_SECRET_PARAM];
+  const params: Param[] = [SIGNING_SECRET_PARAM, REQUIRE_V3_PARAM];
   if (!spec.types) params.push(EVENTS_PARAM);
   if (spec.propertyFilter) params.push(PROPERTIES_PARAM);
 
@@ -272,7 +288,13 @@ export function hubspotWebhookTrigger(
     onUnsubscribe() {},
 
     async handleIngest({ raw, params, state }) {
-      const body = await verifyHubSpotSignature(raw, params?.signingSecret, state?.callbackUrl);
+      const body = await verifyHubSpotSignature(
+        raw,
+        params?.signingSecret,
+        state?.callbackUrl,
+        Date.now(),
+        params?.requireV3 === true,
+      );
       let payload: unknown;
       try {
         payload = JSON.parse(body);

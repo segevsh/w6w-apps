@@ -145,7 +145,7 @@ present it is the only proof accepted: it must equal the base64 HMAC-SHA256, und
 secret, of the HTTP method, the Target URL, the exact raw body and `X-HubSpot-Request-Timestamp`,
 and the timestamp must be within five minutes. When it is absent the delivery must carry
 `X-HubSpot-Signature` with `X-HubSpot-Signature-Version: v1`, which is the hex SHA-256 of the
-client secret followed by the raw body. v1 has no timestamp, so it cannot reject a replay.
+client secret followed by the raw body. v1 has no timestamp, so it cannot reject a replay; switch on the **Require the v3 signature** param (`requireV3`) once your app sends v3 and v1 deliveries are refused.
 Any other signature version is refused, as is a missing or empty
 secret, a missing signature and a missing raw body. Nothing is accepted unsigned.
 
