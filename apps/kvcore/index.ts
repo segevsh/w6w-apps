@@ -78,8 +78,6 @@ import teamUserRemove from "./actions/team-user-remove.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
-import newUser from "./triggers/new-user.ts";
-
 export default {
   actions: [
     // Contacts
@@ -117,6 +115,5 @@ export default {
   // the V2 API's self-serve token rather than the newer, invite-only OAuth
   // API kvCORE's developer hub also documents.
   auth: [bearerToken],
-  triggers: [newUser],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

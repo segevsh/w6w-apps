@@ -150,7 +150,4 @@ the UI's native `boolean` param type in `lib/params.ts` (`contactBody`/`entityBo
 `tests/index.test.ts`. Every icon path on the marketing domains (`insiderealestate.com`, `kvcore.com`,
 apex and `www`) answers a fake `200` zero-byte image; none of those was used.
 
-
-## Triggers
-
-- **New User** wraps the existing `user-list` action and polls its newest-first feed. Vendor documentation: https://developer.insiderealestate.com/publicv2 (verified 2026-11-09).
+Triggers: not shipped — user-list takes only an updated-since filter (`since`) and documents no created-time field or sort, so a "new user" cannot be told from an edited one (https://developer.insiderealestate.com/publicv2/reference/get_v2-public-users)
