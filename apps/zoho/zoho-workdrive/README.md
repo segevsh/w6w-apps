@@ -1,19 +1,31 @@
 # Zoho WorkDrive
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 ## Triggers
 
-| Key               | Mechanism     | Source             | What the run gets                 |
-| ----------------- | ------------- | ------------------ | --------------------------------- |
-| `new-team-member` | poll snapshot | `team-member-list` | Each member newly added to a team |
+| Key                                 | Mechanism       | Source             | What the run gets                          |
+| ----------------------------------- | --------------- | ------------------ | ------------------------------------------ |
+| `new-team-member`                   | poll snapshot   | `team-member-list` | Each member newly added to a team          |
+| `new-team-folder` — New Team Folder | Poll (snapshot) | `team-folder-list` | Each team folder newly created in the team |
+
+`new-team-folder` reads every page of the team's folders (`page[limit]` 50, `page[offset]`; "Without
+specifying any pagination parameter, Listing APIs usually return 50 items by default, which is the
+allowed maximum limit") and diffs the ids; the endpoint documents no sort or created filter.
+Sources:
+[Get team folders in a team](https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-folders-in-a-team.html),
+[Pagination](https://www.zoho.com/workdrive/developer/docs/api/v1/getting-started-pagination.html),
+verified 2026-11-10.
+
+Not covered: `team-list` (the teams one user belongs to, account structure), `file-list`,
+`team-folder-file-list` and `record-search` (folder contents and free-text search have no documented
+sort or created filter and are unbounded), `file-version-list` (versions of one file),
+`share-link-list` (per-file external links whose URLs are share secrets).
 
 Pick the team with the `teamId` trigger param. Get Team Members ("This API fetches all members of a
 WorkDrive team") documents no paging parameters, so the roster is one request and is snapshotted for
 additions: https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html (verified
-2026-11-09). Team folders are not watched: their list pages with `page[limit]`/`page[offset]`
-(https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-folders-in-a-team.html) and the page
-documents no cap on the number of folders.
+2026-11-09).
 
 Manage Zoho WorkDrive files, folders, team folders, search and external download links.
 

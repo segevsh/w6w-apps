@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-workdrive",
-  "version": "0.2.0",
-  "description": "Manage Zoho WorkDrive files, folders, team folders, search and share links, and trigger on new team members.",
+  "version": "0.3.0",
+  "description": "Manage Zoho WorkDrive files, folders, team folders, search and share links, and trigger on new team members and new team folders.",
   "license": "MIT",
   "author": {
     "name": "w6w"
