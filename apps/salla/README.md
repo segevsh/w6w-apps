@@ -1,6 +1,6 @@
 # Salla
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 7 (poll)
 
 ## Triggers
 
@@ -8,8 +8,26 @@
 | --- | --- | --- | --- |
 | `new-order` — New Order | poll | `order-list` | Each newly created order. |
 | `new-or-updated-order` — New or Updated Order | poll | `order-list` | Each newly created or updated order. |
+| `new-brand` — New Brand | poll (snapshot) | `brand-list` | Each brand newly added to the store. |
+| `new-category` — New Category | poll (snapshot) | `category-list` | Each category newly added to the store. |
+| `new-coupon` — New Coupon | poll (snapshot) | `coupon-list` | Each discount coupon newly created. |
+| `new-product` — New Product | poll (snapshot) | `product-list` | Each product newly added (reads up to 3000). |
+| `new-customer` — New Customer | poll (snapshot) | `customer-list` | Each customer newly registered (reads up to 3000). |
 
-Salla documents `sort_by` on [List Orders](https://docs.salla.dev/orders/list.md): the direction is chosen by appending `-asc` or `-desc` to the attribute, so the triggers send `created_at-desc` (new) and `updated_at-desc` (new or updated). Verified 2026-11-09.
+Salla documents `sort_by` on [List Orders](https://docs.salla.dev/orders/list.md): the direction is chosen by appending `-asc` or `-desc` to the attribute, so the triggers send `created_at-desc` (new) and `updated_at-desc` (new or updated). Verified 2026-11-10.
+
+Brands, categories, coupons, products and customers document no sort order and no created-since
+filter ([pagination guide](https://docs.salla.dev/pagination.md), [List Products](https://docs.salla.dev/product/list-product.md),
+[List Coupons](https://docs.salla.dev/coupon/list.md), [List Categories](https://docs.salla.dev/categories/list.md),
+[List Brands](https://docs.salla.dev/brands/list.md), [List Customers](https://docs.salla.dev/5394121e0.md)),
+so their triggers read the whole list (60 per page) every check and diff the ids. A list longer
+than the trigger's page cap (10 pages; 50 for products and customers, checked every 15 minutes)
+fails with an error naming the cap rather than silently missing records. Customers'
+`date_from` / `date_to` descriptions contradict each other ("created before" / "created after"), so
+they are not used.
+
+Not covered: `order-status-list` (static reference data), `order-history-list` (the status log of
+one order; `new-or-updated-order` already delivers each status change).
 
 Products, orders, customers, categories, brands, discount coupons and store details in Salla, the
 Saudi e-commerce platform, over the Merchant API (`api.salla.dev/admin/v2`).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/salla",
-  "version": "0.2.0",
-  "description": "Manage products, orders, customers, categories, coupons and brands in Salla, the Saudi e-commerce platform, and trigger workflows on new or updated orders.",
+  "version": "0.3.0",
+  "description": "Manage products, orders, customers, categories, coupons and brands in Salla, the Saudi e-commerce platform, and trigger workflows on new or updated orders and on new brands, categories, coupons, products and customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
