@@ -28,7 +28,7 @@ templates, transactional email, SMS and list webhooks, over the REST API at
 
 Not covered (no trigger is built where the vendor documents no id or order to dedupe on, or the list is unbounded):
 
-- `campaigns-list` — `getCampaigns` is documented only as returning a `dict` "List of campaigns" with no id keying or order; its date filter takes `dd/mm/YYYY HH:MM` strings and the item shape is unspecified (https://acumbamail.com/en/apidoc/function/getCampaigns/).
+- `campaigns-list` — `getCampaigns` does document a `date_field` (`created` or `sent`) filter with `start_date`/`end_date` and a `status` filter (dates as `dd/mm/YYYY HH:MM`), but it returns only a `dict` "List of campaigns" and the item shape is undocumented, so there is no pinned id key to dedupe on (https://acumbamail.com/en/apidoc/function/getCampaigns/).
 - `templates-list` — `getTemplates` is documented only as a `dict` "List of templates with their ID, their name and if they are available"; the dict's keying is not specified (https://acumbamail.com/en/apidoc/function/getTemplates/).
 - `subscribers-list` — `getSubscribers` has no created-after filter or order, returns the list in blocks of up to 10,000 emails, which exceeds the 5000-row snapshot cap (https://acumbamail.com/en/apidoc/function/getSubscribers/). New subscribers are a list-webhook event (`subscribes`), queued for a webhook trigger.
 - `subscriber-search` — a lookup of one email the caller already knows, not a feed (https://acumbamail.com/en/apidoc/function/searchSubscriber/).
