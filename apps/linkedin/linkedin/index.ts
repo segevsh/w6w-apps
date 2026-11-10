@@ -41,8 +41,8 @@ import getOrganization from "./actions/get-organization.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-
 import newPost from "./triggers/new-post.ts";
+import newOrUpdatedPost from "./triggers/new-or-updated-post.ts";
 
 export default {
   auth: [oauth2, oauth2CommunityManagement],
@@ -56,6 +56,6 @@ export default {
     getCurrentMemberProfile,
     getOrganization,
   ],
-  triggers: [newPost],
+  triggers: [newPost, newOrUpdatedPost],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
