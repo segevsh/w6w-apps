@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newInvoice from "./triggers/new-invoice.ts";
 import apiKey from "./auth/api-key.ts";
 
 import listAccounts from "./actions/list-accounts.ts";
@@ -55,4 +56,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newInvoice],
 } satisfies AppDefinition;

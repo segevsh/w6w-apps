@@ -1,6 +1,7 @@
 # Recruitee
 
-Triggers: not shipped — candidate-list sort choices do not document a newest-first creation ordering suitable for a new-candidate feed (https://apidocs.recruitee.com/).
+Triggers: not shipped — candidate-list sort choices do not document a newest-first creation ordering suitable for a new-candidate feed (https://apidocs.recruitee.com/)
+
 
 Manage candidates, job offers, notes, tasks, tags and the hiring pipeline in **Recruitee**, an
 applicant tracking system (ATS), over its REST API.

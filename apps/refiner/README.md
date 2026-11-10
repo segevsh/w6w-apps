@@ -1,5 +1,7 @@
 # Refiner
 
+- **Triggers** — 1 (poll)
+
 [Refiner](https://refiner.io) is an in-product survey tool for NPS, CSAT and product-feedback
 surveys. This app lets a workflow read responses and reports, manage surveys, contacts and
 segments, and push user traits, events and externally collected responses back in, over the
@@ -109,3 +111,11 @@ deno task check
 deno task lint
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled through the existing `contact-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/refiner) (verified 2026-11-09).

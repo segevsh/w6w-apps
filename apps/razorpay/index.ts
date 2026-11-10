@@ -37,6 +37,7 @@
  * full list of what is out of scope and why.
  */
 import type { AppDefinition } from "@w6w/types";
+import newOrder from "./triggers/new-order.ts";
 import basic from "./auth/basic.ts";
 
 import orderCreate from "./actions/order-create.ts";
@@ -161,4 +162,5 @@ export default {
   // (`mcp.razorpay.com`) authenticates its own MCP server, not this REST API.
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newOrder],
 } satisfies AppDefinition;

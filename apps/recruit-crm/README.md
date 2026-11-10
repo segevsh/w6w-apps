@@ -1,5 +1,7 @@
 # Recruit CRM
 
+- **Triggers** — 1 (poll)
+
 Search and manage Recruit CRM candidates, companies, contacts and jobs, assign candidates to jobs
 and move them through hiring stages. REST API at `https://api.recruitcrm.io/v1`, read from the
 vendor's OpenAPI 3.0 document (`https://api.recruitcrm.io/docs`); the unsigned error shapes were
@@ -66,3 +68,11 @@ and the logo in the spec's `x-logo` answers 403). Nothing was redrawn.
   `X-RateLimit` header, but the only measured (unsigned) headers show an anonymous traffic class
   with limit 30000, and a signed token's values could not be checked.
 - `auth:api-token` is derived from the connection test.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job` — New Job | Poll | `job-list` | Each newly created job |
+
+Polled through the existing `job-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/recruit-crm) (verified 2026-11-09).

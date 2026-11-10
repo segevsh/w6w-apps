@@ -1,5 +1,7 @@
 # Readwise
 
+- **Triggers** — 1 (poll)
+
 Create, list and export highlights and books, manage highlight/book tags, and read or complete the
 Daily Review, on the classic **Readwise API v2**.
 
@@ -237,3 +239,11 @@ how `_tools/audit.ts` resolves its own import map, not of this app. Run the audi
 ```bash
 cd ../../_tools && deno run --no-check -A audit.ts readwise
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-book` — New Book | Poll | `book-list` | Each newly created book |
+
+Polled through the existing `book-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/readwise) (verified 2026-11-09).

@@ -20,6 +20,7 @@
  * silently.
  */
 import type { AppDefinition } from "@w6w/types";
+import newOrder from "./triggers/new-order.ts";
 import apiToken from "./auth/api-token.ts";
 
 import customerList from "./actions/customer-list.ts";
@@ -111,4 +112,5 @@ export default {
   // authentication story.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newOrder],
 } satisfies AppDefinition;

@@ -1,5 +1,7 @@
 # Razorpay
 
+- **Triggers** — 1 (poll)
+
 Accept payments, manage orders, refunds, customers, invoices and subscriptions on the
 **Razorpay API v1**, India's payment gateway.
 
@@ -288,3 +290,11 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+
+Polled through the existing `order-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/razorpay) (verified 2026-11-09).

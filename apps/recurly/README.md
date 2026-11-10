@@ -1,5 +1,7 @@
 # Recurly
 
+- **Triggers** — 1 (poll)
+
 Subscription billing — accounts, subscriptions, plans, invoices, transactions and coupons —
 through the **Recurly V3 API**.
 
@@ -277,3 +279,11 @@ Use `deno task fmt`, never a bare `deno fmt` — the bare form reformats asset f
 > OpenAPI document was fetched and parsed, the status API was probed against a deliberately bogus
 > sibling path to rule out a catch-all host, and `cdn.simpleicons.org/recurly`'s 404 was confirmed
 > live before falling back to the favicon.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | Poll | `list-invoices` | Each newly created invoice |
+
+Polled through the existing `list-invoices` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/recurly) (verified 2026-11-09).

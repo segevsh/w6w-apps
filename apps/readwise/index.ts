@@ -28,6 +28,7 @@
  * rather than guessing at one.
  */
 import type { AppDefinition } from "@w6w/types";
+import newBook from "./triggers/new-book.ts";
 import accessToken from "./auth/api-token.ts";
 
 import highlightCreate from "./actions/highlight-create.ts";
@@ -89,4 +90,5 @@ export default {
   // apps — the token is the whole authentication story.
   auth: [accessToken],
   healthChecks: [service],
+  triggers: [newBook],
 } satisfies AppDefinition;

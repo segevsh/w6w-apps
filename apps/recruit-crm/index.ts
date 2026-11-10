@@ -18,6 +18,7 @@
  *     indicator is used and declared informational.
  */
 import type { AppDefinition } from "@w6w/types";
+import newJob from "./triggers/new-job.ts";
 import apiToken from "./auth/api-token.ts";
 
 import candidateAssign from "./actions/candidate-assign.ts";
@@ -78,4 +79,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newJob],
 } satisfies AppDefinition;

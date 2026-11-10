@@ -1,5 +1,7 @@
 # Pushover
 
+Triggers: not shipped — sounds-list is a static application sound catalogue, not a record feed (https://apidocs.pushover.net/)
+
 Push notifications to phones, tablets and desktops on the **Pushover API**.
 
 - **Categories** — communication, monitoring

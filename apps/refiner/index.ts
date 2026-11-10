@@ -20,6 +20,7 @@
  *     which `lib/client.ts` builds from plain objects and arrays.
  */
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -71,6 +72,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [api, service, quota],
+  triggers: [newContact],
 };
 
 export default app;

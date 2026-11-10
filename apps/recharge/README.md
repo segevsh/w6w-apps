@@ -1,5 +1,7 @@
 # Recharge
 
+- **Triggers** — 1 (poll)
+
 Manage customers, addresses, subscriptions, one-time purchases, charges, orders, discounts and
 webhooks on **Recharge**, the recurring-billing platform for Shopify (and BigCommerce / custom)
 ecommerce stores — over the **Recharge API `2021-11`**.
@@ -163,3 +165,11 @@ deprecated but "will not be removed from this API version," so it stays in the l
   Customer Entitlements.** See "Left out, deliberately" above.
 - **A `request-rate` / `X-RateLimit-Reset` reading.** The vendor exposes no reset time or window
   length alongside `x-recharge-limit`, so `quota` reports only the used/cap pair it can measure.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+
+Polled through the existing `order-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/recharge) (verified 2026-11-09).
