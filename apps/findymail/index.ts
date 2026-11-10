@@ -38,6 +38,10 @@ import getUsage from "./actions/get-usage.ts";
 import getTeamUsage from "./actions/get-team-usage.ts";
 
 import newList from "./triggers/new-list.ts";
+import newSignal from "./triggers/new-signal.ts";
+import newMonitor from "./triggers/new-monitor.ts";
+import newExclusionList from "./triggers/new-exclusion-list.ts";
+import newListContact from "./triggers/new-list-contact.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -85,7 +89,13 @@ export default {
     getUsage,
     getTeamUsage,
   ],
-  triggers: [newList],
+  triggers: [
+    newList,
+    newSignal,
+    newMonitor,
+    newExclusionList,
+    newListContact,
+  ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;
