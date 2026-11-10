@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/thanksio",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Send handwritten-style postcards, letters, notecards and gift cards through thanks.io, manage mailing lists and recipients, price orders before placing them, and track delivery.",
   "license": "MIT",
   "author": {
@@ -12,7 +12,6 @@
     "lastReviewed": null
   },
   "w6w": {
-    "build": { "include": ["../_shared"] },
     "id": "io.w6w.thanksio",
     "displayName": "thanks.io",
     "apiDocs": [

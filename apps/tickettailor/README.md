@@ -1,5 +1,7 @@
 # Ticket Tailor
 
+Triggers: not shipped — `issued-ticket-list` takes only cursor paging and no documented sort or created-after filter (https://developers.tickettailor.com/) (checked 2026-11-09).
+
 Manage event series and occurrences, ticket types, orders, holds, check-ins, discounts, vouchers,
 and issued tickets, on the **Ticket Tailor API v1**.
 
@@ -143,7 +145,3 @@ deno task lint       # deno lint
 deno task fmt         # format — use this, never bare `deno fmt`
 deno task validate   # manifest + coverage audit
 ```
-
-## Triggers
-
-- **New Issued Ticket** wraps `issued-ticket-list`. Vendor API reference: https://developers.tickettailor.com/ (verified 2026-11-09).

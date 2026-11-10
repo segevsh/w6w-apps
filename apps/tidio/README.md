@@ -1,5 +1,7 @@
 # Tidio
 
+Triggers: not shipped — `GET /tickets` takes only a cursor and documents no sort or filter, so its order is not guaranteed (https://developers.tidio.com/reference/get_tickets.md) (checked 2026-11-09).
+
 Drive **Tidio** from a workflow: contacts and their custom properties, conversations, tickets,
 operators, departments and the Lyro AI Agent's Q&A knowledge, over the OpenAPI at `api.tidio.com`.
 
@@ -76,7 +78,3 @@ passes only on a 200 carrying a numeric `project_id`; a rejection is read from t
   404s, so there is no feed.
 - `quota` — see item 3 above. `informational`.
 - `auth:client-credentials` — derived from the auth `test` hook above.
-
-## Triggers
-
-- **New Ticket** wraps `ticket-list`. Vendor API reference: https://developers.tidio.com/llms.txt (verified 2026-11-09).

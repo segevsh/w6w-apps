@@ -5,6 +5,7 @@ Manage Teamwork projects, tasks, task lists, milestones and time logs.
 - **Categories** — project-management
 - **Auth methods** — api-key
 - **Actions** — 17
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.teamwork.com`
 - **Website** — https://www.teamwork.com
 - **API docs** — https://apidocs.teamwork.com
@@ -170,4 +171,8 @@ failing for everyone at once.
 
 ## Triggers
 
-- **New Project** wraps `project-list` ordered by creation date descending. Vendor API reference: https://apidocs.teamwork.com/docs/projects/projects/list-projects (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-project` — New Project | Poll | `project-list` | Each newly created project |
+
+Polled newest-first through the `project-list` action (`orderBy=datecreated&orderMode=desc`); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Teamwork list projects](https://apidocs.teamwork.com/docs/teamwork/v3/projects/get-projects-api-v3-projects-json) (verified 2026-11-09).

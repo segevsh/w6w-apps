@@ -96,7 +96,6 @@ import ping from "./actions/ping.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newIssuedTicket from "./triggers/new-issued-ticket.ts";
 
 export default {
   actions: [
@@ -157,5 +156,4 @@ export default {
   // apps; the key, sent as HTTP Basic, is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newIssuedTicket],
 } satisfies AppDefinition;

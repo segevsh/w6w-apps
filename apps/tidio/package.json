@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/tidio",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Manage Tidio: contacts, conversations, tickets, operators and Lyro AI knowledge.",
   "license": "MIT",
   "author": {
@@ -12,7 +12,6 @@
     "lastReviewed": null
   },
   "w6w": {
-    "build": { "include": ["../_shared"] },
     "id": "io.w6w.tidio",
     "displayName": "Tidio",
     "apiDocs": [

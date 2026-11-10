@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/tickettailor",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Manage Ticket Tailor event series, ticket types, orders, holds, check-ins, discounts, vouchers, and issued tickets.",
   "license": "MIT",
   "author": {
@@ -12,7 +12,6 @@
     "lastReviewed": null
   },
   "w6w": {
-    "build": { "include": ["../_shared"] },
     "id": "io.w6w.tickettailor",
     "displayName": "Ticket Tailor",
     "apiDocs": [

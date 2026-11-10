@@ -40,7 +40,6 @@ import lyroDataSourceList from "./actions/lyro-data-source-list.ts";
 import lyroQaCreate from "./actions/lyro-qa-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newTicket from "./triggers/new-ticket.ts";
 
 export default {
   actions: [
@@ -71,5 +70,4 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newTicket],
 } satisfies AppDefinition;

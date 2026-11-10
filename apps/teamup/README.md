@@ -1,5 +1,7 @@
 # TeamUp
 
+Triggers: not shipped — `customers-list` documents no sort or created/updated filter and no newest-first order is cited, so a new-record poll cannot be made safe (https://goteamup.com/api/docs/) (checked 2026-11-09).
+
 Run a gym, studio or fitness business on **TeamUp** (goteamup.com): customers and their families,
 the class schedule, attendance and waiting lists, memberships and the plans they are sold from,
 invoices, front-desk check-ins, and the business's own vocabulary — instructors, venues and their
@@ -232,7 +234,3 @@ deno task fmt
 deno task test    # 134 tests, no network
 deno task validate  # the pack's conformance auditor
 ```
-
-## Triggers
-
-- **New Customer** wraps `customers-list`. Vendor API reference: https://docs.goteamup.com/api-reference (verified 2026-11-09).

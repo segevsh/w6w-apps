@@ -1,5 +1,7 @@
 # thanks.io
 
+Triggers: not shipped — `order-list` documents only "recent orders" with no sort or since filter, so its order is not guaranteed (https://docs.thanks.io/api-reference/openapi.json) (checked 2026-11-09).
+
 Send handwritten-style direct mail — postcards, letters, notecards, Magnacards and gift cards — from
 a workflow, manage the mailing lists they go to, price an order before placing it, and follow it to
 delivery.
@@ -82,7 +84,3 @@ webhook CRUD (paid plans only), radius-search purchase (charged per record; the 
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
-
-## Triggers
-
-- **New Order** wraps `order-list`. Vendor API reference: https://docs.thanks.io/api-reference/openapi.json (verified 2026-11-09).

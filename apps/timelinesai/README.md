@@ -6,6 +6,7 @@ workspace quota through [TimelinesAI](https://timelines.ai), a shared WhatsApp i
 - **Categories** — communication, marketing
 - **Auth methods** — api-token (`Authorization: Bearer <token>`)
 - **Actions** — 27
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.timelines.ai` (the only host any hook calls)
 - **Website** — https://timelines.ai
 - **API docs** — https://timelines.ai/docs (Mintlify; index at https://timelines.ai/docs/llms.txt).
@@ -98,4 +99,8 @@ still consumes a credit.
 
 ## Triggers
 
-- **New Message** wraps `messages-list` in a selected chat, newest first. Vendor API reference: https://timelines.ai/docs (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `messages-list` | Each new message in the chat you choose (Chat ID) |
+
+Polled newest-first through the `messages-list` action (`sorting_order=desc`, for the chat you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [TimelinesAI API](https://app.timelines.ai/integrations/api/) (verified 2026-11-09).

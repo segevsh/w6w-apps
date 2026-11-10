@@ -1,7 +1,5 @@
 # Twist
 
-Triggers: not shipped — the message feed requires a conversation ID, so it is not a global new-record feed (https://developer.twist.com/api/).
-
 Read and write **Twist** (Doist's async team messaging): workspaces, channels, threads, comments,
 conversations, messages, groups, the inbox, search and webhooks, on the **Twist API v3** (v4 for
 workspace users only).
@@ -9,6 +7,7 @@ workspace users only).
 - **Categories** — communication, productivity
 - **Auth methods** — oauth2, api-token (bearer test token)
 - **Actions** — 111
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:oauth2` and `auth:api-token`
 - **Egress allowlist** — `api.twist.com` (the `service` check adds `status.twist.io` to its own hook
   allowlist, never to the app's)
@@ -85,4 +84,8 @@ does it, and the two actions here are thin wrappers around that.
 
 ## Triggers
 
-- **New Message** wraps `message-list` in a selected conversation, descending. Vendor API reference: https://developer.twist.com/v3/ (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `message-list` | Each new message in the conversation you choose |
+
+Polled newest-first through the `message-list` action (`order_by=desc`, for the conversation you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Twist API v3](https://developer.twist.com/v3/) (verified 2026-11-09).

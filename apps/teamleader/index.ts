@@ -54,6 +54,7 @@ import usersMe from "./actions/users-me.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -79,5 +80,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;
