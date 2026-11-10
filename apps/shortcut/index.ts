@@ -85,6 +85,16 @@ import search from "./actions/search.ts";
 
 import newStory from "./triggers/new-story.ts";
 import newOrUpdatedStory from "./triggers/new-or-updated-story.ts";
+import newEpic from "./triggers/new-epic.ts";
+import newIteration from "./triggers/new-iteration.ts";
+import newLabel from "./triggers/new-label.ts";
+import newMember from "./triggers/new-member.ts";
+import newProject from "./triggers/new-project.ts";
+import newEpicComment from "./triggers/new-epic-comment.ts";
+import newStoryComment from "./triggers/new-story-comment.ts";
+import newEpicStory from "./triggers/new-epic-story.ts";
+import newIterationStory from "./triggers/new-iteration-story.ts";
+import newLabelStory from "./triggers/new-label-story.ts";
 
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
@@ -137,7 +147,20 @@ export default {
     search,
   ],
   // API token only. Shortcut publishes no OAuth surface for third-party apps.
-  triggers: [newStory, newOrUpdatedStory],
+  triggers: [
+    newStory,
+    newOrUpdatedStory,
+    newEpic,
+    newIteration,
+    newLabel,
+    newMember,
+    newProject,
+    newEpicComment,
+    newStoryComment,
+    newEpicStory,
+    newIterationStory,
+    newLabelStory,
+  ],
   auth: [apiToken],
   healthChecks: [service, requestRate],
 } satisfies AppDefinition;

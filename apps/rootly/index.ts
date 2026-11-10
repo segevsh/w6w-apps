@@ -1,5 +1,17 @@
 import type { AppDefinition } from "@w6w/types";
 import newIncident from "./triggers/new-incident.ts";
+import newAlert from "./triggers/new-alert.ts";
+import newOrUpdatedAlert from "./triggers/new-or-updated-alert.ts";
+import newService from "./triggers/new-service.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
+import newFunctionality from "./triggers/new-functionality.ts";
+import newEnvironment from "./triggers/new-environment.ts";
+import newSeverity from "./triggers/new-severity.ts";
+import newSchedule from "./triggers/new-schedule.ts";
+import newIncidentEvent from "./triggers/new-incident-event.ts";
+import newIncidentActionItem from "./triggers/new-incident-action-item.ts";
 import incidentList from "./actions/incident-list.ts";
 import incidentGet from "./actions/incident-get.ts";
 import incidentCreate from "./actions/incident-create.ts";
@@ -85,7 +97,21 @@ const app: AppDefinition = {
     shiftList,
     oncallList,
   ],
-  triggers: [newIncident],
+  triggers: [
+    newIncident,
+    newAlert,
+    newOrUpdatedAlert,
+    newService,
+    newTeam,
+    newUser,
+    newOrUpdatedUser,
+    newFunctionality,
+    newEnvironment,
+    newSeverity,
+    newSchedule,
+    newIncidentEvent,
+    newIncidentActionItem,
+  ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
 };
