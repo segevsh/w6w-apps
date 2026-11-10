@@ -8,6 +8,7 @@ Subscriptions billed against a saved Mandate.
 - **Auth methods** — bearer (API Key — also accepts an Advanced Access Token or a hand-obtained
   OAuth access token, all three presented the same way)
 - **Actions** — 41
+- **Triggers** — 5 (poll)
 - **Health checks** — 2 live probes (`service`, `quota`) + the derived `auth:bearer`
 - **Egress allowlist** — `api.mollie.com` (the `service` check adds `status.mollie.com` to its own
   hook allowlist, never to the app's)
@@ -307,4 +308,16 @@ deno task test
 
 ## Triggers
 
-- **New Customer** wraps `customer-list` with descending order. [Mollie list customers](https://docs.mollie.com/reference/list-customers), verified 2026-11-09.
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-customer` | New Customer | poll | `customer-list` | each newly created customer |
+| `new-chargeback` | New Chargeback | poll | `chargeback-list` | each newly created chargeback |
+| `new-customer-payment` | New Customer Payment | poll | `customer-payment-list` | each newly created payment for the selected customer |
+| `new-refund` | New Refund | poll | `refund-list` | each newly created refund |
+| `new-subscription` | New Subscription | poll | `subscription-list` | each newly created subscription for the selected customer |
+
+The poll actions request Mollie's documented descending `sort` order, so each check begins with
+the newest records. [Mollie list customers](https://docs.mollie.com/reference/list-customers),
+[chargebacks](https://docs.mollie.com/reference/list-chargebacks),
+[refunds](https://docs.mollie.com/reference/list-refunds), and
+[subscriptions](https://docs.mollie.com/reference/list-subscriptions), verified 2026-11-10.

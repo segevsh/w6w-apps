@@ -115,6 +115,10 @@ import profileList from "./actions/profile-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
+import newChargeback from "./triggers/new-chargeback.ts";
+import newCustomerPayment from "./triggers/new-customer-payment.ts";
+import newRefund from "./triggers/new-refund.ts";
+import newSubscription from "./triggers/new-subscription.ts";
 
 export default {
   actions: [
@@ -169,7 +173,7 @@ export default {
     profileGet,
     profileList,
   ],
-  triggers: [newCustomer],
+  triggers: [newCustomer, newChargeback, newCustomerPayment, newRefund, newSubscription],
   auth: [bearer],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
