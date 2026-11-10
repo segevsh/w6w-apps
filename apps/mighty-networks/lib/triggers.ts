@@ -5,6 +5,7 @@ import {
   requireSecret,
   timingSafeEqual,
 } from "../../_shared/webhook/mod.ts";
+import { pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /**
  * Mighty Networks webhook triggers (rfcs/trigger.md, webhook form, manual setup).
@@ -163,3 +164,57 @@ export function webhookTrigger(
     },
   };
 }
+
+/** Items per page the Admin API allows (`per_page`, max 100). */
+const PAGE_SIZE = 100;
+/** Pages one snapshot reads; a collection at or above PAGE_SIZE × MAX_PAGES is refused, not cut. */
+const MAX_PAGES = 20;
+
+/**
+ * Snapshot a small Admin API collection (spaces, plans, tags, one course's coursework): read every
+ * page through the SAME list action the user can run (`fetchPage` calls `action.execute`), stop at
+ * the first short page, and diff against the last check with `pollSnapshot` — "added" only.
+ *
+ * The Admin API documents no sort order or since filter on these lists, so only a complete read is
+ * safe: a collection that fills all MAX_PAGES pages throws (naming the cap) rather than snapshot
+ * a prefix, and a page whose list the action could not lift (`items: null`) throws instead of
+ * reading as "empty" (which would make every later record look new).
+ */
+export async function snapshotPoll(o: {
+  state: unknown;
+  label: string;
+  fetchPage(page: number, perPage: number): unknown;
+}) {
+  const rows = new Map<string, unknown>();
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res = await o.fetchPage(page, PAGE_SIZE) as { items?: unknown };
+    if (!Array.isArray(res?.items)) {
+      throw new Error(`Mighty Networks ${o.label}: the list response has an unexpected shape.`);
+    }
+    for (const item of res.items) {
+      const id = asObject(item)?.id;
+      if (typeof id === "number" || (typeof id === "string" && id !== "")) {
+        rows.set(String(id), item);
+      }
+    }
+    if (res.items.length < PAGE_SIZE) {
+      return await pollSnapshot({
+        state: o.state,
+        maxRows: PAGE_SIZE * MAX_PAGES,
+        emit: { added: true, updated: false },
+        rows: [...rows].map(([key, values]) => ({ key, values })),
+      });
+    }
+  }
+  throw new Error(
+    `Mighty Networks ${o.label}: ${
+      PAGE_SIZE * MAX_PAGES
+    } or more records; refusing to snapshot a partial list.`,
+  );
+}
+
+export const SNAPSHOT_OUTPUT: OutputField[] = [
+  { key: "change", type: "string", label: "Change (added)" },
+  { key: "key", type: "string", label: "Record ID" },
+  { key: "values", type: "object", label: "The record as the Admin API returns it" },
+];

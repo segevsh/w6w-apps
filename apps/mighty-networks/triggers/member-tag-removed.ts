@@ -1,0 +1,28 @@
+import { webhookTrigger } from "../lib/triggers.ts";
+
+/** Member Tag Removed (the `MemberTagRemoved` webhook event). */
+const memberTagRemoved = webhookTrigger({
+  key: "member-tag-removed",
+  title: "Member Tag Removed",
+  description:
+    "Fires when a tag is removed from a member. The run gets the event id and time and the payload: the member, the tag (id, title, color) and the network id.",
+  eventTypes: ["MemberTagRemoved"],
+  sample: {
+    eventId: "sample-event-id",
+    eventType: "MemberTagRemoved",
+    eventTimestamp: "2026-11-10T10:30:00Z",
+    payload: {
+      member: {
+        id: 67890,
+        email: "ada@example.com",
+        first_name: "Ada",
+        last_name: "Lovelace",
+        member_type: "member",
+      },
+      tag: { id: 777, title: "VIP", color: "#ff8800" },
+      network_id: 222,
+    },
+  },
+});
+
+export default memberTagRemoved;
