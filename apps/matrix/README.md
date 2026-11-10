@@ -204,6 +204,15 @@ matrix/
 └── tests/                    # unit tests against a mocked HookContext
 ```
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-room-message` — New Room Message | poll | `get-messages` | Each new event in one room |
+
+The room messages endpoint supports backwards (newest-first) paging. [Matrix Client-Server API](https://spec.matrix.org/latest/client-server-api/)
+verified 2026-11-09.
+
 ## Development
 
 ```bash

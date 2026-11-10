@@ -32,6 +32,7 @@ import timelinePublic from "./actions/timeline-public.ts";
 import notificationList from "./actions/notification-list.ts";
 import mediaUpload from "./actions/media-upload.ts";
 import instanceGet from "./actions/instance-get.ts";
+import newNotification from "./triggers/new-notification.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -56,6 +57,7 @@ const app: AppDefinition = {
   ],
   auth: [accessToken],
   healthChecks: [service, instance, quota],
+  triggers: [newNotification],
 };
 
 export default app;
