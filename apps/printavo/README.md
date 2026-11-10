@@ -6,7 +6,7 @@ tasks, inquiries and payments, over Printavo's GraphQL API v2.
 - **Categories** — crm, finance, commerce
 - **Auth methods** — `credentials` (`custom`: Printavo email + API token, sent as the `email` and `token` headers)
 - **Actions** — 38
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** — ~~`service`~~, ~~`quota`~~ (both declared unavailable, informational) + the derived `auth:credentials`
 - **Egress allowlist** — `www.printavo.com`
 - **API docs** — https://www.printavo.com/docs/api/v2 (GraphQL reference; every field, argument and
@@ -78,5 +78,15 @@ liveness is the derived `auth:credentials` check.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-task` — New Task | Poll | `task-list` | Each newly created record |
+| `new-quote` — New Quote | Poll, newest-first (`VISUAL_ID` desc) | `quote-list` | Each newly created quote |
+| `new-invoice` — New Invoice | Poll, newest-first (`VISUAL_ID` desc) | `invoice-list` | Each newly created invoice |
+| `new-order` — New Order | Poll, newest-first (`VISUAL_ID` desc) | `order-list` | Each newly created quote or invoice |
+| `new-payment-request` — New Payment Request | Poll, snapshot | `payment-request-list` (`status: OPEN`) | Each payment request that newly appears among the open ones |
 
 This poll wraps the existing `task-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://www.printavo.com/docs/api/v2) (verified 2026-11-09).
+
+The quote, invoice and order lists have no created-at sort in Printavo's sort enum, so those triggers sort by descending visual ID (the sequential order number) and read page 1 of 100. The payment-request trigger reads the OPEN list (up to 5 pages of 100) and diffs the ids; a longer list fails with a clear error.
+
+Not covered: `customer-list`, `contact-list` and `inquiry-list` (the customers and inquiries connections document no sort or filter, and contacts sort only by email, name, customer name or order count, so there is no newest-first read and the lists are unbounded), `status-list` (order statuses are account configuration, a reference list) and `product-search` (the API requires a caller-supplied search term; it is a catalog lookup, not a feed).
+
+Vendor docs (verified 2026-11-10): [Printavo API v2](https://www.printavo.com/docs/api/v2).
