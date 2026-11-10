@@ -1,5 +1,5 @@
 import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Look-back before the previous window, so a record that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
@@ -121,6 +121,66 @@ export function sinceTrigger<T, P = Record<string, unknown>>(
           ...(more ? { resume: { since, until, page } } : {}),
         },
       };
+    },
+  };
+}
+
+/** Vendor pages read per snapshot check; a collection with more pages throws a clear error. */
+export const SNAPSHOT_MAX_PAGES = 50;
+
+export interface SnapshotSpec<T, P = Record<string, unknown>> {
+  key: string;
+  title: string;
+  description: string;
+  params?: Param[];
+  output: OutputField[];
+  sample: unknown;
+  /** One page (1-based) of the collection; `pages` is the vendor's `meta.number_of_pages`. */
+  fetchPage(
+    page: number,
+    ctx: HookContext,
+    params: P,
+  ): Promise<{ items: T[]; pages: number | undefined }>;
+  idOf(item: T): string;
+}
+
+/**
+ * Bounded-collection poll (brief 9.1 c) over the app's own list action: every check reads the
+ * whole collection (all pages, `meta.number_of_pages`), diffs the ids against the previous check
+ * with `pollSnapshot` and emits only the added ones. The first check seeds and emits nothing.
+ */
+export function snapshotTrigger<T, P = Record<string, unknown>>(
+  spec: SnapshotSpec<T, P>,
+): TriggerDefinition<P> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state, params }, ctx) {
+      const byId = new Map<string, T>();
+      let page = 1;
+      let pages = 1;
+      while (page <= pages) {
+        if (page > SNAPSHOT_MAX_PAGES) {
+          throw new Error(
+            `${spec.key}: the collection has more than ${SNAPSHOT_MAX_PAGES} pages; too large to watch`,
+          );
+        }
+        const res = await spec.fetchPage(page, ctx, params);
+        for (const item of res.items) byId.set(spec.idOf(item), item);
+        pages = res.pages ?? 1;
+        page += 1;
+      }
+      const { events, nextState } = await pollSnapshot({
+        state,
+        rows: [...byId.keys()].map((key) => ({ key, values: { id: key } })),
+        emit: { added: true, updated: false },
+      });
+      return { events: events.map((e) => byId.get(e.key) as T), nextState };
     },
   };
 }

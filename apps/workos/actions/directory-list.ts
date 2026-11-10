@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /directories` — the SCIM directories customers have connected.
@@ -32,6 +32,7 @@ const action: ActionDefinition = {
       default: "",
       hint: "Matches the directory name.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -46,6 +47,7 @@ const action: ActionDefinition = {
     const { items, after } = await new WorkOSClient(ctx).requestAll("/directories", {
       query: compact({
         organization_id: p.organizationId,
+        order: p.order,
         search: p.search,
       }) as Record<string, string>,
     }, want);

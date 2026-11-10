@@ -1,12 +1,15 @@
 # VideoAsk
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 4 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-conversation` — New Conversation | Poll | `conversation-list` | New conversations for a form |
+| `new-form` — New Form | Poll (newest first) | `form-list` | Each newly created VideoAsk form |
+| `new-brand` — New Brand | Poll (newest first) | `branding-list` | Each newly created brand (signed logo URL removed) |
+| `new-tag` — New Tag | Poll (snapshot) | `tag-list` | Each newly created contact tag |
 
 VideoAsk API docs: https://developer.videoask.com/ (verified 2026-11-09).
 
@@ -36,6 +39,10 @@ is a **conversation**.
 > source the public documentation page itself embeds and fetches from client-side) — plus live,
 > unauthenticated probes against `api.videoask.com` and `status.videoask.com` the same day. Nothing
 > here came from a third-party integration directory.
+
+`new-form` reads `form-list` ("Forms are sorted by creation date in descending order"); `form-search` returns the same forms, so it is covered by it. `new-brand` reads `branding-list` ("Brandings are sorted by creation date in descending order") and drops `logo_url`, a signed media URL. `new-tag` reads every page of `tag-list` (`limit`/`offset`) and diffs the ids, since tags have no documented order. Sources: [VideoAsk API reference](https://developers.videoask.com/) (Forms, Branding, Tags), verified 2026-11-10.
+
+Not covered: `question-answers-list` (the vendor limits it to 10 requests per hour and says to use webhooks instead; `new-conversation` already delivers responses), `webhook-list` (webhook configuration; the vendor documents no response shape), `organization-list` (the signed-in account's own organizations; no documented response shape or id).
 
 ## The three things most likely to cost you a day
 
