@@ -6,6 +6,7 @@ it.
 - **Categories** — analytics, marketing
 - **Auth methods** — service-account
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `mixpanel.com`, `*.mixpanel.com` (nine hosts across
   three families — see below)
 - **Website** — https://mixpanel.com
@@ -248,4 +249,10 @@ limit, so the first time a workflow hits it the error says why.
 - **Group profiles** — they need a group key configured on the project before
   any of it means anything.
 
-Triggers: not shipped — activity-list is a per-user analytics query rather than a record feed (https://developer.mixpanel.com/reference/query-stream-query).
+## Triggers
+
+| Key | Mechanism | Wrapped action | The run gets |
+| --- | --- | --- | --- |
+| `new-cohort` — New Cohort | poll | `cohort-list` | each cohort saved since the last check (`id`, `name`, `count`, ...) |
+
+The poll calls the same `POST /api/query/cohorts/list` as `cohort-list` and emits a cohort the first time its `id` appears (a size change is not an event). A project's saved cohorts are a small collection people create by hand in the UI, returned whole by that route, so a snapshot compare is bounded. `activity-list` (per-user analytics query) and the event/segmentation queries are not record feeds and are not wrapped. [Mixpanel cohorts list](https://developer.mixpanel.com/reference/cohorts-list), verified 2026-11-09.
