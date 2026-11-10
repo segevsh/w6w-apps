@@ -9,8 +9,9 @@
 | `new-calendar` | poll snapshot | `calendar-list` | Newly available calendars |
 
 Zoho's calendar-list endpoint returns the account collection without pagination; additions are
-snapshotted. Vendor API reference: https://www.zoho.com/calendar/help/api/get-calendars.html
-(verified 2026-11-09).
+snapshotted. The trigger's `category` param defaults to `all`: without a category Zoho returns only
+your own calendars ("If the category is not mentioned, you will get all your own calendars"). Vendor
+API reference: https://www.zoho.com/calendar/help/api/get-calendar-list.html (verified 2026-11-09).
 
 List, read, create, update and delete calendars and events in Zoho Calendar; search event titles;
 read a group's RSVP status for an event; check a user's free/busy availability.

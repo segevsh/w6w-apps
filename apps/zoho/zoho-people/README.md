@@ -1,8 +1,21 @@
 # Zoho People
 
-Triggers: not shipped — `record-list` has a modified-time filter but requires a user-selected form
-and its bulk response has no documented newest-first ordering for a safe generic feed
-(https://www.zoho.com/people/api/forms-api.html; verified 2026-11-09).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key                     | Mechanism | Source                                            | What the run gets             |
+| ----------------------- | --------- | ------------------------------------------------- | ----------------------------- |
+| `new-or-updated-record` | poll      | `record-list` filtered by `modifiedtime` (a form) | Each record added or modified |
+
+Pick the form with the `formLinkName` trigger param. Zoho People documents `modifiedtime` ("To fetch
+records added & modified after the given time. value should be timestamp in milliseconds"), `sIndex`
+and `limit` (max 200) on Get Bulk Records: https://www.zoho.com/people/api/bulk-records.html
+(verified 2026-11-09). Each check re-reads the window since the last drain minus a 2 minute overlap,
+resumes a window of more than three pages at the saved `sIndex`, and de-duplicates on
+`recordId:ModifiedTime`, so an edit is a new event. There is no separate "new record" trigger: the
+documented `AddedTime` ("22-Jan-2025 09:03:41") carries no time zone, so it cannot be compared with
+a clock reliably.
 
 Read and write Zoho People HR data: forms and employee records, attendance check-in/out, leave, and
 time-tracker time logs and timesheets.

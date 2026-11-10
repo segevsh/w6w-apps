@@ -9,7 +9,7 @@
 | `new-workspace` | poll snapshot | `workspace-list` | Newly available workspaces |
 
 The workspace collection is read in one request and snapshotted for additions. Vendor API reference:
-https://www.zoho.com/bookings/help/api/v1/workspaces.html (verified 2026-11-09).
+https://www.zoho.com/bookings/help/api/v1/fetch-workspaces.html (verified 2026-11-09).
 
 List workspaces, services and staff, check availability, and book, get, update, reschedule and
 cancel appointments in Zoho Bookings — appointment scheduling software.

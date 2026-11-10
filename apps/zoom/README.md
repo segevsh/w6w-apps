@@ -1,9 +1,20 @@
 # Zoom
 
-Triggers: not shipped — recordings support a bounded date window but the existing action exposes
-date-only filters, so it cannot safely resume by created timestamp without skipping same-day records
-(https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/cloudRecordings;
-verified 2026-11-09).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key             | Mechanism | Source                                              | What the run gets                   |
+| --------------- | --------- | --------------------------------------------------- | ----------------------------------- |
+| `new-recording` | poll      | `recording-get-many` over a `from`/`to` date window | Each meeting with a cloud recording |
+
+Zoom's List Recordings takes `from`/`to` as `yyyy-mm-dd` UTC dates ("The maximum range can be a
+month") and pages with `next_page_token` (valid 15 minutes):
+https://developers.zoom.us/docs/api/meetings/ (verified 2026-11-09). Each check reads from the day
+of the last drain, minus a 2 minute overlap, to today; a window of more than three pages is resumed
+with the page token (a token Zoom rejects restarts the window, and ids are de-duplicated). A meeting
+that started before the trigger was first checked is never emitted. Pick the user with the `userId`
+trigger param (default `me`).
 
 Schedule and manage Zoom meetings, webinars, registrants, users and cloud recordings.
 

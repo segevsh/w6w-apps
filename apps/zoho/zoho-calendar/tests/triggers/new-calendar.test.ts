@@ -8,7 +8,8 @@ test("new-calendar seeds, emits additions, retries, and calls the literal list e
   const seeded = await trigger.poll!({ params: {}, subscriptionId: "sub", state: {} }, seedCtx.ctx);
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
-  assertEquals(new URL(seedCtx.calls[0].url).pathname, "/api/v1/calendars");
+  const url = new URL(seedCtx.calls[0].url);
+  assertEquals(url.pathname + url.search, "/api/v1/calendars?category=all");
   const first = await trigger.poll!(
     { params: {}, subscriptionId: "sub", state: seeded.nextState },
     mockCalendarCtx([{ body: { calendars: [{ uid: "b" }, { uid: "a" }] } }]).ctx,

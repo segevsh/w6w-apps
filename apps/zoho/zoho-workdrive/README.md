@@ -1,8 +1,19 @@
 # Zoho WorkDrive
 
-Triggers: not shipped — existing folder/file lists are cursor or offset pages without a documented
-creation order or created-since filter (https://workdrive.zoho.com/apidocs/v1/; verified
-2026-11-09).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key               | Mechanism     | Source             | What the run gets                 |
+| ----------------- | ------------- | ------------------ | --------------------------------- |
+| `new-team-member` | poll snapshot | `team-member-list` | Each member newly added to a team |
+
+Pick the team with the `teamId` trigger param. Get Team Members ("This API fetches all members of a
+WorkDrive team") documents no paging parameters, so the roster is one request and is snapshotted for
+additions: https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html (verified
+2026-11-09). Team folders are not watched: their list pages with `page[limit]`/`page[offset]`
+(https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-folders-in-a-team.html) and the page
+documents no cap on the number of folders.
 
 Manage Zoho WorkDrive files, folders, team folders, search and external download links.
 

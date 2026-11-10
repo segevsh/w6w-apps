@@ -15,12 +15,17 @@ test("new-message seeds, emits additions, retries, and requests newest messages 
   );
   const first = await trigger.poll!(
     { params: {}, subscriptionId: "sub", state: seeded.nextState },
-    mockCtx([response([{ id: 2 }, { id: 1 }])]).ctx,
+    mockCtx([response([{ id: 1 }, { id: 2 }])]).ctx,
   );
   const retry = await trigger.poll!(
     { params: {}, subscriptionId: "sub", state: seeded.nextState },
-    mockCtx([response([{ id: 2 }, { id: 1 }])]).ctx,
+    mockCtx([response([{ id: 1 }, { id: 2 }])]).ctx,
   );
   assertEquals(first.events, [{ id: 2 }]);
   assertEquals(retry, first);
+  const burst = await trigger.poll!(
+    { params: {}, subscriptionId: "sub", state: seeded.nextState },
+    mockCtx([response([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }])]).ctx,
+  );
+  assertEquals(burst.events, [{ id: 2 }, { id: 3 }, { id: 4 }]); // oldest first
 });

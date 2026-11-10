@@ -9,7 +9,7 @@
 | `new-application` | poll snapshot | `application-list` | Newly accessible applications |
 
 The metadata applications collection is snapshotted for additions. Vendor API reference:
-https://www.zoho.com/creator/help/api/v2/get-all-applications.html (verified 2026-11-09).
+https://www.zoho.com/creator/help/api/v2/get-applications.html (verified 2026-11-09).
 
 List applications, forms, reports and fields, list/add/update/delete records, and upload/download a
 record's file — over Zoho Creator's REST API v2, across every Zoho data centre.

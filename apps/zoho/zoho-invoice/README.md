@@ -1,15 +1,19 @@
 # Zoho Invoice
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 ## Triggers
 
-| Key           | Mechanism | Source                                                   | What the run gets |
-| ------------- | --------- | -------------------------------------------------------- | ----------------- |
-| `new-contact` | poll      | `contact-list` sorted by `last_modified_time` descending | New contacts      |
+| Key                      | Mechanism | Source                                        | What the run gets              |
+| ------------------------ | --------- | --------------------------------------------- | ------------------------------ |
+| `new-contact`            | poll      | `contact-list` sorted by `created_time`       | Each newly created contact     |
+| `new-or-updated-contact` | poll      | `contact-list` sorted by `last_modified_time` | Each contact created or edited |
 
-Zoho Invoice documents `sort_column` and `sort_order` on List Contacts:
-https://www.zoho.com/invoice/api/v3/contacts/ (verified 2026-11-09).
+Zoho Invoice documents `sort_column` on List Contacts ("Allowed Values: contact_name, first_name,
+last_name, email, outstanding_receivable_amount, created_time and last_modified_time"):
+https://www.zoho.com/invoice/api/v3/contacts/ (verified 2026-11-09). The docs show no request value
+for the sort direction, only `page_context.sort_order: "D"` in responses, so the triggers send just
+`sort_column` and refuse to run if a response reports another direction.
 
 Create, send and manage contacts, items, invoices and estimates in Zoho Invoice — invoicing
 software.
