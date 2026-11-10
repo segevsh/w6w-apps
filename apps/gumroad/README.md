@@ -7,7 +7,7 @@ subscriptions) for sales, refunds, disputes and subscription changes, on the **G
 
 **53 actions**, one access-token auth method, two declared health checks.
 
-- **Triggers** — 2 (poll, webhook)
+- **Triggers** — 16 (poll, webhook)
 
 ## Provenance
 
@@ -164,9 +164,42 @@ tests/                 index, auth, client, health, defaults + one test file per
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-sale` | New Sale | poll | `sale-list` (Gumroad returns sales newest first) | Each new sale |
-| `sale-webhook` | New Sale (Webhook) | webhook | `resource_subscriptions` | Each delivered sale |
+| `sale-webhook` | New Sale (Webhook) | webhook | `sale` resource | Each delivered sale |
+| `sale-refunded` | Sale Refunded | webhook | `refund` resource | Each refunded sale |
+| `dispute-raised` | Dispute Raised | webhook | `dispute` resource | Each dispute raised against a sale |
+| `dispute-won` | Dispute Won | webhook | `dispute_won` resource | Each dispute the seller wins |
+| `subscription-cancelled` | Subscription Cancelled | webhook | `cancellation` resource | Each membership cancellation |
+| `subscription-updated` | Subscription Updated | webhook | `subscription_updated` resource | Each upgrade or downgrade |
+| `subscription-ended` | Subscription Ended | webhook | `subscription_ended` resource | Each membership that has ended |
+| `subscription-restarted` | Subscription Restarted | webhook | `subscription_restarted` resource | Each restarted membership |
+| `any-event` | Any Event | webhook | all 8 resources, or the `events` list | The delivered fields plus `resource_name` |
+| `new-product` | New Product | poll | `product-list` (whole catalogue in one request) | Each new product |
+| `new-offer-code` | New Offer Code | poll | `offer-code-list` (all codes of a product in one request) | Each new offer code on a product |
+| `new-variant-category` | New Variant Category | poll | `variant-category-list` (all categories of a product in one request) | Each new variant category |
+| `new-variant` | New Variant | poll | `variant-list` (all variants of a category in one request) | Each new variant |
+| `new-review` | New Review | poll | `review-list` (reference: newest first) | Each new written review on a product |
+| `new-payout` | New Payout | poll | `payout-list` with `after=` (since-filter window) | Each new payout (not the upcoming one) |
 
-The poll trigger uses the existing sales request and its cursor state to avoid duplicate runs.
-`sale-webhook` removes callback-URL leftovers, creates a `sale` subscription, and stores its id.
-Gumroad documents no delivery signature; the callback URL is the secret. Vendor mechanism:
-<https://gumroad.com/api> (verified 2026-11-09).
+**Webhooks.** Each webhook trigger registers its own resource subscription
+(`PUT /v2/resource_subscriptions`), removes callback-URL leftovers first, stores the ids and deletes
+them on unsubscribe. **Any Event** takes an `events` param (comma-separated resource names, empty =
+all eight; `sale,refund,dispute,dispute_won,cancellation,subscription_updated,subscription_ended,subscription_restarted`)
+and registers one subscription per name; it tags each registration with a `w6w_resource` query
+parameter on the callback URL so the delivery says which resource it is (`resource_name`).
+Gumroad documents that resource-subscription notifications are **not signed** (the signing secret
+in account settings covers only the Ping URL), so the private callback URL is the secret. Deliveries
+are at least once and unordered: de-duplicate on `sale_id` plus `resource_name`.
+
+**Polls.** The product, offer code, variant category and variant lists return the whole collection
+in one request (no paging parameters), so each is a snapshot that reports rows added after the
+first check. `new-payout` filters by `after` (a date) and follows `page_key` across checks, so a
+long window is drained over several checks and payouts created before the trigger started are never
+emitted.
+
+Not covered as triggers: `category-list` (static product taxonomy), `custom-field-list` (checkout
+field definitions), `tax-form-list` (US tax-form report output), `resource-subscription-list`
+(webhook subscription management), and `subscriber-list` (the reference gives no order or
+since-filter and returns every active subscriber; use the `subscription_*` and `cancellation` webhook
+triggers for membership changes).
+
+Vendor mechanism: <https://gumroad.com/api> and <https://gumroad.com/ping> (verified 2026-11-10).
