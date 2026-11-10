@@ -118,4 +118,4 @@ nothing to probe.
 
 ## Triggers
 
-- **New or Updated Contact** wraps `contact-list` with its `updated_after` incremental-sync filter. [MOCO API v1](https://docs.mocoapp.com/api/docs/v1), verified 2026-11-09.
+- **New or Updated Contact** (poll) calls `contact-list` with `updated_after` set to the previous check minus a 2-minute overlap (MOCO documents it as returning entities created or updated after that time) and dedupes by `id` plus `updated_at`, so an edit is a new event. The first check only records the cursor. [MOCO API v1 spec](https://docs.mocoapp.com/api/docs/v1.yaml), verified 2026-11-09.
