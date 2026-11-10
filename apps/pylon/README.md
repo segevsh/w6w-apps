@@ -6,7 +6,7 @@ support platform, over the **Pylon API**.
 - **Categories** — support, crm
 - **Auth methods** — api-token (`Authorization: Bearer <token>`, plus a US/EU region field)
 - **Actions** — 30
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — `service` (status.usepylon.com, `API` component), `api` (unsigned
   reachability on the connection's region host), `quota` (declared unavailable, informational)
   + the derived `auth:api-token`
@@ -67,5 +67,16 @@ roles, user update, team create/update, and the activities, files and highlights
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-issue` | poll | `issue-list` | Each newly created support issue |
+| `new-account` | poll | `account-list` (also `account-search`) | Each newly created account |
+| `new-contact` | poll | `contact-list` (also `contact-search`) | Each newly created contact |
+| `new-user` | poll | `user-list` (also `user-search`) | Each newly added support agent |
+| `new-team` | poll | `team-list` | Each newly created team |
+| `new-tag` | poll | `tag-list` | Each newly created tag |
+| `new-issue-message` | poll | `message-list` | Each new reply or internal note on the issue you pick |
+| `new-issue-thread` | poll | `issue-thread-list` | Each new thread on the issue you pick |
 
-`new-issue` runs `issue-list` over a short created-time window (`start_time` = last check minus two minutes, `end_time` = now; the API allows up to 365 days) with `limit` 200 and follows `nextCursor` for up to three pages, de-duplicating on issue id. A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://docs.usepylon.com/pylon-docs/developer/api) (verified 2026-11-09).
+The account, contact, user, team and tag triggers keep the ids seen at the previous check and fire the ones that are new (the first check stores them and fires nothing). Pylon documents no sort order or time filter for these lists, so each check reads the whole collection: accounts and contacts in pages of 200 (up to 25 pages, 5000 rows; a larger collection makes the check fail with an error naming the cap), users, teams and tags in the single response Pylon returns. `new-issue-message` and `new-issue-thread` do the same for the one issue you name. `issue-search` returns the same issues as `new-issue`, so it has no trigger of its own.
+
+Not covered: `issue-status-list` (reference data: the organization's configured statuses).
+
+`new-issue` runs `issue-list` over a short created-time window (`start_time` = last check minus two minutes, `end_time` = now; the API allows up to 365 days) with `limit` 200 and follows `nextCursor` for up to three pages, de-duplicating on issue id. A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://docs.usepylon.com/pylon-docs/developer/api) (verified 2026-11-10).
