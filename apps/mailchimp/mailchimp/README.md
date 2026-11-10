@@ -1,16 +1,29 @@
 # Mailchimp
 
-- **Triggers** — 1 poll
+- **Triggers** — 10 (7 webhook, 3 poll)
 
 ## Triggers
 
-| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| Key | Title | Mechanism | Mailchimp event or wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
+| `member-subscribed` | Member Subscribed | Webhook (registered by the app) | `subscribe` | The member (ID, email, merge fields) |
+| `member-unsubscribed` | Member Unsubscribed | Webhook (registered by the app) | `unsubscribe` | The member, the action and the reason |
+| `member-updated` | Member Profile Updated | Webhook (registered by the app) | `profile` | The member's updated profile |
+| `member-cleaned` | Member Cleaned | Webhook (registered by the app) | `cleaned` | The audience ID and the event data for the cleaned address |
+| `email-changed` | Member Email Changed | Webhook (registered by the app) | `upemail` | The audience ID and the event data for the change |
+| `campaign-status` | Campaign Sent or Cancelled | Webhook (registered by the app) | `campaign` | The audience ID and the event data for the campaign |
+| `any-event` | Any Event | Webhook (registered by the app) | the `events` you list (empty = the six audience events; the SMS betas `sms_subscribe`, `sms_unsubscribe`, `upsms`, `sms_campaign` by name) | The event and its data |
 | `new-member` | New Audience Member | Poll | `list-members` ordered by `last_changed DESC` | The new audience member |
+| `new-campaign` | New Campaign | Poll | `list-campaigns` sorted `create_time DESC` | The new campaign |
+| `new-group-interest` | New Group Interest | Poll (snapshot) | `list-group-interests` (one group, up to 5000 interests) | The new interest |
 
-Mailchimp's list-webhook API returns a signing secret and can HMAC-sign deliveries. This app therefore polls the existing audience-member list rather than accepting a signed delivery without verification.
+**Webhook setup.** Nothing to paste: choosing an audience makes the app create a webhook on it (`POST /lists/{list_id}/webhooks`, sources `user` and `admin`; tick *Include API changes* to add `api`) and remove it again when the trigger is deleted. The webhook's `signing_secret`, which Mailchimp returns only once, is kept with the subscription.
 
-Vendor documentation: [Webhooks](https://mailchimp.com/developer/marketing/api-concepts/webhooks/) and [List Members](https://mailchimp.com/developer/marketing/api/list-members/list-members-info/) (verified 2026-11-09).
+**Trust model.** Every delivery must carry `X-Mailchimp-Signature: t=<unix seconds>,v1=<hex>`, where `v1` is the HMAC-SHA256 of `<t>.<raw body>` keyed by that signing secret. The check runs over the raw body bytes before the form body is parsed, rejects a timestamp more than 5 minutes from now, and refuses a missing secret, header or body, a malformed header or any mismatch. Only `subscribe` and `unsubscribe` payloads are shown in Mailchimp's guide; for the other events the run gets Mailchimp's fields unchanged in `data`.
+
+**Not covered.** Nothing: every list action is behind a trigger.
+
+Vendor documentation (verified 2026-11-10): [Webhooks guide](https://mailchimp.com/developer/marketing/guides/sync-audience-data-webhooks/), [Add webhook](https://mailchimp.com/developer/marketing/api/list-webhooks/add-webhook/), [List members](https://mailchimp.com/developer/marketing/api/list-members/list-members-info/), [List campaigns](https://mailchimp.com/developer/marketing/api/campaigns/list-campaigns/), [List interests in category](https://mailchimp.com/developer/marketing/api/interests/list-interests-in-category/).
 
 Manage Mailchimp audiences: create/update members, tag them, and send campaigns.
 
