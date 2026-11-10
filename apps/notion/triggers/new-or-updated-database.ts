@@ -19,7 +19,6 @@ const trigger = pollFromListAction({
     { key: "title", type: "array", label: "Title" },
     { key: "created_time", type: "string", label: "Created time" },
     { key: "last_edited_time", type: "string", label: "Last edited time" },
-    { key: "url", type: "string", label: "URL" },
     { key: "data_sources", type: "array", label: "Data sources" },
   ],
   sample: {
@@ -33,7 +32,6 @@ const trigger = pollFromListAction({
     ],
     "created_time": "2026-10-01T10:00:00.000Z",
     "last_edited_time": "2026-11-10T08:30:00.000Z",
-    "url": "https://www.notion.so/Tasks-0ef104cd",
     "data_sources": [
       {
         "id": "a1d8501e-1ac1-43e9-a6bd-ea9fe6c8822b",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/notion",
   "version": "0.5.0",
-  "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, Enterprise administration, and react to workspace changes with signed webhook triggers (page, database, data source and comment events, or any event) and poll triggers (new or updated pages, database rows, comments, blocks, users, files, agents, sessions and meeting notes).",
+  "description": "Manage Notion pages, databases, blocks, comments, files, views, agents and Enterprise admin, with signed webhook and poll triggers for page, database and comment changes.",
   "license": "MIT",
   "author": {
     "name": "w6w"

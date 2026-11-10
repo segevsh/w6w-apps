@@ -32,7 +32,6 @@ const trigger = pollFromListAction<Params>({
     { key: "id", type: "string", label: "Page ID" },
     { key: "created_time", type: "string", label: "Created time" },
     { key: "last_edited_time", type: "string", label: "Last edited time" },
-    { key: "url", type: "string", label: "URL" },
     { key: "parent", type: "object", label: "Parent" },
     { key: "properties", type: "object", label: "Properties" },
   ],
@@ -41,7 +40,6 @@ const trigger = pollFromListAction<Params>({
     "id": "59833787-2cf9-4fdf-8782-e53db20768a5",
     "created_time": "2026-11-09T10:00:00.000Z",
     "last_edited_time": "2026-11-10T08:30:00.000Z",
-    "url": "https://www.notion.so/Roadmap-59833787",
     "parent": {
       "type": "data_source_id",
       "data_source_id": "a1d8501e-1ac1-43e9-a6bd-ea9fe6c8822b",
