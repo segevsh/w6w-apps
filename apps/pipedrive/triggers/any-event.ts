@@ -2,6 +2,7 @@ import { anyEventTrigger } from "../lib/triggers.ts";
 
 /** Pipedrive webhooks on the `<action>.<object>` events the user lists (empty = `*.*`). */
 export default anyEventTrigger({
+  key: "any-event",
   sample: {
     action: "change",
     entity: "product",

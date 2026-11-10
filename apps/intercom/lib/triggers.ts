@@ -169,10 +169,10 @@ const EVENTS_PARAM: Param = {
 
 /** The Any event trigger: every verified topic, optionally narrowed by the `events` list. */
 export function anyEventTrigger(
-  spec: { sample: IntercomEvent },
+  spec: { key: "any-event"; sample: IntercomEvent },
 ): TriggerDefinition<AnyEventParams, IntercomEvent, { callbackUrl: string }> {
   return {
-    key: "any-event",
+    key: spec.key,
     title: "Any Event",
     description:
       "Fires on any Intercom webhook topic you subscribed (or the ones you list). The run gets the notification id and topic and the full item.",

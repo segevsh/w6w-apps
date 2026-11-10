@@ -2,6 +2,7 @@ import { anyEventTrigger } from "../lib/triggers.ts";
 
 /** A Zendesk event-subscription webhook on the event types the user lists. */
 export default anyEventTrigger({
+  key: "any-event",
   sample: {
     eventId: "2b24ef10-19d4-4740-93cf-8f98ec4776c0",
     type: "zen:event-type:user.role_changed",

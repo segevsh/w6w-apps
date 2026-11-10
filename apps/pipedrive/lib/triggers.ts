@@ -337,10 +337,10 @@ export function changedTrigger(
 
 /** The Any event trigger: registers one webhook per listed `<action>.<object>` (empty = `*.*`). */
 export function anyEventTrigger(
-  spec: { sample: ChangeEvent },
+  spec: { key: "any-event"; sample: ChangeEvent },
 ): TriggerDefinition<{ events?: string }, ChangeEvent, EventsState> {
   return build<{ events?: string }, ChangeEvent>({
-    key: "any-event",
+    key: spec.key,
     title: "Any Event",
     description:
       "Fires on the Pipedrive events you list (or every event when empty). The run gets what happened, the object now and the fields that changed.",

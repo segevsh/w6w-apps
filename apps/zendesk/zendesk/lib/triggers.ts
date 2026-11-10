@@ -387,10 +387,10 @@ export function resourceTrigger(
 
 /** The Any event trigger: the user lists the event types; Zendesk has no "all events" value. */
 export function anyEventTrigger(
-  spec: { sample: ResourceEvent },
+  spec: { key: "any-event"; sample: ResourceEvent },
 ): TriggerDefinition<{ events: string }, ResourceEvent, TriggerState> {
   return build<{ events: string }, ResourceEvent>({
-    key: "any-event",
+    key: spec.key,
     title: "Any Event",
     description:
       "Fires on the Zendesk event types you list (tickets, users, organizations, articles and more). The run gets the event: its type, the resource it is about and what changed.",
