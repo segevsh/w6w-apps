@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mautic",
   "version": "0.3.0",
-  "description": "Manage Mautic contacts, segments, companies, campaigns and email sends, and start workflows on contact, company, email, SMS, page-hit and form events (or any Mautic webhook event) and on new campaigns, segments, emails and tags.",
+  "description": "Manage Mautic contacts, segments, companies, campaigns and email sends, and start workflows on contact, company, email, SMS, page-hit and form events, or on new campaigns, segments, emails and tags.",
   "license": "MIT",
   "author": {
     "name": "w6w"

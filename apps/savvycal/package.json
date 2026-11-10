@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/savvycal",
   "version": "0.3.0",
-  "description": "Manage SavvyCal scheduling links, book and cancel events, read availability, and register webhooks, plus webhook triggers for event, attendee and poll-response changes (and an Any Event trigger) and polls for new links, workflows and workflow rules.",
+  "description": "Manage SavvyCal scheduling links, book and cancel events, read availability, and register webhooks, plus triggers for event, attendee and poll changes and polls for new links and workflows.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/facebook",
   "version": "0.3.0",
-  "description": "Manage Facebook Pages, posts, comments, photos, videos, insights and basic ad-account reads via the Graph API. Triggers: signed webhooks for Page feed activity, posts, comments, photos and videos (plus an Any Event trigger for mentions, ratings and live videos) and polls for new Pages and ad campaigns.",
+  "description": "Manage Facebook Pages, posts, comments, photos, videos, insights and ad-account reads via the Graph API. Triggers: signed Page webhooks (feed, mentions, ratings) and polls for new Pages and campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"
