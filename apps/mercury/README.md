@@ -288,3 +288,7 @@ deno task test
 `deno task validate` passes `--config ./deno.json` explicitly, matching the sibling `apify`/`wise`
 apps' template — without it, `_tools/audit.ts` resolves imports against `_tools/deno.json` instead of
 this app's own, which is a property of how the tool is invoked rather than of this app's code.
+
+## Triggers
+
+- **New Customer** wraps `customer-list` with descending order. [Mercury List Customers](https://docs.mercury.com/reference/list-customers), verified 2026-11-09.
