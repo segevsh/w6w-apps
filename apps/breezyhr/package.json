@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/breezyhr",
   "version": "0.3.0",
-  "description": "Manage Breezy HR positions, candidates, pipelines, scorecards, notes, messages and webhooks through the Breezy HR applicant tracking API, and trigger workflows on new candidates, positions (new or edited), candidates on a position, and a candidate's messages and activity.",
+  "description": "Manage Breezy HR positions, candidates, pipelines, notes, messages and webhooks; poll triggers for new candidates, positions, and candidate messages and activity.",
   "license": "MIT",
   "author": {
     "name": "w6w"
