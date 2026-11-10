@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/box",
   "version": "0.3.0",
-  "description": "Upload, download, and manage files and folders in Box. Triggers fire on file, folder and shared-link events and any chosen file or folder activity (webhooks verified with the Box signature keys), and poll a folder or a search for new items.",
+  "description": "Upload, download, and manage files and folders in Box. Signed webhook triggers for file, folder and shared-link events, plus polls for new folder items and search matches.",
   "license": "MIT",
   "author": {
     "name": "w6w"

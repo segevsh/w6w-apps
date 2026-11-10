@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import search from "../actions/search.ts";
 
@@ -29,7 +30,7 @@ const newOrUpdatedSearchResult = pollFromListAction<Params>({
   title: "New or Updated Search Result",
   description:
     "Polls a Box search and fires for each match that is new or was modified since the last check. The run gets the file, folder or web link.",
-  action: search,
+  action: search as unknown as ActionDefinition,
   input: (params) => ({
     query: params.query,
     type: params.type,

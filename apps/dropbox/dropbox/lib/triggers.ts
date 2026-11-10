@@ -115,21 +115,30 @@ const handleIngest: Ingest = async ({ raw, params }) => {
     .map((accountId) => ({ accountId }));
 };
 
-export const filesChanged: TriggerDefinition<TriggerParams, FilesChangedEvent, TriggerState> = {
-  key: "files-changed",
-  title: "Files Changed (Webhook)",
-  description:
-    "Fires when Dropbox reports new changes in an account that authorized your app. The run gets the account id; read the changes with List Folder.",
-  params: [APP_SECRET_PARAM, ACCOUNT_PARAM],
-  output: FILES_CHANGED_OUTPUT,
-  sample: { accountId: "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc" },
+export interface FilesChangedSpec {
+  key: string;
+  title: string;
+  description: string;
+}
 
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
-  },
-  onUnsubscribe() {},
-  handleIngest,
-  parseOutput({ normalized }) {
-    return normalized as FilesChangedEvent;
-  },
-};
+export function filesChangedTrigger(
+  spec: FilesChangedSpec,
+): TriggerDefinition<TriggerParams, FilesChangedEvent, TriggerState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [APP_SECRET_PARAM, ACCOUNT_PARAM],
+    output: FILES_CHANGED_OUTPUT,
+    sample: { accountId: "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc" },
+
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+    onUnsubscribe() {},
+    handleIngest,
+    parseOutput({ normalized }) {
+      return normalized as FilesChangedEvent;
+    },
+  };
+}
