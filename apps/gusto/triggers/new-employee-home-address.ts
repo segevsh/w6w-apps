@@ -1,4 +1,4 @@
-import { asArray, COMPANY_PARAM, requireId, snapshotTrigger, uuidOf } from "../lib/triggers.ts";
+import { asArray, requireId, snapshotTrigger, uuidOf } from "../lib/triggers.ts";
 import employeeHomeAddressList from "../actions/employee-home-address-list.ts";
 export default snapshotTrigger({
   key: "new-employee-home-address",

@@ -1,4 +1,4 @@
-import { asArray, COMPANY_PARAM, requireId, snapshotTrigger, uuidOf } from "../lib/triggers.ts";
+import { asArray, requireId, snapshotTrigger, uuidOf } from "../lib/triggers.ts";
 import garnishmentList from "../actions/garnishment-list.ts";
 export default snapshotTrigger({
   key: "new-garnishment",
