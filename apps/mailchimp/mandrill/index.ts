@@ -26,6 +26,7 @@ import deleteTemplate from "./actions/delete-template.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import emailEvent from "./triggers/email-event.ts";
 
 export default {
   actions: [
@@ -53,6 +54,7 @@ export default {
     updateTemplate,
     deleteTemplate,
   ],
+  triggers: [emailEvent],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
