@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/elastic-email",
   "version": "0.3.0",
-  "description": "Send transactional and bulk email through Elastic Email, and manage its contacts, lists, templates, campaigns, suppressions and statistics, and trigger workflows for new contact lists and for email events (sent, opened, clicked, unsubscribed, bounced, abuse report).",
+  "description": "Send email through Elastic Email; manage contacts, lists, templates, campaigns, suppressions and statistics; trigger workflows on new lists and on email events (sent, opened, clicked, bounced).",
   "license": "MIT",
   "author": {
     "name": "w6w"

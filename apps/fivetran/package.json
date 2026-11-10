@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fivetran",
   "version": "0.3.0",
-  "description": "Run the pipelines that fill a warehouse — trigger and watch syncs, pause and resume them, run dbt transformations, read destinations and history, and trigger workflows on new connections and on sync start, sync end and connection failure webhooks.",
+  "description": "Run the pipelines that fill a warehouse: trigger and watch syncs, pause them, run dbt transformations, read destinations, and trigger on new connections, sync start and end, and failures.",
   "license": "MIT",
   "author": {
     "name": "w6w"
