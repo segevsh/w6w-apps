@@ -36,6 +36,8 @@ import cameraSnapshot from "./actions/camera-snapshot.ts";
 import errorLog from "./actions/error-log.ts";
 import intentHandle from "./actions/intent-handle.ts";
 
+import automationEvent from "./triggers/automation-event.ts";
+
 const app: AppDefinition = {
   actions: [
     stateList,
@@ -58,6 +60,7 @@ const app: AppDefinition = {
     errorLog,
     intentHandle,
   ],
+  triggers: [automationEvent],
   auth: [token],
   healthChecks: [service, instance, entities, quota],
 };
