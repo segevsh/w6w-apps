@@ -1,6 +1,6 @@
 # Razorpay
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 12 (poll)
 
 Accept payments, manage orders, refunds, customers, invoices and subscriptions on the
 **Razorpay API v1**, India's payment gateway.
@@ -296,6 +296,19 @@ deno task test
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-order` — New Order | Poll | `order-list` | Each newly created order |
+| `new-payment` — New Payment | Poll | `payment-list` | each payment newly created (`from` created-at filter) |
+| `new-refund` — New Refund | Poll | `refund-list` | each refund newly created (`from` filter) |
+| `new-settlement` — New Settlement | Poll | `settlement-list` | each settlement newly created (`from` filter) |
+| `new-invoice` — New Invoice | Poll | `invoice-list` | each invoice newly created (`from` filter) |
+| `new-subscription` — New Subscription | Poll | `subscription-list` | each subscription newly created (`from` filter; `subscription-list` gained optional `from`/`to`) |
+| `new-customer` — New Customer | Poll | `customer-list` | each customer newly created (whole list compared, `count`/`skip`) |
+| `new-dispute` — New Dispute | Poll | `dispute-list` | each dispute newly raised (whole list compared) |
+| `new-item` — New Item | Poll | `item-list` | each catalogue item newly created (whole list compared) |
+| `new-plan` — New Plan | Poll | `plan-list` | each plan newly created (whole list compared) |
+| `new-payment-link` — New Payment Link | Poll | `payment-link-list` | each payment link newly created (whole list compared) |
+| `new-order-payment` — New Order Payment Attempt | Poll | `order-payments-list` | each payment attempt newly made against the chosen order |
+
+Per-parent triggers take the parent id as a required parameter. Every new trigger's first check records what exists without firing. Source: https://razorpay.com/openapi.json (Razorpay's own OpenAPI document: `from`/`to`/`count`/`skip` on payments, refunds, settlements, invoices and subscriptions; `count`/`skip` only on customers, items, plans), verified 2026-11-10.
 
 - Razorpay's Fetch all orders reference documents `from`/`to` (unix `created_at` timestamps), `count` and `skip` (CLI example: `razorpay orders list --count 10 --skip 0 --from … --to …`) but no sort argument, and the existing action notes oldest-first. So the trigger asks for `from = last check − 120 s`, pages with `skip` (100 per page, up to 3 pages) and dedupes by id, instead of assuming an order.
 - No `new-or-updated-order`: an order has only `created_at`, no update stamp.

@@ -52,6 +52,13 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMural from "./triggers/new-mural.ts";
 import newOrUpdatedMural from "./triggers/new-or-updated-mural.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
+import newRoom from "./triggers/new-room.ts";
+import newRoomFolder from "./triggers/new-room-folder.ts";
+import newRoomMember from "./triggers/new-room-member.ts";
+import newMuralUser from "./triggers/new-mural-user.ts";
+import newMuralTag from "./triggers/new-mural-tag.ts";
+import newWidget from "./triggers/new-widget.ts";
 
 export default {
   actions: [
@@ -88,5 +95,15 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newMural, newOrUpdatedMural],
+  triggers: [
+    newMural,
+    newOrUpdatedMural,
+    newWorkspace,
+    newRoom,
+    newRoomFolder,
+    newRoomMember,
+    newMuralUser,
+    newMuralTag,
+    newWidget,
+  ],
 } satisfies AppDefinition;

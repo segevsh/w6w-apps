@@ -98,6 +98,17 @@ import invoiceList from "./actions/invoice-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrder from "./triggers/new-order.ts";
+import newPayment from "./triggers/new-payment.ts";
+import newRefund from "./triggers/new-refund.ts";
+import newSettlement from "./triggers/new-settlement.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newDispute from "./triggers/new-dispute.ts";
+import newItem from "./triggers/new-item.ts";
+import newPlan from "./triggers/new-plan.ts";
+import newPaymentLink from "./triggers/new-payment-link.ts";
+import newOrderPayment from "./triggers/new-order-payment.ts";
 
 export default {
   actions: [
@@ -162,5 +173,18 @@ export default {
   // (`mcp.razorpay.com`) authenticates its own MCP server, not this REST API.
   auth: [basic],
   healthChecks: [service, quota],
-  triggers: [newOrder],
+  triggers: [
+    newOrder,
+    newPayment,
+    newRefund,
+    newSettlement,
+    newInvoice,
+    newSubscription,
+    newCustomer,
+    newDispute,
+    newItem,
+    newPlan,
+    newPaymentLink,
+    newOrderPayment,
+  ],
 } satisfies AppDefinition;

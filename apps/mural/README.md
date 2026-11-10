@@ -59,6 +59,17 @@ comment, area, arrow, file, image and shape; assets.
 | --- | --- | --- | --- |
 | `new-mural` — New Mural | poll | `mural-list` | each newly created mural in the chosen workspace (`sortBy=lastCreated`, most recent first) |
 | `new-or-updated-mural` — New or Updated Mural | poll | `mural-list` | each mural created or changed (`sortBy=lastModified`, most recently modified first; the dedupe id includes `updatedOn`) |
+| `new-workspace` — New Workspace | Poll | `workspace-list` | each workspace the user newly gains access to (whole list compared, 99 per page via `next`) |
+| `new-room` — New Room | Poll | `room-list` | each room newly created in the chosen workspace |
+| `new-room-folder` — New Room Folder | Poll | `room-folder-list` | each folder newly created in the chosen room |
+| `new-room-member` — New Room Member | Poll | `room-member-list` | each user newly added to the chosen room |
+| `new-mural-user` — New Mural User | Poll | `mural-user-list` | each user newly given access to the chosen mural |
+| `new-mural-tag` — New Mural Tag | Poll | `tag-list` | each tag newly created on the chosen mural |
+| `new-widget` — New Widget | Poll | `widget-list` | each widget newly added to the chosen mural (refused above about 5000 widgets) |
+
+Murals listed another way are delivered by `new-mural`: `room-mural-list`, `mural-recent-list` and `mural-search` return the same mural records; `room-search` returns the rooms `new-room` delivers.
+
+Per-parent triggers take the parent id as a required parameter. Every new trigger's first check records what exists without firing. Source: https://developers.mural.co/public/reference (list endpoints, `limit` < 100 and `next` paging), verified 2026-11-10.
 
 Setup: set the **Workspace ID** trigger parameter. Each check lists the 99 newest murals and emits those not seen before (the updated trigger re-emits a mural whose `updatedOn` changed); the first check only records what exists.
 

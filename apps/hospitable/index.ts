@@ -35,6 +35,14 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newReservation from "./triggers/new-reservation.ts";
+import newOrUpdatedInquiry from "./triggers/new-or-updated-inquiry.ts";
+import newPayout from "./triggers/new-payout.ts";
+import newProperty from "./triggers/new-property.ts";
+import newPropertyImage from "./triggers/new-property-image.ts";
+import newPropertyReview from "./triggers/new-property-review.ts";
+import newReservationMessage from "./triggers/new-reservation-message.ts";
+import newTask from "./triggers/new-task.ts";
+import newTeammate from "./triggers/new-teammate.ts";
 
 export default {
   actions: [
@@ -69,5 +77,15 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, api, quota],
-  triggers: [newReservation],
+  triggers: [
+    newReservation,
+    newOrUpdatedInquiry,
+    newPayout,
+    newProperty,
+    newPropertyImage,
+    newPropertyReview,
+    newReservationMessage,
+    newTask,
+    newTeammate,
+  ],
 } satisfies AppDefinition;

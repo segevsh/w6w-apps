@@ -91,6 +91,17 @@ import personMe from "./actions/person-me.ts";
 import projectPersonList from "./actions/project-person-list.ts";
 
 import newChecklistItem from "./triggers/new-checklist-item.ts";
+import newProject from "./triggers/new-project.ts";
+import newSection from "./triggers/new-section.ts";
+import newTask from "./triggers/new-task.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newComment from "./triggers/new-comment.ts";
+import newSubtask from "./triggers/new-subtask.ts";
+import newChecklist from "./triggers/new-checklist.ts";
+import newLabel from "./triggers/new-label.ts";
+import newProjectPerson from "./triggers/new-project-person.ts";
+import newPerson from "./triggers/new-person.ts";
+import newTaskLabel from "./triggers/new-task-label.ts";
 
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
@@ -146,5 +157,18 @@ export default {
   ],
   auth: [personalAccessToken, oauth2],
   healthChecks: [service, rateLimit],
-  triggers: [newChecklistItem],
+  triggers: [
+    newChecklistItem,
+    newProject,
+    newSection,
+    newTask,
+    newOrUpdatedTask,
+    newComment,
+    newSubtask,
+    newChecklist,
+    newLabel,
+    newProjectPerson,
+    newPerson,
+    newTaskLabel,
+  ],
 } satisfies AppDefinition;

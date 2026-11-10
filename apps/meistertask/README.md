@@ -6,7 +6,7 @@ Manage MeisterTask projects, sections, tasks, subtasks, checklists, labels and c
 - **Categories** — project-management, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 38
-- **Triggers** — 1 (poll)
+- **Triggers** — 12 (poll)
 - **Health checks** — 1 live (`service`) + 1 declared absence (~~`rate-limit`~~) + 2 derived
   (`auth:personal-access-token`, `auth:oauth2`)
 - **Egress allowlist** — `www.meistertask.com` (the `service` check adds `status.meistertask.com`
@@ -306,6 +306,21 @@ app's health check needs (`worstHealthState`).
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-checklist-item` — New Checklist Item | Poll | `checklist-item-list` | Each newly created checklist item |
+| `new-project` — New Project | Poll | `project-list` | each project newly created (`sort=-id`, `status=all`) |
+| `new-section` — New Section | Poll | `section-list` | each section newly added to the chosen project (`sort=-id`) |
+| `new-task` — New Task | Poll | `task-list` | each task newly created in the chosen project (`sort=-id`) |
+| `new-or-updated-task` — New or Updated Task | Poll | `task-list` | each task in the chosen project that is new or edited (`sort=-updated_at`, id includes `updated_at`) |
+| `new-comment` — New Comment | Poll | `comment-list` | each comment newly posted on the chosen task (`sort=-id`) |
+| `new-subtask` — New Subtask | Poll | `subtask-list` | each subtask newly added to the chosen task (`sort=-id`) |
+| `new-checklist` — New Checklist | Poll | `checklist-list` | each checklist newly added to the chosen task (`sort=-id`) |
+| `new-label` — New Label | Poll | `label-list` | each label newly created in the chosen project (whole list compared) |
+| `new-project-person` — New Project Person | Poll | `project-person-list` | each person newly added to the chosen project (whole list compared; also delivers `project-members-list`'s members) |
+| `new-person` — New Person | Poll | `person-list` | each person who newly shares a project with the user (whole list compared) |
+| `new-task-label` — New Task Label | Poll | `task-label-list` | each label newly attached to the chosen task (whole list compared) |
+
+Not covered: `project-members-list` (the same members `new-project-person` delivers; the rights/membership detail is a read, not a feed).
+
+Per-parent triggers take the parent id as a required parameter. Every new trigger's first check records what exists without firing. Source: https://developers.meistertask.com/reference/sorting and https://developers.meistertask.com/reference/pagination (descending `-` sort prefix, `items`/`page`), verified 2026-11-10.
 
 Calls `checklist-item-list` for the configured checklist with `sort=-id` (a `-` prefix is descending; without `sort` the vendor lists ascending by id), `items=100`, `page=1`. Item ids grow with creation. The first check records what exists without firing; later checks emit only unseen items.
 
