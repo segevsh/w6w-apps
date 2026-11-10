@@ -218,12 +218,27 @@
     "path": "apps/aircall",
     "mechanism": "poll",
     "candidates": [
-      "new-call"
+      "new-call",
+      "new-contact",
+      "new-or-updated-contact",
+      "new-user",
+      "new-number",
+      "new-team",
+      "new-user-number"
     ],
     "pollAction": "call-list",
-    "reason": "Call list supports documented descending order (https://developer.aircall.io/api-references/).",
-    "verified": "apps/aircall/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Newest-first polls (order=desc, documented) on calls, contacts, users, numbers and teams; contacts also by updated_at; a user's numbers as a bounded snapshot (https://developer.aircall.io/api-references/).",
+    "verified": "apps/aircall/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "call-search": "new-call",
+      "contact-search": "new-contact"
+    },
+    "skipped": {
+      "tag-list": "reference data: call tag definitions (names/colours/ids) used to label calls, no order or filter on the endpoint",
+      "user-availability-list": "live operational status per user (available/offline/in_call), not records; changes constantly and has no stable new-record notion",
+      "webhook-list": "integration admin: the app's own registered webhooks (tokens stripped); not a business record feed"
+    }
   },
   {
     "path": "apps/airparser",
@@ -295,12 +310,24 @@
     "path": "apps/anchor",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice"
+      "new-invoice",
+      "new-payout",
+      "new-contact",
+      "new-proposal",
+      "new-proposal-draft",
+      "new-agreement",
+      "new-proposal-template",
+      "new-service-template"
     ],
     "pollAction": "invoice-list",
-    "reason": "Invoice list supports descending issue-date order (https://docs.sayanchor.com/reference/listinvoices-1).",
-    "verified": "apps/anchor/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Invoices and payouts newest-first (sortField/sortDirection=desc); contacts, proposals, drafts, agreements and templates have no sort or created-since filter, so they are bounded snapshots (https://docs.sayanchor.com/reference/pagination-filtering).",
+    "verified": "apps/anchor/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "legal-terms-list": "reference library: the business's boilerplate legal-terms documents (terms of service, privacy policy, MSA), rarely changed, attached to proposals",
+      "payout-invoice-list": "per-parent list whose parent is not picked by a user: the charges of one settled payout are fixed when the payout is created; new payouts arrive through new-payout",
+      "webhook-subscription-list": "integration admin: the account's own webhook subscriptions (target URL and event types)"
+    }
   },
   {
     "path": "apps/anthropic",
@@ -1302,12 +1329,25 @@
     "path": "apps/breezyhr",
     "mechanism": "poll",
     "candidates": [
-      "new-candidate"
+      "new-candidate",
+      "new-position",
+      "new-or-updated-position",
+      "new-position-candidate",
+      "new-candidate-message",
+      "new-candidate-activity"
     ],
     "pollAction": "candidate-search",
-    "reason": "shipped poll trigger(s) over list action candidate-search",
-    "verified": "apps/breezyhr/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Candidate search newest-first; a candidate's conversation and stream are documented newest-first; positions and a position's candidates are unpaged full lists diffed as snapshots (https://developer.breezy.hr/reference/listpositions).",
+    "verified": "apps/breezyhr/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "category-list": "reference data: position category definitions (built-in plus custom)",
+      "company-list": "account membership: the companies the token's user belongs to; not a record feed",
+      "custom-field-list": "reference data: custom field definitions (name, data type, options), not values",
+      "department-list": "reference data: department names",
+      "pipeline-list": "reference data: hiring pipeline and stage definitions",
+      "webhook-list": "integration admin: the company's own webhook endpoints and delivery stats"
+    }
   },
   {
     "path": "apps/brevo",
@@ -1539,12 +1579,27 @@
     "path": "apps/checkly",
     "mechanism": "poll",
     "candidates": [
-      "new-check-result"
+      "new-check-result",
+      "new-check-alert",
+      "new-check",
+      "new-or-updated-check",
+      "new-check-group",
+      "new-alert-channel",
+      "new-maintenance-window"
     ],
     "pollAction": "check-result-list",
-    "reason": "Since-filter poll: check-result-list takes documented from/to Unix timestamps; one check per subscription, FINAL results, optional failures only",
-    "verified": "apps/checkly/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Check results and alerts by documented from= since filter (alerts floor-guarded); checks, groups, alert channels and maintenance windows are bounded snapshots, no sort or created-since filter (https://api.checklyhq.com/openapi.json).",
+    "verified": "apps/checkly/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "check-group-checks-list": "new-check"
+    },
+    "skipped": {
+      "check-status-list": "live pass/fail state per check, not records; failures are delivered by new-check-result (failures only)",
+      "location-list": "reference data: Checkly's fixed set of run locations",
+      "runtime-list": "reference data: supported runtime versions",
+      "variable-list": "configuration: environment variables, values may be secrets and must not be fanned out to workflows"
+    }
   },
   {
     "path": "apps/circle",

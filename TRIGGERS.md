@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -38,10 +38,6 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/mural | 2 | 12 | 11 |
 | apps/razorpay | 1 | 12 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
-| apps/aircall | 1 | 11 | 10 |
-| apps/anchor | 1 | 11 | 10 |
-| apps/breezyhr | 1 | 11 | 10 |
-| apps/checkly | 1 | 11 | 10 |
 | apps/circle | 1 | 11 | 10 |
 | apps/followupboss | 2 | 11 | 10 |
 | apps/givebutter | 2 | 11 | 10 |
@@ -580,7 +576,9 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/ahrefs | 2 | 12 | 0 |
 | apps/aidbase | 12 | 12 | 0 |
+| apps/aircall | 7 | 11 | 0 |
 | apps/airtable | 3 | 2 | 0 |
+| apps/anchor | 8 | 11 | 0 |
 | apps/apollo | 6 | 13 | 0 |
 | apps/asana | 9 | 5 | 0 |
 | apps/ashby | 8 | 16 | 0 |
@@ -591,8 +589,10 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/bannerbear | 11 | 12 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
 | apps/box | 20 | 2 | 0 |
+| apps/breezyhr | 6 | 11 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
+| apps/checkly | 7 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
@@ -809,12 +809,12 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/agencyzoom | 1 | lead-list | new-lead | apps/agencyzoom/README.md Triggers section (verified 2026-11-09) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
 | apps/ahrefs | 2 | project-list | new-project, new-site-audit-crawl | apps/ahrefs/README.md Triggers section (verified 2026-11-10) | hand | snapshot of the management project collection plus finished Site Audit crawls from the free /site-audit/projects health-score list (https://docs.ahrefs.com/openapi.json) |
 | apps/aidbase | 12 | ticket-list | new-chat, new-chatbot, new-chatbot-knowledge, new-email, new-email-inbox, new-email-inbox-knowledge, new-faq-item, new-knowledge-item, new-knowledge-sub-page, new-ticket, new-ticket-form, new-ticket-form-knowledge | apps/aidbase/README.md Triggers section (verified 2026-11-10) | hand | created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference) |
-| apps/aircall | 1 | call-list | new-call | apps/aircall/README.md Triggers section (verified 2026-11-09) | hand | Call list supports documented descending order (https://developer.aircall.io/api-references/). |
+| apps/aircall | 7 | call-list | new-call, new-contact, new-or-updated-contact, new-user, new-number, new-team, new-user-number | apps/aircall/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (order=desc, documented) on calls, contacts, users, numbers and teams; contacts also by updated_at; a user's numbers as a bounded snapshot (https://developer.aircall.io/api-references/). |
 | apps/airtable | 3 | search-records | new-record, new-or-updated-record, new-base | apps/airtable/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over search-records and list-bases; Airtable webhooks are ping-only and need a saved payload cursor (https://airtable.com/developers/web/api/webhooks-overview) |
 | apps/alegra | 1 | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
 | apps/algolia | 1 | index-list | new-index | apps/algolia/README.md Triggers section (verified 2026-11-09) | hand | Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices). |
 | apps/amplitude | 1 | cohort-list | new-cohort | apps/amplitude/README.md Triggers section (verified 2026-11-10) | hand | GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound |
-| apps/anchor | 1 | invoice-list | new-invoice | apps/anchor/README.md Triggers section (verified 2026-11-09) | hand | Invoice list supports descending issue-date order (https://docs.sayanchor.com/reference/listinvoices-1). |
+| apps/anchor | 8 | invoice-list | new-invoice, new-payout, new-contact, new-proposal, new-proposal-draft, new-agreement, new-proposal-template, new-service-template | apps/anchor/README.md Triggers section (verified 2026-11-10) | hand | Invoices and payouts newest-first (sortField/sortDirection=desc); contacts, proposals, drafts, agreements and templates have no sort or created-since filter, so they are bounded snapshots (https://docs.sayanchor.com/reference/pagination-filtering). |
 | apps/anthropic | 1 | batch-list | new-batch | apps/anthropic/README.md Triggers section (verified 2026-11-10) | hand | batch-list returns 'Most recently created batches first' (https://platform.claude.com/docs/en/api/python/messages/batches/list); the API offers no batch webhook |
 | apps/apify | 1 | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
 | apps/apitemplateio | 1 | list-objects | new-object | apps/apitemplateio/README.md Triggers section (verified 2026-11-09) | hand | list-objects is documented by the existing action as a most-recent-first generated-object feed |
@@ -855,7 +855,7 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/booqable | 1 | customer-list | new-customer | apps/booqable/README.md Triggers section (verified 2026-11-09) | hand | Customer list accepts -created_at descending sort. |
 | apps/braintree | 1 | transaction-search | new-transaction | apps/braintree/README.md Triggers section (verified 2026-11-09) | hand | Transaction search has a createdAt >= filter (createdFrom); the trigger filters cursor minus 120 s and dedupes by id, no default order assumed (https://developer.paypal.com/braintree/graphql/reference/). |
 | apps/braze | 1 | campaign-list | new-or-updated-campaign | apps/braze/README.md Triggers section (verified 2026-11-09) | hand | Campaign list supports latest-edit descending order and update identity. |
-| apps/breezyhr | 1 | candidate-search | new-candidate | apps/breezyhr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-search |
+| apps/breezyhr | 6 | candidate-search | new-candidate, new-position, new-or-updated-position, new-position-candidate, new-candidate-message, new-candidate-activity | apps/breezyhr/README.md Triggers section (verified 2026-11-10) | hand | Candidate search newest-first; a candidate's conversation and stream are documented newest-first; positions and a position's candidates are unpaged full lists diffed as snapshots (https://developer.breezy.hr/reference/listpositions). |
 | apps/browseai | 1 | task-list | new-task | apps/browseai/README.md Triggers section (verified 2026-11-09) | hand | Task list sorted explicitly with sort=-createdAt (vendor default is ascending), page size capped at 10 (https://docs.browse.ai/api/). |
 | apps/browserless | 1 | crawl-list | new-crawl | apps/browserless/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls |
 | apps/bubble | 2 | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
@@ -868,7 +868,7 @@ depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-p
 | apps/certifier | 2 | credential-search | new-credential, new-or-updated-credential | apps/certifier/README.md Triggers section (verified 2026-11-09) | hand | credential-search sorted createdAt/updatedAt desc |
 | apps/chargebee | 1 | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
 | apps/chatwork | 1 | room-message-list | new-message | apps/chatwork/README.md Triggers section (verified 2026-11-09) | hand | force=1 returns the latest 100 messages, re-sorted by send_time desc |
-| apps/checkly | 1 | check-result-list | new-check-result | apps/checkly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: check-result-list takes documented from/to Unix timestamps; one check per subscription, FINAL results, optional failures only |
+| apps/checkly | 7 | check-result-list | new-check-result, new-check-alert, new-check, new-or-updated-check, new-check-group, new-alert-channel, new-maintenance-window | apps/checkly/README.md Triggers section (verified 2026-11-10) | hand | Check results and alerts by documented from= since filter (alerts floor-guarded); checks, groups, alert channels and maintenance windows are bounded snapshots, no sort or created-since filter (https://api.checklyhq.com/openapi.json). |
 | apps/circle | 1 | event-list | new-event | apps/circle/README.md Triggers section (verified 2026-11-09) | hand | Admin API v2 documents default order newest by created_at; records array |
 | apps/circleci | 1 | pipeline-list | new-pipeline | apps/circleci/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id |
 | apps/clerk | 2 | user-list | new-user, new-or-updated-user | apps/clerk/README.md Triggers section (verified 2026-11-09) | hand | order_by=-created_at / -updated_at via new optional orderBy input |
