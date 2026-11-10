@@ -199,7 +199,7 @@ async function everySource(): Promise<Array<{ path: string; src: string }>> {
 
 test("index: nothing sends an X-Version header — that belongs to the deprecated v1 API", async () => {
   const sources = await everySource();
-  assertEquals(sources.length, 41 + 1 + 3 + 3 + 1, "the source sweep lost files");
+  assertEquals(sources.length, 41 + 1 + 3 + 4 + 1, "the source sweep lost files");
   for (const { path, src } of sources) {
     assert(!/x-version/i.test(src), `${path}: sends an X-Version header`);
   }
