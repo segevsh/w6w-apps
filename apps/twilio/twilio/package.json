@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/twilio",
   "version": "0.5.0",
-  "description": "Send SMS/MMS/WhatsApp messages and make phone calls via Twilio. Triggers fire on incoming messages, message and call status updates, and Event Streams events (call summaries or any event type), verified with the Twilio signature.",
+  "description": "Send SMS/MMS/WhatsApp messages and make calls via Twilio. Triggers fire on incoming messages, message and call status and Event Streams events, signature-verified.",
   "license": "MIT",
   "author": {
     "name": "w6w"

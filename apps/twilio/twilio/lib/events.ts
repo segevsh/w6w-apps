@@ -169,7 +169,7 @@ const STREAM_SAMPLE: StreamEvent = {
   type: SUMMARY_TYPE,
   source: "/v1/Voice/CAsample-call-sid/Summary",
   time: "2026-11-09T22:56:33.000Z",
-  dataSchema: "https://events-schemas.twilio.com/VoiceInsights.CallSummary/1",
+  dataSchema: "VoiceInsights.CallSummary/1",
   data: {
     call_sid: "CAsample-call-sid",
     account_sid: "sample-account-sid",
