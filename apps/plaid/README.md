@@ -13,6 +13,8 @@ liabilities — and manage the Items that connect them.
 Paths come from Plaid's reference; the hosts, credential placement and error
 taxonomy were verified live on 2026-08-18.
 
+Triggers: not shipped — `institution-list` (`POST /institutions/get`) pages a catalog of supported institutions at `count` ≤ 500 per request with no sort order or created filter, so it is neither newest-first nor a bounded (≤ 5000 rows) snapshot (https://plaid.com/docs/api/institutions/)
+
 ## Everything is a POST, and the credential goes in the body
 
 Plaid takes **no `Authorization` header at all**. Every call is a `POST` whose

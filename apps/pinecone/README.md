@@ -6,6 +6,7 @@ embedding and reranking models.
 
 - **Categories** — ai, databases, search
 - **Auth methods** — api-key
+- **Triggers** — 2 (poll)
 - **Actions** — 24
 - **Egress allowlist** — `api.pinecone.io`, `*.pinecone.io` (the data plane lives
   on a per-index host — see below)
@@ -288,3 +289,14 @@ describe a connection's headroom honestly.
   workflow step.
 - **The Admin API** (projects, keys, service accounts) — a different credential.
 - **Assistant and Nexus** — separate Pinecone products with their own specs.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-index` — New Index | Poll | `index-list` | Each index newly created in the project |
+| `new-backup` — New Backup | Poll | `backup-list` | Each backup newly created in the project |
+
+Both triggers snapshot a small, bounded collection and emit only additions: a project holds at most 200 serverless indexes and 1,000 serverless backups on the largest plan ([object limits](https://docs.pinecone.io/reference/api/database-limits/object-limits)). `new-index` keys on the index `name` (`index-list`, [`GET /indexes`](https://docs.pinecone.io/reference/api/2026-04/control-plane/list_indexes)); `new-backup` keys on `backup_id` (`backup-list` read to the end, [`GET /backups`](https://docs.pinecone.io/reference/api/2026-04/control-plane/list_project_backups)). The first check records what exists without emitting events (verified 2026-11-10).
+
+Not triggers: `namespace-list` (up to 1,000,000 namespaces per index, so not a bounded snapshot, per the object limits above), `model-list` (Pinecone's hosted-model catalog, not records in the project) and `record-list` (prefix-scoped ids in lexicographic pagination, not a created feed: [list-records](https://docs.pinecone.io/reference/api/latest/data-plane/list-records)).
