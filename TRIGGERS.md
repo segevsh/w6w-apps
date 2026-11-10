@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1623 triggers, 2787 unaccounted list actions in 562 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1631 triggers, 2784 unaccounted list actions in 559 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -532,9 +532,6 @@ depth: 682 apps, 1623 triggers, 2787 unaccounted list actions in 562 apps, n8n-p
 | apps/gladia | 1 | 2 | 1 |
 | apps/glide | 1 | 2 | 1 |
 | apps/google/gemini | 0 | 1 | 1 |
-| apps/google/google-calendar | 1 | 2 | 1 |
-| apps/google/google-forms | 2 | 2 | 1 |
-| apps/google/google-sheets | 3 | 1 | 1 |
 | apps/google/google-tasks | 1 | 2 | 1 |
 | apps/gravityforms | 2 | 2 | 1 |
 | apps/jev | 0 | 1 | 1 |
@@ -611,7 +608,10 @@ depth: 682 apps, 1623 triggers, 2787 unaccounted list actions in 562 apps, n8n-p
 | apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
+| apps/google/google-calendar | 7 | 2 | 0 |
 | apps/google/google-drive | 5 | 3 | 0 |
+| apps/google/google-forms | 3 | 2 | 0 |
+| apps/google/google-sheets | 4 | 1 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
 | apps/gusto | 15 | 14 | 0 |
 | apps/hibob | 7 | 13 | 0 |
@@ -964,12 +964,12 @@ depth: 682 apps, 1623 triggers, 2787 unaccounted list actions in 562 apps, n8n-p
 | apps/google/bigquery | 1 | job-list | new-job-list | apps/google/bigquery/README.md Triggers section (verified 2026-11-09) | hand | Existing jobs list is polled. |
 | apps/google/gmail | 1 | get-many-messages | new-email | apps/google/gmail/README.md Triggers section (verified 2026-11-09) | hand | gmail users.messages.list with q=after:<epoch>; H-1 |
 | apps/google/google-business-profile | 1 | list-questions | new-question | apps/google/google-business-profile/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-questions |
-| apps/google/google-calendar | 1 | list-events | event-changed | apps/google/google-calendar/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
+| apps/google/google-calendar | 7 | list-events | event-changed, new-event, event-updated, event-cancelled, event-started, event-ended, new-calendar | apps/google/google-calendar/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over list-events (sync feed for created/updated/cancelled, timeMin/timeMax window for started/ended) and list-calendars (snapshot); push channels carry no event data and expire (https://developers.google.com/workspace/calendar/api/guides/push); new-event is created-only on a best-effort basis: a sync-feed item shows the latest state, so an event edited again after creation (more than 2 s) reads as updated and is reported by event-updated, not new-event (n8n eventCreated is therefore approximated) |
 | apps/google/google-contacts | 1 | list-contact-groups | new-contact-group | apps/google/google-contacts/README.md Triggers section (verified 2026-11-09) | hand | Contact groups page of 200 (fits the kit's seen window) is polled; order undocumented. |
 | apps/google/google-drive | 5 | file-list | new-file, new-or-updated-file, new-folder, new-or-updated-folder, new-shared-drive | apps/google/google-drive/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over file-list (createdTime/modifiedTime desc) and drive-list; no webhook because Drive push channels carry no data and have no automatic renewal (https://developers.google.com/workspace/drive/api/guides/push) |
-| apps/google/google-forms | 2 | list-forms | new-form, new-or-updated-form | apps/google/google-forms/README.md Triggers section (verified 2026-11-09) | hand | Drive forms are ordered by created or modified time. |
+| apps/google/google-forms | 3 | list-forms | new-form, new-or-updated-form, new-response | apps/google/google-forms/README.md Triggers section (verified 2026-11-10) | hand | poll list-forms (Drive, newest-first) and response-list (timestamp since-filter); forms.watches delivers only to Cloud Pub/Sub (https://developers.google.com/workspace/forms/api/guides/push-notifications) |
 | apps/google/google-meet | 1 | list-conference-records | new-conference-record | apps/google/google-meet/README.md Triggers section (verified 2026-11-09) | hand | conference records are documented newest-started-first |
-| apps/google/google-sheets | 3 | sheet-read | row-added, row-added-or-updated, row-updated | apps/google/google-sheets/README.md Triggers section (verified 2026-11-09) | hand | poll sheet-read, diff rows against seeded snapshot |
+| apps/google/google-sheets | 4 | sheet-read | row-added, row-added-or-updated, row-updated, new-sheet | apps/google/google-sheets/README.md Triggers section (verified 2026-11-10) | hand | poll sheet-read, diff rows against seeded snapshot; new-sheet snapshots list-sheets |
 | apps/google/google-tasks | 1 | list-tasks | new-or-updated-task | apps/google/google-tasks/README.md Triggers section (verified 2026-11-09) | hand | tasks.list supports updatedMin and the trigger deduplicates a bounded overlap |
 | apps/google/googlechat | 1 | list-messages | new-message | apps/google/googlechat/README.md Triggers section (verified 2026-11-09) | hand | Messages are requested in descending create-time order. |
 | apps/google/youtube | 1 | list-comment-threads | new-comment-thread | apps/google/youtube/README.md Triggers section (verified 2026-11-09) | hand | Comment threads are requested in time order. |

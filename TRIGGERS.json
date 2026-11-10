@@ -3517,12 +3517,25 @@
     "path": "apps/google/google-calendar",
     "mechanism": "poll",
     "candidates": [
-      "event-changed"
+      "event-changed",
+      "new-event",
+      "event-updated",
+      "event-cancelled",
+      "event-started",
+      "event-ended",
+      "new-calendar"
     ],
     "pollAction": "list-events",
-    "reason": "shipped poll trigger(s) over list action list-events",
-    "verified": "apps/google/google-calendar/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over list-events (sync feed for created/updated/cancelled, timeMin/timeMax window for started/ended) and list-calendars (snapshot); push channels carry no event data and expire (https://developers.google.com/workspace/calendar/api/guides/push); new-event is created-only on a best-effort basis: a sync-feed item shows the latest state, so an event edited again after creation (more than 2 s) reads as updated and is reported by event-updated, not new-event (n8n eventCreated is therefore approximated)",
+    "verified": "apps/google/google-calendar/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "n8n": {
+      "eventCreated": "new-event",
+      "eventUpdated": "event-updated",
+      "eventCancelled": "event-cancelled",
+      "eventStarted": "event-started",
+      "eventEnded": "event-ended"
+    }
   },
   {
     "path": "apps/google/google-contacts",
@@ -3577,11 +3590,12 @@
     "mechanism": "poll",
     "candidates": [
       "new-form",
-      "new-or-updated-form"
+      "new-or-updated-form",
+      "new-response"
     ],
     "pollAction": "list-forms",
-    "reason": "Drive forms are ordered by created or modified time.",
-    "verified": "apps/google/google-forms/README.md Triggers section (verified 2026-11-09)",
+    "reason": "poll list-forms (Drive, newest-first) and response-list (timestamp since-filter); forms.watches delivers only to Cloud Pub/Sub (https://developers.google.com/workspace/forms/api/guides/push-notifications)",
+    "verified": "apps/google/google-forms/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -3610,12 +3624,18 @@
     "candidates": [
       "row-added",
       "row-added-or-updated",
-      "row-updated"
+      "row-updated",
+      "new-sheet"
     ],
     "pollAction": "sheet-read",
-    "reason": "poll sheet-read, diff rows against seeded snapshot",
-    "verified": "apps/google/google-sheets/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll sheet-read, diff rows against seeded snapshot; new-sheet snapshots list-sheets",
+    "verified": "apps/google/google-sheets/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "n8n": {
+      "rowAdded": "row-added",
+      "rowUpdate": "row-updated",
+      "anyUpdate": "row-added-or-updated"
+    }
   },
   {
     "path": "apps/google/google-slides",
