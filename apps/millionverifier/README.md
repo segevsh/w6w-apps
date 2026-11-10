@@ -1,7 +1,5 @@
 # MillionVerifier
 
-Triggers: not shipped — bulk file filters accept timestamps but their values are silently ignored when malformed, so this app needs a dedicated validated cursor action before safe polling (https://developer.millionverifier.com/).
-
 Verify email addresses in real time, verify whole lists in bulk and check credits with
 [MillionVerifier](https://www.millionverifier.com). 8 actions.
 
@@ -10,6 +8,20 @@ OpenAPI 3.0.0 document embedded in the page, `info.version` 3.1.0) and live prob
 hosts. `deprecat`/`sunset`/`end of life`/`will be removed` appear nowhere in the API content (the
 only hits are inside the bundled Redoc/Prism JavaScript); v3 (single) and v2 (bulk) are the
 documented live versions.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-bulk-file` — New Bulk File | poll | `bulk-list-files` (`createdFrom`) | Each bulk file created since the previous check |
+| `new-or-updated-bulk-file` — New or Updated Bulk File | poll | `bulk-list-files` (`updatedAtFrom`) | Each bulk file created or changed (status, progress) since the previous check |
+
+`GET /bulkapi/v2/filelist` documents `createdate_from` and `updated_at_from` ("files created/updated
+after the given date time", `yyyy-MM-dd HH:mm:ss`). The trigger writes that value itself from its
+cursor minus a 120 s overlap and de-duplicates on `file_id` (`file_id:updated_at` for the updated
+trigger). The vendor does not state a timezone for the filter; the trigger sends UTC, and the overlap
+plus id de-duplication absorb small skew. [MillionVerifier API reference](https://developer.millionverifier.com/)
+verified 2026-11-09.
 
 ## Auth
 
