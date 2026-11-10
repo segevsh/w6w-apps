@@ -1,21 +1,27 @@
 [
   {
     "path": "apps/2chat",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "messages-list",
+    "reason": "messages-list returns the newest 100 messages first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages); webhooks are separate and not shipped",
+    "verified": "apps/2chat/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/accelo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-activity",
+      "new-company",
+      "new-job"
+    ],
+    "pollAction": "activity-list",
+    "reason": "list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity orders activity-list by date_modified (documented order field) and keys on id:date_modified",
+    "verified": "apps/accelo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/acculynx",
@@ -67,21 +73,23 @@
   },
   {
     "path": "apps/acumbamail",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-list"
+    ],
+    "pollAction": "list-get-all",
+    "reason": "getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order",
+    "verified": "apps/acumbamail/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/adalo",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-records offers only offset/limit and a single-property equality filter; Adalo's Collections API documents no sort order or created-since filter (https://help.adalo.com/integrations/the-adalo-api/collections)",
+    "verified": "apps/adalo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/addevent",
@@ -96,12 +104,17 @@
   },
   {
     "path": "apps/adyen",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "AUTHORISATION",
+      "CANCELLATION",
+      "CAPTURE",
+      "REFUND"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: payment notifications; the only list actions are a per-shopper stored-payment-method lookup and a donation-campaign configuration lookup, not record feeds (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods)",
+    "verified": "apps/adyen/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/affinity",
@@ -171,12 +184,14 @@
   },
   {
     "path": "apps/airparser",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "parsed-document"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: parsed document delivery (airparser-signature HMAC, per-webhook signing secret); document-list has no documented order/response shape for polling",
+    "verified": "apps/airparser/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/airtable",
@@ -194,9 +209,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "session-list takes only sessionIds, status, offset and limit and file-list only sessionIds, offset and limit; neither documents an order or created-since filter, and sessions are short-lived browser sessions the workflow itself opens (https://docs.airtop.ai/api-reference/airtop-api/sessions/list, https://docs.airtop.ai/api-reference/airtop-api/files/list)",
+    "verified": "apps/airtop/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/alegra",
@@ -222,12 +237,14 @@
   },
   {
     "path": "apps/amplitude",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-cohort"
+    ],
+    "pollAction": "cohort-list",
+    "reason": "GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound",
+    "verified": "apps/amplitude/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/anchor",
@@ -242,12 +259,14 @@
   },
   {
     "path": "apps/anthropic",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-batch"
+    ],
+    "pollAction": "batch-list",
+    "reason": "batch-list returns 'Most recently created batches first' (https://platform.claude.com/docs/en/api/python/messages/batches/list); the API offers no batch webhook",
+    "verified": "apps/anthropic/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/apify",
@@ -262,12 +281,14 @@
   },
   {
     "path": "apps/apitemplateio",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-object"
+    ],
+    "pollAction": "list-objects",
+    "reason": "list-objects is documented by the existing action as a most-recent-first generated-object feed",
+    "verified": "apps/apitemplateio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/apollo",
@@ -306,12 +327,14 @@
   },
   {
     "path": "apps/assemblyai",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-transcript"
+    ],
+    "pollAction": "transcript-list",
+    "reason": "AssemblyAI documents transcript-list as newest-to-oldest",
+    "verified": "apps/assemblyai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/bitbucket",
@@ -366,12 +389,15 @@
   },
   {
     "path": "apps/atlassian/jira-service-management",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-service-desk",
+      "new-organization"
+    ],
+    "pollAction": "servicedesk-get-many",
+    "reason": "servicedesk-get-many (GET /servicedesk, all service desks the user can access) and organization-get-many (GET /organization) are bounded id-keyed paged collections, polled as snapshots (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/, .../api-group-organization/); request-search stays unpolled: ordered by latest activity, no created-since filter",
+    "verified": "apps/atlassian/jira-service-management/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/trello",
@@ -422,12 +448,15 @@
   },
   {
     "path": "apps/autotask",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-ticket",
+      "new-or-updated-ticket"
+    ],
+    "pollAction": "entity-query",
+    "reason": "entity-query (POST /Tickets/query) takes a JSON filter, so createDate > cursor (new-ticket) and lastActivityDate > cursor (new-or-updated-ticket, keyed id:lastActivityDate) are documented since-filters over Tickets datetime fields (https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm)",
+    "verified": "apps/autotask/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/avoma",
@@ -453,21 +482,27 @@
   },
   {
     "path": "apps/aws/s3",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-bucket"
+    ],
+    "pollAction": "bucket-list",
+    "reason": "ListBuckets returns every bucket in one call (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html); snapshot diff. object-list is lexicographic by key, not by creation",
+    "verified": "apps/aws/s3/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/aws/ses",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-suppression",
+      "new-template",
+      "new-identity"
+    ],
+    "pollAction": "suppression-list",
+    "reason": "ListSuppressedDestinations StartDate keeps addresses added after a date (https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListSuppressedDestinations.html); template-list and identity-list are per-region collections polled as snapshots",
+    "verified": "apps/aws/ses/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/axonaut",
@@ -505,12 +540,14 @@
   },
   {
     "path": "apps/bannerbear",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-image"
+    ],
+    "pollAction": "image-list",
+    "reason": "Bannerbear documents image-list as the recent image render feed",
+    "verified": "apps/bannerbear/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/baremetrics",
@@ -536,12 +573,14 @@
   },
   {
     "path": "apps/basecamp",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-project"
+    ],
+    "pollAction": "project-list",
+    "reason": "GET /projects.json is 'sorted by most recently created project first' (https://github.com/basecamp/bc3-api/blob/master/sections/projects.md); message and to-do events are webhook-only and not shipped",
+    "verified": "apps/basecamp/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/baserow",

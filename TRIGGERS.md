@@ -8,15 +8,17 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 394, none: 214
+**Totals:** 683 apps — webhook-api: 60, manual-webhook: 17, poll: 407, none: 199
 
-## webhook-api (58)
+## webhook-api (60)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
 | apps/activecampaign | new-contact | apps/activecampaign/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/acuityscheduling | appointment-canceled, appointment-rescheduled, appointment-scheduled | apps/acuityscheduling/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/adyen | AUTHORISATION, CANCELLATION, CAPTURE, REFUND | apps/adyen/README.md Triggers section (verified 2026-11-10) | hand | webhook candidate queued for a webhook node: payment notifications; the only list actions are a per-shopper stored-payment-method lookup and a donation-campaign configuration lookup, not record feeds (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods) |
 | apps/affinity | new-list-entry | apps/affinity/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/airparser | parsed-document | apps/airparser/README.md Triggers section (verified 2026-11-10) | hand | webhook candidate queued for a webhook node: parsed document delivery (airparser-signature HMAC, per-webhook signing secret); document-list has no documented order/response shape for polling |
 | apps/asana | new-task, task-updated | apps/asana/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/bitbucket | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/trello | card-created, card-moved, card-updated, comment-added | apps/atlassian/trello/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -95,12 +97,15 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (394)
+## poll (407)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
+| apps/2chat | messages-list | new-message | apps/2chat/README.md Triggers section (verified 2026-11-10) | hand | messages-list returns the newest 100 messages first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages); webhooks are separate and not shipped |
+| apps/accelo | activity-list | new-activity, new-company, new-job | apps/accelo/README.md Triggers section (verified 2026-11-10) | hand | list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity orders activity-list by date_modified (documented order field) and keys on id:date_modified |
 | apps/acculynx | job-list | new-job, new-or-updated-job | apps/acculynx/README.md Triggers section (verified 2026-11-09) | hand | Job list supports documented CreatedDate and ModifiedDate descending order (https://apidocs.acculynx.com/reference/getjobs). |
 | apps/actionnetwork | person-list | new-person, new-or-updated-person | apps/actionnetwork/README.md Triggers section (verified 2026-11-09) | hand | People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/). |
+| apps/acumbamail | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order |
 | apps/addevent | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
 | apps/agencyzoom | lead-list | new-lead | apps/agencyzoom/README.md Triggers section (verified 2026-11-09) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
 | apps/ahrefs | project-list | new-project | apps/ahrefs/README.md Triggers section (verified 2026-11-09) | hand | Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects). |
@@ -109,23 +114,33 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/airtable | search-records | new-record | apps/airtable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-records |
 | apps/alegra | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
 | apps/algolia | index-list | new-index | apps/algolia/README.md Triggers section (verified 2026-11-09) | hand | Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices). |
+| apps/amplitude | cohort-list | new-cohort | apps/amplitude/README.md Triggers section (verified 2026-11-10) | hand | GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound |
 | apps/anchor | invoice-list | new-invoice | apps/anchor/README.md Triggers section (verified 2026-11-09) | hand | Invoice list supports descending issue-date order (https://docs.sayanchor.com/reference/listinvoices-1). |
+| apps/anthropic | batch-list | new-batch | apps/anthropic/README.md Triggers section (verified 2026-11-10) | hand | batch-list returns 'Most recently created batches first' (https://platform.claude.com/docs/en/api/python/messages/batches/list); the API offers no batch webhook |
 | apps/apify | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
+| apps/apitemplateio | list-objects | new-object | apps/apitemplateio/README.md Triggers section (verified 2026-11-09) | hand | list-objects is documented by the existing action as a most-recent-first generated-object feed |
 | apps/apollo | contact-search | new-contact, new-or-updated-contact | apps/apollo/README.md Triggers section (verified 2026-11-09) | hand | Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts). |
 | apps/ashby | candidate-list | new-candidate | apps/ashby/README.md Triggers section (verified 2026-11-09) | hand | Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist). |
+| apps/assemblyai | transcript-list | new-transcript | apps/assemblyai/README.md Triggers section (verified 2026-11-09) | hand | AssemblyAI documents transcript-list as newest-to-oldest |
 | apps/atlassian/confluence | page-list | new-page, new-or-updated-page | apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09) | hand | Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). |
 | apps/atlassian/jira | issue-search | new-issue | apps/atlassian/jira/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-search |
 | apps/atlassian/jira-data-center | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
+| apps/atlassian/jira-service-management | servicedesk-get-many | new-service-desk, new-organization | apps/atlassian/jira-service-management/README.md Triggers section (verified 2026-11-10) | hand | servicedesk-get-many (GET /servicedesk, all service desks the user can access) and organization-get-many (GET /organization) are bounded id-keyed paged collections, polled as snapshots (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/, .../api-group-organization/); request-search stays unpolled: ordered by latest activity, no created-since filter |
 | apps/attio | list-tasks | new-task | apps/attio/README.md Triggers section (verified 2026-11-09) | hand | list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks) |
 | apps/auth0 | log-list | new-log | apps/auth0/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-list |
 | apps/authorize-net | list-customer-transactions | new-customer-transaction | apps/authorize-net/README.md Triggers section (verified 2026-11-09) | hand | Customer transaction list explicitly sorts by submit time descending. |
+| apps/autotask | entity-query | new-ticket, new-or-updated-ticket | apps/autotask/README.md Triggers section (verified 2026-11-10) | hand | entity-query (POST /Tickets/query) takes a JSON filter, so createDate > cursor (new-ticket) and lastActivityDate > cursor (new-or-updated-ticket, keyed id:lastActivityDate) are documented since-filters over Tickets datetime fields (https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm) |
 | apps/avoma | meeting-list | new-meeting | apps/avoma/README.md Triggers section (verified 2026-11-09) | hand | meeting-list with o=-start_at, page_size=100 and a rolling from/to window; late-synced older meetings are a documented residual (https://dev.avoma.com/openapi.yml) |
 | apps/aweber | subscriber-find | new-subscriber | apps/aweber/README.md Triggers section (verified 2026-11-09) | hand | subscriber-find with sort_key=subscribed_at, sort_order=desc pinned (https://api.aweber.com/) |
+| apps/aws/s3 | bucket-list | new-bucket | apps/aws/s3/README.md Triggers section (verified 2026-11-10) | hand | ListBuckets returns every bucket in one call (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html); snapshot diff. object-list is lexicographic by key, not by creation |
+| apps/aws/ses | suppression-list | new-suppression, new-template, new-identity | apps/aws/ses/README.md Triggers section (verified 2026-11-10) | hand | ListSuppressedDestinations StartDate keeps addresses added after a date (https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListSuppressedDestinations.html); template-list and identity-list are per-region collections polled as snapshots |
 | apps/axonaut | invoice-list | new-invoice, new-or-updated-invoice | apps/axonaut/README.md Triggers section (verified 2026-11-09) | hand | Invoice list has creation_date_after and updated_after filters (DD/MM/YYYY, date-only); triggers filter with a one-day overlap and dedupe by id (https://axonaut.com/api/v2/doc). |
 | apps/balena | release-list | new-release | apps/balena/README.md Triggers section (verified 2026-11-09) | hand | release-list ($orderby=created_at desc, successful builds) wrapped; https://docs.balena.io/reference/api/resources/release/ |
 | apps/bamboohr | list-employees | new-employee | apps/bamboohr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-employees |
+| apps/bannerbear | image-list | new-image | apps/bannerbear/README.md Triggers section (verified 2026-11-09) | hand | Bannerbear documents image-list as the recent image render feed |
 | apps/baremetrics | customer-list | new-customer | apps/baremetrics/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/base44 | list-audit-logs | new-audit-log | apps/base44/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-audit-logs |
+| apps/basecamp | project-list | new-project | apps/basecamp/README.md Triggers section (verified 2026-11-10) | hand | GET /projects.json is 'sorted by most recently created project first' (https://github.com/basecamp/bc3-api/blob/master/sections/projects.md); message and to-do events are webhook-only and not shipped |
 | apps/baserow | row-list | new-row | apps/baserow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
 | apps/beehiiv | post-list | new-post | apps/beehiiv/README.md Triggers section (verified 2026-11-09) | hand | Post list supports created descending order. |
 | apps/beeminder | list-datapoints | new-datapoint | apps/beeminder/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-datapoints |
@@ -494,28 +509,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (214)
+## none (199)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
-| apps/2chat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/accelo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/acumbamail |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/adalo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/adyen |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/adalo |  | apps/adalo/README.md Triggers section (verified 2026-11-10) | hand | list-records offers only offset/limit and a single-property equality filter; Adalo's Collections API documents no sort order or created-since filter (https://help.adalo.com/integrations/the-adalo-api/collections) |
 | apps/airbyte | new-destination | no | hand | List destinations documents pagination but no creation order, update filter, or bounded collection size (https://reference.airbyte.com/reference/listdestinations) |
-| apps/airparser |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/airtop |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/amplitude |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/anthropic |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/apitemplateio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/assemblyai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/atlassian/jira-service-management |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/autotask |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/aws/s3 |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/aws/ses |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/bannerbear |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/basecamp |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/airtop |  | apps/airtop/README.md Triggers section (verified 2026-11-10) | hand | session-list takes only sessionIds, status, offset and limit and file-list only sessionIds, offset and limit; neither documents an order or created-since filter, and sessions are short-lived browser sessions the workflow itself opens (https://docs.airtop.ai/api-reference/airtop-api/sessions/list, https://docs.airtop.ai/api-reference/airtop-api/files/list) |
 | apps/brandfetch |  | apps/brandfetch/README.md Triggers section (verified 2026-11-09) | hand | Brand search is a stateless lookup catalog, not an account record collection that can change |
 | apps/chatbase |  | apps/chatbase/README.md Triggers section (verified 2026-11-09) | hand | conversation-list is ordered by createdAt with no documented direction and the action exposes no sort or since filter (https://chatbase.co/docs/api-reference/v2/conversations/list-conversations.md) |
 | apps/clearbit |  | no | hand | Enrichment/prospector/reveal lookups only, no account records that change; the 202 lookup callback is per-request, not an event subscription, and no fetchable vendor page documents it (dashboard.clearbit.com/docs is a JS app; legacy keys only since HubSpot's acquisition) |
