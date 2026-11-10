@@ -56,6 +56,19 @@ describe("new-call", () => {
     );
   });
 
+  test("forwards the direction param to the call list request", async () => {
+    clock.now = () => T0;
+    const m = mockCtx([page([], null)]);
+    await trigger.poll!(
+      { params: { direction: "inbound" }, subscriptionId: "sub-1", state: {} },
+      m.ctx,
+    );
+    assertEquals(
+      m.calls[0].url,
+      "https://api.avoma.com/v1/calls/?from_date=2026-11-10T11%3A00%3A00.000Z&to_date=2026-11-10T12%3A00%3A00.000Z&direction=inbound",
+    );
+  });
+
   test("a window of more than maxPages pages of pre-seed calls never fires (9.9)", async () => {
     const seeded = await run({}, T0, [page([], null)]);
     const preSeed = () => Array.from({ length: 10 }, () => call(OLD));
