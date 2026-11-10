@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import segmentSubscribersList from "../actions/segment-subscribers-list.ts";
 
@@ -11,7 +12,7 @@ export default pollFromListAction({
   title: "New Subscriber in Segment",
   description:
     "The run gets each newly created subscriber that matches the chosen segment (a subscriber who starts matching later is not reported).",
-  action: segmentSubscribersList,
+  action: segmentSubscribersList as unknown as ActionDefinition,
   params: [
     {
       key: "segmentId",

@@ -28,13 +28,11 @@ export default pollFromListAction({
     { key: "owner", type: "string", label: "Owner" },
     { key: "name", type: "string", label: "Model name" },
     { key: "latest_version", type: "object", label: "Latest version" },
-    { key: "url", type: "string", label: "URL" },
   ],
   sample: {
     owner: "example-owner",
     name: "example-model",
     latest_version: { id: "version-2", created_at: "2026-11-10T09:00:00Z" },
-    url: "https://replicate.com/example-owner/example-model",
   },
   maxPages: 1,
 });

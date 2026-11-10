@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import conversationList from "../actions/conversation-list.ts";
 
@@ -11,7 +12,7 @@ export default pollFromListAction({
   title: "New or Active Conversation",
   description:
     "The run gets each conversation in the chosen inbox view when it starts or gets a new message.",
-  action: conversationList,
+  action: conversationList as unknown as ActionDefinition,
   params: [
     {
       key: "filter",

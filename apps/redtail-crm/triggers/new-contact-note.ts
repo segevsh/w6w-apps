@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pagedSnapshotTrigger } from "../lib/triggers.ts";
 import noteList from "../actions/note-list.ts";
 
@@ -11,7 +12,7 @@ export default pagedSnapshotTrigger({
   key: "new-contact-note",
   title: "New Contact Note",
   description: "The run gets each note newly logged against the chosen contact.",
-  action: noteList,
+  action: noteList as unknown as ActionDefinition,
   maxPages: 20,
   params: [
     {

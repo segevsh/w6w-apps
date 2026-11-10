@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pagedSnapshotTrigger } from "../lib/triggers.ts";
 import opportunityList from "../actions/opportunity-list.ts";
 
@@ -11,7 +12,7 @@ export default pagedSnapshotTrigger({
   key: "new-opportunity",
   title: "New Opportunity",
   description: "The run gets each sales opportunity newly created in the database.",
-  action: opportunityList,
+  action: opportunityList as unknown as ActionDefinition,
   maxPages: 20,
   items: (result) => (result as { opportunities?: unknown[] }).opportunities ?? [],
   output: [

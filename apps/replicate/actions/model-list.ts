@@ -48,7 +48,10 @@ const action: ActionDefinition = {
       ctx.log("info", "listing Replicate models", { limit });
     }
 
-    const query = { sort_by: p.sortBy, sort_direction: p.sortDirection };
+    const query = {
+      sort_by: p.sortBy as string | undefined,
+      sort_direction: p.sortDirection as string | undefined,
+    };
     return await new ReplicateClient(ctx).requestAll(
       "/models",
       { query },

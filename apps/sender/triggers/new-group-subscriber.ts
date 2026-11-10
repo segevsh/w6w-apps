@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import groupSubscribersList from "../actions/group-subscribers-list.ts";
 
@@ -11,7 +12,7 @@ export default pollFromListAction({
   title: "New Subscriber in Group",
   description:
     "The run gets each newly created subscriber that belongs to the chosen group (a subscriber added to the group after it was created is not reported).",
-  action: groupSubscribersList,
+  action: groupSubscribersList as unknown as ActionDefinition,
   params: [
     {
       key: "groupId",

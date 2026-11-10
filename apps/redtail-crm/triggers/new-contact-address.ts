@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pagedSnapshotTrigger } from "../lib/triggers.ts";
 import contactAddressList from "../actions/contact-address-list.ts";
 
@@ -11,7 +12,7 @@ export default pagedSnapshotTrigger({
   key: "new-contact-address",
   title: "New Contact Address",
   description: "The run gets each address newly added to the chosen contact.",
-  action: contactAddressList,
+  action: contactAddressList as unknown as ActionDefinition,
   maxPages: 20,
   params: [
     {
