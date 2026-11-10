@@ -6137,12 +6137,17 @@
   },
   {
     "path": "apps/signwell",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "document_completed",
+      "document_created",
+      "document_signed",
+      "document_declined"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: document_* and template_* events registered via POST /webhooks; bulk-send-list documents only page/limit/user_email/api_application_id, no sort order and no since filter (https://developers.signwell.com/openapi/resources-and-endpoints.json), and no document-list action exists",
+    "verified": "apps/signwell/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/simplero",
@@ -6168,21 +6173,25 @@
   },
   {
     "path": "apps/simplybook",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-booking"
+    ],
+    "pollAction": "booking-get-many",
+    "reason": "GET /admin/bookings documents filter[record_date_from|to] (YYYY-MM-DD, company time zone, read from GET /admin/company/info) and every booking carries record_date; the booking has no edit stamp, so filter[edited_date_from] cannot back a new-or-updated trigger: since-filter poll widened one day and filtered by record_date (https://simplybook.me/api/swagger-admin)",
+    "verified": "apps/simplybook/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/skyvern",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-run"
+    ],
+    "pollAction": "run-list",
+    "reason": "run-list is documented newest-first: OpenAPI GET /v1/runs says \"List the organization's task and agent runs, newest first\" (https://api.skyvern.com/openapi.json)",
+    "verified": "apps/skyvern/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/slack",
@@ -6234,9 +6243,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "database-list and warehouse-list run SHOW metadata statements (objects, not a record feed), and statement-get/execute are per-statement SQL calls; the SQL API has no list-of-events endpoint (https://docs.snowflake.com/en/developer-guide/sql-api/index)",
+    "verified": "apps/snowflake/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/snyk",
@@ -6262,12 +6271,15 @@
   },
   {
     "path": "apps/solapi",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message",
+      "new-or-updated-message"
+    ],
+    "pollAction": "list-messages",
+    "reason": "list-messages takes startDate/endDate with dateType CREATED|UPDATED and a startKey/nextKey cursor (limit up to 500, ours 100): since-filter poll with resume and seed floor (https://developers.solapi.com/references/messages/list-messages)",
+    "verified": "apps/solapi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/splitwise",
@@ -6285,9 +6297,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "search-get-many reads /services/search/jobs, a list of short-lived search jobs (expire on a TTL) and the action exposes only count/offset, no sort_key/sort_dir or since filter; saved-search and index lists are configuration objects, not events; dev.splunk.com REST reference was not fetchable as text from the lane (https://dev.splunk.com/enterprise/docs/reference/rest-api/)",
+    "verified": "apps/splunk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/spotify",
@@ -6519,9 +6531,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "user/course/group/branch get-many and ILT session lists in the v1 API are unpaged-or-paged lookups with no documented sort order, no created/updated-since filter and no webhook for them (https://market.talentlms.com/pages/docs/TalentLMS-API-Documentation.pdf)",
+    "verified": "apps/talentlms/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tally",
@@ -6536,12 +6548,14 @@
   },
   {
     "path": "apps/tapfiliate",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversion"
+    ],
+    "pollAction": "conversion-list",
+    "reason": "conversion-list takes date_from/date_to (days in UTC, no sort order) and each conversion carries created_at; no update stamp, so no new-or-updated trigger; click-list is Enterprise-plan only and not polled: since-filter poll widened one day and filtered by created_at (https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions)",
+    "verified": "apps/tapfiliate/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/taskade",
@@ -6559,9 +6573,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "search, extract, crawl, map and research endpoints are request-scoped jobs keyed by the caller's query, not an account record collection; usage-get is a single counter (https://docs.tavily.com/documentation/api-reference/introduction)",
+    "verified": "apps/tavily/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/teachable",
@@ -6622,21 +6636,25 @@
   },
   {
     "path": "apps/telnyx",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-phone-number"
+    ],
+    "pollAction": "list-phone-numbers",
+    "reason": "GET /phone_numbers documents its default order: \"If not given, results are sorted by created_at in descending order\" (https://github.com/team-telnyx/openapi, spec3.json); signed message/call webhooks are also offered and queued (https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks)",
+    "verified": "apps/telnyx/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/terraform",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "run notification (completed/errored/needs-attention)"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: run notification configurations (HMAC-SHA512 X-TFE-Notification-Signature); GET /workspaces/:id/runs documents page and filter[status|operation|source] only, no sort order or since filter (https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run#list-runs-in-a-workspace)",
+    "verified": "apps/terraform/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/textmagic",
@@ -6662,21 +6680,27 @@
   },
   {
     "path": "apps/thinkific",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-enrollment",
+      "new-or-updated-enrollment"
+    ],
+    "pollAction": "enrollments-list",
+    "reason": "enrollments-list documents query[created_after|created_before] and query[updated_after|updated_before] date-time filters (no sort order) and the response carries updated_at: since-filter polls (https://developers.thinkific.com/openapi/thinkific-admin-api-v1.yaml)",
+    "verified": "apps/thinkific/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/thrivecart",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "purchase",
+      "subscription"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: ThriveCart purchase/subscription events; product, bump, upsell and downsell lists are catalogs with no order or since filter (https://apidocs.thrivecart.com/)",
+    "verified": "apps/thrivecart/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tickettailor",
@@ -6716,18 +6740,20 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "booking-list filters by starts_at/ends_at (the booking's own time, not its creation) and contact-list takes only a page number, neither documents a sort order or created-since filter (https://tidycal.com/developer/docs/)",
+    "verified": "apps/tidycal/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tiktok-lead-generation",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "lead.generated"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: lead-generation events; the existing lead retrievals (get-lead by id, download-page-leads as an async export task) have no documented order or since filter (https://business-api.tiktok.com/portal/docs)",
+    "verified": "apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/timelinesai",
@@ -6742,12 +6768,15 @@
   },
   {
     "path": "apps/tldv",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "MeetingReady",
+      "TranscriptReady"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list from/to filters the meeting's own date, not when its recording became ready, and no order is documented (https://doc.tldv.io/)",
+    "verified": "apps/tldv/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/todoist",
@@ -6813,9 +6842,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the HTTP Tracking API actions (identify, track, page, group, alias, batch) are write-only ingestion calls with no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/)",
+    "verified": "apps/twilio/segment/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/twilio/sendgrid",

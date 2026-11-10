@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 74, manual-webhook: 19, poll: 464, none: 126
+**Totals:** 683 apps — webhook-api: 77, manual-webhook: 21, poll: 470, none: 115
 
-## webhook-api (74)
+## webhook-api (77)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -79,9 +79,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/savvycal | event.created, event.rescheduled, event.canceled | apps/savvycal/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap |
 | apps/shopify | customer-created, event, order-cancelled, order-created, order-fulfilled, order-paid, order-updated, product-created, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/signnow | document.create, document.update, document.complete | apps/signnow/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot |
+| apps/signwell | document_completed, document_created, document_signed, document_declined | apps/signwell/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document_* and template_* events registered via POST /webhooks; bulk-send-list documents only page/limit/user_email/api_application_id, no sort order and no since filter (https://developers.signwell.com/openapi/resources-and-endpoints.json), and no document-list action exists |
 | apps/stripe | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/surveymonkey | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/terraform | run notification (completed/errored/needs-attention) | apps/terraform/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: run notification configurations (HMAC-SHA512 X-TFE-Notification-Signature); GET /workspaces/:id/runs documents page and filter[status\|operation\|source] only, no sort order or since filter (https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run#list-runs-in-a-workspace) |
+| apps/thrivecart | purchase, subscription | apps/thrivecart/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: ThriveCart purchase/subscription events; product, bump, upsell and downsell lists are catalogs with no order or since filter (https://apidocs.thrivecart.com/) |
 | apps/toggl | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | new-response | apps/typeform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webex | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -89,7 +92,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (19)
+## manual-webhook (21)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -109,11 +112,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/payhip | paid, refunded, subscription.created, subscription.deleted | apps/payhip/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: paid, refunded, subscription.created and subscription.deleted (help.payhip.com/article/115-webhooks); the Public API only verifies and manages a supplied license key, so no list action exists. |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/strava | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/tiktok-lead-generation | lead.generated | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: lead-generation events; the existing lead retrievals (get-lead by id, download-page-leads as an async export task) have no documented order or since filter (https://business-api.tiktok.com/portal/docs) |
+| apps/tldv | MeetingReady, TranscriptReady | apps/tldv/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list from/to filters the meeting's own date, not when its recording became ready, and no order is documented (https://doc.tldv.io/) |
 | apps/todoist | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (464)
+## poll (470)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -509,11 +514,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/signrequest | document-search | new-document | apps/signrequest/README.md Triggers section (verified 2026-11-09) | hand | documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used |
 | apps/simplero | purchase-list | new-purchase-list | no | scan | list action purchase-list has pagination and order/since params |
 | apps/simpletexting | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/simplybook | booking-get-many | new-booking | apps/simplybook/README.md Triggers section (verified 2026-11-10) | hand | GET /admin/bookings documents filter[record_date_from\|to] (YYYY-MM-DD, company time zone, read from GET /admin/company/info) and every booking carries record_date; the booking has no edit stamp, so filter[edited_date_from] cannot back a new-or-updated trigger: since-filter poll widened one day and filtered by record_date (https://simplybook.me/api/swagger-admin) |
+| apps/skyvern | run-list | new-run | apps/skyvern/README.md Triggers section (verified 2026-11-09) | hand | run-list is documented newest-first: OpenAPI GET /v1/runs says "List the organization's task and agent runs, newest first" (https://api.skyvern.com/openapi.json) |
 | apps/slite | km-note-list | new-km-note-list | no | scan | list action km-note-list has pagination and order/since params |
 | apps/smartsheet | list-container-children | new-container-children | no | scan | list action list-container-children has pagination and order/since params |
 | apps/smartsuite | list-records | new-records | no | scan | list action list-records has pagination and order/since params |
 | apps/snyk | issue-list | new-issue-list | no | scan | list action issue-list has pagination and order/since params |
 | apps/softr | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
+| apps/solapi | list-messages | new-message, new-or-updated-message | apps/solapi/README.md Triggers section (verified 2026-11-09) | hand | list-messages takes startDate/endDate with dateType CREATED\|UPDATED and a startKey/nextKey cursor (limit up to 500, ours 100): since-filter poll with resume and seed floor (https://developers.solapi.com/references/messages/list-messages) |
 | apps/splitwise | list-expenses | new-expenses | no | scan | list action list-expenses has pagination and order/since params |
 | apps/spotify | search | new-record | no | scan | list action search has pagination and order/since params |
 | apps/square | customer-get-many | new-customer | apps/square/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-get-many |
@@ -529,11 +537,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tableau | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
 | apps/tailscale | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |
 | apps/tally | submission-get-many | new-submission | apps/tally/README.md Triggers section (verified 2026-11-09) | hand | since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list) |
+| apps/tapfiliate | conversion-list | new-conversion | apps/tapfiliate/README.md Triggers section (verified 2026-11-10) | hand | conversion-list takes date_from/date_to (days in UTC, no sort order) and each conversion carries created_at; no update stamp, so no new-or-updated trigger; click-list is Enterprise-plan only and not polled: since-filter poll widened one day and filtered by created_at (https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions) |
 | apps/teachable | transaction-list | new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-09) | hand | since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions) |
 | apps/teamleader | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
 | apps/teamup | invoices-list | new-invoice | apps/teamup/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): invoices-list sort=-id (documented enum id\|-id\|due_date\|-due_date, https://docs.goteamup.com/llms.txt) |
 | apps/teamwork | project-list | new-project | apps/teamwork/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): project-list orderBy=datecreated&orderMode=desc |
+| apps/telnyx | list-phone-numbers | new-phone-number | apps/telnyx/README.md Triggers section (verified 2026-11-09) | hand | GET /phone_numbers documents its default order: "If not given, results are sorted by created_at in descending order" (https://github.com/team-telnyx/openapi, spec3.json); signed message/call webhooks are also offered and queued (https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks) |
 | apps/textmagic | contact-list | new-contact | apps/textmagic/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): contact-list orderBy=id&direction=desc |
+| apps/thinkific | enrollments-list | new-enrollment, new-or-updated-enrollment | apps/thinkific/README.md Triggers section (verified 2026-11-09) | hand | enrollments-list documents query[created_after\|created_before] and query[updated_after\|updated_before] date-time filters (no sort order) and the response carries updated_at: since-filter polls (https://developers.thinkific.com/openapi/thinkific-admin-api-v1.yaml) |
 | apps/ticktick | list-habits | new-habit | apps/ticktick/README.md Triggers section (verified 2026-11-09) | hand | snapshot (c): list-habits returns the whole small unpaged habit collection; added only; emits the flat habit |
 | apps/timelinesai | messages-list | new-message | apps/timelinesai/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): messages-list sorting_order=desc, per chat |
 | apps/tremendous | order-list | new-order | apps/tremendous/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): order-list createdAtGte (created_at[gte]); floor/resume per brief 9.8/9.9 |
@@ -582,7 +593,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (126)
+## none (115)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -660,30 +671,19 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/semrush |  | apps/semrush/README.md Triggers section (verified 2026-11-09) | hand | backlink, keyword, and domain endpoints are analytics/report queries, not account-owned changing records |
 | apps/sendy |  | apps/sendy/README.md Triggers section (verified 2026-11-09) | hand | brand-list and list-list are installation configuration reads (list-list needs a brand id per call) with no created/updated field or since filter documented |
 | apps/sierrainteractive |  | apps/sierrainteractive/README.md Triggers section (verified 2026-11-09) | hand | lead-find is an individual lookup and remaining lists are reference data, with no documented lead change feed |
-| apps/signwell |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/simplybook |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/skyvern |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/snowflake |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/solapi |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/splunk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/snowflake |  | apps/snowflake/README.md Triggers section (verified 2026-11-09) | hand | database-list and warehouse-list run SHOW metadata statements (objects, not a record feed), and statement-get/execute are per-statement SQL calls; the SQL API has no list-of-events endpoint (https://docs.snowflake.com/en/developer-guide/sql-api/index) |
+| apps/splunk |  | apps/splunk/README.md Triggers section (verified 2026-11-09) | hand | search-get-many reads /services/search/jobs, a list of short-lived search jobs (expire on a TTL) and the action exposes only count/offset, no sort_key/sort_dir or since filter; saved-search and index lists are configuration objects, not events; dev.splunk.com REST reference was not fetchable as text from the lane (https://dev.splunk.com/enterprise/docs/reference/rest-api/) |
 | apps/statuspage | new-incident, new-component, new-subscriber | apps/statuspage/README.md Triggers section (verified 2026-11-09) | hand | incident-list (q, limit, page) and component-list (page, per_page) document no sort order and no created-since filter; subscriber-list's endpoint documents sort_field=created_at + sort_direction=desc but pages by zero-based page + limit while the action sends page=1&per_page, so newest-first page 1 would skip rows and fixing it changes existing paging (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers) |
 | apps/streamtime | new-record | apps/streamtime/README.md Triggers section (verified 2026-11-09) | hand | search-records sorts by a per-view sortColumn from Search Setup and defaults to ascending; the spec names no creation column or id for every view (https://api.streamtime.net/swagger.json) |
 | apps/supadata | new-youtube-result | apps/supadata/README.md Triggers section (verified 2026-11-09) | hand | youtube-search is a search over public YouTube results (sortBy relevance/rating/date/views), not a feed of the account's own records (https://docs.supadata.ai/youtube/search) |
-| apps/talentlms |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/tapfiliate |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/talentlms |  | apps/talentlms/README.md Triggers section (verified 2026-11-09) | hand | user/course/group/branch get-many and ILT session lists in the v1 API are unpaged-or-paged lookups with no documented sort order, no created/updated-since filter and no webhook for them (https://market.talentlms.com/pages/docs/TalentLMS-API-Documentation.pdf) |
 | apps/taskade | new-project | apps/taskade/README.md Triggers section (verified 2026-11-09) | hand | my-project-list documents only 'Sort options: viewed-asc, viewed-desc' (last viewed, not created) and no created-since filter (https://docs.taskade.com/developers/comprehensive-api-guide/) |
-| apps/tavily |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/telnyx |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/terraform |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/tavily |  | apps/tavily/README.md Triggers section (verified 2026-11-09) | hand | search, extract, crawl, map and research endpoints are request-scoped jobs keyed by the caller's query, not an account record collection; usage-get is a single counter (https://docs.tavily.com/documentation/api-reference/introduction) |
 | apps/thanksio | order-list | apps/thanksio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | order-list documents only 'recent orders', no sort or since filter (https://docs.thanks.io/api-reference/openapi.json) |
-| apps/thinkific |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/thrivecart |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/tickettailor | issued-ticket-list | apps/tickettailor/README.md Triggers: not shipped line (verified 2026-11-09) | hand | issued-ticket-list has cursor paging only, no documented sort or created-after filter (https://developers.tickettailor.com/) |
 | apps/tidio | ticket-list | apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md) |
-| apps/tidycal |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/tiktok-lead-generation |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/tldv |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/twilio/segment |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/tidycal |  | apps/tidycal/README.md Triggers section (verified 2026-11-09) | hand | booking-list filters by starts_at/ends_at (the booking's own time, not its creation) and contact-list takes only a page number, neither documents a sort order or created-since filter (https://tidycal.com/developer/docs/) |
+| apps/twilio/segment |  | apps/twilio/segment/README.md Triggers section (verified 2026-11-09) | hand | the HTTP Tracking API actions (identify, track, page, group, alias, batch) are write-only ingestion calls with no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/) |
 | apps/twilio/sendgrid |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/upstash |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/uptimerobot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
