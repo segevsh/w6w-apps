@@ -229,4 +229,4 @@ everyone at once.
 
 ## Triggers
 
-- **New Board** wraps `board-list` with `sort=last_created`. [Miro list boards](https://developers.miro.com/reference/get-boards), verified 2026-11-09.
+- **New Board** (poll) wraps `board-list` with `sort=last_created` and a required **Team ID** (optional **Project ID**): Miro documents `sort` as applicable only when listing boards by team or project, so the trigger is scoped to one. [Miro get boards](https://developers.miro.com/reference/get-boards-1.md), verified 2026-11-09.
