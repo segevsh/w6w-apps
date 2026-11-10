@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ninox",
   "version": "0.4.0",
-  "description": "Read and write Ninox 4 records, inspect modules, tables, fields, views and reports, poll record changes, trigger on new or updated records, record changes and schema changes, and run scripts in a Ninox workspace.",
+  "description": "Read and write Ninox 4 records, inspect modules, tables, fields, views and reports, poll record and schema changes, trigger on new or updated records, and run scripts in a Ninox workspace.",
   "license": "MIT",
   "author": {
     "name": "w6w"
