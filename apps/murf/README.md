@@ -1,6 +1,6 @@
 # Murf
 
-Triggers: not shipped — webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter (https://murf.ai/api/docs)
+Triggers: not shipped — dubbing-job completion callbacks are a webhook candidate; voice and project lists lack documented new-record ordering or a since filter (https://murf.ai/api/docs/capabilities/dubbing/webhooks)
 
 Synthesize speech, browse voices, manage cloned voices, re-voice audio, translate text and run
 dubbing jobs and projects over the **Murf API** (`api.murf.ai`).

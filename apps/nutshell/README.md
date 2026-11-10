@@ -8,10 +8,15 @@
 | --- | --- | --- | --- |
 | `new-lead` — New Lead | poll | `find-leads`, sorted by `id` descending | Each newly created Lead |
 
-The trigger uses the same JSON-RPC `findLeads` action with a bounded 100-record, newest-first page;
-the first check seeds its ID window and emits no historical Leads. Nutshell's JSON-RPC `findLeads`
-documentation and webhook offering were verified 2026-11-09 at
-https://developers.nutshell.com/docs/core-findleads and https://developers.nutshell.com/docs/webhooks.
+The trigger uses the same JSON-RPC `findLeads` action with a bounded 100-record page ordered by `id`
+descending; the first check seeds its ID window and emits no historical Leads. The JSON-RPC
+`Core::findLeads` reference documents the `$orderBy` (default `'id'`), `$orderDirection` (default
+`'ASC'`; `findNotes` on the same page shows `'DESC'`) and `$limit` arguments the action passes
+(verified 2026-11-10 at https://developers-rpc.nutshell.com/detail/class_core.html); the page does
+not spell out the full set of accepted direction values, so `DESC` on the `id` key is the documented
+`$orderDirection` argument in its non-default direction. Nutshell's webhook offering (created in the
+web UI under Setup > API keys, not wired here) is described at
+https://developers.nutshell.com/docs/working-with-webhooks (verified 2026-11-10).
 
 Read and write [Nutshell](https://www.nutshell.com) CRM Leads, Accounts (companies) and Contacts
 (people), and log notes, over Nutshell's legacy **JSON-RPC** API.
