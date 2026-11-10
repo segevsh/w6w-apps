@@ -265,8 +265,6 @@ identically and unmodified on the sibling `apify` app. Use the audit tool direct
 cd ../../_tools && deno run --no-check -A audit.ts missive
 ```
 
-Triggers: not shipped — `contact-list` orders by name or modified field without a documented newest-first direction (https://missiveapp.com/docs/developers/rest-api/endpoints).
-
 ## Triggers
 
 - **New or Updated Contact** wraps `contact-list` with `order=last_modified`. [Missive contacts](https://missiveapp.com/docs/developers/rest-api/endpoints), verified 2026-11-09.

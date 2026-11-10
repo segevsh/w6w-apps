@@ -20,3 +20,12 @@ test("new-or-updated-contact seeds, emits contacts, retries, and requests last-m
   assertEquals(first.events, [item("b")]);
   assertEquals(retry, first);
 });
+test("new-or-updated-contact emits an edited contact (same id, new modified_at) exactly once", async () => {
+  const input = { params: { contactBook: "book" }, state: {}, subscriptionId: "sub" };
+  const seeded = await trigger.poll!(input, ctx([{ id: "a", modified_at: 1 }]).ctx);
+  const edited = { id: "a", modified_at: 2 };
+  const first = await trigger.poll!({ ...input, state: seeded.nextState }, ctx([edited]).ctx);
+  assertEquals(first.events, [edited]);
+  const again = await trigger.poll!({ ...input, state: first.nextState }, ctx([edited]).ctx);
+  assertEquals(again.events, []);
+});

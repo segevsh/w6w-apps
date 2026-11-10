@@ -17,3 +17,12 @@ test("new-or-updated-page seeds, emits changed pages, retries, and requests the 
   assertEquals(first.events, [item("b")]);
   assertEquals(retry, first);
 });
+test("new-or-updated-page emits an edited page (same id, new lastModifiedDateTime) exactly once", async () => {
+  const input = { params: {}, state: {}, subscriptionId: "sub" };
+  const seeded = await trigger.poll!(input, ctx([{ id: "a", lastModifiedDateTime: "1" }]).ctx);
+  const edited = { id: "a", lastModifiedDateTime: "2" };
+  const first = await trigger.poll!({ ...input, state: seeded.nextState }, ctx([edited]).ctx);
+  assertEquals(first.events, [edited]);
+  const again = await trigger.poll!({ ...input, state: first.nextState }, ctx([edited]).ctx);
+  assertEquals(again.events, []);
+});

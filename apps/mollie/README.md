@@ -33,9 +33,6 @@ STRING value:
 { "currency": "EUR", "value": "10.00" }
 ```
 
-## Triggers
-
-- **New Customer** wraps `customer-list` with descending order. [Mollie list customers](https://docs.mollie.com/reference/v2/customers-api/list-customers), verified 2026-11-09.
 There is no smallest-currency-sub-unit integer anywhere in this API — `value` carries the
 currency's natural number of decimal places as a string. A naive `Math.round(amount * 100)`
 integer-cents conversion, the instinct anyone coming from Stripe/Razorpay will have, is the wrong
@@ -307,3 +304,7 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+- **New Customer** wraps `customer-list` with descending order. [Mollie list customers](https://docs.mollie.com/reference/list-customers), verified 2026-11-09.
