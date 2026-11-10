@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-recruit",
   "version": "0.2.0",
-  "description": "Create, read, update, search and change the pipeline status of Candidates, Job Openings and Clients in Zoho Recruit, and trigger workflows on new candidates.",
+  "description": "Create, read, update, search and change the pipeline status of Candidates, Job Openings and Clients in Zoho Recruit, and trigger workflows on new or updated candidates.",
   "license": "MIT",
   "author": {
     "name": "w6w"

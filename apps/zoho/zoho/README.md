@@ -8,6 +8,7 @@ is out of scope here; each of those is a separate potential app.
 - **Categories** — crm
 - **Auth methods** — oauth2
 - **Actions** — 21
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `www.zohoapis.com`
 - **Website** — https://www.zoho.com/crm
 - **API docs** — https://www.zoho.com/crm/developer/docs/api/v6/
@@ -139,7 +140,20 @@ Researched and endpoint-verified 2026-08-02 against
 details, multi-DC hosts, API credit limits — these are stable across versions). Status surfaces
 move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at
 once.
-# Triggers
 
-`New Contact` wraps `contact-list` with `Created_Time` descending. Vendor API reference verified 2026-11-09: https://www.zoho.com/crm/developer/docs/api/v8/get-records.html
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` | poll | `contact-list` | a contact when it is created |
+| `new-or-updated-contact` | poll | `contact-list` | a contact whenever it is created or edited (`id:Modified_Time` is the identity) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests sort by `Created_Time` / `Modified_Time` descending, page 1, 100 per page, with an explicit `fields` list that includes both stamps.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Zoho CRM get-records — "sort_by … To sort the records based on the fields id, Created_Time, and Modified_Time": https://www.zoho.com/crm/developer/docs/api/v6/get-records.html

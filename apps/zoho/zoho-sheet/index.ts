@@ -79,6 +79,7 @@ import usedAreaGet from "./actions/used-area-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newWorkbook from "./triggers/new-workbook.ts";
+import newOrUpdatedWorkbook from "./triggers/new-or-updated-workbook.ts";
 
 export default {
   actions: [
@@ -100,5 +101,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
-  triggers: [newWorkbook],
+  triggers: [newWorkbook, newOrUpdatedWorkbook],
 } satisfies AppDefinition;

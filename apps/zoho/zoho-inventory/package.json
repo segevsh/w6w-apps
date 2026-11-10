@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-inventory",
-  "version": "0.2.0",
-  "description": "Track stock, contacts, catalog items, warehouses and sales orders in Zoho Inventory, and trigger workflows on new sales orders.",
+  "version": "0.1.0",
+  "description": "Track stock, contacts, catalog items, warehouses and sales orders in Zoho Inventory, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -42,8 +42,7 @@
         "us.zohostatus.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

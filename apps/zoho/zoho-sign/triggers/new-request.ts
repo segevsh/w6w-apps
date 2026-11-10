@@ -4,15 +4,23 @@ import action from "../actions/request-list.ts";
 export default pollFromListAction({
   key: "new-request",
   title: "New Signature Request",
-  description: "Polls the existing request-list action ordered by creation time descending.",
+  description: "The run gets each newly created signature request (document), newest first.",
   action,
   input: () => ({ rowCount: 100, startIndex: 1, sortColumn: "created_time", sortOrder: "DESC" }),
   items: (result) => (result as { requests?: unknown[] }).requests ?? [],
-  idOf: (item) =>
-    String(
-      (item as { request_id?: unknown; id?: unknown }).request_id ??
-        (item as { id?: unknown }).id ?? "",
-    ),
-  output: [{ key: "request_id", type: "string", label: "Request ID" }],
-  sample: { request_id: "request-101" },
+  idOf: (item) => String((item as { request_id?: unknown }).request_id ?? ""),
+  output: [
+    { key: "request_id", type: "string", label: "Request ID" },
+    { key: "request_name", type: "string", label: "Request name" },
+    { key: "request_status", type: "string", label: "Status" },
+    { key: "owner_email", type: "string", label: "Owner email" },
+    { key: "created_time", type: "number", label: "Created time (epoch ms)" },
+  ],
+  sample: {
+    request_id: "100000000000012345",
+    request_name: "Mutual NDA",
+    request_status: "inprogress",
+    owner_email: "owner@example.com",
+    created_time: 1731153600000,
+  },
 });

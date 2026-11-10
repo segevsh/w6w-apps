@@ -6,6 +6,7 @@ Zuora — a subscription billing and monetization platform.
 - **Categories** — finance
 - **Auth methods** — client-credentials
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — the ten regional/environment hosts below (the
   `service` health check separately adds `zuora.statuspage.io`)
 - **Website** — https://www.zuora.com
@@ -206,7 +207,19 @@ that split here — the region is just a `select` field read before the token
 call is made, the same shape this pack's `vanta` app already uses for its
 commercial/FedRAMP split. One `AuthDefinition`, ten `select` options, rather
 than ten near-identical `AuthDefinition`s.
-# Triggers
 
-`New Invoice` wraps `invoice-list` with `CreatedDate` descending. Vendor API reference verified 2026-11-09: https://developer.zuora.com/v1-api-reference/api/object-queries/queryinvoices/
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-invoice` | poll | `invoice-list` | an invoice the first time it is seen and again whenever `updatedDate` changes (posting, adjustments, payments) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sort[]=updateddate.DESC`, one page of 50, and uses `id:updatedDate` as the event identity, so a newly created invoice is a new event.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Object Query — List invoices, `sort[]`: "Supported sortable fields: id updateddate accountid amount balance duedate invoicedate invoicenumber …" (`createddate` is not sortable): https://developer.zuora.com/v1-api-reference/api/object-queries/queryinvoices

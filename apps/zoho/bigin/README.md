@@ -7,6 +7,7 @@ Create, read, update, search and delete Contacts, Companies, Pipelines and Tasks
 - **Categories** — crm
 - **Auth methods** — oauth2
 - **Actions** — 23
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — the eight `www.zohoapis.*` regional API hosts, plus `accounts.zoho.com`
 - **Website** — https://www.bigin.com
 - **API docs** — https://www.bigin.com/developer/docs/apis/v2/
@@ -263,7 +264,20 @@ Researched and endpoint-verified 2026-09-22 against
 multi-DC, status codes, API limits) plus live probes of `www.zohoapis.com/bigin/v2/...`,
 `accounts.zoho.com/oauth/v2/token` and `us.zohostatus.com/rss`. Vendor status surfaces move; if a
 probe starts failing for everyone at once, re-check the feed's component name first.
-# Triggers
 
-`New Contact` wraps `contact-list` with `Created_Time` descending. Vendor API reference verified 2026-11-09: https://www.bigin.com/developer/docs/apis/v2/get-records.html
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` | poll | `contact-list` | a contact when it is created |
+| `new-or-updated-contact` | poll | `contact-list` | a contact whenever it is created or edited (`id:Modified_Time` is the identity) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests sort by `Created_Time` / `Modified_Time` descending, page 1, 100 per page, with an explicit `fields` list that includes both stamps.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Bigin get-records — "sort_by … Specify the field API name based on which the records will be sorted" and "sort_order … asc … or desc"; `Created_Time` and `Modified_Time` are documented Contacts fields: https://www.bigin.com/developer/docs/apis/v2/get-records.html

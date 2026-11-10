@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-sheet",
   "version": "0.2.0",
-  "description": "Read and write Zoho Sheet workbooks, worksheets, rows and ranges, and trigger workflows on new workbooks.",
+  "description": "Read and write Zoho Sheet workbooks, worksheets, rows and ranges, and trigger workflows on new or updated workbooks.",
   "license": "MIT",
   "author": {
     "name": "w6w"

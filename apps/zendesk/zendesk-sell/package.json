@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zendesk-sell",
   "version": "0.2.0",
-  "description": "Manage contacts, leads, deals, notes and tasks in Zendesk Sell (formerly Base CRM), and trigger workflows on new contacts.",
+  "description": "Manage contacts, leads, deals, notes and tasks in Zendesk Sell (formerly Base CRM), and trigger workflows on new or updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"

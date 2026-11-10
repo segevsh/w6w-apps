@@ -5,6 +5,7 @@ Manage Xero contacts, invoices, bank transactions, items and the chart of accoun
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.xero.com`, `identity.xero.com`
 - **Website** — https://www.xero.com
 - **API docs** — https://developer.xero.com/documentation
@@ -168,7 +169,20 @@ Researched and endpoint-verified 2026-07-31 against developer.xero.com (via sear
 indexed content — several documentation pages timed out on direct fetch) and a direct
 fetch of `status.xero.com/api/v2/summary.json`. Status surfaces and scope names move;
 re-check if a probe starts failing for everyone at once.
-# Triggers
 
-`New Contact` wraps `contact-list` ordered by `CreatedDateUTC DESC`. Vendor API reference verified 2026-11-09: https://developer.xero.com/documentation/api/accounting/contacts
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-contact` | poll | `contact-list` | a contact the first time it is seen and again whenever `UpdatedDateUTC` changes |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+The `Contact` model carries only `UpdatedDateUTC` — there is no created stamp to sort by — so the one trigger is `new-or-updated-contact` (a brand-new contact is a new event too). It requests `order=UpdatedDateUTC DESC`, page 1 (up to 100 contacts) and treats `ContactID:UpdatedDateUTC` as the event identity.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Contacts list `order` parameter — "Order by an any element" (OpenAPI spec): https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/xero_accounting.yaml
+- Contact fields (`ContactID`, `UpdatedDateUTC`): https://developer.xero.com/documentation/api/accounting/contacts

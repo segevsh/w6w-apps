@@ -10,6 +10,7 @@ confuse the four, and do not modify `apps/zoho/zoho/`, `apps/zoho/zohobooks/` or
 - **Categories** — support
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 27
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `desk.zoho.com`, `desk.zoho.eu`, `desk.zoho.in`, `desk.zoho.com.au`,
   `desk.zoho.jp`, `desk.zohocloud.ca`, `desk.zoho.com.cn`, `desk.zoho.sa`, `desk.zoho.sg`,
   `desk.zoho.ae`
@@ -261,7 +262,19 @@ Data Centers, Rate limits, Organizations, Tickets, Contacts, Accounts, Agents, D
 Threads, Comments, Attachments, Search), plus live probes against all ten `desk.zoho.<tld>` API
 hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
-# Triggers
 
-`New Contact` wraps `contact-list` with `-createdTime`. Vendor API reference verified 2026-11-09: https://desk.zoho.com/DeskAPIDocument#Contacts#Contacts_Listallcontacts
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` | poll | `contact-list` | a Zoho Desk contact when it is created |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sortBy=-createdTime`, 100 contacts. Set the `orgId` trigger parameter, or leave it empty to use the organization recorded on the connection. The list response does not carry a modified stamp, so there is no new-or-updated trigger.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- List contacts — "sortBy … Parameter that sorts contacts by one of these attributes: firstName, lastName, phone, email, account, createdTime, modifiedTime" and "A - prefix denotes descending order": https://desk.zoho.com/DeskAPIDocument

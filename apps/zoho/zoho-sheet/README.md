@@ -9,6 +9,7 @@ those apps from here.
 - **Categories** — spreadsheets, productivity
 - **Auth methods** — oauth2, one per Zoho data centre (see below) — **seven**, not eight
 - **Actions** — 10
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `sheet.zoho.com`, `sheet.zoho.eu`, `sheet.zoho.in`, `sheet.zoho.com.au`,
   `sheet.zoho.jp`, `sheet.zoho.com.cn`, `sheet.zoho.sa`
 - **Website** — https://www.zoho.com/sheet/
@@ -216,7 +217,20 @@ Researched and endpoint-verified live 2026-09-05 against `https://www.zoho.com/s
 against all seven working regional API hosts, the excluded Canadian host, their accounts hosts, and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
-# Triggers
 
-`New Workbook` wraps `workbook-list` with `recently_created`. Vendor API reference verified 2026-11-09: https://www.zoho.com/sheet/help/api/v2/
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-workbook` | poll | `workbook-list` | a workbook when it is created or shared with the account |
+| `new-or-updated-workbook` | poll | `workbook-list` | a workbook whenever it is created or modified (`resource_id:last_modified_time` is the identity) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sort_option=recently_created` / `recently_modified`, starting at index 1, 100 workbooks.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- workbook.list — "sort_option … Supported options are 'recently_opened', 'recently_modified', 'recently_created', 'ascending', and 'descending'. Default option is 'recently_created'": https://www.zoho.com/sheet/help/api/v2/list-all-workbooks.html

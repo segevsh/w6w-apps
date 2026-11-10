@@ -12,7 +12,7 @@ import clientCredentials from "./auth/client-credentials.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
 
 import accountList from "./actions/account-list.ts";
 import accountGet from "./actions/account-get.ts";
@@ -48,7 +48,7 @@ const app: AppDefinition = {
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newInvoice],
+  triggers: [newOrUpdatedInvoice],
 };
 
 export default app;

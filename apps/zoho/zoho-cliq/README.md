@@ -4,6 +4,8 @@ W6W app for [Zoho Cliq](https://www.zoho.com/cliq/): post messages and files to 
 users and bots, manage channels and their members, read users, teams and chats, and manage
 reminders. 32 actions, OAuth2 only, covering all nine Zoho data centres.
 
+- **Triggers** — 1 (poll)
+
 API reference: <https://www.zoho.com/cliq/help/restapi/v2/>. Every endpoint here is taken from that
 reference and the paths were probed unauthenticated on every data centre (all answered `401`).
 
@@ -87,7 +89,19 @@ reminder get/update/snooze.
 zoho.com/cliq/ serves no favicon. `assets/icon.svg` is
 <https://www.zohowebstatic.com/sites/zweb/images/productlogos/cliq.svg> saved verbatim (an Adobe
 Illustrator export, viewBox `0 0 672 296`, a wide logo).
-# Triggers
 
-`New Chat` wraps `chat-list`. Vendor API reference verified 2026-11-09: https://www.zoho.com/cliq/help/restapi/v2/
+## Triggers
 
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-chat` | poll | `chat-list` | a direct, group or bot chat the first time it is listed after the trigger was enabled |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+The list has no created-time filter, so this is a since-filter poll on the last-message time: each check asks for `modified_after = cursor − 2 minutes`, reads up to 3 pages of 100 (paging back with `modified_before`) and fires only chats whose `creation_time` is later than the moment the trigger was enabled. A window longer than 3 pages is drained over the next checks and the cursor only moves on once it is empty. A chat is first seen when it has a message, so a brand-new chat with no message yet fires on its first one.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Retrieve all direct chats — `modified_after`: "Gets the list of chats where the last message is sent after the mentioned time", `modified_before` likewise, `limit` max 100: https://www.zoho.com/cliq/help/restapi/v2/
