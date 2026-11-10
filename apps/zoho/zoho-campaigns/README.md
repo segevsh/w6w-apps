@@ -297,3 +297,5 @@ campaign-management and its dozen linked pages, error-codes), plus live probes a
 `campaigns.zoho.<tld>`-shaped API hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces
 move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at
 once.
+Triggers: not shipped — the existing contact-list is scoped to a caller-selected mailing list and has no documented created-time order or since filter (https://www.zoho.com/campaigns/help/developers/get-list-subscribers.html)
+

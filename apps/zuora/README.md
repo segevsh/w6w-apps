@@ -206,3 +206,7 @@ that split here — the region is just a `select` field read before the token
 call is made, the same shape this pack's `vanta` app already uses for its
 commercial/FedRAMP split. One `AuthDefinition`, ten `select` options, rather
 than ten near-identical `AuthDefinition`s.
+# Triggers
+
+`New Invoice` wraps `invoice-list` with `CreatedDate` descending. Vendor API reference verified 2026-11-09: https://developer.zuora.com/v1-api-reference/api/object-queries/queryinvoices/
+

@@ -168,3 +168,7 @@ Researched and endpoint-verified 2026-07-31 against developer.xero.com (via sear
 indexed content — several documentation pages timed out on direct fetch) and a direct
 fetch of `status.xero.com/api/v2/summary.json`. Status surfaces and scope names move;
 re-check if a probe starts failing for everyone at once.
+# Triggers
+
+`New Contact` wraps `contact-list` ordered by `CreatedDateUTC DESC`. Vendor API reference verified 2026-11-09: https://developer.xero.com/documentation/api/accounting/contacts
+

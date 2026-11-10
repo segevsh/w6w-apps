@@ -161,3 +161,7 @@ index, 95,001 bytes) and every per-endpoint page it links to for the surface thi
 plus live probes against all eight `mail.zoho.<tld>` and `accounts.zoho.<tld>` host pairs and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
+# Triggers
+
+`New Email` wraps `message-list` with newest-first date ordering. Vendor API reference verified 2026-11-09: https://www.zoho.com/mail/help/api/
+

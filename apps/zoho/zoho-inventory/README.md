@@ -266,3 +266,7 @@ Researched and endpoint-verified 2026-09-22 against `https://www.zoho.com/invent
 plus live probes against all eight `www.zohoapis.<tld>` API hosts, their accounts hosts, and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
+# Triggers
+
+`New Sales Order` wraps `salesorder-list`. Vendor API reference verified 2026-11-09: https://www.zoho.com/inventory/api/v1/salesorders/
+

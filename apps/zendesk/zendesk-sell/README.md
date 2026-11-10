@@ -187,3 +187,7 @@ cd ../../../_tools && deno run --no-check -A --config ./deno.json ./audit.ts zen
 ```
 
 — passes with 0 errors, 0 warnings.
+# Triggers
+
+`New Contact` wraps `contact-list` with `created_at:desc`. Vendor API reference verified 2026-11-09: https://developer.zendesk.com/api-reference/sales-crm/resources/contacts/
+

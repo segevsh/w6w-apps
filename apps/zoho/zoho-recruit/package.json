@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-recruit",
-  "version": "0.1.0",
-  "description": "Create, read, update, search and change the pipeline status of Candidates, Job Openings and Clients in Zoho Recruit, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Create, read, update, search and change the pipeline status of Candidates, Job Openings and Clients in Zoho Recruit, and trigger workflows on new candidates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -41,7 +41,8 @@
         "recruit.zoho.ae"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

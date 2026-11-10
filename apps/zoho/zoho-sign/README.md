@@ -231,3 +231,7 @@ individual pages (`api-endpoint.html`, `oauth.html`, `getting-started.html`,
 that path and fetched live — plus live probes against all ten `sign.zoho.<tld>` API hosts, their
 accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts`
 conventions in mind if a probe starts failing for everyone at once.
+# Triggers
+
+`New Signature Request` wraps `request-list` with creation-time descending. Vendor API reference verified 2026-11-09: https://www.zoho.com/sign/api/document-managment/get-document-list.html
+

@@ -139,3 +139,7 @@ Researched and endpoint-verified 2026-08-02 against
 details, multi-DC hosts, API credit limits — these are stable across versions). Status surfaces
 move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at
 once.
+# Triggers
+
+`New Contact` wraps `contact-list` with `Created_Time` descending. Vendor API reference verified 2026-11-09: https://www.zoho.com/crm/developer/docs/api/v8/get-records.html
+

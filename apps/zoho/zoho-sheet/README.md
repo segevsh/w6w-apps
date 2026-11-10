@@ -216,3 +216,7 @@ Researched and endpoint-verified live 2026-09-05 against `https://www.zoho.com/s
 against all seven working regional API hosts, the excluded Canadian host, their accounts hosts, and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
+# Triggers
+
+`New Workbook` wraps `workbook-list` with `recently_created`. Vendor API reference verified 2026-11-09: https://www.zoho.com/sheet/help/api/v2/
+

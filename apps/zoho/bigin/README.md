@@ -263,3 +263,7 @@ Researched and endpoint-verified 2026-09-22 against
 multi-DC, status codes, API limits) plus live probes of `www.zohoapis.com/bigin/v2/...`,
 `accounts.zoho.com/oauth/v2/token` and `us.zohostatus.com/rss`. Vendor status surfaces move; if a
 probe starts failing for everyone at once, re-check the feed's component name first.
+# Triggers
+
+`New Contact` wraps `contact-list` with `Created_Time` descending. Vendor API reference verified 2026-11-09: https://www.bigin.com/developer/docs/apis/v2/get-records.html
+

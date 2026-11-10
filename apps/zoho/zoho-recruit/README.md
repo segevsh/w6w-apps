@@ -225,3 +225,7 @@ update-records, delete-records, search-records, change-status, get/create/update
 get-attachments, get-users, oauth-overview, multi-dc, limits), plus live probes against all ten
 `recruit.zoho.<tld>` API hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move;
 re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+# Triggers
+
+`New Candidate` wraps `candidate-list` with `Created_Time` descending. Vendor API reference verified 2026-11-09: https://www.zoho.com/recruit/developer-guide/apiv2/get-records.html
+

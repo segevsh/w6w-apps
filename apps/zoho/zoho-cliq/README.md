@@ -87,3 +87,7 @@ reminder get/update/snooze.
 zoho.com/cliq/ serves no favicon. `assets/icon.svg` is
 <https://www.zohowebstatic.com/sites/zweb/images/productlogos/cliq.svg> saved verbatim (an Adobe
 Illustrator export, viewBox `0 0 672 296`, a wide logo).
+# Triggers
+
+`New Chat` wraps `chat-list`. Vendor API reference verified 2026-11-09: https://www.zoho.com/cliq/help/restapi/v2/
+

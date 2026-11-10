@@ -261,3 +261,7 @@ Data Centers, Rate limits, Organizations, Tickets, Contacts, Accounts, Agents, D
 Threads, Comments, Attachments, Search), plus live probes against all ten `desk.zoho.<tld>` API
 hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+# Triggers
+
+`New Contact` wraps `contact-list` with `-createdTime`. Vendor API reference verified 2026-11-09: https://desk.zoho.com/DeskAPIDocument#Contacts#Contacts_Listallcontacts
+

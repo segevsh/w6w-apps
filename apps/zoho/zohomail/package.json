@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zohomail",
-  "version": "0.1.1",
-  "description": "Send, search and manage email in Zoho Mail — messages, folders, labels and accounts, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Send, search and manage email in Zoho Mail, and trigger workflows on new messages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "mail.zoho.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

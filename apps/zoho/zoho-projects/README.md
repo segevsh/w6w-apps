@@ -83,3 +83,5 @@ surface; each can be added later:
 - Project permanent delete, the portal bin, comments, attachments and WorkDrive links, followers,
   dependencies, baselines, custom fields/layouts/modules, templates, automation, users
   administration and invitations, clients/contacts, calendar events, forums, documents.
+Triggers: not shipped — the existing issue-list requires a caller-selected portal and project, so no account-wide new-record feed is available (https://www.zoho.com/projects/)
+

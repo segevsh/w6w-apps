@@ -96,6 +96,7 @@ import salesorderDelete from "./actions/salesorder-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSalesorder from "./triggers/new-salesorder.ts";
 
 export default {
   actions: [
@@ -126,4 +127,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newSalesorder],
 } satisfies AppDefinition;

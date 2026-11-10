@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zendesk-sell",
-  "version": "0.1.1",
-  "description": "Manage contacts, leads, deals, notes and tasks in Zendesk Sell (formerly Base CRM), over the Sell API v2.",
+  "version": "0.2.0",
+  "description": "Manage contacts, leads, deals, notes and tasks in Zendesk Sell (formerly Base CRM), and trigger workflows on new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "api.getbase.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
