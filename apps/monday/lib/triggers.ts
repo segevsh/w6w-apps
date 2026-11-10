@@ -167,6 +167,7 @@ export function webhookTrigger(
       }
     },
 
+    // deno-lint-ignore require-await
     async handleIngest({ raw }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`monday delivers webhooks with POST, not ${raw.method}.`);

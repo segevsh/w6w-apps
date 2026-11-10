@@ -1,6 +1,6 @@
 # Mindee
 
-Triggers: not shipped — the only webhook is a per-job completion callback (the webhook endpoint id is passed on each enqueue call, so it fires only for files this workflow itself submits) and Mindee's docs name an `X-Signature` HMAC header without stating its algorithm, so deliveries cannot be verified from the docs (https://docs.mindee.com/integrations/webhooks)
+Triggers: not shipped — the only webhook is a per-job completion callback (the webhook endpoint id is passed on each enqueue call, so the callback fires for any upload that names the endpoint, from any client, not just this workflow) and Mindee's docs name an `X-Signature` HMAC header without stating its algorithm, so deliveries cannot be verified from the docs (https://docs.mindee.com/integrations/webhooks)
 
 Extract structured data from documents with Mindee's OCR/AI models, on the **Mindee Platform V2
 API**.

@@ -36,7 +36,7 @@ or wrong signature, an absent raw body or an unset secret refuses the delivery (
 Patreon sends no timestamp, so there is no replay window: a captured delivery can be replayed.
 Keep the callback URL private as well.
 
-Docs (verified 2026-11-10): https://docs.patreon.com/#tag/Webhooks (Webhooks, Triggers v2, Webhook Payloads and POST/DELETE /webhooks)
+Docs (verified 2026-11-10): https://docs.patreon.com/#webhooks (Webhooks, Triggers v2, Webhook Payloads and POST/DELETE /webhooks)
 
 ## Why API v2, not v1
 

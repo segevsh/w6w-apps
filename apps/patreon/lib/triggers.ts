@@ -323,6 +323,7 @@ export function webhookTrigger(
       }
     },
 
+    // deno-lint-ignore require-await
     async handleIngest({ raw, state }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Patreon delivers webhooks with POST, not ${raw.method}.`);

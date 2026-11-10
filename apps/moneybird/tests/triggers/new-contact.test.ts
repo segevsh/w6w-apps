@@ -209,3 +209,28 @@ test("onUnsubscribe DELETEs the webhook; 404 and 410 are already gone; 500 surfa
     "500",
   );
 });
+
+test("a truncated valid digest is refused", async () => {
+  const t = nowSec();
+  const full = sig(BODY, t).split("v1=")[1];
+  for (const cut of [full.slice(0, 32), full.slice(0, 1), full.slice(0, -1)]) {
+    await assertRejects(
+      () => ingest(call({}, BODY, SECRET, `t=${t},v1=${cut}`)),
+      Error,
+      "signature",
+    );
+  }
+});
+
+test("the stale-timestamp error never echoes the header, digest or timestamp", async () => {
+  const t = nowSec() - 3600;
+  const h = sig(BODY, t);
+  try {
+    await ingest(call({}, BODY, SECRET, h));
+    assert(false, "must throw");
+  } catch (e) {
+    const m = (e as Error).message;
+    assert(m.includes("five minutes"));
+    assert(!m.includes(h) && !m.includes(h.split("v1=")[1]) && !m.includes(String(t)));
+  }
+});
