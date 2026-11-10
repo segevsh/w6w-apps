@@ -49,8 +49,16 @@
  * is an array of `{eventType}` objects (not of strings).
  */
 import type { AppDefinition } from "@w6w/types";
+import newEntity from "./triggers/new-entity.ts";
+import newEntityRelationship from "./triggers/new-entity-relationship.ts";
+import newMember from "./triggers/new-member.ts";
 import newNote from "./triggers/new-note.ts";
+import newNoteRelationship from "./triggers/new-note-relationship.ts";
+import newOrUpdatedEntity from "./triggers/new-or-updated-entity.ts";
 import newOrUpdatedNote from "./triggers/new-or-updated-note.ts";
+import newOrUpdatedTeam from "./triggers/new-or-updated-team.ts";
+import newTeam from "./triggers/new-team.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
 import apiToken from "./auth/api-token.ts";
 
 // Entities — the unified product-hierarchy surface
@@ -165,5 +173,16 @@ export default {
   // the write scope). See `auth/api-token.ts` for the measurement.
   auth: [apiToken],
   healthChecks: [service, api, quota],
-  triggers: [newNote, newOrUpdatedNote],
+  triggers: [
+    newEntity,
+    newEntityRelationship,
+    newMember,
+    newNote,
+    newNoteRelationship,
+    newOrUpdatedEntity,
+    newOrUpdatedNote,
+    newOrUpdatedTeam,
+    newTeam,
+    newTeamMember,
+  ],
 } satisfies AppDefinition;
