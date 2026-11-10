@@ -6780,12 +6780,12 @@
   },
   {
     "path": "apps/tiktok-lead-generation",
-    "mechanism": "none",
+    "mechanism": "webhook-api",
     "candidates": [
-      "lead.generated"
+      "new-lead"
     ],
     "pollAction": null,
-    "reason": "TikTok's subscription API covers leads (Create a subscription) but its docs render client-side, so the lead event names, delivery format and verification scheme cannot be read from the vendor (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3); paged lead retrievals have no verified order or since filter",
+    "reason": "signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3)",
     "verified": "apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },

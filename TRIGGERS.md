@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 64, manual-webhook: 31, poll: 486, none: 102
+**Totals:** 683 apps — webhook-api: 65, manual-webhook: 31, poll: 486, none: 101
 
-## webhook-api (64)
+## webhook-api (65)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -72,6 +72,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/telegram | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/terraform | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
 | apps/thrivecart | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret |
+| apps/tiktok-lead-generation | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
 | apps/toggl | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | new-response | apps/typeform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webex | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -606,7 +607,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (102)
+## none (101)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -702,7 +703,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tickettailor | issued-ticket-list | apps/tickettailor/README.md Triggers: not shipped line (verified 2026-11-09) | hand | issued-ticket-list has cursor paging only, no documented sort or created-after filter (https://developers.tickettailor.com/) |
 | apps/tidio | ticket-list | apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md) |
 | apps/tidycal |  | apps/tidycal/README.md Triggers section (verified 2026-11-09) | hand | booking-list filters by starts_at/ends_at (the booking's own time, not its creation) and contact-list takes only a page number, neither documents a sort order or created-since filter (https://tidycal.com/developer/docs/) |
-| apps/tiktok-lead-generation | lead.generated | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | TikTok's subscription API covers leads (Create a subscription) but its docs render client-side, so the lead event names, delivery format and verification scheme cannot be read from the vendor (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3); paged lead retrievals have no verified order or since filter |
 | apps/twilio/segment |  | apps/twilio/segment/README.md Triggers section (verified 2026-11-09) | hand | the HTTP Tracking API actions (identify, track, page, group, alias, batch) are write-only ingestion calls with no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/) |
 | apps/upstash |  | apps/upstash/README.md Triggers section (verified 2026-11-09) | hand | Upstash Redis REST commands run against caller-chosen keys and collections: no account record list with stable ids and no created/updated filter or sort (https://upstash.com/docs/redis/features/restapi) |
 | apps/webscrapingai | serp-search | apps/webscrapingai/README.md Triggers section (verified 2026-11-09) | hand | serp-search is a query-driven search result, not a persistent record feed (https://docs.webscraping.ai/web-scraping-api/serp-api/) |
