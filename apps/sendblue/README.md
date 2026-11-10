@@ -3,7 +3,7 @@
 Send and receive iMessage, SMS, and RCS business messages — plus contacts, webhooks, TOTP,
 seats, location sharing, and phone verification — through the **Sendblue REST API**.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Categories** — communication
 - **Auth methods** — api-keys (two custom headers: `sb-api-key-id` + `sb-api-secret-key`)
 - **Actions** — 47
@@ -197,6 +197,8 @@ verbatim-mark claim.
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
 | `new-message` — New Message | poll (every 5 minutes at most) | `message-list`, ordered `createdAt` descending | each new message, inbound or outbound, identified by `message_handle` |
+| `new-contact` — New Contact | poll (every 5 minutes at most) | `contact-list`, ordered `created_at` descending | each new contact, identified by phone number |
+| `new-seat` — New Seat | poll (every 5 minutes at most) | `seat-list` (whole list, id snapshot) | each new seat (rep) of the account |
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `message-list` through the connection's own
@@ -206,4 +208,8 @@ No webhook is registered and nothing is delivered to a callback URL, so there is
 verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
 the connection.
 
-Vendor docs: <https://docs.sendblue.com/api-v2/messages/> (verified 2026-11-09).
+`new-seat` reads the whole seat list (a small account-level collection with no sort or filter) and emits `seat_id`s not seen before.
+
+Vendor docs: <https://docs.sendblue.com/api-v2/messages/>, <https://docs.sendblue.com/api-v2/contacts>, <https://docs.sendblue.com/api-v2/seats> (verified 2026-11-10).
+
+Not covered: `verify-verification-list` (the account-wide list and its `updated_at_gte` filter are in no public docs page — only the per-service endpoints are documented — and Verify attempts are one-time-code state); `verify-service-list` and `webhook-list` are account configuration; `totp-secret-list` returns credential material only (secret values never included); `location-list` is live Find My position state; `verified-contact-list` has no documented item fields or order.
