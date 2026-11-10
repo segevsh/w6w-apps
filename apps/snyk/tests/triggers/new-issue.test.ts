@@ -61,3 +61,41 @@ test("new-issue: requests the since window with the vendor's filter", async () =
     "https://api.snyk.io/rest/orgs/org-1/issues?version=2026-03-25&created_after=2026-11-09T11%3A58%3A00.000Z&limit=100",
   );
 });
+
+test("new-issue: records from before the seed are never emitted; one after it is (seed floor)", async () => {
+  const { r: seeded } = await seed();
+  const PRE = "2026-11-09T11:59:30.000Z"; // 30 s before the seed, inside the overlap window
+  const POST = "2026-11-09T12:06:00.000Z"; // after the seed, inside the next window
+  // more than maxPages (3) full pages of records that all existed before the seed
+  const pre = [0, 1, 2, 3].map((p) =>
+    Array.from({ length: 100 }, (_, i) => rec(`pre${p}-${i}`, PRE, PRE))
+  );
+  let state = next(seeded);
+  let emitted = 0;
+  let now = T1;
+  for (
+    const responses of [
+      pre.map((c, i) => ({
+        body: {
+          data: c,
+          links: i < 3 ? { next: `/rest/orgs/org-1/issues?limit=100&starting_after=c${i}` } : {},
+        },
+      })),
+    ]
+  ) {
+    clock.now = () => now;
+    const r = await trigger.poll!({ ...input, state } as never, mockCtx(responses).ctx);
+    emitted += events(r).length;
+    state = next(r);
+    now += 300_000;
+  }
+  assertEquals(emitted, 0);
+  assertEquals((state as { resume?: unknown }).resume, undefined);
+  clock.now = () => now;
+  const post = rec("post-1", POST, POST);
+  const r = await trigger.poll!(
+    { ...input, state } as never,
+    mockCtx([{ body: wrap([post]) }]).ctx,
+  );
+  assertEquals(events(r), [post]);
+});

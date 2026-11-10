@@ -248,7 +248,7 @@ newest-first reads. Each check calls the `issue-list` action (with Return All, w
 vendor's `starting_after` cursor itself) with the documented filter `created_after` (`new-issue`) or
 `updated_after` (`new-or-updated-issue`) set to the previous check minus two minutes, and de-duplicates
 by issue id (`new-or-updated-issue`: id plus `attributes.updated_at`). The window is drained inside
-the one action call, so nothing is left to resume; the first check only records the cursor. The
+the one action call, so nothing is left to resume; the first check reads nothing: it records the cursor and a floor (the time it ran), and an issue stamped before the floor is never emitted. The
 OpenAPI document describes the filters as "A filter to select issues created after this date" and
 "A filter to select issues updated after this date" and caps `limit` at 100.
 

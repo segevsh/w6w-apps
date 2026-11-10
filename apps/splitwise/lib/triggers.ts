@@ -22,20 +22,26 @@ export interface WindowState {
   ids: string[];
   /** Epoch ms of the last fully drained check. */
   cursor: number;
+  /** Epoch ms of the seed check: a record stamped before it is never emitted (brief §9.9). */
+  floor: number;
   resume?: { sinceMs: number; pos: Pos; checkedAt: number };
 }
 
 function isSeeded(state: unknown): state is WindowState {
   const s = state as Partial<WindowState> | null;
   return typeof s === "object" && s !== null && s.v === 1 && s.kind === "ids" &&
-    s.seeded === true && Array.isArray(s.ids) && typeof s.cursor === "number";
+    s.seeded === true && Array.isArray(s.ids) && typeof s.cursor === "number" &&
+    typeof s.floor === "number";
 }
 
 /**
  * Since-filter poll (brief §9.1 b + §9.8). Each check reads the window `[cursor - overlap, now]`
  * through the wrapped list action, at most `MAX_PAGES` pages. A window that is not drained is
  * resumed from its saved position on the next check (same `since`), and the cursor only advances
- * to the first check's start once the window is drained. The first check only records the cursor.
+ * to the first check's start once the window is drained. The first check reads nothing: it records
+ * the cursor and `floor = now`, and every later check drops a record whose own `stampOf` time is
+ * before `floor` (a record with no parseable stamp is kept), so nothing that existed before the
+ * seed is ever emitted however many pages the overlap window holds (brief §9.9).
  * Dedupe is by `idOf` through the kit's seen-id window.
  */
 export async function pollWindow<T>(o: {
@@ -48,6 +54,8 @@ export async function pollWindow<T>(o: {
   idOf(item: T): string;
   /** Client-side filter for records the vendor can only select by modification time. */
   keep?(item: T, sinceMs: number): boolean;
+  /** The record's own creation (new-*) or update (new-or-updated-*) stamp, for the seed floor. */
+  stampOf(item: T): string | undefined;
   ctx: HookContext;
 }): Promise<{ events: T[]; nextState: WindowState }> {
   const checkedAt = clock.now();
@@ -60,7 +68,11 @@ export async function pollWindow<T>(o: {
     let pos = prior.resume?.pos;
     for (let page = 0; page < MAX_PAGES; page++) {
       const res = await o.read(new Date(sinceMs).toISOString(), pos, o.ctx);
-      for (const item of res.items) if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
+      for (const item of res.items) {
+        const at = Date.parse(o.stampOf(item) ?? "");
+        if (at < prior.floor) continue;
+        if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
+      }
       next = res.next;
       if (next === undefined) break;
       pos = next;
@@ -78,6 +90,7 @@ export async function pollWindow<T>(o: {
   const state: WindowState = {
     ...nextState,
     cursor: !prior || next === undefined ? windowStart : prior.cursor,
+    floor: prior?.floor ?? checkedAt,
   };
   if (prior && next !== undefined) state.resume = { sinceMs, pos: next, checkedAt: windowStart };
   return { events, nextState: state };
@@ -155,6 +168,7 @@ export const newExpenseTrigger: TriggerDefinition<Params> = {
       state,
       ctx,
       read: (since, pos, c) => fetchSince(since, pos, c, params),
+      stampOf: (e) => e.created_at,
       idOf: (e) => String(e.id),
       keep: (e, sinceMs) => !e.deleted_at && Date.parse(e.created_at ?? "") >= sinceMs,
     });
@@ -174,6 +188,7 @@ export const newOrUpdatedExpenseTrigger: TriggerDefinition<Params> = {
       state,
       ctx,
       read: (since, pos, c) => fetchSince(since, pos, c, params),
+      stampOf: (e) => e.updated_at,
       idOf: (e) => `${e.id}:${e.updated_at ?? ""}`,
     });
   },

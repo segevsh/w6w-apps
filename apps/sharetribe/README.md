@@ -286,7 +286,8 @@ ascending order of their sequence ID", and documents `startAfterSequenceId` ("Re
 sequence ID strictly larger than the given sequence ID") and `createdAtStart` ("events with createdAt
 timestamp greater than or equal to the given timestamp"), at most one of the two. The poll therefore
 keeps a **token** instead of de-duplicating a page: the first check records the time it ran (no
-request, no events); the next check calls the `event-list` request
+request, no events) and that time is kept as a floor, so an event whose `createdAt` is before it is
+dropped and never emitted; the next check calls the `event-list` request
 `GET /v1/integration_api/events/query?createdAtStart=<that time>`; every later check calls
 `...events/query?startAfterSequenceId=<sequence id of the last event handed to a run>`. At most 1000
 events are handed over per check, the rest on the next one. Sharetribe notes that "there can be delay

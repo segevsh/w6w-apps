@@ -382,7 +382,8 @@ the `list-sheets` request `GET /sheets?modifiedSince=<previous check − 2 min>&
 reads up to three pages, and resumes a longer window from the saved page on the next check (the cursor
 advances only once the window is drained). `new-sheet` keeps abbreviated sheets whose `createdAt`
 falls inside the window; `new-or-updated-sheet` keys each event on `id:modifiedAt`. The first check
-only records the cursor.
+reads nothing: it records the cursor and a floor (the time it ran), and a sheet stamped before the
+floor is never emitted.
 
 The other list actions were considered and are not triggers: `list-container-children` (a scoped,
 token-paged hierarchy with no creation order or filter), `list-reports` (has `modifiedSince`, but a

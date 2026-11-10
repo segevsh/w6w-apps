@@ -103,3 +103,39 @@ test("new-order: a window longer than maxPages is resumed, every record emitted 
   const all = [...events(a), ...events(b)] as { id: string }[];
   assertEquals(new Set(all.map((x) => x.id)).size, 3 * N + 5);
 });
+
+test("new-order: records from before the seed are never emitted; one after it is (seed floor)", async () => {
+  const { r: seeded } = await seed();
+  const PRE = "2026-11-09T11:59:30.000Z"; // 30 s before the seed, inside the overlap window
+  const POST = "2026-11-09T12:06:00.000Z"; // after the seed, inside the next window
+  // more than maxPages (3) full pages of records that all existed before the seed
+  const pre = [0, 1, 2, 3].map((p) =>
+    Array.from({ length: 50 }, (_, i) => rec(`pre${p}-${i}`, PRE, PRE))
+  );
+  let state = next(seeded);
+  let emitted = 0;
+  let now = T1;
+  for (
+    const responses of [
+      pre.slice(0, 3).map((c, i) => ({
+        body: { result: c, pagination: { hasNextPage: true, nextPageCursor: `c${i}` } },
+      })),
+      [{ body: { result: pre[3], pagination: { hasNextPage: false } } }],
+    ]
+  ) {
+    clock.now = () => now;
+    const r = await trigger.poll!({ ...input, state } as never, mockCtx(responses).ctx);
+    emitted += events(r).length;
+    state = next(r);
+    now += 300_000;
+  }
+  assertEquals(emitted, 0);
+  assertEquals((state as { resume?: unknown }).resume, undefined);
+  clock.now = () => now;
+  const post = rec("post-1", POST, POST);
+  const r = await trigger.poll!(
+    { ...input, state } as never,
+    mockCtx([{ body: wrap([post]) }]).ctx,
+  );
+  assertEquals(events(r), [post]);
+});

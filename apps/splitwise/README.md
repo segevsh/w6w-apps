@@ -522,7 +522,7 @@ these are **since-filter** polls. Each check calls the `list-expenses` request
 pages; a window with more pages is resumed from the saved offset on the next check (the cursor only
 advances once the window is drained). `new-expense` keeps rows whose `created_at` falls inside the
 window and skips ones carrying `deleted_at`; `new-or-updated-expense` keys each event on
-`id:updated_at`. The first check only records the cursor. The vendor's reference lists
+`id:updated_at`. The first check reads nothing: it records the cursor and a floor (the time it ran), and an expense stamped before the floor is never emitted. The vendor's reference lists
 `updated_after` (`GET /get_expenses`, `limit` default 20, `offset` default 0).
 
 Vendor documentation: https://dev.splitwise.com/ (verified 2026-11-09).

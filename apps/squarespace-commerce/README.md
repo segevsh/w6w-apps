@@ -168,7 +168,7 @@ vendor requires together) and reads up to three pages of 50, following the vendo
 continued with the cursor). A window with more pages is resumed from the saved cursor on the next
 check; the cursor position advances only once the window is drained. `new-order` keeps orders whose
 `createdOn` falls inside the window; `new-or-updated-order` keys each event on `id:modifiedOn`. The
-first check only records the cursor.
+first check reads nothing: it records the cursor and a floor (the time it ran), and an order stamped before the floor is never emitted.
 
 Vendor documentation: https://developers.squarespace.com/commerce-apis/retrieve-all-orders
 (verified 2026-11-09).

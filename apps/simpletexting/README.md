@@ -156,7 +156,7 @@ triggers are therefore **since-filter** polls: each check calls the `contact-lis
 `GET /api/contacts?page=<n>&size=100&since=<previous check − 2 min>&direction=desc`, reads up to
 three pages, and resumes a longer window from the saved page on the next check (the cursor advances
 only once the window is drained). `new-contact` keeps rows whose `created` falls inside the window;
-`new-or-updated-contact` keys each event on `contactId:updated`. The first check only records the
-cursor.
+`new-or-updated-contact` keys each event on `contactId:updated`. The first check reads nothing: it records the
+cursor and a floor (the time it ran), and a contact stamped before the floor is never emitted.
 
 Vendor documentation: https://api-doc.simpletexting.com/ (verified 2026-11-09).

@@ -37,7 +37,7 @@ test("new-event: reads from the seed time, emits in order, and moves the token t
     mockCtx([page([ev(101), ev(102)])]).ctx,
   );
   assertEquals(events(first), [ev(101), ev(102)]);
-  assertEquals(next(first).token, "s:102");
+  assertEquals(next(first).token, `s:102@${T0}`);
   assertEquals(retry, first);
   assertEquals(c.calls[0].method, "GET");
   assertEquals(
@@ -71,4 +71,33 @@ test("new-event: more than 1000 events in one response are handed over 1000 at a
   const r = await trigger.poll!({ ...input, state } as never, mockCtx([page(many)]).ctx);
   assertEquals(events(r).length, 1000);
   assertEquals(next(r).token, "s:1000");
+});
+
+test("new-event: an event created before the seed is dropped, the token moves past it, a later event is emitted", async () => {
+  const { r: seeded } = await seed();
+  const at = (sequenceId: number, createdAt: string) => ({
+    id: `e${sequenceId}`,
+    type: "event",
+    attributes: { sequenceId, createdAt, eventType: "listing/created" },
+  });
+  const before = Array.from({ length: 1500 }, (_, i) => at(i + 1, "2026-11-09T11:59:30.000Z"));
+  const first = await trigger.poll!(
+    { ...input, state: seeded.nextState } as never,
+    mockCtx([page(before)]).ctx,
+  );
+  assertEquals(events(first), []);
+  assertEquals(next(first).token, `s:1000@${T0}`);
+  const second = await trigger.poll!(
+    { ...input, state: first.nextState } as never,
+    mockCtx([page(before.slice(1000))]).ctx,
+  );
+  assertEquals(events(second), []);
+  assertEquals(next(second).token, `s:1500@${T0}`);
+  const after = at(1501, "2026-11-09T12:02:00.000Z");
+  const third = await trigger.poll!(
+    { ...input, state: second.nextState } as never,
+    mockCtx([page([after])]).ctx,
+  );
+  assertEquals(events(third), [after]);
+  assertEquals(next(third).token, `s:1501@${T0}`);
 });

@@ -9,7 +9,7 @@ export const clock = { now: (): number => Date.now() };
 const MAX_EVENTS = 1000;
 
 interface MarketplaceEvent {
-  attributes?: { sequenceId?: number };
+  attributes?: { sequenceId?: number; createdAt?: string };
 }
 
 const OUTPUT: OutputField[] = [
@@ -29,15 +29,28 @@ const OUTPUT: OutputField[] = [
  * time it ran and sends it as `createdAtStart`), then `s:<sequenceId>` of the last event handed to a
  * run (sent as `startAfterSequenceId`, the vendor's documented way to read on from the last received
  * event; the two filters are mutually exclusive, so only one is ever sent).
+ *
+ * Seed floor (brief §9.9): the seed time rides along as `s:<sequenceId>@<seedMs>`, and every check
+ * drops an event whose own `createdAt` is before it (an event with no parseable `createdAt` is
+ * kept). The token still moves past a dropped event, so a pre-seed event is never emitted and never
+ * re-read.
  */
 async function changes(token: string, ctx: Parameters<NonNullable<typeof action.execute>>[1]) {
-  const input = token.startsWith("s:")
-    ? { startAfterSequenceId: Number(token.slice(2)) }
-    : { createdAtStart: token.slice(2) };
+  const [head, at] = token.split("@");
+  const floorMs = at !== undefined
+    ? Number(at)
+    : head.startsWith("t:")
+    ? Date.parse(head.slice(2))
+    : Number.NaN;
+  const input = head.startsWith("s:")
+    ? { startAfterSequenceId: Number(head.slice(2)) }
+    : { createdAtStart: head.slice(2) };
   const res = await action.execute!(input, ctx) as { data?: MarketplaceEvent[] };
-  const items = (res.data ?? []).slice(0, MAX_EVENTS);
-  const last = items.at(-1)?.attributes?.sequenceId;
-  return { items, nextToken: last === undefined ? token : `s:${last}` };
+  const read = (res.data ?? []).slice(0, MAX_EVENTS);
+  const items = read.filter((e) => !(Date.parse(e.attributes?.createdAt ?? "") < floorMs));
+  const last = read.at(-1)?.attributes?.sequenceId;
+  const keep = Number.isNaN(floorMs) ? "" : `@${floorMs}`;
+  return { items, nextToken: last === undefined ? token : `s:${last}${keep}` };
 }
 
 export const newEventTrigger: TriggerDefinition = {
