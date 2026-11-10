@@ -7,7 +7,7 @@ the **Givebutter API v1**.
 - **Categories** — crm, commerce, communication
 - **Auth methods** — api-key
 - **Actions** — 43
-- **Triggers** — 2 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.givebutter.com` (the `service` check adds `givebutter.statuspage.io` to
   its own hook allowlist, never to the app's)
@@ -258,15 +258,23 @@ deno task validate       # @w6w/validator conformance audit
 
 ## Triggers
 
-Poll triggers built on the app's existing `contact-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+Poll triggers built on the app's existing list actions (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-contact` — New Contact | poll | `contact-list` | Each newly created Givebutter contact, oldest first. |
 | `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each Givebutter contact that is newly created or edited, once per edit. |
+| `new-transaction` — New Transaction | poll | `transaction-list` | Each newly created transaction (donation, ticket sale, ...). |
+| `new-or-updated-transaction` — New or Updated Transaction | poll (since-filter) | `transaction-list` | Each transaction that is newly created or edited, once per edit. |
+| `new-campaign` — New Campaign | poll (snapshot) | `campaign-list` | Each newly created campaign. |
+| `new-fund` — New Fund | poll (snapshot) | `fund-list` | Each newly created fund. |
+| `new-payout` — New Payout | poll (snapshot) | `payout-list` | Each newly created payout. |
+| `new-message` — New Message | poll (snapshot) | `message-list` | Each newly created outbound email or text message. |
 
-How the feed is read: `GET /contacts` with `sortByDesc=created_at` for new contacts and the `updatedAfter` filter for the updated variant.
+How the feeds are read: `GET /contacts` and `GET /transactions` with `sortByDesc=created_at` for the "new" triggers (a documented value of that parameter); the "or updated" triggers use the documented `updatedAfter` filter (transactions: one page of 100 per check in a stable `sortBy=created_at` order, a longer window is drained across checks, and records that were last updated before the trigger was enabled are never emitted). Campaigns, funds, payouts and messages are small collections with no sort or since filter: every check reads all of them (at most 5000 rows) and emits only ids not seen before.
+
+Not covered: `webhook-list` (webhook endpoint configuration, not business records) and `household-list`, `plan-list`, `pledge-list`, `ticket-list` (unbounded record lists with no since filter and no documented default order; `GET /households` takes `sortByDesc` but the API document lists no accepted values, so a newest-first read cannot be justified).
 
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 
-Vendor docs: <https://docs.givebutter.com/api-reference/contacts/list-all-contacts> (verified 2026-11-09).
+Vendor docs: <https://docs.givebutter.com/api-reference/contacts/list-all-contacts>, <https://docs.givebutter.com/api-reference/transactions/list-all-transactions>, <https://docs.givebutter.com/api-reference/pagination> (verified 2026-11-10).

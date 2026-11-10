@@ -120,7 +120,7 @@ Connection (it identifies the community, like the token) and never on an Action.
 `GET /community` is v2's whoami — there is no `/me`, and the alternatives are collections.
 
 - **401** → the token is wrong, revoked, or the wrong *type*. The message says so, because an
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
   Admin V1 or Headless token fails identically and the fix is different.
 - **403** → the token is fine and the **plan** is not:
   `{"success":false,"message":"The community is not eligible for admin API v2 access."}`. The
@@ -139,12 +139,22 @@ the wire to prove a token works.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each newly created event |
+| `new-post` — New Post | Poll | `post-list` (`sort=latest`) | Each newly created published post |
+| `new-or-updated-post` — New or Updated Post | Poll | `post-list` (`sort=latest_updated`) | Each post created or edited |
+| `new-comment` — New Comment | Poll | `comment-list` | Each new comment |
+| `new-member-tag` — New Member Tag | Poll | `member-tag-list` (`sort=newest`) | Each newly created member tag |
+| `new-space` — New Space | Poll (snapshot) | `space-list` | Each newly created space |
+| `new-space-group` — New Space Group | Poll (snapshot) | `space-group-list` | Each newly created space group |
+| `new-event-attendee` — New Event RSVP | Poll (snapshot) | `event-attendee-list` | Each new RSVP on the chosen event (`eventId` param) |
+| `new-space-member` — New Space Member | Poll (snapshot) | `space-member-list` | Each member who joins the chosen space (`spaceId` param) |
 
-Polled through `event-list` with no `sort`: the Admin API v2 spec documents that the default order is newest by `created_at` ("default is newest (by created_at)"). Records are read from the `records` array. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+Newest-first triggers: `new-event` uses no `sort` (the spec documents "default is newest (by created_at)"); `new-post` / `new-or-updated-post` pass the documented `sort` values `latest` / `latest_updated` to `GET /posts`; `new-member-tag` passes `sort=newest` to `GET /member_tags`; `new-comment` relies on the spec's "Lists comments in the community, newest first". Records are read from the `records` array. Each check emits only unseen items, oldest first; the first check records what exists without firing. The snapshot triggers (spaces, space groups, one event's RSVPs, one space's members) read every page (100 per page, at most 5000 rows) because those endpoints have no sort or since filter, and emit only ids not seen before.
+
+Not covered: `member-list` (no sort or since filter, order undocumented, unbounded roster), `member-search` (exact lookup of one member by email, not a list), `search` (ranked full-text query across mixed record types).
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://api-headless.circle.so/api/admin/v2/swagger.yaml) (verified 2026-11-09).
+Source: [vendor docs](https://api-headless.circle.so/api/admin/v2/swagger.yaml) (verified 2026-11-10).
 
 ## Health checks
 

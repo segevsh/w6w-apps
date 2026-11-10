@@ -39,9 +39,28 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrUpdatedPerson from "./triggers/new-or-updated-person.ts";
 import newPerson from "./triggers/new-person.ts";
+import newDeal from "./triggers/new-deal.ts";
+import newTask from "./triggers/new-task.ts";
+import newLeadEvent from "./triggers/new-lead-event.ts";
+import newAppointment from "./triggers/new-appointment.ts";
+import newUser from "./triggers/new-user.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
+import newSmartList from "./triggers/new-smart-list.ts";
+import newActionPlan from "./triggers/new-action-plan.ts";
 
 export default {
-  triggers: [newOrUpdatedPerson, newPerson],
+  triggers: [
+    newOrUpdatedPerson,
+    newPerson,
+    newDeal,
+    newTask,
+    newLeadEvent,
+    newAppointment,
+    newUser,
+    newPipeline,
+    newSmartList,
+    newActionPlan,
+  ],
   actions: [
     // Person — the contact everything else hangs off
     searchPeople,
