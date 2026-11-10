@@ -6,6 +6,7 @@ avatars, voices, assets and templates that feed those jobs, on the **HeyGen v3 E
 - **Categories** — ai, video, marketing
 - **Auth methods** — api-key
 - **Actions** — 18
+- **Triggers** — 2 (webhook)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.heygen.com` (the `service` check adds `status.heygen.com` to its own
   hook allowlist, never to the app's)
@@ -20,6 +21,19 @@ avatars, voices, assets and templates that feed those jobs, on the **HeyGen v3 E
 > 1,159,990 bytes, `info.title` "HeyGen External API", 98 documented paths), the docs' own
 > `llms.txt` index, and live probes against `api.heygen.com` and `status.heygen.com`. Nothing here
 > came from a third-party integration directory.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `video-completed` — Video Completed | webhook (API-registered, signed) | `avatar_video.success` | video id, pre-signed download URL, HeyGen page URL, `callback_id`, full event data |
+| `video-failed` — Video Failed | webhook (API-registered, signed) | `avatar_video.fail` | video id and `callback_id` where sent, full event data with the failure details |
+
+**Setup.** Nothing to paste. Subscribing registers the trigger's URL with `POST /v3/webhooks/endpoints` for its one event type (the account API key the app already uses is the only credential); unsubscribing deletes the endpoint (`DELETE /v3/webhooks/endpoints/{id}`; one HeyGen no longer has counts as deleted). HeyGen returns the endpoint's signing secret only once, at creation, so the trigger keeps it in its subscription state; if HeyGen does not return one the endpoint is removed again and the subscribe fails. These triggers cover the whole account's videos, not only those created through w6w. Only the `avatar_video.*` events are wired; HeyGen also sends video agent, translation and avatar events, which can be added the same way.
+
+**Trust model.** HeyGen signs the exact request body: the `signature` header is the hex HMAC-SHA256 of the body under the endpoint secret. The trigger checks it in constant time before it parses anything, and refuses a delivery whose signature is missing or wrong, whose raw body is unavailable, or whose stored secret is empty. HeyGen documents no timestamp in the scheme, so there is no freshness window; it retries failed deliveries for up to 24 hours, so the same event can arrive twice: de-duplicate on `eventType` plus `videoId` (or your own `callback_id`).
+
+Docs (verified 2026-11-10): https://developers.heygen.com/docs/webhooks and https://developers.heygen.com/docs/webhook-events
 
 ## The findings that would have cost someone a day
 
@@ -84,9 +98,9 @@ the id of. `video-translation-create`'s output and this app's tests both pin the
   `watermark`/`motion_prompt` fields on the `avatar` variant.
 - **Workflows** (`/v3/workflows`, `/v3/workflow-runs`) and **HyperFrames** (HTML→video rendering) are
   separate, larger sub-APIs left out entirely.
-- **Webhooks** (register/list/rotate) and **Brand Kits/Glossaries** are left out — none of this app's
-  actions need them to be useful, and adding them without a way to verify delivery live would be
-  guessing at the wire shape.
+- **Webhook endpoint actions** (list/rotate) and **Brand Kits/Glossaries** are left out as actions;
+  the two triggers (see Triggers) create and delete their own endpoint, and the wire shape of a
+  delivery is the vendor's documented one, not verified live.
 - **Direct-to-S3 large uploads** (`POST /v3/assets/direct-uploads`, for files over the 32 MB inline
   cap) are left out; `asset-upload` covers the common inline case.
 - **Avatar training** (`POST /v3/avatars`, creating a new avatar from footage/an image/a prompt) is

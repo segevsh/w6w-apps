@@ -11,6 +11,7 @@ apps from here.
 - **Categories** — marketing, email
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 24
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `campaigns.zoho.com`, `campaigns.zoho.eu`, `campaigns.zoho.in`,
   `campaigns.zoho.com.au`, `campaigns.zoho.jp`, `campaigns.zohocloud.ca`, `campaigns.zoho.com.cn`,
   `campaigns.zoho.sa`
@@ -297,3 +298,19 @@ campaign-management and its dozen linked pages, error-codes), plus live probes a
 `campaigns.zoho.<tld>`-shaped API hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces
 move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at
 once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-campaign` | poll | `campaign-list-recent` | an email campaign (any status) when it is created |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sort=desc`, `fromindex=1`, `range=20`: a bounded page of the most recently created campaigns, de-duplicated by `campaign_key`, so the order inside the page does not matter. More than 20 campaigns created inside one polling interval would be missed.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Recent Campaigns — "you can see the details of the five most recent campaigns that has been created in your organization" (parameters `sort` asc/desc, `fromindex`, `range`): https://www.zoho.com/campaigns/help/developers/recent-campaign.html

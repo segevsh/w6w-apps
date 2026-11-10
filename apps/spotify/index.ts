@@ -32,10 +32,13 @@ import playlistCreate from "./actions/playlist-create.ts";
 import playlistAddTracks from "./actions/playlist-add-tracks.ts";
 import playerGetCurrentlyPlaying from "./actions/player-get-currently-playing.ts";
 
+import newPlaylist from "./triggers/new-playlist.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newPlaylist],
   actions: [
     // catalog
     search,

@@ -44,6 +44,8 @@ import balanceGet from "./actions/balance-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMailingList from "./triggers/new-mailing-list.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
 
 export default {
   actions: [
@@ -74,4 +76,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],
+  triggers: [newPipeline, newMailingList],
 } satisfies AppDefinition;

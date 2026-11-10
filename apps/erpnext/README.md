@@ -6,6 +6,7 @@ API, plus the submit/cancel document lifecycle.
 - **Categories** — finance, crm, hr
 - **Auth methods** — api-key (Frappe API Key/Secret pair)
 - **Actions** — 10
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://frappe.io/erpnext
 - **API docs** — https://docs.frappe.io/framework/user/en/api/rest — read in
@@ -182,3 +183,16 @@ status page there would not describe most installs' own sites.
 - **Frappe's `/api/v2/...` surface** — a separate, opt-in API version this
   app does not target; every action here uses the unversioned
   `/api/resource` and `/api/method` paths the REST documentation describes.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-document` — New Document | poll | List Documents (`GET /api/resource/{doctype}`, `order_by=creation desc`) | each newly created document of the DocType |
+| `new-or-updated-document` — New or Updated Document | poll | List Documents (`order_by=modified desc`) | each created or edited document (an edit is a new event) |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `list-documents` action is called with all fields, 100 per page, ordered by `creation desc` or `modified desc`. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://frappeframework.com/docs/user/en/api/rest (`order_by`, `limit_page_length`) (verified 2026-11-09).

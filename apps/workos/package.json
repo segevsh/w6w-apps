@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/workos",
-  "version": "0.1.0",
-  "description": "Manage WorkOS enterprise features — organizations, SSO connections, Directory Sync users and groups, the Admin Portal, user management and the unified event stream.",
+  "version": "0.2.0",
+  "description": "Manage WorkOS and trigger workflows on new events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.workos.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

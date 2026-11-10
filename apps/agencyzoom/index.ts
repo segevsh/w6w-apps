@@ -43,6 +43,7 @@
  * `README.md` for the full list and why.
  */
 import type { AppDefinition } from "@w6w/types";
+import newLead from "./triggers/new-lead.ts";
 import login from "./auth/login.ts";
 
 import pipelineList from "./actions/pipeline-list.ts";
@@ -109,4 +110,5 @@ export default {
   ],
   auth: [login],
   healthChecks: [service, quota],
+  triggers: [newLead],
 } satisfies AppDefinition;

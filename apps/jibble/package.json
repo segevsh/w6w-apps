@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jibble",
-  "version": "0.1.0",
-  "description": "Track time, manage people and run attendance reports against the Jibble time-tracking API.",
+  "version": "0.2.0",
+  "description": "Track time, manage people and run attendance reports against the Jibble time-tracking API, with new-activity triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "time-attendance.prod.jibble.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

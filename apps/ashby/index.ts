@@ -9,6 +9,7 @@
  * that decide whether a workflow built on it is correct.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCandidate from "./triggers/new-candidate.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -76,6 +77,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, permissions, quota],
+  triggers: [newCandidate],
 };
 
 export default app;

@@ -34,6 +34,7 @@ import conversationAudioGet from "./actions/conversation-audio-get.ts";
 import conversationCreate from "./actions/conversation-create.ts";
 
 import workspaceGet from "./actions/workspace-get.ts";
+import newConversation from "./triggers/new-conversation.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -50,4 +51,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newConversation],
 } satisfies AppDefinition;

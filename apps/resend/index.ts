@@ -64,6 +64,7 @@ import apiKeyList from "./actions/api-key-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEmail from "./triggers/new-email.ts";
 
 export default {
   actions: [
@@ -100,4 +101,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEmail],
 } satisfies AppDefinition;

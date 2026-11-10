@@ -121,6 +121,8 @@ import webhookGet from "./actions/webhook-get.ts";
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookUpdate from "./actions/webhook-update.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
+import newClient from "./triggers/new-client.ts";
+import newInvoice from "./triggers/new-invoice.ts";
 
 export default {
   actions: [
@@ -224,4 +226,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newClient, newInvoice],
 } satisfies AppDefinition;

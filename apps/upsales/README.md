@@ -1,5 +1,15 @@
 # Upsales
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled through `contact-list` as an id crawl: `sort=id` with `id=gt:<last contact id>` (the documented full-crawl form; Upsales documents no descending sort), keeping the last id read as the resume position. The first check stores a floor (now) and reads nothing; a contact whose `regDate` is before the floor is never emitted, and a window over 5 pages (1000 each) is drained across successive checks. Source: https://api.upsales.com (verified 2026-11-09).
+
 Manage the core objects of **Upsales**, the Nordic sales and marketing CRM, over the Upsales API v2.
 
 - **Categories** — crm, marketing

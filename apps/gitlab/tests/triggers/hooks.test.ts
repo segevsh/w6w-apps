@@ -148,19 +148,124 @@ test("a signature made with another key is refused", async () => {
 });
 
 test("each signature header missing is refused", async () => {
-  for (const drop of ["webhook-id", "webhook-timestamp", "webhook-signature"]) {
+  for (const drop of ["webhook-id", "webhook-timestamp"]) {
     const h: Record<string, string> = { ...headersFor() };
     delete h[drop];
     await assertRejects(() => ingest(push, call(BODY, h)), Error, "no signature");
   }
+  // No signature header at all: refused in signed mode (the default).
+  const h: Record<string, string> = { ...headersFor() };
+  delete h["webhook-signature"];
+  await assertRejects(() => ingest(push, call(BODY, h)), Error, "no signature");
 });
 
-test("a delivery signed only with the plain X-Gitlab-Token is refused (no unsigned path)", async () => {
+const TOKEN_STATE: TriggerState = {
+  hookId: "55",
+  projectId: "gitlab-org/gitlab-test",
+  kind: "push",
+  mode: "token",
+  legacyToken: "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90",
+};
+
+const LEGACY = { "x-gitlab-token": TOKEN, "x-gitlab-event": "Push Hook" };
+
+test("R3-4 signed mode (and mode absent): unsigned + X-Gitlab-Token is refused, whatever its value", async () => {
+  const signedState = { ...STATE, mode: "signed" as const };
+  for (const state of [STATE, signedState]) {
+    for (const given of [TOKEN, TOKEN_STATE.legacyToken!, "wrong", ""]) {
+      await assertRejects(
+        () => ingest(push, call(BODY, { "x-gitlab-token": given }), { state }),
+        Error,
+        "no signature",
+      );
+    }
+    assertEquals(evs(await ingest(push, call(BODY, headersFor()), { state })).length, 1);
+  }
+});
+
+test("R3-5 token mode: right token -> event; wrong, missing or empty-state token is refused", async () => {
+  const state = TOKEN_STATE;
+  const out = evs(
+    await ingest(push, call(BODY, { "x-gitlab-token": state.legacyToken! }), { state }),
+  );
+  assertEquals(out.length, 1);
+  assertEquals((out[0] as { deliveryId: unknown }).deliveryId, null);
+  assertEquals(
+    evs(await ingest(push, call(BODY, { "X-Gitlab-Token": state.legacyToken! }), { state })).length,
+    1,
+  );
+  for (const given of ["wrong", "", state.legacyToken + "x", state.legacyToken!.slice(0, -1)]) {
+    await assertRejects(
+      () => ingest(push, call(BODY, { "x-gitlab-token": given }), { state }),
+      Error,
+      "no valid token",
+    );
+  }
+  await assertRejects(() => ingest(push, call(BODY, {}), { state }), Error, "no valid token");
+  // A signature is not consulted in token mode, and the signing-key-shaped value is no token.
   await assertRejects(
-    () => ingest(push, call(BODY, { "x-gitlab-token": TOKEN, "x-gitlab-event": "Push Hook" })),
+    () => ingest(push, call(BODY, headersFor()), { state }),
+    Error,
+    "no valid token",
+  );
+  for (const legacyToken of [undefined, ""]) {
+    for (const headers of [{}, { "x-gitlab-token": "" }, { "x-gitlab-token": "undefined" }]) {
+      await assertRejects(
+        () => ingest(push, call(BODY, headers), { state: { ...state, legacyToken } }),
+        Error,
+        "secret",
+      );
+    }
+  }
+});
+
+test("signed with a bad signature is refused even with a matching X-Gitlab-Token (no downgrade)", async () => {
+  const bad = sign("msg_123", NOW, BODY, Buffer.from("fedcba9876543210fedcba9876543210"));
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": bad, ...LEGACY })),
+    Error,
+    "signature does not match",
+  );
+  // An empty signature header still counts as signed: refused, never the token path.
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": "", ...LEGACY })),
     Error,
     "no signature",
   );
+  // Signature present but webhook-id / webhook-timestamp missing: refused despite the token.
+  for (const drop of ["webhook-id", "webhook-timestamp"]) {
+    const h: Record<string, string> = { ...headersFor(), ...LEGACY };
+    delete h[drop];
+    await assertRejects(() => ingest(push, call(BODY, h)), Error, "no signature");
+  }
+  // Non-empty signature header with no `v1,` entry: refused despite the token.
+  for (const sig of ["v2,AAAA", "garbage", " "]) {
+    await assertRejects(
+      () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": sig, ...LEGACY })),
+      Error,
+    );
+  }
+  // A stale timestamp on a signed delivery is not rescued by the token either.
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(BODY, NOW - 9999), ...LEGACY })),
+    Error,
+    "5-minute window",
+  );
+  // Signed + valid, with a wrong token also present: the signature alone decides.
+  const out = evs(await ingest(push, call(BODY, { ...headersFor(), "x-gitlab-token": "wrong" })));
+  assertEquals(out.length, 1);
+});
+
+test("unset or empty stored secret refuses an unsigned delivery, even with an empty/absent token", async () => {
+  for (const signingToken of [undefined, ""]) {
+    for (const headers of [{}, { "x-gitlab-token": "" }, { "x-gitlab-token": "undefined" }]) {
+      await assertRejects(
+        () => ingest(push, call(BODY, headers), { state: { ...STATE, signingToken } }),
+        Error,
+        "secret",
+      );
+    }
+  }
 });
 
 test("a stale or future timestamp is refused, even with a valid signature over it", async () => {
@@ -219,6 +324,9 @@ test("error text never echoes the token, a signature or a header value", async (
   const cases: Array<() => Promise<unknown>> = [
     () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": bad })),
     () => ingest(push, call(undefined, headersFor())),
+    () => ingest(push, call(BODY, { "x-gitlab-token": "leaky-token-value" })),
+    () =>
+      ingest(push, call(BODY, { "x-gitlab-token": "leaky-token-value" }), { state: TOKEN_STATE }),
     () => ingest(push, call(BODY, headersFor(BODY, NOW - 9999))),
     () => ingest(push, call(BODY, headersFor()), { state: { ...STATE, signingToken: "" } }),
     () =>
@@ -233,7 +341,17 @@ test("error text never echoes the token, a signature or a header value", async (
     }
     assert(threw, "should have thrown");
     const m = threw!.message;
-    for (const leak of [TOKEN, KEY.toString("base64"), bad, "msg_123", String(NOW)]) {
+    for (
+      const leak of [
+        TOKEN,
+        KEY.toString("base64"),
+        bad,
+        "msg_123",
+        String(NOW),
+        "leaky-token-value",
+        TOKEN_STATE.legacyToken!,
+      ]
+    ) {
       assert(!m.includes(leak), `leaked ${leak}`);
     }
   }
@@ -264,59 +382,129 @@ function subscribe(params: Record<string, unknown>, ctx: HookContext) {
   ) as Promise<TriggerState>;
 }
 
-test("onSubscribe: deletes a leftover hook, creates one with a signing token, stores it", async () => {
+const VERSION_URL = "https://gitlab.com/api/v4/version";
+const HOOKS_URL = "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-test/hooks";
+
+test("R3-1 onSubscribe on 19.1.0-ee: signing_token only, no token, mode signed", async () => {
   const { ctx, calls } = mockCtx([
+    { body: { version: "19.1.0-ee", revision: "abc" } },
     { body: [{ id: 9, url: CALLBACK }, { id: 10, url: "https://elsewhere.test/hook" }] },
     { status: 204 },
     { status: 201, body: { id: 55 } },
   ]);
   const state = await subscribe({ projectId: "gitlab-org/gitlab-test" }, ctx);
-  assertEquals(calls.length, 3);
-  assertEquals([calls[0].method, calls[0].url], [
-    "GET",
-    "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-test/hooks?per_page=100",
-  ]);
-  assertEquals([calls[1].method, calls[1].url], [
-    "DELETE",
-    "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-test/hooks/9",
-  ]);
-  assertEquals([calls[2].method, calls[2].url], [
-    "POST",
-    "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-test/hooks",
-  ]);
+  assertEquals(calls.length, 4);
+  assertEquals([calls[0].method, calls[0].url], ["GET", VERSION_URL]);
+  assertEquals([calls[1].method, calls[1].url], ["GET", `${HOOKS_URL}?per_page=100`]);
+  assertEquals([calls[2].method, calls[2].url], ["DELETE", `${HOOKS_URL}/9`]);
+  assertEquals([calls[3].method, calls[3].url], ["POST", HOOKS_URL]);
   // GitLab requires `whsec_<base64 of a 32-byte key>`.
-  assert(/^whsec_[A-Za-z0-9+/]{43}=$/.test(state.signingToken));
-  assertEquals(Buffer.from(state.signingToken.slice(6), "base64").length, 32);
-  assertEquals(JSON.parse(calls[2].body!), {
+  assert(/^whsec_[A-Za-z0-9+/]{43}=$/.test(state.signingToken!));
+  assertEquals(Buffer.from(state.signingToken!.slice(6), "base64").length, 32);
+  const body = JSON.parse(calls[3].body!);
+  assertEquals(body, {
     url: CALLBACK,
     signing_token: state.signingToken,
     enable_ssl_verification: true,
     push_events: true,
   });
+  assert(!("token" in body));
   assertEquals(state, {
     hookId: "55",
     projectId: "gitlab-org/gitlab-test",
     kind: "push",
+    mode: "signed",
     signingToken: state.signingToken,
   });
 });
 
+test("R3-2 onSubscribe on 18.9.2: a new random token only, no signing_token, mode token", async () => {
+  const { ctx, calls } = mockCtx([
+    { body: { version: "18.9.2" } },
+    { body: [] },
+    { status: 201, body: { id: 56 } },
+  ]);
+  const state = await subscribe({ projectId: "gitlab-org/gitlab-test" }, ctx);
+  assertEquals(calls[0].url, VERSION_URL);
+  const body = JSON.parse(calls[2].body!);
+  assert(!("signing_token" in body));
+  assertEquals(typeof body.token, "string");
+  assert(/^[0-9a-f]{64}$/.test(body.token));
+  assertEquals(Object.keys(body).sort(), [
+    "enable_ssl_verification",
+    "push_events",
+    "token",
+    "url",
+  ]);
+  assertEquals(state, {
+    hookId: "56",
+    projectId: "gitlab-org/gitlab-test",
+    kind: "push",
+    mode: "token",
+    legacyToken: body.token,
+  });
+  // No signing key exists in state, so the token cannot equal one.
+  assertEquals(state.signingToken, undefined);
+});
+
+test("R3-3 onSubscribe: a failed or garbage /version is signed mode", async () => {
+  const probes = [
+    { status: 403, body: { message: "403 Forbidden" } },
+    { status: 500 },
+    { body: "<html>not json</html>" },
+    { body: { version: "garbage" } },
+    { body: {} },
+    { body: { version: 19 } },
+  ];
+  for (const probe of probes) {
+    const { ctx, calls } = mockCtx([probe, { body: [] }, { status: 201, body: { id: 57 } }]);
+    const state = await subscribe({ projectId: "gitlab-org/gitlab-test" }, ctx);
+    const body = JSON.parse(calls[2].body!);
+    assert("signing_token" in body && !("token" in body), JSON.stringify(probe));
+    assertEquals(state.mode, "signed");
+    assertEquals(state.legacyToken, undefined);
+  }
+});
+
+test("onSubscribe: the 19.0 boundary is signed; 18.x is token", async () => {
+  for (
+    const [version, mode] of [["19.0.0", "signed"], ["20.2.1-ee", "signed"], ["18.99.9", "token"], [
+      "9.4.1",
+      "token",
+    ]]
+  ) {
+    const { ctx } = mockCtx([{ body: { version } }, { body: [] }, {
+      status: 201,
+      body: { id: 1 },
+    }]);
+    assertEquals((await subscribe({ projectId: "1" }, ctx)).mode, mode, version);
+  }
+});
+
 test("onSubscribe: a non-push trigger turns push events off and its own flag on", async () => {
-  const { ctx, calls } = mockCtx([{ body: [] }, { status: 201, body: { id: 7 } }]);
+  const { ctx, calls } = mockCtx([
+    { body: { version: "19.1.0" } },
+    { body: [] },
+    { status: 201, body: { id: 7 } },
+  ]);
   await mergeRequest.onSubscribe!(
     { params: { projectId: "42" }, subscriptionId: "s", callbackUrl: CALLBACK, hostUrl: HOST },
     ctx,
   );
-  assertEquals(calls[1].url, "https://gitlab.com/api/v4/projects/42/hooks");
-  const body = JSON.parse(calls[1].body!);
+  assertEquals(calls[2].url, "https://gitlab.com/api/v4/projects/42/hooks");
+  const body = JSON.parse(calls[2].body!);
   assertEquals([body.push_events, body.merge_requests_events], [false, true]);
 });
 
-test("onSubscribe: a fresh token per subscription; project required", async () => {
-  const make = () => mockCtx([{ body: [] }, { status: 201, body: { id: 1 } }]).ctx;
-  const a = await subscribe({ projectId: "1" }, make());
-  const b = await subscribe({ projectId: "1" }, make());
+test("onSubscribe: a fresh secret per subscription; project required", async () => {
+  const make = (version: string) =>
+    mockCtx([{ body: { version } }, { body: [] }, { status: 201, body: { id: 1 } }]).ctx;
+  const a = await subscribe({ projectId: "1" }, make("19.0.0"));
+  const b = await subscribe({ projectId: "1" }, make("19.0.0"));
   assert(a.signingToken !== b.signingToken);
+  const c = await subscribe({ projectId: "1" }, make("18.0.0"));
+  const d = await subscribe({ projectId: "1" }, make("18.0.0"));
+  assert(c.legacyToken !== d.legacyToken);
   const { ctx, calls } = mockCtx();
   await assertRejects(() => subscribe({}, ctx), Error, "Project");
   assertEquals(calls.length, 0);

@@ -17,3 +17,13 @@ test("files-list: forwards purpose filter", async () => {
   const url = new URL(calls[0].url);
   assertEquals(url.searchParams.get("purpose"), "assistants");
 });
+
+test("files-list: forwards limit and order, and sends neither unless set", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
+  await action.execute!({ limit: 20, order: "desc" }, ctx);
+  const url = new URL(calls[0].url);
+  assertEquals(url.searchParams.get("limit"), "20");
+  assertEquals(url.searchParams.get("order"), "desc");
+  await action.execute!({}, ctx);
+  assertEquals(new URL(calls[1].url).search, "");
+});

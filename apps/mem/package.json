@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mem",
-  "version": "0.1.0",
-  "description": "Mem: create, search and organize notes and collections, and read the tasks, projects and follow-ups Mem derives.",
+  "version": "0.2.0",
+  "description": "Mem: create, search and organize notes and collections, read derived tasks, projects and follow-ups, and trigger workflows on new tasks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,12 @@
         "api.mem.ai"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

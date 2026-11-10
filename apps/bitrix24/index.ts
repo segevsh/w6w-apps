@@ -59,6 +59,7 @@ import dealDelete from "./actions/deal-delete.ts";
 
 import service from "./health/service.ts";
 import portal from "./health/portal.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -81,6 +82,7 @@ export default {
     dealUpdate,
     dealDelete,
   ],
+  triggers: [newContact],
   auth: [webhook],
   healthChecks: [service, portal],
 } satisfies AppDefinition;

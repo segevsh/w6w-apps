@@ -187,6 +187,16 @@ returns, which is what makes this worth checking per connection.
 `https://joinmastodon.org/logos/logo-purple.svg` on 2026-08-18 — the project's
 own logo page. Checked with `_tools/icon-legibility.ts`.
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-notification` — New Notification | poll | `notification-list` | Each notification newer than the previous check |
+
+Mastodon's notification endpoint is newest-first and accepts `min_id` to page forward from the
+last notification. [Mastodon notifications API](https://docs.joinmastodon.org/methods/notifications/)
+verified 2026-11-09.
+
 ## Tests
 
 162 assertions across 24 files: one per action, one per auth method, one per

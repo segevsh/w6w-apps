@@ -46,6 +46,7 @@ import emailTemplateList from "./actions/email-template-list.ts";
 import socialChannelList from "./actions/social-channel-list.ts";
 import socialStatsList from "./actions/social-stats-list.ts";
 import goalList from "./actions/goal-list.ts";
+import newList from "./triggers/new-list.ts";
 
 export default {
   actions: [
@@ -78,4 +79,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newList],
 } satisfies AppDefinition;

@@ -302,3 +302,7 @@ hook calls. No loopback, no status host.
 - [Update OneNote pages](https://learn.microsoft.com/en-us/graph/onenote-update-page)
 - [Graph throttling limits (OneNote section)](https://learn.microsoft.com/en-us/graph/throttling-limits)
 - [OneNote API throttling and how to avoid it](https://developer.microsoft.com/en-us/office/blogs/onenote-api-throttling-and-how-to-avoid-it/)
+
+## Triggers
+
+- **New or Updated Page** wraps `list-pages`, which is ordered by `lastModifiedDateTime desc`. [Microsoft Graph list pages](https://learn.microsoft.com/en-us/graph/api/onenote-list-pages), verified 2026-11-09.

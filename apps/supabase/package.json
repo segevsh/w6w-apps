@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/supabase",
-  "version": "0.1.1",
-  "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API.",
+  "version": "0.2.1",
+  "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API. Trigger for new rows.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "*.supabase.co"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

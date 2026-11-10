@@ -1,5 +1,7 @@
 # Ollama
 
+Triggers: not shipped — local model listing is server capability state, not a user-record feed with creation ordering (https://github.com/ollama/ollama/blob/main/docs/api.md)
+
 Run prompts, chats and embeddings against your own Ollama server, and manage the
 models on it.
 

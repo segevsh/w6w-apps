@@ -47,6 +47,8 @@ import technicianList from "./actions/technician-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
 
 export default {
   actions: [
@@ -70,4 +72,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, api, quota],
+  triggers: [newCustomer, newOrUpdatedCustomer],
 } satisfies AppDefinition;

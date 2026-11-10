@@ -5,6 +5,7 @@ Manage Salesmate (sales CRM) contacts, companies, deals, activities and notes on
 - **Categories** — crm
 - **Auth methods** — access-token (`accessToken` header + link name)
 - **Actions** — 28
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.salesmate.io`
 - **Website** — https://www.salesmate.io/
 - **API docs** — https://apidocs.salesmate.io/ (Postman collection `7811505/S1ZucWTA`)
@@ -113,3 +114,16 @@ Products and product variants (v1/v3 only), custom-module records (`/module/v4/{
 module id is per-account and needs the "Get Module IDs" lookup; left out of this core set), lookup-field
 association (`PUT /{module}/v4/{id}` with undocumented bodies and an unfilled placeholder URL), note
 attachments, custom-module/ticket/quote notes, deal `associatedProducts`, and bulk operations.
+
+## Triggers
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-search` (`sortBy: contact.createdAt`, desc) | the new contact |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-search` (`sortBy: contact.lastModifiedAt`, desc) | a contact created or modified (each new `lastModifiedAt` is a new event) |
+
+Each check reads the first 100 contacts sorted newest-first by the chosen field and emits the ones it has not seen; the first check records the current page and emits nothing.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `contact-search` with the connection's credentials.
+
+Vendor docs: https://apidocs.salesmate.io/ (verified 2026-11-09 as a published reference; the `contact.`-prefixed sort field names follow the action's own filter naming and the reference's example bodies, but the sort-field list there is printed unprefixed (`id`, `createdAt`, `lastModifiedAt`), so the prefix is **unverified** without a live request)

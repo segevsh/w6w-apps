@@ -52,6 +52,7 @@ for the API, `{"error":"invalid_client",…}` for the token endpoint), and the s
 Things worth knowing:
 
 - **The response schemas are not documented.** The Swagger document types almost every 200 as a
+- **Triggers** — 1 (poll)
   bare `string` or `array<string>`, so actions return what the vendor sent, parsed. Lists come back
   as `{items, count}` (a non-array body is kept under `raw`); single records as `{item}`;
   mutations as `{result}`.
@@ -67,6 +68,18 @@ Things worth knowing:
 - **Receivers are addressed by id or email**; emails are URL-encoded.
 - **`receiver-delete`'s `groupId`** is sent as the vendor's `group_id` query, which the spec leaves
   unexplained. Try a group-scoped delete on a test account first.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-group` — New Group | Poll | `group-list` | Each newly created group (receiver list) |
+
+Polled newest-first through `group-list` with `order=created DESC`, one of the action's documented sort statements (created/changed, ASC/DESC). Groups are a small collection; the response is not paged. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://rest.cleverreach.com/explorer/v3/) (verified 2026-11-09).
 
 ## Health checks
 

@@ -1,5 +1,7 @@
 # Ticket Tailor
 
+Triggers: not shipped — `issued-ticket-list` takes only cursor paging and no documented sort or created-after filter (https://developers.tickettailor.com/) (checked 2026-11-09).
+
 Manage event series and occurrences, ticket types, orders, holds, check-ins, discounts, vouchers,
 and issued tickets, on the **Ticket Tailor API v1**.
 

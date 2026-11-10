@@ -1,5 +1,15 @@
 # Booqable
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-list` sorted by `-created_at` | Each newly created customer |
+
+Vendor reference: https://developers.booqable.com/ (verified 2026-11-09).
+
 Manage Booqable rental orders, customers, products and stock.
 
 - **Categories** — crm, commerce

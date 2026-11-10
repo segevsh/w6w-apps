@@ -1,5 +1,15 @@
 # Hunter
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-lead` — New Lead | poll | `lead-list` | Each new saved lead |
+
+Hunter documents saved leads at https://hunter.io/api-documentation/v2 (verified 2026-11-09).
+
 Find and verify professional email addresses, enrich people and companies, and manage the
 Hunter Leads CRM, against `api.hunter.io/v2`.
 

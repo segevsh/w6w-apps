@@ -6,6 +6,7 @@ built for financial advisors — over Redtail's public REST API.
 - **Categories** — crm
 - **Auth methods** — database-credentials (custom: API Key + Username + Password, exchanged for a `user_key`)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `crm.redtailtechnology.com`
 - **Website** — https://www.redtailtechnology.com
 - **API docs** — https://documenter.getpostman.com/view/7873823/SVzxXyzn ("TWAPI Documentation")
@@ -219,3 +220,11 @@ Tests call every hook directly with a mocked `HookContext` (`tests/_helpers.ts`:
 unexpected request fails rather than hanging. `UNAUTHORIZED_401`, `FORBIDDEN_403` and
 `NO_CONTENT_204` in that file are the live/collection-measured responses reused everywhere those
 failure and success modes are asserted.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-contact` | poll | `contact-search` | Each contact when created or updated (`updated_since`) |
+
+`new-or-updated-contact` runs `contact-search` with the documented `updated_since` parameter set to the last check minus two minutes and de-duplicates on `id:updated_at`, so an edit is a new event. The documented search responses carry `meta: {total_records, total_pages}` (for example `{"total_records": 21, "total_pages": 1}` in the collection's "Contacts Search by category ids" example), so the action takes the same 1-indexed `page` the list endpoints take and returns `meta` when present; a check reads up to three pages (50 per page), the next page is kept in the trigger state and the cursor moves only after the last page, so a multi-page window drains. Caveat: the `page` parameter on `GET /contacts/search` is inferred from the list endpoints and is NOT documented by the vendor for search; if the endpoint ignores it, every page request returns page 1, the trigger de-duplicates it and reads no further than that single response, so a window larger than one search response (50 by default) would be truncated rather than drained. The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own update (`updated_at`) stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://documenter.getpostman.com/view/7873823/SVzxXyzn) (verified 2026-11-09).

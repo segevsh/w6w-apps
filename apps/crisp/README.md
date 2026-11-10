@@ -3,12 +3,20 @@
 Manage conversations, messages, and contact ("people") profiles on Crisp — customer messaging and
 support.
 
-Triggers: not shipped — `list-people` accepts `sort_field`, but Crisp documents it only as "available search field names, eg. nickname" (<https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles>, verified 2026-11-09); a creation-time sort is not documented, so a newest-first poll cannot be relied on.
+## Triggers
 
-- **Categories** — support, communication
-- **Auth methods** — basic (Website Token)
-- **Actions** — 12
-- **Egress allowlist** — `api.crisp.chat`
+- **Triggers** — 2 (poll)
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` | poll | `list-conversations` | Each conversation started since the last check (updated in the window AND `created_at` in the window; deduped by `session_id`) |
+| `new-or-updated-conversation` | poll | `list-conversations` | Each conversation created or with activity since the last check (`session_id` + `updated_at`) |
+
+`list-conversations` documents no sort, so the trigger uses Crisp's `filter_date_start` ("when to start relative to conversation update date"), which this change exposes on the action as the optional `Filter: updated since` parameter (additive; unset it changes nothing). Each check asks for conversations updated since the previous check minus 2 minutes and dedupes by `session_id:updated_at`; at most 3 pages of 50 per check.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://docs.crisp.chat/references/rest-api/v1/> (list conversations, verified 2026-11-09).
 
 ## Links
 

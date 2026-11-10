@@ -5,6 +5,7 @@ add and import subscribers, build and send campaigns, read campaign reporting, a
 transactional email.
 
 - **API host:** `https://api.createsend.com/api/v3.3`
+- **Triggers** — 1 (poll)
 - **Docs:** <https://www.campaignmonitor.com/api/v3-3/getting-started/>
 - **Auth:** HTTP Basic with an API key as the username, **or** OAuth 2.0
 - **Egress:** `api.createsend.com` only
@@ -312,6 +313,18 @@ client credentials there is not stated anywhere in the reference, so no custom `
 shipped and the host's standard refresh against `refreshUrl` is used.
 
 ---
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | Poll | `list-subscribers-get` | Each subscriber who becomes active on the chosen list |
+
+Polled newest-first through `list-subscribers-get` (state `active`) with `orderfield=date&orderdirection=desc`; `date` is when the subscriber entered the state, so a re-subscribed address is not repeated (de-duplicated by email address). `list-stats-get` is an analytics report and is not used. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://www.campaignmonitor.com/api/v3-3/lists/) (verified 2026-11-09).
 
 ## Health checks
 

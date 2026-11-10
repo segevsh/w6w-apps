@@ -20,3 +20,5 @@ so there is no `quota` check.
 ## Notes
 
 `assets/icon.svg` is a placeholder, not the TypeSafe brand mark.
+
+Triggers: not shipped — stateless typed-evaluation API: `evaluate` is a compute call and `list-models` returns the static model catalog, so there are no user records that change (https://docs.typesafe.ai)

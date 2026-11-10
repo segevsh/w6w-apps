@@ -7,11 +7,30 @@ platform — each customer's own tenant endpoint.
 - **Categories** — communication, support
 - **Auth methods** — api-token
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (every Wati tenant is its own host — see below)
 - **Website** — https://wati.io
 - **API docs** — https://docs.wati.io/ (ReadMe-hosted; the OpenAPI 3.0.4 document, `info.title:
   "WhatsApp chat API"`, `info.version: "v3"`, is embedded per-endpoint rather than published as a
   single downloadable file — extracted directly from the reference pages). Read 2026-09-05.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-template` | poll (5 min) | `templates-list` | each WhatsApp message template newly added to the account |
+
+`GET /api/ext/v3/messageTemplates` documents `page_number`/`page_size` (max 100) and a `total`, but
+no sort order or since filter, so the trigger reads every page and snapshot-diffs the collection
+(additions only; more than 5000 templates throws). The first check only records the templates.
+Contacts are not a trigger: `GET /contacts` pages with no documented order or filter and the
+collection is unbounded.
+
+Wati also offers webhook subscriptions (incoming messages, message status) created through its
+API; they are not wired here (webhook candidate recorded for a webhook node).
+
+Sources: https://docs.wati.io/reference/messagetemplate_getmessagetemplates.md,
+https://docs.wati.io/reference/introduction-1.md (verified 2026-11-09).
 
 ## Setup
 

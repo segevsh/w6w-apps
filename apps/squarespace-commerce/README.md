@@ -4,6 +4,7 @@ The merchant-side commerce APIs for **one Squarespace website**: its orders, inv
 store pages, customer profiles and transaction documents, on **`api.squarespace.com`**.
 
 - **Categories** — commerce, finance
+- **Triggers** — 2 (poll)
 - **Auth methods** — api-key
 - **Actions** — 21
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
@@ -151,3 +152,23 @@ Settings → Developer Tools → API Keys (tied to that one website), and OAuth,
 for registered Squarespace Extensions — not a fit for a workflow Connection. This app implements
 the API key, sent as `Authorization: Bearer <key>` (stamped only in `auth/api-key.ts`'s `sign`
 hook, never inside an action).
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-order` — New Order | poll | `list-orders` | Each order newly placed on the site. |
+| `new-or-updated-order` — New or Updated Order | poll | `list-orders` | Each order that is placed or modified (an edit is a new event). |
+
+Squarespace orders the list "by their modification date (modifiedOn)" and states no direction, so these
+are **since-filter** polls, not newest-first reads. Each check calls the `list-orders` request
+`GET /1.0/commerce/orders?modifiedAfter=<previous check − 2 min>&modifiedBefore=<now>` (the pair the
+vendor requires together) and reads up to three pages of 50, following the vendor's `nextPageCursor`
+(a cursor cannot be combined with the modified pair, so the window is opened with the pair and
+continued with the cursor). A window with more pages is resumed from the saved cursor on the next
+check; the cursor position advances only once the window is drained. `new-order` keeps orders whose
+`createdOn` falls inside the window; `new-or-updated-order` keys each event on `id:modifiedOn`. The
+first check reads nothing: it records the cursor and a floor (the time it ran), and an order stamped before the floor is never emitted.
+
+Vendor documentation: https://developers.squarespace.com/commerce-apis/retrieve-all-orders
+(verified 2026-11-09).

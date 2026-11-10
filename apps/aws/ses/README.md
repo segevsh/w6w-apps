@@ -7,10 +7,23 @@ signed locally with AWS Signature Version 4.
 - **Categories** — email, communication
 - **Auth methods** — aws-iam (custom: access key ID + secret + region, optional session token)
 - **Actions** — 23
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — 29 regional endpoints `email.<region>.amazonaws.com` (commercial regions + GovCloud US). The manifest's `network.allow` takes exact hosts or a leading `*.` only, so a mid-string wildcard (`email.*.amazonaws.com`) is not expressible; the hosts are listed by name, as the S3 app does. FIPS (`email-fips.*`) and China are not included.
 - **Website** — https://aws.amazon.com/ses/
 - **API docs** — https://docs.aws.amazon.com/ses/latest/APIReference-V2/Welcome.html
 - **Icon** — the AWS SES mark, verbatim from n8n's `nodes-base/nodes/Aws/SES/ses.svg`.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-suppression` | poll | `suppression-list` | Each address newly added to the suppression list. |
+| `new-template` | poll | `template-list` | Each newly created email template. |
+| `new-identity` | poll | `identity-list` | Each newly registered email address or domain identity. |
+
+`new-suppression` calls `ListSuppressedDestinations` with `StartDate` ("only includes addresses that were added to the list after a specific date", https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListSuppressedDestinations.html) set to the last check minus two minutes and de-duplicates by address. `new-template` and `new-identity` list the whole per-region collection (https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListEmailTemplates.html, https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListEmailIdentities.html; up to 5000 rows, larger is a failed check) and emit names not seen before. Verified 2026-11-10.
+
+No `new-or-updated-suppression`: the vendor documents `StartDate` as an added-after filter, not an updated-after filter.
 
 ## Auth — AWS IAM Access Key
 

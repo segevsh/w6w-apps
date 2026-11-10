@@ -1,5 +1,7 @@
 # 1Password
 
+Triggers: not shipped — no existing list fits: item-list, item-file-list and vault-list wrap Connect collections with no documented sort order or created-since filter, and audit-event-list / signin-attempt-list are `start_time` + cursor streams whose page order the Events API reference does not state (https://developer.1password.com/docs/events-api/reference/, verified 2026-11-09; Connect: https://developer.1password.com/docs/connect/api-reference/).
+
 Read and manage vault items through a self-hosted Connect server, and read the
 account's audit trail through the Events API.
 

@@ -1,15 +1,19 @@
 # Docusign
 
-Send agreements for signature with the **Docusign eSignature REST API v2.1**, track them, read
-what recipients filled in, and download the signed PDFs.
+## Triggers
 
-> **Auth:** OAuth 2.0 Authorization Code Grant · two methods — `oauth2` (production) and
-> `oauth2-demo` (developer sandbox)
-> **Categories:** documents, legal, productivity
-> **API:** `{base_uri}/restapi/v2.1/accounts/{accountId}` — the host is **per account** and
-> discovered at runtime (see below)
+- **Triggers** — 2 (poll)
 
----
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-envelope` | poll | `envelope-list` | Each newly created envelope (`order_by=created`, `order=desc`) |
+| `new-or-updated-envelope` | poll | `envelope-list` | Each envelope created or changed status since the last check (`order_by=status_changed`, id + `statusChangedDateTime`) |
+
+`envelope-list` is `Envelopes: listStatusChanges`; Docusign requires `from_date`, so the trigger looks back 30 days and reads the first 100 rows.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/liststatuschanges/> (verified 2026-11-09).
 
 ## The thing to get right first: there is no single Docusign API host
 

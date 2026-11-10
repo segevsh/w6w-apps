@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/monday",
-  "version": "0.1.1",
-  "description": "Boards, groups, items and columns on monday.com via its GraphQL API.",
+  "version": "0.2.0",
+  "description": "Boards, groups, items and columns on monday.com via its GraphQL API. Two triggers start a workflow on a new item or a changed column value on a board.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developer.monday.com/api-reference/docs",
       "https://developer.monday.com/api-reference/docs/complexity"
     ],
-    "longDescription": "monday.com organizes work as boards of items moving through groups and columns, and this app puts that structure under workflow control: create and read boards, groups and items, and change an item's column values or move it between groups as work progresses.\n\nBecause monday's entire API is GraphQL rather than a set of REST endpoints, every action here is really a purpose-built query or mutation against the one endpoint monday exposes, so a workflow just supplies the ids and values that matter and never has to construct GraphQL itself. Column values are the part most likely to trip up a hand-built integration, since monday expects them as a specific encoded structure rather than plain values — this app validates and encodes them, so a workflow can pass a straightforward value and trust it lands correctly.\n\nArchiving a board and deleting a group are included for cleanup, and looking up a board's own columns is there specifically to discover the ids a write needs before making one. This app stays at the level of boards and their contents — account and workspace administration aren't part of it.",
+    "longDescription": "monday.com organizes work as boards of items moving through groups and columns, and this app puts that structure under workflow control: create and read boards, groups and items, and change an item's column values or move it between groups as work progresses.\n\nBecause monday's entire API is GraphQL rather than a set of REST endpoints, every action here is really a purpose-built query or mutation against the one endpoint monday exposes, so a workflow just supplies the ids and values that matter and never has to construct GraphQL itself. Column values are the part most likely to trip up a hand-built integration, since monday expects them as a specific encoded structure rather than plain values — this app validates and encodes them, so a workflow can pass a straightforward value and trust it lands correctly.\n\nArchiving a board and deleting a group are included for cleanup, and looking up a board's own columns is there specifically to discover the ids a write needs before making one. This app stays at the level of boards and their contents — account and workspace administration aren't part of it.\n\nTwo triggers start a workflow from a board: Item Created and Column Value Changed. Subscribing registers a monday webhook on the board and answers monday's URL-verification challenge; unsubscribing removes it. monday does not sign these webhooks, so the callback URL of the subscription is the secret.",
     "categories": [
       "project-management",
       "productivity"
@@ -34,7 +34,12 @@
         "api.monday.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

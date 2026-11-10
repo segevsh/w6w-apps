@@ -1,6 +1,14 @@
 # WorkOS
 
-Triggers: not shipped — the organization action follows cursors internally rather than exposing one bounded newest-first page (https://workos.com/docs/reference/organization/list-organizations).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | Poll | `event-list` | Each new WorkOS event |
+
+`GET /events` returns events oldest first and pages forward with `after` ("Events are returned oldest first; use `after` to page forward"), so the trigger keeps the last event id it read and asks for events `after` it; the first read starts at `range_start` = the moment the first check ran, which reads nothing itself. A window over 5 pages (100 each) is drained across successive checks. Source: https://workos.com/docs/reference/events (verified 2026-11-09).
 
 Manage the enterprise features a B2B product has to ship before an enterprise
 will buy it: SSO, SCIM user provisioning, audit logs, and the Admin Portal that

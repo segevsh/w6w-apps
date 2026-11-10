@@ -103,6 +103,7 @@ import eventExport from "./actions/event-export.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCohort from "./triggers/new-cohort.ts";
 
 export default {
   actions: [
@@ -125,6 +126,7 @@ export default {
     // getting it all out
     eventExport,
   ],
+  triggers: [newCohort],
   auth: [serviceAccount],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

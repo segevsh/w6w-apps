@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/okta",
-  "version": "0.1.4",
-  "description": "Manage Okta users and groups — identity lifecycle for an org.",
+  "version": "0.2.0",
+  "description": "Manage Okta users and groups — identity lifecycle for an org, and trigger workflows on new and updated users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developer.okta.com/docs/reference/",
       "https://developer.okta.com/docs/reference/core-okta-api/"
     ],
-    "longDescription": "Okta manages the identity lifecycle for an org — users and the groups they belong to — against Okta's own management API for either a production org or a sandbox. Users can be listed by name, email prefix or a SCIM-style filter, created, partially updated, deactivated and reactivated, and a user's full set of assigned apps — direct or via group membership — can be read back.\n\nDeactivation unwinds every app assignment and group membership for a user and cannot be undone; reactivation is not its inverse, it restarts activation for a user stuck mid-provisioning. Groups can be listed, read, and have members added or removed, for Okta-native groups — membership managed by an app import or a built-in group isn't something this app changes.\n\nEvery request targets the org's own domain, collected once when the connection is created, since an Okta org is its own host and every action needs to know which one it's talking to.",
+    "longDescription": "Okta manages the identity lifecycle for an org — users and the groups they belong to — against Okta's own management API for either a production org or a sandbox. Users can be listed by name, email prefix or a SCIM-style filter, created, partially updated, deactivated and reactivated, and a user's full set of assigned apps — direct or via group membership — can be read back.\n\nDeactivation unwinds every app assignment and group membership for a user and cannot be undone; reactivation is not its inverse, it restarts activation for a user stuck mid-provisioning. Groups can be listed, read, and have members added or removed, for Okta-native groups — membership managed by an app import or a built-in group isn't something this app changes.\n\nEvery request targets the org's own domain, collected once when the connection is created, since an Okta org is its own host and every action needs to know which one it's talking to.\n\nThe New User and New or Updated User poll triggers reuse List Users with Okta's documented search over the created and lastUpdated properties, a thirty-minute overlap (search is eventually consistent) and ID deduplication.",
     "categories": [
       "security"
     ],
@@ -40,7 +40,12 @@
         "*.oktapreview.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

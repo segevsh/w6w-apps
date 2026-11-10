@@ -15,6 +15,8 @@ import entryNotificationsSend from "./actions/entry-notifications-send.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newEntry from "./triggers/new-entry.ts";
+import newOrUpdatedEntry from "./triggers/new-or-updated-entry.ts";
 
 export default {
   actions: [
@@ -33,4 +35,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota, site],
+  triggers: [newEntry, newOrUpdatedEntry],
 } satisfies AppDefinition;

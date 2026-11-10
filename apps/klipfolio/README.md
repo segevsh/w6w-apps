@@ -5,6 +5,7 @@ Manage Klipfolio data sources, Klips, dashboards, users, clients and groups, and
 - **App id:** `io.w6w.klipfolio` · **Category:** analytics
 - **API:** `https://app.klipfolio.com/api/1.0/` (reference: https://apidocs.klipfolio.com/). The reference is hand-written readme.io pages, not an OpenAPI document; every path here was read from it.
 - **Auth:** `api-key` — the key goes in the `kf-api-key` header (My Profile → API key, or Users for an admin with `user.manage`). Requests act as the key's owner with that user's role permissions.
+- **Triggers** — 2 (poll)
 - **Icon:** `assets/icon.png`, the 512×512 PNG from https://www.klipfolio.com/favicon.png, verbatim.
 
 ## Actions (42)
@@ -41,3 +42,14 @@ Lists take `limit` (1–100, default 25; over 100 is a 400) and `offset`, and re
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-dashboard` | poll | `dashboard-list` | Each dashboard newly created in the account (snapshot diff) |
+| `new-data-source` | poll | `datasource-list` | Each data source newly created in the account (snapshot diff) |
+
+`GET /tabs` and `GET /datasources` list the account's dashboards and data sources, `limit`/`offset` paged with a `total`; the trigger reads every page (up to the kit's 5,000-row cap, which fails the check loudly rather than silently truncating) and a new id is a new record.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://apidocs.klipfolio.com/ (verified 2026-11-09).

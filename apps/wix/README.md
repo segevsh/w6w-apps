@@ -1,5 +1,15 @@
 # Wix
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact |
+
+Polled newest-first by `createdDate` through `list-contacts`. Source: https://dev.wix.com/docs/sdk/backend-modules/crm/contacts/list-contacts (verified 2026-11-09).
+
 Manage a [Wix](https://www.wix.com) site from a workflow: its CMS collections and data items, its
 contacts and labels, its Stores catalog, and its eCommerce orders — over the Wix REST API at
 `https://www.wixapis.com`.

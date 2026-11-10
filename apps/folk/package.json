@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/folk",
-  "version": "0.1.1",
-  "description": "Manage folk CRM groups, people and companies via the folk External API.",
+  "version": "0.2.0",
+  "description": "Manage folk CRM groups, people and companies via the folk External API, and trigger workflows when a new group is added.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://folk-external-api.readme.io/reference/getuser"
     ],
-    "longDescription": "folk is a CRM built around Groups — contact lists of People and Companies, each carrying its own set of custom fields. This app covers the vendor's public 'External API' in full: listing a network's groups and creating/updating/finding people and companies within one, reading a group's available custom fields, listing the folk teammates on a network, and checking that a key can reach a given network.\n\nGood for syncing leads or portfolio contacts into a folk group from a form or another CRM, keeping a company record current as deal data changes elsewhere, or looking a contact up by name/email before deciding whether to create a duplicate.",
+    "longDescription": "folk is a CRM built around Groups — contact lists of People and Companies, each carrying its own set of custom fields. This app covers the vendor's public 'External API' in full: listing a network's groups and creating/updating/finding people and companies within one, reading a group's available custom fields, listing the folk teammates on a network, and checking that a key can reach a given network.\n\nGood for syncing leads or portfolio contacts into a folk group from a form or another CRM, keeping a company record current as deal data changes elsewhere, looking a contact up by name/email before deciding whether to create a duplicate, or triggering a workflow when a group is added.",
     "categories": [
       "crm"
     ],
@@ -38,7 +38,12 @@
         "api.folk.app"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

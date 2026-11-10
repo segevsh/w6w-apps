@@ -29,6 +29,7 @@
  * schema isn't known at publish time.
  */
 import type { AppDefinition } from "@w6w/types";
+import newRow from "./triggers/new-row.ts";
 import apiKey from "./auth/api-key.ts";
 
 import rowsList from "./actions/rows-list.ts";
@@ -54,4 +55,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, reachable],
+  triggers: [newRow],
 } satisfies AppDefinition;

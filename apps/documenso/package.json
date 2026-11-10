@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/documenso",
-  "version": "0.1.0",
-  "description": "Send Documenso envelopes for signature, manage their recipients and fields, and read the audit trail.",
+  "version": "0.2.0",
+  "description": "Send Documenso envelopes for signature, manage their recipients and fields, and read the audit trail, and trigger workflows on new document.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.documenso.com/developers"
     ],
-    "longDescription": "Documenso sends documents out for electronic signature, and this app manages the whole lifecycle of an envelope — the unit that holds the documents, recipients, and signature fields together. A template can be turned into a real envelope with its placeholders filled in, sent to recipients, cancelled if something is wrong, or duplicated into a fresh draft; once distributed, its recipients and fields are fixed, so nothing changes what a signer already sees.\n\nBeyond sending, it tracks the parts of a signature workflow that are easy to get wrong: reading a specific recipient's own signing status rather than waiting for everyone to finish, re-sending only to whoever hasn't signed yet, and pulling the audit trail — who opened, viewed, and signed, and when — which is the evidence a signed document actually depends on. Signed documents and their signing certificates can both be downloaded as short-lived links, and folders can be created to keep documents and templates organized.",
+    "longDescription": "Documenso sends documents out for electronic signature, and this app manages the whole lifecycle of an envelope — the unit that holds the documents, recipients, and signature fields together. A template can be turned into a real envelope with its placeholders filled in, sent to recipients, cancelled if something is wrong, or duplicated into a fresh draft; once distributed, its recipients and fields are fixed, so nothing changes what a signer already sees.\n\nBeyond sending, it tracks the parts of a signature workflow that are easy to get wrong: reading a specific recipient's own signing status rather than waiting for everyone to finish, re-sending only to whoever hasn't signed yet, and pulling the audit trail — who opened, viewed, and signed, and when — which is the evidence a signed document actually depends on. Signed documents and their signing certificates can both be downloaded as short-lived links, and folders can be created to keep documents and templates organized. Poll triggers start workflows on: new document.",
     "categories": [
       "legal",
       "documents",
@@ -41,7 +41,12 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

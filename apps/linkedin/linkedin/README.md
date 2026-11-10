@@ -152,3 +152,17 @@ Researched and endpoint-verified 2026-07-31 against LinkedIn's own developer doc
 (`learn.microsoft.com/en-us/linkedin/...`). API versions and status surfaces move — LinkedIn
 deprecates each `LinkedIn-Version` roughly 12 months after release, so bump `API_VERSION` in
 `lib/client.ts` periodically.
+
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Post (`new-post`) | poll | `list-posts-by-author` — by creation time descending (`sortBy=CREATED`) | each newly created post |
+| New or Updated Post (`new-or-updated-post`) | poll | `list-posts-by-author` — by last-modified time descending (`sortBy=LAST_MODIFIED`) | each post that is new or edited (one event per edit) |
+
+Both triggers poll every 5 minutes, read one page of 100 from the app's existing `list-posts-by-author` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api (verified 2026-11-09). Its "Find Posts by Authors" section documents `sortBy` ("LAST_MODIFIED or CREATED", sorted in descending order) and the `lastModifiedAt` field. Listing posts needs `r_member_social` (approved partners) or `r_organization_social`, as the existing action notes.

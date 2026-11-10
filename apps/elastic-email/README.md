@@ -5,6 +5,8 @@ templates, campaigns, suppressions and statistics. Verified 2026-10-06 against t
 OpenAPI 3.0.3 document (`https://elasticemail.com/api/redoc-spec/api-v4`, 74 paths). This is
 **API v4**, host `api.elasticemail.com`, prefix `/v4` — not the legacy v2 API.
 
+- **Triggers** — 7 (1 poll, 6 webhook)
+
 ## Auth
 
 One method, **`api-key`**: the `X-ElasticEmail-ApiKey` header (the spec's `apikey` scheme), set only
@@ -70,3 +72,52 @@ measured live without a key.
 (5,920 bytes) is actually a 270x270 RGBA PNG, embedded unmodified as a base64 `<image>` (verified by
 decoding it back and comparing md5 `b64a23a96eb09e7823dea2481513781b`). `/favicon.svg` and
 `/apple-touch-icon.png` answer an HTML shell, not an image. Nothing was redrawn.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event or wrapped action | what the run gets |
+|---|---|---|---|
+| `new-list` — New List | poll | `list-list` | each contact list newly created in the account |
+| `email-sent` — Email Sent | webhook (API-registered) | notification `Sent` | the transaction id, recipient, sender, subject, channel and time |
+| `email-opened` — Email Opened | webhook (API-registered) | notification `Opened` | the same, plus the recipient's IP address and country |
+| `email-clicked` — Email Clicked | webhook (API-registered) | notification `Clicked` | the same, plus the clicked link |
+| `email-unsubscribed` — Email Unsubscribed | webhook (API-registered) | notification `Unsubscribed` | the transaction id, recipient, subject, channel and time |
+| `email-error` — Email Bounced or Failed | webhook (API-registered) | notification `Error` (bounces included) | the same, plus the bounce category |
+| `abuse-report` — Abuse Report | webhook (API-registered) | notification `AbuseReport` (complaints included) | the transaction id, recipient, subject, channel and time |
+
+### New List (poll)
+
+The v4 `GET /lists` "returns all your existing lists". Each check asks for up to 5000, diffs the
+answer against the previous check and emits only additions (an answer that fills the request fails
+the check with an error naming the cap). The first check only records what exists. Contacts,
+campaigns, templates and suppressions page by `limit`/`offset` with no documented created-since filter
+or newest-first order, so they have no poll trigger.
+
+### Webhook triggers
+
+**Setup.** Nothing to paste. Subscribing runs `POST /v4/webhook` with the host's callback URL, the one
+`NotificationFor…` flag the trigger is for, `EnableSigning: true` and `DeliveryMethod: "PostJson"`;
+Elastic Email answers with the webhook's `WebhookID` and its `SigningSecret` once, and both are kept in
+the subscription's state. Unsubscribing runs `DELETE /v4/webhook/{id}` (a webhook already gone counts as
+deleted). The API key needs the `ModifyWebNotifications` access level, and Elastic Email offers
+notification webhooks on its PRO plans only. When a webhook is created Elastic Email sends one sample
+`Opened` notification for `test@test.com` to the URL (signed with a secret the host does not hold yet);
+the host refuses it and records it as one failed event on the subscription; it never starts a run.
+
+**Trust model.** Elastic Email signs a webhook created with signing. Each delivery carries
+`X-ElasticEmail-Timestamp` (Unix seconds), `X-ElasticEmail-Signature` (a comma-separated list of
+`v1=<hex>` entries) and `X-ElasticEmail-Webhook-Id`. The signature is the HMAC-SHA256, keyed by the
+subscription's secret, of `<timestamp>\nPOST\n<request target>\n<raw body>`, where the request target is
+the path and query of the callback URL the webhook was registered with. The app verifies it before it
+parses the body (constant-time compare, any one `v1=` entry may match) and refuses a timestamp more
+than five minutes from its clock. A missing or wrong signature, a stale timestamp, an absent raw body
+or an unset secret refuses the delivery (one failed row, no run). If Elastic Email ever returns a
+webhook without a secret, the app deletes it and refuses to subscribe. Elastic Email retries a
+rejected delivery for up to 24 hours, re-signed each time, so the five-minute window never blocks a
+retry. Because the signature covers the request target, the public URL the host registered must be the
+one deliveries arrive on (a proxy that rewrites the path breaks verification).
+
+Docs (verified 2026-11-10):
+https://help.elasticemail.com/en/articles/17578018-webhook-request-signing-and-json-delivery ,
+https://help.elasticemail.com/en/articles/4804685-notification-settings ,
+https://elasticemail.com/api/redoc-spec/api-v4

@@ -54,6 +54,8 @@ import dataSourceSearch from "./actions/data-source-search.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newSpace from "./triggers/new-space.ts";
 
 export default {
   actions: [
@@ -76,4 +78,5 @@ export default {
   // workspace-scoped key is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newAgent, newSpace],
 } satisfies AppDefinition;

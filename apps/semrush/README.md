@@ -1,5 +1,7 @@
 # SEMrush
 
+Triggers: not shipped — existing endpoints are analytics and report queries, not changing account records (https://developer.semrush.com/api/, checked 2026-11-09)
+
 Read SEMrush backlink, referring-domain, anchor, competitor and keyword reports, and check the
 account's remaining API units, on the current **v4 Standard API**.
 

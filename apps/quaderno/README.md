@@ -71,3 +71,11 @@ attachments on documents are not exposed.
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` | poll | `invoice-list` | Each newly created invoice |
+
+The invoice list is newest first. Vendor API reference: https://developers.quaderno.io/ (verified 2026-11-09).

@@ -55,6 +55,8 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import webhookList from "./actions/webhook-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAccount from "./triggers/new-account.ts";
+import newOrUpdatedAccount from "./triggers/new-or-updated-account.ts";
 
 export default {
   actions: [
@@ -101,4 +103,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newAccount, newOrUpdatedAccount],
 } satisfies AppDefinition;

@@ -11,7 +11,7 @@
  *     stable version on every call so response shapes stay predictable; the auth
  *     `test` and `quota` probes send it too.
  *
- * Deliberately absent: webhook triggers (a Trigger, not an Action) and the
+ * Deliberately absent: the
  * legacy `/users` + `/leads` endpoints the old n8n node used — both are folded
  * into `/contacts` on the modern API.
  */
@@ -36,6 +36,8 @@ import tagGetMany from "./actions/tag-get-many.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import conversationCreated from "./triggers/conversation-created.ts";
+import contactCreated from "./triggers/contact-created.ts";
 
 export default {
   actions: [
@@ -59,6 +61,7 @@ export default {
     // tag
     tagGetMany,
   ],
+  triggers: [conversationCreated, contactCreated],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

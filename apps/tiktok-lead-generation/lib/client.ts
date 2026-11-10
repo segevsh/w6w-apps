@@ -24,7 +24,12 @@ export interface TikTokEnvelope<T = unknown> {
 }
 
 export class TikTokApiError extends Error {
-  constructor(public readonly code: number, message: string, public readonly requestId?: string) {
+  constructor(
+    public readonly code: number,
+    message: string,
+    public readonly requestId?: string,
+    public readonly status?: number,
+  ) {
     super(message);
     this.name = "TikTokApiError";
   }
@@ -37,6 +42,8 @@ export interface RequestOptions {
     string | number | boolean | undefined | null | Record<string, unknown> | unknown[]
   >;
   headers?: Record<string, string>;
+  /** JSON request body (POST endpoints such as `/subscription/subscribe/`). */
+  body?: Record<string, unknown>;
 }
 
 /**
@@ -62,7 +69,12 @@ export class TikTokClient {
 
     const res = await this.ctx.fetch(url.toString(), {
       method: options.method ?? "GET",
-      headers: { accept: "application/json", ...options.headers },
+      headers: {
+        accept: "application/json",
+        ...(options.body === undefined ? {} : { "content-type": "application/json" }),
+        ...options.headers,
+      },
+      ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
     });
 
     let body: TikTokEnvelope<T>;
@@ -73,7 +85,7 @@ export class TikTokClient {
     }
 
     if (body.code !== 0) {
-      throw new TikTokApiError(body.code, body.message, body.request_id);
+      throw new TikTokApiError(body.code, body.message, body.request_id, res.status);
     }
     return body.data;
   }

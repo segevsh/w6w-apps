@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/huggingface",
-  "version": "0.1.1",
-  "description": "Search the Hugging Face Hub for models, datasets and Spaces, read repository files and dataset rows, manage repositories, and run chat inference through the router.",
+  "version": "0.2.0",
+  "description": "Search the Hugging Face Hub for models, datasets and Spaces, read repository files and dataset rows, manage repositories, and run chat inference through the router, with new-inference-model triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -42,7 +42,8 @@
         "status.huggingface.co"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

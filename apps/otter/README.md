@@ -6,6 +6,7 @@ meeting audio, and import calls from a URL — over Otter's Enterprise Public AP
 - **Categories** — ai, productivity, video
 - **Auth methods** — api-key (bearer)
 - **Actions** — 7
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.otter.ai`
 - **Website** — https://otter.ai
 - **API docs** — https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API
@@ -74,6 +75,16 @@ Notes worth knowing before wiring a workflow:
 - Anything not named in the article body read above. The docs cover exactly channels,
   conversations (including audio and the file-import write), and workspace — nothing was inferred
   or guessed beyond that surface.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` | poll | `conversation-list` (`GET /conversations`, most recent first) | Each newly created Otter conversation. |
+
+The poll seeds without emitting existing conversations, then deduplicates their stable `id` values.
+Otter documents the conversation list as most recent first. The trigger requests `limit=20`, the documented maximum for that endpoint. Vendor API and webhook documentation:
+https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API (verified 2026-11-09).
 
 ## Health check
 

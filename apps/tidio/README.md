@@ -1,5 +1,7 @@
 # Tidio
 
+Triggers: not shipped — `GET /tickets` takes only a cursor and documents no sort or filter, so its order is not guaranteed (https://developers.tidio.com/reference/get_tickets.md) (checked 2026-11-09).
+
 Drive **Tidio** from a workflow: contacts and their custom properties, conversations, tickets,
 operators, departments and the Lyro AI Agent's Q&A knowledge, over the OpenAPI at `api.tidio.com`.
 

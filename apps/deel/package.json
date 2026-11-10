@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/deel",
-  "version": "0.1.0",
-  "description": "Manage Deel contracts, people, time off, timesheets and invoice adjustments.",
+  "version": "0.2.0",
+  "description": "Manage Deel contracts, people, time off, timesheets and invoice adjustments, with a New Contract trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.deel.com/openapi.json"
     ],
-    "longDescription": "Deel manages contracts, people, time off, timesheets and invoice adjustments for a global workforce, exposing what an HR or finance workflow needs without going near payroll or employment-record changes. Contracts can be listed, read and terminated; workers' profiles, personal details and department assignments can be read and updated; time off can be requested, approved or cancelled against a worker's actual leave balance; and timesheets and invoice adjustments — bonuses, expenses, deductions — can be logged against a contract.\n\nMoney-moving actions are marked as non-idempotent on purpose, since retrying a milestone, adjustment or timesheet submission pays twice rather than correcting a mistake. Time-off requests can either enter Deel's own approval chain or be created directly in a given status, for a workflow that has already collected approval elsewhere.\n\nWebhooks can be registered and listed so a workflow can react to Deel's own events rather than polling. Employment-record administration — EOR and global payroll worker data, the applicant tracking system, immigration and compliance screening — is deliberately out of scope; those are separate products with their own legal weight and belong to their own integrations.",
+    "longDescription": "Deel manages contracts, people, time off, timesheets and invoice adjustments for a global workforce, exposing what an HR or finance workflow needs without going near payroll or employment-record changes. Contracts can be listed, read and terminated; workers' profiles, personal details and department assignments can be read and updated; time off can be requested, approved or cancelled against a worker's actual leave balance; and timesheets and invoice adjustments — bonuses, expenses, deductions — can be logged against a contract.\n\nMoney-moving actions are marked as non-idempotent on purpose, since retrying a milestone, adjustment or timesheet submission pays twice rather than correcting a mistake. Time-off requests can either enter Deel's own approval chain or be created directly in a given status, for a workflow that has already collected approval elsewhere.\n\nWebhooks can be registered and listed so a workflow can react to Deel's own events rather than polling. Employment-record administration — EOR and global payroll worker data, the applicant tracking system, immigration and compliance screening — is deliberately out of scope; those are separate products with their own legal weight and belong to their own integrations. Polling triggers: a New Contract trigger.",
     "categories": [
       "hr",
       "finance"
@@ -34,7 +34,8 @@
         "api-staging.letsdeel.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

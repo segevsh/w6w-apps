@@ -149,3 +149,5 @@ their Netlify-hosted mirror since `segment.com` itself returns 403 to automated 
 checked against n8n's Segment node/credentials (`identify`, `track`, `page`, `group` — n8n does not
 implement `alias` or `batch`, both added here to complete the Tracking API's real verb set per this
 app's spec). Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+Triggers: not shipped — Segment's HTTP Tracking API is write-only and has no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/)

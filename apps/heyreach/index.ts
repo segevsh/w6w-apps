@@ -30,6 +30,7 @@ import apiKey from "./auth/api-key.ts";
 import api from "./health/api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newLead from "./triggers/new-lead.ts";
 
 import checkApiKey from "./actions/check-api-key.ts";
 
@@ -114,6 +115,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [api, service, quota],
+  triggers: [newLead],
 };
 
 export default app;

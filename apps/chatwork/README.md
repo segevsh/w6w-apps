@@ -6,6 +6,7 @@ team chat platform (chatwork.com), over the **Chatwork API v2**.
 - **Categories** — communication, productivity
 - **Auth methods** — api-token
 - **Actions** — 32 (every operation the vendor's OpenAPI document declares)
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (`quota`) + ~~`service`~~ (declared absence) + the derived `auth:api-token`
 - **Egress allowlist** — `api.chatwork.com`
 - **Website** — https://go.chatwork.com/
@@ -91,6 +92,18 @@ hand-tracing a vector that doesn't exist (see `apollo`, `blandai`, `dialpad`, `g
 It is not run through `_tools/icon-normalize.ts`, matching those apps: that tool re-frames genuine
 vector artwork onto the pack's shared 100×100 canvas, and a wrapped raster already fills its own
 square.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `room-message-list` | Each new message in the chosen chat |
+
+Polled through `room-message-list` with `force=1`, which returns the latest messages (up to 100) regardless of this connection's read marker. The list is oldest-first, so the trigger re-orders by `send_time` descending; a burst of more than 100 messages between checks loses the oldest. Edits (`update_time`) are not tracked. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://developer.chatwork.com/reference/get-rooms-room_id-messages) (verified 2026-11-09).
 
 ## Layout
 

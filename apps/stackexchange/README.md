@@ -6,6 +6,7 @@ the other communities on the Stack Exchange network, over the public **Stack Exc
 - **Categories** — developer-tools, search
 - **Auth methods** — api-key (application `key`, sent as a query parameter)
 - **Actions** — 39, all read-only
+- **Triggers** — 2 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /info`), `quota` (signed `GET /info`, reads `quota_remaining` / `quota_max`) + the derived
   `auth:api-key`
@@ -95,3 +96,12 @@ building: pass a filter name or id instead); `/revisions` and `/posts/{ids}/revi
 - `quota` — signed `GET /info?site=stackoverflow`, `quota_remaining` / `quota_max`: `degraded` at
   90% used, `down` at zero. No reset instant is documented, so none is reported.
 - `auth:api-key` (derived) — the same `/info` read with the key; the verdict is taken from the body.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-answer` — New Answer | Poll (newest first) | `user-answer-list` | Each newly created answer by the chosen users |
+| `new-or-updated-answer` — New or Updated Answer | Poll (most recent activity first) | `user-answer-list` | Each answer that is new or has new activity |
+
+Polled through the `user-answer-list` action with `sort=creation&order=desc` (new) and `sort=activity&order=desc` (new or updated; the id includes `last_activity_date`, so a later edit is a new event). The first check records what exists without firing; later checks emit only unseen items. Source: the API reference states "The sorts accepted by this method operate on the following fields of the answer object: activity – last_activity_date, creation – creation_date, votes – score" ([answers-on-users](https://api.stackexchange.com/docs/answers-on-users), verified 2026-11-09).

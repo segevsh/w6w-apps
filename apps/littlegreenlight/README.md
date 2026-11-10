@@ -7,6 +7,7 @@ for small and mid-size nonprofits — over LGL's own **REST API v1**.
 - **Categories** — crm, finance
 - **Auth methods** — bearer-token
 - **Actions** — 12 (2 `search`, 7 `read`, 3 `perform`)
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`, both declared `unavailable`, `informational`) + the
   derived `auth:bearer-token`
 - **Egress allowlist** — `api.littlegreenlight.com`
@@ -178,3 +179,14 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests
 deno task validate       # @w6w/validator conformance audit
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-constituent` — New Constituent | Poll | `constituent-search` | Each newly created constituent |
+| `new-or-updated-constituent` — New or Updated Constituent | Poll | `constituent-search` | Each constituent that is new or was edited since the last check |
+
+Both triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:updated_at` (the vendor response carries `created_at`/`updated_at`; `date_updated` is only the sort key), so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor constituents API](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/constituents.json) (verified 2026-11-10).

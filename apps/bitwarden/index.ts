@@ -17,6 +17,7 @@ import collectionGet from "./actions/collection-get.ts";
 import collectionUpdate from "./actions/collection-update.ts";
 import collectionDelete from "./actions/collection-delete.ts";
 import eventList from "./actions/event-list.ts";
+import newEvent from "./triggers/new-event.ts";
 import groupList from "./actions/group-list.ts";
 import groupGet from "./actions/group-get.ts";
 import groupCreate from "./actions/group-create.ts";
@@ -76,6 +77,7 @@ const app: AppDefinition = {
   ],
   auth: [clientCredentials],
   healthChecks: [service],
+  triggers: [newEvent],
 };
 
 export default app;

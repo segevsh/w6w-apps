@@ -20,6 +20,7 @@ import updateEmployees from "./actions/update-employees.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newPolicy from "./triggers/new-policy.ts";
 
 /**
  * Expensify — the documented Integration Server job types, built from
@@ -51,4 +52,5 @@ export default {
   ],
   auth: [partner],
   healthChecks: [service, api, quota],
+  triggers: [newPolicy],
 } satisfies AppDefinition;

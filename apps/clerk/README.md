@@ -6,6 +6,7 @@ sessions, and sign-in tokens — through the **Backend API**.
 - **Categories** — security, developer-tools
 - **Auth methods** — secret-key
 - **Actions** — 30
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `instance`) + the derived `auth:secret-key`
 - **Egress allowlist** — `api.clerk.com` (the `service` check adds `status.clerk.com` to its own
   hook allowlist, never to the app's)
@@ -101,6 +102,19 @@ Clerk's spec documents `POST /sessions` (create a session directly), but its own
 *"This operation is intended only for use in testing, and is not available for production
 instances,"* pointing instead at **Sign-in Tokens** for a backend-issued session. This app exposes
 `sign-in-token-create`/`sign-in-token-revoke` and does **not** expose session creation at all.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | Poll | `user-list` | Each newly created user |
+| `new-or-updated-user` — New or Updated User | Poll | `user-list` | Each user created or changed (id + updated_at) |
+
+Polled newest-first through `user-list` with its (new, optional) `orderBy` input sent as `order_by=-created_at` / `-updated_at`; Clerk documents `order_by` with `+`/`-` direction prefixes over `created_at` and `updated_at`. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://clerk.com/docs/reference/backend-api/tag/Users) (verified 2026-11-09).
 
 ## Health checks
 

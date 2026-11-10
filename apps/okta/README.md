@@ -1,5 +1,16 @@
 # Okta
 
+- **Triggers** — 2 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | poll | `user-list`, `search=created gt "<cursor − 30 min>"` | Each newly created user |
+| `new-or-updated-user` — New or Updated User | poll | `user-list`, `search=lastUpdated gt "<cursor − 30 min>"` | Each user that is new or changed (ID plus `lastUpdated` is the event identity) |
+
+Both triggers call the existing List Users action with Okta's documented SCIM `search` over the top-level `created` and `lastUpdated` properties (limit 100, one page). Okta states the `search` results are "sourced from an eventually consistent datasource and may not reflect the latest information", so each check re-reads a thirty-minute overlap and deduplicates by ID; a user that becomes visible later than that window is missed. Search also returns `DEPROVISIONED` users. Groups are not polled: `group-list` exposes only `q`. Verified 2026-11-10 against the Okta Management OpenAPI `listUsers` operation (https://github.com/okta/okta-management-openapi-spec) and https://developer.okta.com/docs/reference/api/users/.
+
 Manage Okta users and groups — identity lifecycle for an org.
 
 - **Categories** — security
@@ -119,3 +130,7 @@ forever.
 
 Researched and endpoint-verified 2026-07-31 against Okta's own developer documentation and the
 n8n `Okta` node. Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+## Trigger floor assumption
+
+The new-user and new-or-updated-user triggers continue a large window with `sortBy`/`sortOrder=desc` on the search endpoint and a `<field> le` filter; this is from Okta's docs and has not been verified against a live org.

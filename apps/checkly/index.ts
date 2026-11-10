@@ -89,6 +89,7 @@ import accountEntitlementsGet from "./actions/account-entitlements-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCheckResult from "./triggers/new-check-result.ts";
 
 export default {
   actions: [
@@ -127,4 +128,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCheckResult],
 } satisfies AppDefinition;

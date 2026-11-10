@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/linkedin-ads",
-  "version": "0.1.0",
-  "description": "Manage LinkedIn ad accounts, campaign groups, campaigns, creatives and Matched Audiences segments, and read performance analytics, via the versioned LinkedIn Marketing (Ads) API.",
+  "version": "0.2.0",
+  "description": "Manage LinkedIn ad accounts, campaigns, creatives and audiences through the Marketing API. Includes a new ad account poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-campaigns",
       "https://learn.microsoft.com/en-us/linkedin/marketing/"
     ],
-    "longDescription": "LinkedIn's Marketing (Ads) API is how a business manages advertising on LinkedIn programmatically, and this app covers the campaign-management side of it: Ad Accounts, Campaign Groups, Campaigns and Creatives, plus performance analytics and Matched Audiences segments.\n\nIt handles the day-to-day campaign lifecycle — creating and updating campaign groups, campaigns and creatives, and pausing or retiring one when it's done — alongside analytics reads that pull performance metrics by date range and up to three pivots at once, by campaign, by creative, by demographic, and more. Matched Audiences actions create and manage the audience segments a campaign can target, separately from the audience-population step, which is a higher-volume upload flow of its own.\n\nAccess to LinkedIn's Advertising API is approval-gated by LinkedIn directly, and Matched Audiences segments require a second, separate approval on top of that — this app authenticates each surface with its own credential so a workflow's campaign management doesn't stall on an audience-program review it doesn't need. A health check tracks LinkedIn's own developer-API status page.",
+    "longDescription": "LinkedIn's Marketing (Ads) API is how a business manages advertising on LinkedIn programmatically, and this app covers the campaign-management side of it: Ad Accounts, Campaign Groups, Campaigns and Creatives, plus performance analytics and Matched Audiences segments.\n\nIt handles the day-to-day campaign lifecycle — creating and updating campaign groups, campaigns and creatives, and pausing or retiring one when it's done — alongside analytics reads that pull performance metrics by date range and up to three pivots at once, by campaign, by creative, by demographic, and more. Matched Audiences actions create and manage the audience segments a campaign can target, separately from the audience-population step, which is a higher-volume upload flow of its own.\n\nAccess to LinkedIn's Advertising API is approval-gated by LinkedIn directly, and Matched Audiences segments require a second, separate approval on top of that — this app authenticates each surface with its own credential so a workflow's campaign management doesn't stall on an audience-program review it doesn't need. A health check tracks LinkedIn's own developer-API status page.\n\nA new ad account poll trigger starts workflows from the existing ad-account-list action.",
     "categories": [
       "marketing",
       "analytics"
@@ -34,7 +34,12 @@
         "api.linkedin.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

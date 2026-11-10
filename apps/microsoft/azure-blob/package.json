@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/azure-blob",
-  "version": "0.1.0",
-  "description": "Azure Blob Storage: containers and blobs, uploads and downloads, tiers and leases, plus SAS URLs minted from the account key.",
+  "version": "0.2.0",
+  "description": "Azure Blob Storage: containers and blobs, uploads and downloads, tiers and leases, plus SAS URLs minted from the account key, plus webhook triggers for blobs created and deleted.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://learn.microsoft.com/rest/api/storageservices/blob-service-rest-api"
     ],
-    "longDescription": "Azure Blob Storage covers containers and blobs: list, upload, download, copy and delete, plus tier changes between Hot, Cool, Cold and Archive and metadata management. It completes the pack's object-storage set alongside S3 and Google Cloud Storage, for workflows that already have data landing in an Azure storage account.\n\nDistinctive here is a real lease — an exclusive lock on a blob, unlike the optimistic-concurrency-only pattern S3 and Cloud Storage offer — useful for a read-modify-write sequence that would otherwise lose a race. Container deletion counts the blobs it will remove and requires that number to be acknowledged before it proceeds, since Azure deletes a container and everything inside it in one irreversible call.\n\nBlob tiering exposes what each move commits you to: moving into Cool, Cold or Archive comes with a minimum retention period, and an Archive-tier blob is offline until a rehydration completes, not just slow. The app authenticates with the account's shared key and does not mint SAS URLs, a limitation of what that signature needs rather than a missing feature.",
+    "longDescription": "Azure Blob Storage covers containers and blobs: list, upload, download, copy and delete, plus tier changes between Hot, Cool, Cold and Archive and metadata management. It completes the pack's object-storage set alongside S3 and Google Cloud Storage, for workflows that already have data landing in an Azure storage account.\n\nDistinctive here is a real lease — an exclusive lock on a blob, unlike the optimistic-concurrency-only pattern S3 and Cloud Storage offer — useful for a read-modify-write sequence that would otherwise lose a race. Container deletion counts the blobs it will remove and requires that number to be acknowledged before it proceeds, since Azure deletes a container and everything inside it in one irreversible call.\n\nBlob tiering exposes what each move commits you to: moving into Cool, Cold or Archive comes with a minimum retention period, and an Archive-tier blob is offline until a rehydration completes, not just slow. The app authenticates with the account's shared key and does not mint SAS URLs, a limitation of what that signature needs rather than a missing feature.\n\nWebhook triggers start a workflow when a blob is created or deleted; Azure Event Grid delivers the events to the trigger's callback URL, which you enter once when you create the Event Grid subscription.",
     "categories": [
       "storage",
       "devops"
@@ -34,7 +34,12 @@
         "azurestatuscdn.azureedge.net"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

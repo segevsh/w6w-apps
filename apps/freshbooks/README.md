@@ -5,6 +5,7 @@ Manage FreshBooks clients, invoices, expenses, time entries and projects.
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.freshbooks.com`, `auth.freshbooks.com`
 - **Website** — https://www.freshbooks.com
 - **API docs** — https://www.freshbooks.com/api/start
@@ -182,3 +183,11 @@ authentication, identity_model, scopes, clients, invoices, expenses, time_entrie
 project, errors, limits pages) and a direct fetch of
 `status.freshbooks.com/api/v2/summary.json`. Status surfaces and scope names move;
 re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-invoice` — New or Updated Invoice | Poll | `invoice-list` | Each invoice created or updated since the previous check |
+
+Polled through the `invoice-list` action with FreshBooks' documented `search[updated_min]` filter (a `YYYY-MM-DD`, greater-than-or-equal date), re-reading from one day before the last check and de-duplicating on invoice id plus its `updated` stamp, so an edit emits again. The `updated` stamp has no documented zone, so the first-check cutoff allows 5 hours of slack: an invoice updated in the 5 hours before you enabled the trigger may fire once. The first check records what exists without firing. Source: [FreshBooks invoices reference](https://www.freshbooks.com/api/invoices) and [parameters](https://www.freshbooks.com/api/parameters) (verified 2026-11-09).

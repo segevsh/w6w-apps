@@ -56,6 +56,7 @@ import highlightsCreate from "./actions/highlights-create.ts";
 import highlightsDelete from "./actions/highlights-delete.ts";
 
 import service from "./health/service.ts";
+import newFolder from "./triggers/new-folder.ts";
 
 export default {
   actions: [
@@ -84,4 +85,5 @@ export default {
   ],
   auth: [xAuth],
   healthChecks: [service],
+  triggers: [newFolder],
 } satisfies AppDefinition;

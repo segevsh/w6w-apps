@@ -67,6 +67,7 @@ and `redirect_uri` on the w6w server, and users connect in the browser.
   service account signing a JWT assertion (RS256), which is a different auth
   shape. Shipping the OAuth path and saying so is better than half-implementing
   the other; a service-account mode is the natural follow-up.
+- **Triggers** — 1 (poll)
 
 ## Documents and values
 
@@ -242,4 +243,14 @@ deno task test
 
 No runtime dependencies beyond `@w6w/types` (types-only, dev).
 
-Triggers: not shipped — document listing has no documented creation-time newest-first order; its ordering is field or name based (https://firebase.google.com/docs/firestore/reference/rest, verified 2026-11-09).
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-document` — New Document | poll | List Documents (`GET .../documents/{collection}`, `orderBy=<your timestamp field> desc`) | each newly listed document of the collection |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `document-list` action is ordered by the field you set in **Newest-first order** (for example `createdAt desc`); Firestore has no creation-time ordering of its own, so documents must carry such a field and documents without it are not seen. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://firebase.google.com/docs/firestore/reference/rest/v1/projects.databases.documents/list (`orderBy`) (verified 2026-11-09).

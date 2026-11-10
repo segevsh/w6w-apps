@@ -37,6 +37,8 @@ import subscriptionList from "./actions/subscription-list.ts";
 import tagCreate from "./actions/tag-create.ts";
 import tagGet from "./actions/tag-get.ts";
 import tagList from "./actions/tag-list.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 /**
  * Simplero API v2 (`https://simplero.com/api/v2`), scoped to the contact and commerce core. See
@@ -81,6 +83,7 @@ export default {
     automationGet,
     automationList,
   ],
+  triggers: [newContact, newOrUpdatedContact],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

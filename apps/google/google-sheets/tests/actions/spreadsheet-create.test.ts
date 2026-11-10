@@ -23,3 +23,13 @@ test("spreadsheet-create: POST /v4/spreadsheets with title + sheets", async () =
   assertEquals(body.sheets[1].properties.hidden, true);
   assertEquals(result, { spreadsheetId: "abc" });
 });
+
+test('spreadsheet-create: an unchecked "Hidden" saved as "" is sent as false', async () => {
+  const { ctx, calls } = mockCtx([{ body: { spreadsheetId: "abc" } }]);
+  await action.execute(
+    { title: "T", sheets: [{ title: "Attendees", hidden: "" as unknown as boolean }] },
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body!);
+  assertEquals(body.sheets[0].properties.hidden, false);
+});

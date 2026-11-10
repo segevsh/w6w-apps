@@ -39,6 +39,8 @@ import userGetCurrent from "./actions/user-get-current.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newOpportunity from "./triggers/new-opportunity.ts";
+import newOrUpdatedOpportunity from "./triggers/new-or-updated-opportunity.ts";
 export default {
   actions: [
     // party
@@ -68,4 +70,5 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, quota],
+  triggers: [newOpportunity, newOrUpdatedOpportunity],
 } satisfies AppDefinition;

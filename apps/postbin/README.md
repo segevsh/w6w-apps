@@ -112,3 +112,5 @@ node implements against the same host, so the contract in this app is treated as
 icon is a pixel-exact vector trace of PostBin's own `favicon.ico`, fetched via a third-party image
 proxy (`postb.in` itself refused a direct connection from this environment; the site was
 independently confirmed live through other fetch paths — see the app's build notes).
+
+Triggers: not shipped — request inbox actions fetch or shift one known request and expose no bounded list of new requests (https://www.postb.in/)

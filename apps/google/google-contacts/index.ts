@@ -16,6 +16,7 @@ import deleteContactGroup from "./actions/delete-contact-group.ts";
 import modifyContactGroupMembers from "./actions/modify-contact-group-members.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContactGroup from "./triggers/new-contact-group.ts";
 
 export default {
   actions: [
@@ -36,4 +37,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newContactGroup],
 } satisfies AppDefinition;

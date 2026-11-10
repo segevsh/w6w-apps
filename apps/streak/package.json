@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/streak",
-  "version": "0.1.0",
-  "description": "Manage Streak CRM pipelines, boxes, stages, fields, contacts, organizations and tasks over the Streak API v1.",
+  "version": "0.2.0",
+  "description": "Manage Streak CRM pipelines, boxes, stages, fields, contacts, organizations and tasks over the Streak API v1. Triggers for new and updated boxes.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,7 +32,8 @@
         "api.streak.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

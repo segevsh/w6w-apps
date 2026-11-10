@@ -34,6 +34,7 @@ import payoutList from "./actions/payout-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newReservation from "./triggers/new-reservation.ts";
 
 export default {
   actions: [
@@ -68,4 +69,5 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, api, quota],
+  triggers: [newReservation],
 } satisfies AppDefinition;

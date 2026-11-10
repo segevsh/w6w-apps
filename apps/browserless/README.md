@@ -4,6 +4,21 @@ Headless Chrome as a service, driven from a workflow: screenshots, PDFs, rendere
 scraping, your own Puppeteer code, Lighthouse audits, stealth page loads, site mapping, web search,
 smart scraping and asynchronous crawls. Vendor docs: <https://docs.browserless.io>.
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-crawl` | New Crawl | poll (page walk) | `crawl-list` | Newly created crawl jobs |
+
+The crawl listing documents no order (<https://docs.browserless.io/rest-apis/crawl>, verified
+2026-11-09), so the poll does not rely on one: each check makes the same `GET /crawl` request as
+`crawl-list` (100 per page), follows `nextCursor` for up to 10 pages, and de-duplicates on the crawl
+id. A listing longer than 10 pages is cut at the cap with a warning in the run log. The response array
+is `crawls`, as the vendor documents it. The first check records the current crawls and emits
+nothing. No webhook code is included.
+
 ## Connecting
 
 Create an API token at <https://www.browserless.io/account> (an account can hold up to 20 tokens;
@@ -71,3 +86,4 @@ Agent Run API (beta), `/download`, BrowserQL, sessions and authenticated profile
 `assets/icon.svg` is the vendor's favicon with its dark-mode `@media` rule replaced by a static
 `fill:black`; `assets/icon.dark.svg` is the same mark in white. The host picks the variant through
 `appearance.darkMode`, and the pack's legibility audit does not evaluate the media rule.
+

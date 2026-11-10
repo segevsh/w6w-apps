@@ -18,6 +18,7 @@ product events and subscribe webhooks.
 - **Icon** `assets/icon.svg` wraps the verbatim 180x180 `apple-touch-icon.png` served by
   `app.encharge.io/favicons/apple-touch-icon.png` in a base64 data URI. Encharge publishes no
   full-colour vendor SVG (its `safari-pinned-tab.svg` is a monochrome mask, not used).
+- **Triggers** — 1 (poll)
 
 ## Actions (17)
 
@@ -99,4 +100,14 @@ If a route turns out to want OAuth2, that action will fail with an auth error na
   event tracking** (a browser library): neither is a server-callable API.
 - **Custom objects, flows, emails and forms**: no endpoints exist for them in the OpenAPI document.
 
-Triggers: not shipped — the segment-membership list does not provide a documented newest-first creation order (https://docs.encharge.io/api-documentation, verified 2026-11-09).
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-segment-person` — New Segment Person | poll | List People in a Segment (`GET /segments/{id}/people`, `sort=<field>&order=desc`) | each person newly listed in the segment |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `segment-people-list` action is sorted descending by the person field you name in **Creation-time person field** (for example `createdAt`); Encharge's docs only describe `sort` as a person field name, so that field choice is yours. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://docs.encharge.io/api-documentation (verified 2026-11-09).

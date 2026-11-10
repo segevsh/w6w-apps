@@ -112,6 +112,7 @@ import companyGet from "./actions/company-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCall from "./triggers/new-call.ts";
 
 export default {
   actions: [
@@ -170,4 +171,5 @@ export default {
   // `actions/`. See `auth/basic.ts` and the README.
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newCall],
 } satisfies AppDefinition;

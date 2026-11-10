@@ -3,6 +3,8 @@
 Create and manage Chatbase AI agents, chat with them, and run their conversations, knowledge
 sources, helpdesk, and WhatsApp channel — on the **Chatbase API v2**.
 
+Triggers: not shipped — `conversation-list` is documented as "ordered by createdAt date" without a direction, the action exposes no sort or since filter, and it lists only API-created conversations (https://chatbase.co/docs/api-reference/v2/conversations/list-conversations.md, verified 2026-11-09)
+
 - **Categories** — ai, support, communication
 - **Auth methods** — api-key
 - **Actions** — 35

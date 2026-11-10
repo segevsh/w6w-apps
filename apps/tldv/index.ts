@@ -45,6 +45,9 @@ import transcriptGet from "./actions/transcript-get.ts";
 import notesGet from "./actions/notes-get.ts";
 import meetingImport from "./actions/meeting-import.ts";
 
+import meetingReady from "./triggers/meeting-ready.ts";
+import transcriptReady from "./triggers/transcript-ready.ts";
+
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -57,6 +60,7 @@ export default {
     notesGet,
     meetingImport,
   ],
+  triggers: [meetingReady, transcriptReady],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

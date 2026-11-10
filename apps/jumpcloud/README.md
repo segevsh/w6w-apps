@@ -241,3 +241,16 @@ Exhaustion is only visible as a `429` at the moment it happens.
 JumpCloud's envelope is `{"error": "...", "message": "..."}`, and `message` is
 the useful half — *"Unauthorized: api key user not found"* rather than just
 *"Unauthorized"*. Failures surface the status and the whole envelope.
+
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New User (`new-user`) | poll | `user-list` — by `created` descending (`sort=-created`) | each newly created user |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `user-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://docs.jumpcloud.com/api/1.0/index.yaml (verified 2026-11-09). Its `systemusers_list` operation documents `sort` ("Default sort is ascending, prefix with `-` to sort descending") and the `SystemUserReturn` schema carries the `created` field. The V1 users list has no documented update-time field, so no new-or-updated trigger ships. (User groups were dropped: the V2 `UserGroup` schema at https://docs.jumpcloud.com/api/2.0/index.yaml has no creation field to sort on.)

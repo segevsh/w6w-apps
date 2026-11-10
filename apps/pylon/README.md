@@ -6,6 +6,7 @@ support platform, over the **Pylon API**.
 - **Categories** — support, crm
 - **Auth methods** — api-token (`Authorization: Bearer <token>`, plus a US/EU region field)
 - **Actions** — 30
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (status.usepylon.com, `API` component), `api` (unsigned
   reachability on the connection's region host), `quota` (declared unavailable, informational)
   + the derived `auth:api-token`
@@ -60,3 +61,11 @@ groups, AI response, followers, external-issue link, voice calls, redact/delete 
 reply, custom fields and custom objects, email, knowledge base, macros, tasks and projects, ticket
 forms, training data, surveys, feature requests, call recordings, attachments, audit logs, user
 roles, user update, team create/update, and the activities, files and highlights endpoints.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-issue` | poll | `issue-list` | Each newly created support issue |
+
+`new-issue` runs `issue-list` over a short created-time window (`start_time` = last check minus two minutes, `end_time` = now; the API allows up to 365 days) with `limit` 200 and follows `nextCursor` for up to three pages, de-duplicating on issue id. A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://docs.usepylon.com/pylon-docs/developer/api) (verified 2026-11-09).

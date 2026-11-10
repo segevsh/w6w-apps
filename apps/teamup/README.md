@@ -8,11 +8,12 @@ rooms, staff, courses and their sessions, providers and offering types.
 - **Categories** — crm, calendar, commerce
 - **Auth methods** — M2M token (`bearer`)
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`host`, `quota`) + the derived `auth:token`
 - **Egress allowlist** — `goteamup.com` (the only host any action or check reaches; the vendor's
   documentation and status hosts are never called)
 - **Website** — https://goteamup.com/
-- **API docs** — https://docs.goteamup.com/api-reference/
+- **API docs** — https://docs.goteamup.com/api-reference/introduction
 - **Status page** — https://status.goteamup.com/ (**abandoned — deliberately not wired**, see
   [Health checks](#health-checks))
 - **Icon** — TeamUp's own webclip mark, copied verbatim from the vendor's CDN
@@ -45,7 +46,7 @@ and that is the one this app implements:
    server-to-server API key. **This is what this app uses.**
 
 The field is a single secret, `token`, and its hint links TeamUp's own guide,
-<https://docs.goteamup.com/guides/creating-an-m2m-token>.
+<https://support.goteamup.com/en/articles/14819895-creating-a-machine-to-machine-m2m-token>.
 
 ### The header is `Bearer`, and that is a deliberate reading of two contradictory sources
 
@@ -232,3 +233,11 @@ deno task fmt
 deno task test    # 134 tests, no network
 deno task validate  # the pack's conformance auditor
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | Poll | `invoices-list` | Each new invoice in the business |
+
+Polled newest-first through the `invoices-list` action with `sort=-id` (TeamUp documents the `sort` enum `id`, `-id`, `due_date`, `-due_date` on the invoices list); the first check records what exists without firing, later checks emit only unseen invoice ids. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [TeamUp API reference, List invoices](https://docs.goteamup.com/api-reference/introduction) and the OpenAPI index at <https://docs.goteamup.com/llms.txt> (verified 2026-11-09).

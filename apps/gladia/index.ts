@@ -11,6 +11,7 @@ import modelList from "./actions/model-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newTranscription from "./triggers/new-transcription.ts";
 
 /**
  * Gladia — speech-to-text. Pre-recorded jobs only (`/v2/pre-recorded`); the deprecated
@@ -25,6 +26,7 @@ export default {
     audioUploadUrl,
     modelList,
   ],
+  triggers: [newTranscription],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

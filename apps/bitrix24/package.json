@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bitrix24",
-  "version": "0.1.0",
-  "description": "Manage Bitrix24 CRM leads, contacts and deals via a portal's own inbound webhook.",
+  "version": "0.2.0",
+  "description": "Manage Bitrix24 CRM leads, contacts and deals, including polling newly created contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.bitrix24",
     "displayName": "Bitrix24",
     "apiDocs": [

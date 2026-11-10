@@ -1,5 +1,7 @@
 # New Relic
 
+Triggers: not shipped — NerdGraph entity and issue searches use cursors but the existing actions do not expose a documented newest-first or since-created query (https://docs.newrelic.com/docs/apis/nerdgraph/get-started/introduction-new-relic-nerdgraph/)
+
 Query with NRQL, search entities, manage tags and alerts, read dashboards and
 record deployments — all through NerdGraph.
 

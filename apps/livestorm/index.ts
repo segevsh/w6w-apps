@@ -90,6 +90,9 @@ import webhookList from "./actions/webhook-list.ts";
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
 
+import newEvent from "./triggers/new-event.ts";
+import newOrUpdatedEvent from "./triggers/new-or-updated-event.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -145,4 +148,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEvent, newOrUpdatedEvent],
 } satisfies AppDefinition;

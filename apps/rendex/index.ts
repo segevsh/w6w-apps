@@ -29,6 +29,7 @@ import watchRunsList from "./actions/watch-runs-list.ts";
 import watchRun from "./actions/watch-run.ts";
 import watchUpdate from "./actions/watch-update.ts";
 import watchDelete from "./actions/watch-delete.ts";
+import watchEvent from "./triggers/watch-event.ts";
 
 export default {
   actions: [
@@ -51,6 +52,7 @@ export default {
     watchUpdate,
     watchDelete,
   ],
+  triggers: [watchEvent],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

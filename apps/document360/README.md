@@ -8,6 +8,7 @@ on the **Document360 Customer API v3**.
 - **Categories** — cms, documents
 - **Auth methods** — api-key (`X-API-Key`)
 - **Actions** — 37
+- **Triggers** — 2 (poll)
 - **Health checks** — 3 (~~`service`~~, `api`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `apihub.document360.io`, `apihub.us.document360.io`,
   `apihub.ca.document360.io` (the three documented data centers, nothing else)
@@ -19,6 +20,25 @@ on the **Document360 Customer API v3**.
 > **Everything below was verified on 2026-10-06** against Document360's own OpenAPI 3.0.1 document
 > (4,544,745 bytes, `info.title` "Document360 Customer API", `info.version` 3.0.0, 149 paths), the v3
 > pages of `apidocs.document360.com`, and live probes of all three hosts and the status page.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-article` | poll | `workspace-article-list` | Each article newly added to the workspace |
+| `new-or-updated-article` | poll | `workspace-article-list` | Each article added, or whose list summary (including its content hash) changed |
+
+Params: `workspaceId` (required) and an optional `projectId`. Each check pages the existing
+`workspace-article-list` action (`GET /v3/projects/{projectId}/workspaces/{workspaceId}/articles`,
+`page_size` 100, following `pagination.has_more`) and watches the result as a snapshot of article id
+to a hash of its summary; the first check only records it. The action has no sort or date filter, so
+the whole workspace is read each time; a workspace with more than 1000 articles (10 pages) fails the
+check with a clear error instead of silently missing articles. Deleted articles emit nothing.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same
+authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://apidocs.document360.com/> (verified 2026-11-09).
 
 ## The things most likely to go wrong
 

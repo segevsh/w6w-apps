@@ -161,6 +161,14 @@ steps individually would."* To process many rows, start one run per row.
 
 ## Auth
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-image` | poll | `image-list` | Each newly requested image render. |
+
+Bannerbear's V5 list-image reference is at https://developers.bannerbear.com/v5/ (verified 2026-11-09).
+
 **`bearer-token`** — `Authorization: Bearer <api key>`. Bannerbear publishes no OAuth surface for
 third-party apps; the key is the whole story. Keys are creatable/scopeable/restrictable at
 `app.bannerbear.com/v5/api_keys` — a key scoped to only the resources a workflow needs (e.g.

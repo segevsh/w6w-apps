@@ -5,6 +5,7 @@ Search, index, and manage documents and indices on any Elasticsearch cluster.
 - **Categories** — search
 - **Auth methods** — api-key, basic
 - **Actions** — 9
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://www.elastic.co
 - **API docs** — https://www.elastic.co/docs/api
@@ -145,3 +146,15 @@ Researched and endpoint-verified 2026-08-01 against Elastic's own REST API docum
 `n8n-nodes-base` Elasticsearch node's document/index endpoints, which agree with the official
 docs. Elastic's REST surface is stable across versions; re-check if a probe starts failing for
 everyone at once.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-record` — New Record | poll | Search (`POST /{index}/_search`, sorted by your timestamp field descending) | each newly indexed hit |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `search` action runs a `match_all` query sorted by the **Creation timestamp field** you set (default `@timestamp`) descending; documents without that field are not seen. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html (verified 2026-11-09).

@@ -18,6 +18,11 @@ export const GROUPS = [
   "meta",
   "zendesk",
   "twilio",
+  "aws",
+  "dropbox",
+  "freshworks",
+  "linkedin",
+  "zoho",
 ];
 
 async function files(dir: string): Promise<string[]> {

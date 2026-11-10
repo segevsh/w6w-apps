@@ -1,5 +1,15 @@
 # ScoreApp
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-result` — New Result | poll | `result-list` | Each newly created scorecard result. |
+
+ScoreApp documents result `order_by=created_at` and `order_dir` in its [Public API guide](https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started). Verified 2026-11-09.
+
 List scorecards (quiz funnels), read their questions and scoring categories, and read the results
 (leads) they collect with each result's per-question answers, on **ScoreApp's Open API**
 (`open-api.scoreapp.com`).

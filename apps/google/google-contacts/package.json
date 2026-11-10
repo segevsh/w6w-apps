@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-contacts",
-  "version": "0.1.1",
-  "description": "Read and manage Google Contacts via the Google People API: connections, contacts and contact groups.",
+  "version": "0.2.0",
+  "description": "Manage Google Contacts and trigger workflows on new contact groups.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -27,6 +27,7 @@ import apiKey from "./auth/api-key.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newVisitorCompany from "./triggers/new-visitor-company.ts";
 
 /**
  * Leadfeeder (now part of Dealfront) — website-visitor identification, company and contact
@@ -67,6 +68,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newVisitorCompany],
 };
 
 export default app;

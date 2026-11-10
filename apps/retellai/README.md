@@ -1,5 +1,16 @@
 # Retell AI
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-agent` — New Agent | poll | `list-agents` | Each newly created agent. |
+| `new-or-updated-agent` — New or Updated Agent | poll | `list-agents` | Each newly created or updated agent. |
+
+Retell documents `sort_order` (default `descending`) on [List Agents](https://docs.retellai.com/api-references/list-agents) as "Sort order for results" without naming the sort field, so that the list is ordered by creation time (`new-agent`) is not proven; the same request feeds `new-or-updated-agent`, which keys on `agent_id:user_modified_timestamp`. Verified 2026-11-09.
+
 Place outbound phone and web calls, batch-dial a list of numbers, search call history, and read
 agent/phone-number/voice catalogs, on Retell AI's voice-agent platform.
 

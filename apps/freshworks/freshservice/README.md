@@ -6,6 +6,7 @@ catalog.
 - **Categories** — support, devops
 - **Auth methods** — api-key
 - **Actions** — 23
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.freshservice.com`
 - **Website** — <https://www.freshworks.com/freshservice/>
 - **API docs** — <https://api.freshservice.com>
@@ -282,3 +283,18 @@ Researched and endpoint-verified 2026-08-03 against <https://api.freshservice.co
 Freshstatus account id and the `ignore_overall_status` convention were read off
 `updates.freshservice.com` and Freshworks' own status client. Status surfaces move;
 re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+Poll triggers built on the app's existing `ticket-get-many` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-ticket` — New Ticket | poll | `ticket-get-many` | Each newly created Freshservice ticket from the last 30 days, oldest first. |
+| `new-or-updated-ticket` — New or Updated Ticket | poll | `ticket-get-many` | Each Freshservice ticket that is newly created or updated, once per update. |
+
+How the feed is read: `GET /api/v2/tickets` with `order_type=desc` (newest first; only tickets created in the last 30 days are returned unless `updated_since` is set) and, for the updated variant, the `updated_since` filter.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://api.freshservice.com/#view_all_ticket> (verified 2026-11-09).

@@ -26,6 +26,8 @@ import getCoupon from "./actions/get-coupon.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
 
 export default {
   actions: [
@@ -55,4 +57,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newInvoice, newOrUpdatedInvoice],
 } satisfies AppDefinition;

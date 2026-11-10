@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mural",
-  "version": "0.1.0",
-  "description": "Manage Mural workspaces, rooms, murals, sticky notes, text boxes, comments and tags.",
+  "version": "0.2.0",
+  "description": "Manage Mural workspaces, rooms, murals, sticky notes, text boxes, comments and tags. Includes poll triggers for new and updated records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://app.mural.co/developers/apps"
     ],
-    "longDescription": "Mural is a visual collaboration canvas. This app drives its public REST API from a workflow: list workspaces, rooms and murals, create, rename, archive, duplicate and delete them, search by text, and read who has access.\n\nOn a mural's canvas it can list and read widgets, add sticky notes, text boxes and comment pins, edit a sticky note, delete any widget, and manage the mural's tags - enough to turn a form submission, a ticket or an AI summary into notes on a board.\n\nMural only offers OAuth 2.0 (authorization code); there is no API key, so a Mural developer app must be registered and its client ID and secret entered when connecting. Voting sessions, timers, templates, exports, file/image/area/arrow/table widgets and membership management exist in the API and are not covered; the README lists them.",
+    "longDescription": "Mural is a visual collaboration canvas. This app drives its public REST API from a workflow: list workspaces, rooms and murals, create, rename, archive, duplicate and delete them, search by text, and read who has access.\n\nOn a mural's canvas it can list and read widgets, add sticky notes, text boxes and comment pins, edit a sticky note, delete any widget, and manage the mural's tags - enough to turn a form submission, a ticket or an AI summary into notes on a board.\n\nMural only offers OAuth 2.0 (authorization code); there is no API key, so a Mural developer app must be registered and its client ID and secret entered when connecting. Voting sessions, timers, templates, exports, file/image/area/arrow/table widgets and membership management exist in the API and are not covered; the README lists them.\n\nPoll triggers start workflows when new records appear.",
     "categories": [
       "productivity",
       "project-management"
@@ -39,7 +39,12 @@
         "app.mural.co"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

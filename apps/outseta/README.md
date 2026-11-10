@@ -122,3 +122,19 @@ JSON object for everything else, including custom properties; typed params win o
 
 Nothing here was exercised against a live account (no credentials); request shapes are from the
 OpenAPI document and the failure behaviour above is the unauthenticated/garbage-key surface only.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-account` | poll | `list-accounts` (`GET /api/v1/crm/accounts`, `orderBy=Created DESC`, `limit=25`) | Each newly created account. |
+| `new-person` | poll | `list-people` (`/crm/people`, same ordering) | Each newly created person. |
+| `new-deal` | poll | `list-deals` (`/crm/deals`, same ordering) | Each newly created CRM deal. |
+| `new-case` | poll | `list-cases` (`/support/cases`, same ordering) | Each newly opened support case. |
+| `new-invoice` | poll | `list-invoices` (`/billing/invoices`, same ordering) | Each newly created invoice. |
+
+Outseta documents `?orderBy=PropertyName+DESC` sorting on list endpoints and the `Created` timestamp as a filterable property (`Created__gt=...`). Each trigger asks for `orderBy=Created DESC` explicitly, seeds on its first check without emitting, and then emits `Uid`s not seen before. The overview shows `Created__gt` on accounts and says `orderBy` "generally supports database-backed scalar properties", so `Created` on people, deals, cases and invoices relies on every Outseta entity carrying that property. Subscriptions, transactions and activities are not wrapped: they are ledgers keyed by their own start/billing dates, not by when the row was created. Outseta also sends signed Activity Notifications (SHA256 signing secret, e.g. `AccountCreated`, `AccountSubscriptionStarted`); no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://docs.outseta.com/api-reference/overview (Sorting, Filtering, Webhooks)

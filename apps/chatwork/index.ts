@@ -77,6 +77,7 @@ import incomingRequestReject from "./actions/incoming-request-reject.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newMessage from "./triggers/new-message.ts";
 export default {
   actions: [
     // Profile
@@ -124,4 +125,5 @@ export default {
   // Personal API token only — see auth/api-token.ts for why OAuth2 is not implemented.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

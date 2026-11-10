@@ -15,6 +15,11 @@ import type { AppDefinition } from "@w6w/types";
 
 import token from "./auth/token.ts";
 
+import runCompleted from "./triggers/run-completed.ts";
+import runErrored from "./triggers/run-errored.ts";
+import runNeedsAttention from "./triggers/run-needs-attention.ts";
+import runEvent from "./triggers/run-event.ts";
+
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 import quota from "./health/quota.ts";
@@ -63,6 +68,7 @@ const app: AppDefinition = {
     variableSet,
     variableDelete,
   ],
+  triggers: [runCompleted, runErrored, runNeedsAttention, runEvent],
   auth: [token],
   healthChecks: [service, instance, quota],
 };

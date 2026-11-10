@@ -8,6 +8,7 @@ Conversation Routing thread control.
 - **Categories** — communication
 - **Auth methods** — `page-token` (bearer)
 - **Actions** — 19
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `graph.facebook.com`
 - **Graph version** — `v26.0` (pinned in `lib/client.ts`; the version every request example in the
   Messenger docs carried on 2026-10-06)
@@ -15,6 +16,20 @@ Conversation Routing thread control.
 
 Not to be confused with `facebook` (Page posts, comments, photos, insights) or `whatsapp`; this app
 shares only the Graph host with them.
+
+## Triggers
+
+1 webhook trigger (manual setup, HMAC-signed).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `messenger-event` — Messenger Event | webhook (manual, signed) | `messages` (a person messages the Page; echoes of the Page's own sends are skipped), `messaging_postbacks` and `message_deliveries`; narrow with the `kinds` param (`message`, `postback`, `delivery`) | kind, page, sender's page-scoped id, time, message id, text, attachments, quick-reply payload, button title and payload, referral, delivered message ids and watermark, full event |
+
+**Setup (manual).** Meta registers webhooks on the app, not through the Page token, and a Meta app has one callback URL per object, so one trigger carries all three kinds. Subscribe the trigger in w6w and copy its callback URL. In the App Dashboard open **Webhooks**, choose the **Page** object, enter the callback URL and a **Verify token** you invent, and save; Meta sends a verification request that the trigger answers, so the trigger must already be subscribed with the same verify token pasted into its `verifyToken` param. Paste the app's **App Secret** (App settings, Basic) into `appSecret`. Then subscribe the Page object to the `messages`, `messaging_postbacks` and `message_deliveries` fields you want, and subscribe your Page to the app.
+
+**Trust model.** Notifications carry `X-Hub-Signature-256: sha256=<hex>`, the HMAC-SHA256 of the body under the App Secret. The trigger refuses a notification whose secret is unset, whose header is missing or malformed, or that does not match (constant-time compare), before it parses the body. Meta signs an escaped-unicode serialisation, so the trigger verifies the exact received text and never a re-serialised copy. The signature binds the body, so tampered data is refused; Meta's scheme has no timestamp, so an identical notification replayed later is not detected (Meta also retries failed deliveries, so de-duplicate on the message id downstream). The verification GET request is answered only for `hub.mode=subscribe` with the matching verify token (constant-time compare), and echoes only a short alphanumeric challenge.
+
+Docs (verified 2026-11-10): https://developers.facebook.com/documentation/business-messaging/messenger-platform/webhooks, https://developers.facebook.com/documentation/business-messaging/messenger-platform/webhooks/webhook-events/messages, https://developers.facebook.com/documentation/business-messaging/messenger-platform/webhooks/webhook-events/messaging_postbacks and https://developers.facebook.com/documentation/business-messaging/messenger-platform/webhooks/webhook-events/message-deliveries
 
 ## Auth setup
 

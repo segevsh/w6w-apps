@@ -5,6 +5,7 @@ Browse, upload, share and search files and folders in Egnyte.
 - **Categories** — storage, productivity
 - **Auth methods** — access-token (OAuth 2.0 bearer token + your Egnyte domain)
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.egnyte.com`
 - **Website** — https://www.egnyte.com
 - **API docs** — https://developers.egnyte.com/docs (rendered at
@@ -75,4 +76,16 @@ Three different questions, kept apart:
 Authenticated calls were not made against a live account: every request shape here
 is taken from the vendor reference, not replayed.
 
-Triggers: not shipped — search requires a 3–100 character free-text query, returns 20 items per page, and sorts by `last_modified` rather than creation time (https://developers.egnyte.com/docs/#operation/search, verified 2026-11-09).
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-link` — New Link | poll (since-filter) | List Links (`GET /pubapi/v2/links`, `created_after`) | each newly created share link |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `link-list` action is called with `created_after` set to two minutes before the previous check and deduplicated by link id; the first check records a baseline. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Non-admin connections only see the links they created.
+
+Vendor docs: https://developers.egnyte.com/docs/Link_API (the `created_after` filter on List Links) (verified 2026-11-09).

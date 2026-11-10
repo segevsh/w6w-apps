@@ -1,5 +1,15 @@
 # Braze
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-campaign` — New or Updated Campaign | poll | `campaign-list` ordered by latest edit | Each newly created or updated campaign |
+
+Vendor reference: https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaign_list/ (verified 2026-11-09).
+
 Track user data, trigger campaigns and Canvases, send messages, and manage
 email subscriptions in Braze — the customer engagement / marketing automation
 platform.

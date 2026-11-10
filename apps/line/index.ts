@@ -51,6 +51,8 @@ import richMenuUnlinkFromUser from "./actions/rich-menu-unlink-from-user.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import eventReceived from "./triggers/event-received.ts";
+
 export default {
   actions: [
     // Bot / profile
@@ -75,6 +77,7 @@ export default {
     richMenuLinkToUser,
     richMenuUnlinkFromUser,
   ],
+  triggers: [eventReceived],
   // A channel access token is the whole authentication story here — see
   // `auth/channel-access-token.ts` for why this app supports only the long-lived form.
   auth: [channelAccessToken],

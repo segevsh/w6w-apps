@@ -92,6 +92,10 @@ permanent `unknown` from ever worsening the App's rolled-up verdict.
 There is no derived `auth:*` check — this app declares no Auth method, so there is no credential
 to test.
 
+## Triggers
+
+`new-story` polls the newest-first `/v0/newstories.json` list every five minutes; its first poll only seeds state. Hacker News does not offer webhooks. Source: https://github.com/HackerNews/API (verified 2026-11-09).
+
 ## Icon
 
 `assets/icon.svg` is Hacker News's own `y18.svg`, fetched verbatim from

@@ -1,5 +1,20 @@
 # Devin
 
+## Triggers
+
+- **Triggers** — 2 (poll)
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-session` | poll | `session-list` | Each Devin session created since the last check (`created_after`) |
+| `new-or-updated-session` | poll | `session-list` | Each session created or changed since the last check (`updated_after`, id + `updated_at`) |
+
+`session-list` documents `created_after` / `updated_after` (Unix seconds, inclusive) but no sort. Each check lists sessions since the previous check minus 2 minutes, up to 3 pages of 100, and dedupes by `session_id`.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://docs.devin.ai/api-reference/overview> (verified 2026-11-09).
+
 Start Devin coding sessions, follow their progress, message them, and manage the attachments and
 secrets that feed them — on Cognition's **Devin API v3**.
 

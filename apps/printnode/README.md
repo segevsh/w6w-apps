@@ -89,3 +89,11 @@ API.
 
 `assets/icon.svg` is PrintNode's own mark, byte-for-byte as served from
 `https://www.printnode.com/ui/images/printnode.svg` (md5 `3180b396bf35aa69df7b8886b5327c50`).
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-printjob` | poll | `printjob-list` | Each newly created print job |
+
+`GET /printjobs` is documented newest first. Vendor API reference: https://www.printnode.com/en/docs/api/curl (verified 2026-11-09).

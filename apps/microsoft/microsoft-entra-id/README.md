@@ -179,3 +179,7 @@ It must stay byte-identical: format this app with `deno task fmt`, never bare `d
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+- **New Deleted Item** wraps `list-deleted-items` with `deletedDateTime desc`. [Microsoft Graph deleted items](https://learn.microsoft.com/en-us/graph/api/directory-deleteditems-list), verified 2026-11-09.

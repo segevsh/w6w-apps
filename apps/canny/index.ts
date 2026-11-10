@@ -87,6 +87,7 @@ import statusChangeList from "./actions/status-change-list.ts";
 
 import service from "./health/service.ts";
 
+import newPost from "./triggers/new-post.ts";
 export default {
   actions: [
     // Boards
@@ -142,4 +143,5 @@ export default {
   // API key only. Canny publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newPost],
 } satisfies AppDefinition;

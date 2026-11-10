@@ -77,6 +77,7 @@ import webhookEventList from "./actions/webhook-event-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContract from "./triggers/new-contract.ts";
 
 export default {
   actions: [
@@ -115,4 +116,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newContract],
 } satisfies AppDefinition;

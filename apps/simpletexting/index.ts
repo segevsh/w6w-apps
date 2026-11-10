@@ -42,6 +42,8 @@
  * in the README.
  */
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 import apiKey from "./auth/api-key.ts";
 
 // Tenant
@@ -89,6 +91,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newContact, newOrUpdatedContact],
   actions: [
     // Tenant
     tenantInfoGet,

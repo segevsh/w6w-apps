@@ -41,6 +41,9 @@ import tagsList from "./actions/tags-list.ts";
 import attributionGet from "./actions/attribution-get.ts";
 import attributionAdAccountGet from "./actions/attribution-ad-account-get.ts";
 
+import newLead from "./triggers/new-lead.ts";
+import newSale from "./triggers/new-sale.ts";
+
 import service from "./health/service.ts";
 
 export default {
@@ -65,6 +68,7 @@ export default {
     attributionGet,
     attributionAdAccountGet,
   ],
+  triggers: [newLead, newSale],
   auth: [apiKey],
   healthChecks: [service],
 } satisfies AppDefinition;

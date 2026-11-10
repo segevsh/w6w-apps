@@ -14,6 +14,8 @@ account/ad-account info via the Pinterest REST API v5.
   `info.version` `5.28.0`, fetched 2026-08-29 — the docs SITE is a client-rendered app that
   returns no usable content to a plain fetch)
 
+Triggers: not shipped — `pin-list` and `pin-search` (`GET /v5/pins`) document no sort order and no created-after filter (none of its query parameters sorts or filters by date), so no feed can be read newest-first, and boards and ad accounts are not documented as bounded collections (https://developers.pinterest.com/docs/api/v5/pins-list/)
+
 ## Auth
 
 ### `oauth2` — OAuth (Pinterest)

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/read-ai",
-  "version": "0.1.0",
-  "description": "Read AI meeting reports: list meetings, fetch one with its summary, action items, transcript and metrics, and read a live meeting's transcript.",
+  "version": "0.2.0",
+  "description": "Read AI meeting reports, including a trigger for newly available meetings.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -31,7 +31,8 @@
         "api.read.ai"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

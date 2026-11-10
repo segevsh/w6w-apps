@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/peopledatalabs",
-  "version": "0.1.0",
-  "description": "Enrich and search people and companies, identify people, resolve IPs, clean company/school/location strings, autocomplete fields and search job postings on People Data Labs.",
+  "version": "0.2.0",
+  "description": "Enrich and search people and companies, identify people, resolve IPs, clean company/school/location strings, search job postings, and a webhook trigger for person-update batches on People Data Labs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.peopledatalabs.com/favicon.svg"
     ],
-    "longDescription": "People Data Labs (PDL) is a person and company data provider. This app enriches a person (one match, a bulk batch of up to 100, or a free-field preview) from an email, phone, social profile or name plus context, identifies the likely people behind loose inputs, and searches the person, company and job posting datasets with Elasticsearch or SQL queries passed through as written.\n\nIt enriches a company by name, website, ticker or profile (single or bulk), resolves an IP address to its company, cleans messy company, school and location strings to canonical records, suggests valid field values for building queries, and enriches a job title with similar titles and skills. Every PDL-billed action can run against the free sandbox host instead.\n\nHealth checks verify the API key, whether api.peopledatalabs.com is answering, the platform status page, and the remaining credit balance.",
+    "longDescription": "People Data Labs (PDL) is a person and company data provider. This app enriches a person (one match, a bulk batch of up to 100, or a free-field preview) from an email, phone, social profile or name plus context, identifies the likely people behind loose inputs, and searches the person, company and job posting datasets with Elasticsearch or SQL queries passed through as written.\n\nIt enriches a company by name, website, ticker or profile (single or bulk), resolves an IP address to its company, cleans messy company, school and location strings to canonical records, suggests valid field values for building queries, and enriches a job title with similar titles and skills. Every PDL-billed action can run against the free sandbox host instead.\n\nHealth checks verify the API key, whether api.peopledatalabs.com is answering, the platform status page, and the remaining credit balance.\n\nA webhook trigger receives the batches of updated person ids that PDL pushes to enterprise customers, checked against a shared key.",
     "categories": [
       "crm",
       "marketing"
@@ -34,7 +34,12 @@
         "sandbox.api.peopledatalabs.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

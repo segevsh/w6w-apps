@@ -53,6 +53,7 @@ import formList from "./actions/form-list.ts";
 import formGet from "./actions/form-get.ts";
 
 import submissionList from "./actions/submission-list.ts";
+import newSubmission from "./triggers/new-submission.ts";
 import submissionGet from "./actions/submission-get.ts";
 import submissionCreate from "./actions/submission-create.ts";
 import submissionDelete from "./actions/submission-delete.ts";
@@ -78,6 +79,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [newSubmission],
   // API key only. Fillout does publish an OAuth surface for "3rd party apps",
   // but its documented exchange omits `response_type`, `grant_type` and
   // `scope`, answers `{access_token, base_url}` rather than an RFC 6749 token

@@ -6,6 +6,7 @@ online school.
 - **Categories** — crm, commerce
 - **Auth methods** — client-credentials (OAuth2 Client Credentials grant)
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (per-school domain — see below)
 - **Website** — https://www.learnworlds.com
 - **API docs** — https://www.learnworlds.dev/docs/api (a JavaScript-rendered
@@ -146,3 +147,11 @@ good is the derived `auth:client-credentials` check's job.
 spec states a fixed prose rate limit ("30 requests / 10 sec") and a `429`
 error shape, but documents no response header or endpoint exposing remaining
 headroom anywhere across all 94 v2 operations.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` | poll | `users-list` | Each newly registered user |
+
+The trigger polls the existing `users-list` action every five minutes and relies on that action's own documentation of a newest-first order; the vendor's Stoplight portal is JavaScript-rendered, so the order was not independently re-checked against the vendor's pages. Vendor API documentation: https://www.learnworlds.dev/ (portal root; endpoint pages not verifiable without a browser).

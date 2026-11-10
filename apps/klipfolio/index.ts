@@ -46,6 +46,8 @@ import groupUserList from "./actions/group-user-list.ts";
 import groupUserAdd from "./actions/group-user-add.ts";
 import groupUserRemove from "./actions/group-user-remove.ts";
 import profileGet from "./actions/profile-get.ts";
+import newDashboard from "./triggers/new-dashboard.ts";
+import newDataSource from "./triggers/new-data-source.ts";
 
 export default {
   actions: [
@@ -94,4 +96,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newDashboard, newDataSource],
 } satisfies AppDefinition;

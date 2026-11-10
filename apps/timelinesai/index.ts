@@ -32,6 +32,7 @@ import reactionUpdate from "./actions/reaction-update.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -65,4 +66,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

@@ -108,6 +108,7 @@ import workflowRunList from "./actions/workflow-run-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newImage from "./triggers/new-image.ts";
 
 export default {
   actions: [
@@ -189,4 +190,5 @@ export default {
   // API key only. Bannerbear publishes no OAuth surface for third-party apps.
   auth: [bearerToken],
   healthChecks: [service, quota],
+  triggers: [newImage],
 } satisfies AppDefinition;

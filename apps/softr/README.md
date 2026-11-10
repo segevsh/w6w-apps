@@ -190,3 +190,35 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-database` — New Database | poll (snapshot) | `database-list` | Each Softr Database newly created in the token's workspaces. |
+
+`GET /databases` documents no query parameters and returns `id`, `name`, `workspaceId`, `tablesCount`,
+`createdAt` and `updatedAt` for every database the token can see, so the whole collection arrives in
+one request. Each check snapshots the database ids, the first check only records them, and later
+checks emit additions only (a rename or a new table is not a new database).
+
+Every other list action was considered and is not a trigger (verified 2026-11-09):
+
+- `record-list` — `GET .../records` documents only `offset`, `limit`, `fieldNames` and `viewId`: no
+  sort and no filter, so a new record cannot be told apart cheaply from the whole table (a table is
+  not a bounded collection; a snapshot would read and hash every row each check).
+- `record-search` — `POST .../records/search` can sort and filter, but only by `sortingField` /
+  `leftSide`, which "always take field IDs" of the table's own columns. Softr documents a
+  `CREATED_AT` field type, yet a table is not guaranteed to have one and its id differs per table, so
+  there is no single created-time sort this app can send for every table.
+- `table-list` — lists the tables of one database with their fields (a schema, set by hand, not a
+  record feed); it needs a `databaseId` and a new table is a rare administrative event.
+- `table-views-list` — lists the saved views of one table (configuration, not records).
+- `database-get`, `table-get`, `record-get` and the `user-*` actions are single-record reads or
+  writes, not lists.
+
+Vendor documentation: https://docs.softr.io/softr-api/softr-database-api/databases/get-databases ,
+https://docs.softr.io/softr-api/softr-database-api/records/get-records ,
+https://docs.softr.io/softr-api/softr-database-api/records/search-records ,
+https://docs.softr.io/softr-api/softr-database-api/tables/get-tables ,
+https://docs.softr.io/softr-api/softr-database-api/tables/get-table-views (verified 2026-11-09).

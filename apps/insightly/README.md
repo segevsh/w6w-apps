@@ -119,10 +119,31 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 - **Out of scope entirely**: file attachments, tags, links between records, projects,
   tasks, custom objects, and the pipeline/stage/pricebook administrative endpoints — all
   real v3.1 API surfaces, left out to keep this app to the four core CRM objects.
-- No webhook/trigger surface — that is a Trigger, not an Action, and out of scope here.
+- No webhook code: Insightly offers webhooks, but this app uses polling triggers (see Triggers).
 
 ---
 
 Researched and endpoint-verified 2026-09-05 against `api.na1.insightly.com/v3.1/help`
 and its underlying Swagger/OpenAPI document (`/v3.1/swagger/docs/v3.1`). Status and pod
 routing move; re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+- **Triggers** — 8 (poll)
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-contact`, `new-lead`, `new-opportunity`, `new-organisation` | poll | `*-get-many` on `GET /{Object}/Search?updated_after_utc=…` | each record created since the last check |
+| `new-or-updated-contact`, `-lead`, `-opportunity`, `-organisation` | poll | the same request | each record created or edited since the last check (an edit is a new event) |
+
+Every five minutes the trigger calls the same `*-get-many` action with `updatedAfterUtc` set to the
+last check minus a 120 s overlap (the first check only records state and emits nothing), reads up
+to 5 pages of 500, and dedupes by record id (`new-*`, which also drops records created before the
+window) or by `id:DATE_UPDATED_UTC` (`new-or-updated-*`). Insightly documents no result order, so
+the pages are never relied on for order. If a window holds more than 2,500 changed records, or a
+check would emit more than 500, the cursor is held and the rest is picked up on the next check.
+Insightly also offers webhooks (dashboard-registered "Webhooks" in User Settings); this app does not
+use them.
+
+Source: https://api.na1.insightly.com/v3.1/swagger/docs/v3.1 — `GET /Contacts/Search`, `/Leads/Search`,
+`/Opportunities/Search`, `/Organisations/Search` take an optional `updated_after_utc` (verified 2026-11-09).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bitwarden",
-  "version": "0.1.1",
-  "description": "Manage a Bitwarden organization: members, groups, collections, policies, event logs, subscription limits and directory import.",
+  "version": "0.2.0",
+  "description": "Manage a Bitwarden organization: members, groups, collections, policies, event logs, subscription limits and directory import, and trigger workflows on new audit events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -41,7 +41,10 @@
         "identity.bitwarden.eu"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

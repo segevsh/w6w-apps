@@ -16,6 +16,7 @@ import unsubscribeDelete from "./actions/unsubscribe-delete.ts";
 import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import emailEvent from "./triggers/email-event.ts";
 
 export default {
   actions: [
@@ -34,6 +35,7 @@ export default {
     unsubscribeGetMany,
     unsubscribeDelete,
   ],
+  triggers: [emailEvent],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -19,6 +19,8 @@ over its **v1 REST API**.
 Verified on 2026-10-06 against the OpenAPI 3.0 document embedded in `developers.printful.com/docs/`
 and live unauthenticated probes of `api.printful.com`.
 
+Triggers: not shipped — `order-list` (`GET /orders`) takes only status, offset and limit; the v1 reference states no sort order and offers no created-after filter, so the newest orders cannot be read first (https://developers.printful.com/docs/)
+
 ## v1, not v2
 
 The reference at `developers.printful.com/docs/` documents the v1 API (`/orders`, `/store/products`,

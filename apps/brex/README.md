@@ -8,6 +8,7 @@ company behind the credential, and the cards themselves — listed, read,
 re-limited, locked, unlocked and terminated.
 
 - **23 actions**, all against `https://api.brex.com/v2`.
+- **1 trigger**: a signed webhook for Brex events (see Triggers), registered through the API.
 - **One auth method**: a Brex **user token**, sent as `Authorization: Bearer <token>`.
 - **Health checks**: Brex's own status page, anchored on its `Partner API`
   component; quota headroom declared absent, because Brex publishes no readable
@@ -60,6 +61,20 @@ than a research gap — the same narrowing this pack already made for
 
 If a multi-tenant partner integration is wanted later, that is a second auth
 method on the same actions, not a rewrite of them.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `event` — Brex Event | webhook (API-registered, signed) | the `eventTypes` you choose: `REFERRAL_CREATED`, `REFERRAL_ACTIVATED`, `REFERRAL_APPLICATION_STATUS_CHANGED`, `TRANSFER_PROCESSED`, `TRANSFER_FAILED`, `USER_UPDATED`, `EXPENSE_PAYMENT_UPDATED`, `ACCOUNTING_RECORD_READY_FOR_EXPORT` (all when empty) | event type, the delivery's `Webhook-Id` and timestamp, the company id and the full event data |
+
+**Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks` with the callback URL and the chosen event types (the endpoint is under `/v1`, unlike the `/v2` actions; the `Idempotency-Key` header is derived from the subscription id), then `GET /v1/webhooks/secrets`, and keeps the signing secrets Brex returns in the subscription's state. Unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone, 404, counts as deleted). The connection's token must be allowed to call the Webhooks API; if Brex refuses, its error is shown as is. Brex allows **one webhook endpoint per client**, so a second Brex trigger (or a webhook already registered for the same client) is refused by Brex at subscribe time: use one trigger and branch on `eventType` in the workflow.
+
+**Trust model.** Brex sends `Webhook-Id`, `Webhook-Timestamp` and `Webhook-Signature` (space-delimited `v1,<base64>` entries). The trigger recomputes the base64 HMAC-SHA256 of `<id>.<timestamp>.<raw body>` under the base64-decoded secret, in constant time, against every `v1` entry and every stored secret (Brex returns two during a rotation), and refuses a timestamp more than five minutes from now (Brex's own sample uses 60 seconds), before it parses anything. A missing secret, header or raw body, a stale timestamp or a mismatch refuses the delivery. A captured delivery can be replayed inside the window, and Brex resends a failed delivery with the same `Webhook-Id`, which the event carries for dedupe. The secrets are read once, at subscribe time: after Brex rotates them, recreate the trigger. Brex's OpenAPI shows a secret with a `whsec_` prefix while its guide decodes the secret string whole, so a stored secret with that prefix is tried both ways (both key the same secret).
+
+No poll trigger: the list actions are directory and card lookups, not event feeds.
+
+Docs (verified 2026-11-10): https://developer.brex.com/guides/webhooks and https://developer.brex.com/openapi/webhooks_api
 
 ## Actions
 
@@ -294,3 +309,4 @@ The mark in `assets/icon.png` is Brex's own (`www.brex.com/apple-touch-icon.png`
 a 256×256 PNG), saved verbatim and declared as `appearance.icon.url` because
 `www.brex.com/favicon.svg` is a 404 — there is no SVG to declare and none was
 invented.
+

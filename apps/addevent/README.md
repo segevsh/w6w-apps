@@ -12,6 +12,7 @@ subscribers, and generate "add to calendar" links, on **AddEvent's Calendar & Ev
 - **Website** — https://www.addevent.com/
 - **API docs** — https://www.addevent.com/c/documentation/calendar-events-api
 - **Status page** — https://addevent.statuspage.io/
+- **Triggers** — 1 (poll)
 
 AddEvent turns a date and a title into a working "add to calendar" link — one that opens correctly in
 Google Calendar, Apple Calendar, Outlook, Office 365 and Yahoo without the caller having to know each
@@ -125,3 +126,11 @@ deno task lint        # deno lint
 deno task fmt         # format — always via this task, never a bare `deno fmt`
 deno task test        # unit tests (87 cases across every action, auth and health check)
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event-template` — New Event Template | Poll | `event-template-list` | Each newly created event template |
+
+Polled through `event-template-list`, which the API documents newest-first. Source: [AddEvent List event templates](https://docs.addevent.com/reference/list-event-templates) (verified 2026-11-09).

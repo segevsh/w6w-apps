@@ -106,6 +106,9 @@ import backupCreate from "./actions/backup-create.ts";
 import backupList from "./actions/backup-list.ts";
 import indexRestore from "./actions/index-restore.ts";
 
+import newIndex from "./triggers/new-index.ts";
+import newBackup from "./triggers/new-backup.ts";
+
 import service from "./health/service.ts";
 import indexes from "./health/indexes.ts";
 import quota from "./health/quota.ts";
@@ -144,5 +147,6 @@ export default {
     indexRestore,
   ],
   auth: [apiKey],
+  triggers: [newIndex, newBackup],
   healthChecks: [service, indexes, quota],
 } satisfies AppDefinition;

@@ -1,4 +1,5 @@
 # Credit Repair Cloud
+Triggers: not shipped — the vendor's API methods are only insertRecord, viewRecord, updateRecord and deleteRecord on a single lead/client or affiliate; there is no list or search method to poll (https://app.creditrepaircloud.com/webapi/apimethods)
 
 Create, update, delete and read the Lead/Client and Affiliate records a Credit Repair Cloud
 account runs on, over the vendor's own Web API.

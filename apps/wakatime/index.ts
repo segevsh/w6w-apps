@@ -28,6 +28,7 @@ import apiKey from "./auth/api-key.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newProject from "./triggers/new-project.ts";
 
 /**
  * WakaTime — automatic coding-time tracking: stats, summaries, durations, heartbeats, projects,
@@ -69,6 +70,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newProject],
 };
 
 export default app;

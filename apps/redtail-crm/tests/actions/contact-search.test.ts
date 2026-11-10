@@ -28,3 +28,14 @@ test("contact-search: omits unset filters entirely", async () => {
   await contactSearch.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
+
+test("contact-search: sends page and returns the response meta only when present", async () => {
+  const { ctx, calls } = mockCtx([{
+    body: { contacts: [], meta: { total_records: 120, total_pages: 3 } },
+  }]);
+  const out = await contactSearch.execute({ page: 2 }, ctx);
+  assertEquals(new URL(calls[0].url).searchParams.get("page"), "2");
+  assertEquals(out.meta, { total_records: 120, total_pages: 3 });
+  const bare = await contactSearch.execute({}, mockCtx([{ body: { contacts: [] } }]).ctx);
+  assertEquals("meta" in bare, false);
+});

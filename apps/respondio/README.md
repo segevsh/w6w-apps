@@ -1,5 +1,7 @@
 # respond.io
 
+Triggers: not shipped — contact-list is a caller-filtered `POST /contact/list` with cursor paging and no documented created/updated sort or since filter; whether a built-in created timestamp can be filtered with `isTimestampBetween` is unverified (the vendor reference is a JavaScript shell that no fetch can read) (https://developers.respond.io/, checked 2026-11-09)
+
 Manage contacts, conversations, and messages across WhatsApp, SMS, Messenger, Instagram, email and
 other channels, on the **respond.io Developer API v2**.
 

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/solapi",
-  "version": "0.1.0",
-  "description": "Send SMS, LMS, MMS and Kakao AlimTalk through SOLAPI, manage message groups and schedules, and read balance, sender numbers, statistics and Kakao channels and templates.",
+  "version": "0.2.0",
+  "description": "Send SOLAPI messages, manage groups and schedules, inspect delivery data, and trigger on new messages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.solapi.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

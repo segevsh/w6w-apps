@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/shippo",
-  "version": "0.1.0",
-  "description": "Rate a parcel across every carrier, buy the label, track it to the door, and validate addresses before a bad one costs a return.",
+  "version": "0.2.0",
+  "description": "Rate parcels, buy labels, track shipments, and poll for new shipments.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.shippo",
+    "build": { "include": ["../_shared"] },
     "displayName": "Shippo",
     "apiDocs": [
       "https://docs.goshippo.com/spec/shippoapi/public-api.yaml"

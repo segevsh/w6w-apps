@@ -163,3 +163,5 @@ at `unknown` forever.
 Researched and endpoint-verified 2026-08-16 against the live `$discovery/rest` document. Re-verify
 against the same document if a probe starts failing for everyone at once — Google occasionally
 revises these APIs without a version bump.
+
+Triggers: not shipped — Gemini's model-list and generation APIs are stateless inference resources, not user records with change events (https://ai.google.dev/gemini-api/docs/models).

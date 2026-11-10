@@ -62,6 +62,9 @@ import userGet from "./actions/user-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import documentCreated from "./triggers/document-created.ts";
+import documentCompleted from "./triggers/document-completed.ts";
+import inviteSigned from "./triggers/invite-signed.ts";
 
 export default {
   actions: [
@@ -88,6 +91,7 @@ export default {
     // user
     userGet,
   ],
+  triggers: [documentCreated, documentCompleted, inviteSigned],
   auth: [oauth2Password],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

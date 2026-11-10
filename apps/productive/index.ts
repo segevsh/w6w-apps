@@ -82,6 +82,7 @@ import webhookList from "./actions/webhook-list.ts";
 import webhookGet from "./actions/webhook-get.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
 import webhookCreate from "./actions/webhook-create.ts";
+import newDeal from "./triggers/new-deal.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -145,6 +146,7 @@ const app: AppDefinition = {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newDeal],
 };
 
 export default app;

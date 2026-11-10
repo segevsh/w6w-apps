@@ -52,6 +52,8 @@ import leadActivityList from "./actions/lead-activity-list.ts";
 import appointmentList from "./actions/appointment-list.ts";
 import orgGet from "./actions/org-get.ts";
 
+import newLead from "./triggers/new-lead.ts";
+
 const app: AppDefinition = {
   actions: [
     // lead
@@ -97,6 +99,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newLead],
 };
 
 export default app;

@@ -1,16 +1,18 @@
 # DigitalOcean
 
-Droplets, block storage, snapshots, reserved IPs, DNS and managed databases —
-with the billing surprises made explicit rather than left to the invoice.
+## Triggers
 
-- **Categories** — devops, storage
-- **Auth methods** — token
-- **Actions** — 15
-- **Egress allowlist** — `api.digitalocean.com`, `status.digitalocean.com`
-- **Website** — https://www.digitalocean.com
-- **API docs** — https://docs.digitalocean.com/reference/api/
+- **Triggers** — 1 (poll)
 
-Probed live against `api.digitalocean.com` on 2026-08-19.
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-domain-record` | poll | `domain-record-list` | Each DNS record newly added to the domain (`domain` parameter) |
+
+`domain-record-list` has no sort argument, so one domain's records are watched as a snapshot of a single request of 200 (the API's page cap); a domain with more than 200 records fails the check with a clear error instead of missing records. Events carry the record plus the action's `qualifiedName`.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://docs.digitalocean.com/reference/api/digitalocean/> (domain records, verified 2026-11-09).
 
 ## Everything bills by the hour until it is destroyed
 

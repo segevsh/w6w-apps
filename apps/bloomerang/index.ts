@@ -17,6 +17,7 @@ import createTask from "./actions/create-task.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedTransaction from "./triggers/new-or-updated-transaction.ts";
 
 export default {
   actions: [
@@ -37,4 +38,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newOrUpdatedTransaction],
 } satisfies AppDefinition;

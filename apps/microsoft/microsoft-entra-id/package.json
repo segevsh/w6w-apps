@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/microsoft-entra-id",
-  "version": "0.1.0",
-  "description": "Manage Microsoft Entra ID users, groups, directory roles, applications and deleted items through the Microsoft Graph API.",
+  "version": "0.2.0",
+  "description": "Manage Microsoft Entra ID directory objects and trigger workflows on newly deleted items.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,12 @@
         "graph.microsoft.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lob",
-  "version": "0.1.0",
-  "description": "Print and mail postcards, letters, checks and self-mailers, verify and autocomplete addresses, and manage address books, templates and bank accounts through Lob.",
+  "version": "0.2.0",
+  "description": "Print and mail postcards, letters, checks and self-mailers, verify and autocomplete addresses, manage address books, templates and bank accounts through Lob, and trigger workflows on new addresses.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.lob.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

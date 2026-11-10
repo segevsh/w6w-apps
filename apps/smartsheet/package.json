@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/smartsheet",
-  "version": "0.1.2",
-  "description": "Read and write Smartsheet sheets, rows, cells and columns; list workspaces, folders, users and reports via the Smartsheet API 2.0.",
+  "version": "0.2.0",
+  "description": "Read and write Smartsheet sheets, rows, cells and columns; list workspaces, folders, users and reports via the Smartsheet API 2.0, with poll triggers for new and updated sheets.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.smartsheet.com/api/smartsheet/openapi",
       "https://smartsheet-platform.github.io/api-docs/"
     ],
-    "longDescription": "Smartsheet runs project and work tracking on a spreadsheet-shaped model of sheets, rows and columns, and this app lets a workflow read and write that data directly. Create a new sheet in a workspace or folder, look up an existing one, and add, update or delete rows and add columns, using the same column-id contract Smartsheet's own API requires so a write always lands in the field you intended.\n\nBeyond individual sheets, list an account's workspaces, folders, sheets and saved reports, search a single sheet or search across the whole account, and look up users on the plan, including the connected user's own profile.\n\nSmartsheet's API is available only on Business and Enterprise plans, so a workflow using this app needs a token minted on one of those.",
+    "longDescription": "Smartsheet runs project and work tracking on a spreadsheet-shaped model of sheets, rows and columns, and this app lets a workflow read and write that data directly. Create a new sheet in a workspace or folder, look up an existing one, and add, update or delete rows and add columns, using the same column-id contract Smartsheet's own API requires so a write always lands in the field you intended.\n\nBeyond individual sheets, list an account's workspaces, folders, sheets and saved reports, search a single sheet or search across the whole account, and look up users on the plan, including the connected user's own profile.\n\nSmartsheet's API is available only on Business and Enterprise plans, so a workflow using this app needs a token minted on one of those.\n\nPoll triggers emit each new or updated sheet, read from the list-sheets request with a modified-since window.",
     "categories": [
       "spreadsheets",
       "productivity"
@@ -40,7 +40,12 @@
         "api.smartsheet.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

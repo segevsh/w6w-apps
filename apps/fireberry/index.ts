@@ -19,6 +19,7 @@ import objectGet from "./actions/object-get.ts";
 import fieldList from "./actions/field-list.ts";
 import fieldGet from "./actions/field-get.ts";
 import picklistValues from "./actions/picklist-values.ts";
+import newRecord from "./triggers/new-record.ts";
 
 /**
  * Fireberry (formerly Powerlink) CRM. Record CRUD is generic over the object
@@ -49,4 +50,5 @@ export default {
   ],
   auth: [token],
   healthChecks: [service, api, quota],
+  triggers: [newRecord],
 } satisfies AppDefinition;

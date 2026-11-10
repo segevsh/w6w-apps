@@ -6,6 +6,7 @@ formerly known as Clubhouse — on the **Shortcut REST API v3**.
 - **Categories** — project-management, developer-tools
 - **Auth methods** — api-token
 - **Actions** — 36
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.app.shortcut.com` (the `service` check adds `status.shortcut.com` to
   its own hook allowlist, never to the app's)
@@ -301,3 +302,16 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-story` — New Story | poll | `story-search` (`created_at_start`) | the new story |
+| `new-or-updated-story` — New or Updated Story | poll | `story-search` (`updated_at_start`) | a story created or updated (each new `updated_at` is a new event) |
+
+The first check only records the time (`floor`) and emits nothing, and anything created (`created_at`) / updated (`updated_at`) before that time is never emitted. Each later check re-reads `created_at_start` / `updated_at_start` from the last drained cursor minus 2 minutes, remembers up to 500 emitted ids and skips them. A window larger than 100 stories is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained. `POST /stories/search` answers one unpaged array, so a window is one request: the array is sorted oldest-first by the trigger (the vendor's order is not relied on), the oldest 100 unseen stories are emitted per check, and the window resumes from the last emitted timestamp until it is drained.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `story-search` with the connection's credentials.
+
+Vendor docs: https://developer.shortcut.com/api/rest/v3 (verified 2026-11-09: Query Stories documents `created_at_start` — "created on or after this date" — and `updated_at_start`)

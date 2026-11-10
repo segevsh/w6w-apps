@@ -6,6 +6,8 @@ Work orders, assets, locations, parts, users, teams, vendors and meters in
 comes from the vendor's OpenAPI 3.0 document (`/v1/openapi.json`, fetched
 2026-10-06) and was spot-checked against the live host. App id `io.w6w.maintainx`.
 
+- **Triggers** — 2 (poll)
+
 ## Auth
 
 One method, `api-key` (type `bearer`): `Authorization: Bearer <key>`, where the key
@@ -91,3 +93,14 @@ asset path.
 | `auth:api-key` (derived) | `GET /organizations?limit=1`, classified from the response body. An unauthenticated call answers `401 text/html` with `Invalid authentication token` (credential never attached); a bad key answers `401 application/json` `{"error":"Invalid token"}`. A 200 must carry an `organizations` array. The response contains no credential material. |
 | `service` | Better Stack status page `https://status.getmaintainx.com/en/index.json` (verified: `company_name: "MaintainX"`, resources `MaintainX App`, `REST API`, `GraphQL API`, `Website`). The verdict is the `REST API` component; the rest are reported as detail. `/api/v2/summary.json` 302s, so this is not Statuspage. The endpoint answers JSON with `content-type: text/html`. |
 | `quota` | Declared unavailable (`informational`): the OpenAPI document and live responses expose no rate-limit headers. |
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-work-order` — New Work Order | Poll | `workorder-list` | Each newly created work order |
+| `new-or-updated-work-order` — New or Updated Work Order | Poll | `workorder-list` | Each work order that was created or edited |
+
+`GET /workorders` takes an explicit `sort` (`-createdAt` / `-updatedAt`; a `-` prefix is descending), so the triggers send `sort=-createdAt` or `sort=-updatedAt` with `limit=100` and read the first page. The edited-record trigger dedupes on `id:updatedAt`. The users list (`user-list`) is not used: the vendor documents no sort or default order for `GET /users`. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor OpenAPI document](https://api.getmaintainx.com/v1/openapi.json) (verified 2026-11-10).

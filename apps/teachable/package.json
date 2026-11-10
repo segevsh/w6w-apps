@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teachable",
-  "version": "0.1.0",
-  "description": "Manage courses, students, enrollments, pricing plans and transactions on a Teachable school.",
+  "version": "0.2.0",
+  "description": "Manage courses, students, enrollments, pricing plans and transactions on a Teachable school. Trigger for new transactions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "developers.teachable.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

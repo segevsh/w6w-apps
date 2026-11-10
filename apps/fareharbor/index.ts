@@ -52,6 +52,7 @@ import bookingResendConfirmation from "./actions/booking-resend-confirmation.ts"
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newBooking from "./triggers/new-booking.ts";
 
 export default {
   actions: [
@@ -82,4 +83,5 @@ export default {
   ],
   auth: [apiKeys],
   healthChecks: [service, api, quota],
+  triggers: [newBooking],
 } satisfies AppDefinition;

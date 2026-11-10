@@ -3,6 +3,7 @@
 Run and inspect Checkly synthetic monitors, their results, alerts and
 maintenance windows.
 
+- **Triggers** — 1 (poll)
 - **Categories** — monitoring, devops, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 25
@@ -187,3 +188,17 @@ and `account-entitlements-get` offers the allowance as the plain read it is.
 Checkly's envelope is `{statusCode, error, message}`. The message is the useful
 half — *"Missing authentication"* — and validation failures put per-field detail
 there too, so the whole body is surfaced.
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-check-result` | New Check Result | poll (since-filter) | `check-result-list` | Each new final result of one check, optionally failures only |
+
+The poll calls the same `GET /v1/check-results/{checkId}` request as `check-result-list` with
+`resultType=FINAL` (so retry attempts are not events), `hasFailures=true` when "Failures only" is on,
+and `from` set to the previous check minus two minutes as a Unix timestamp, then de-duplicates on the
+result id. Checkly documents `from` / `to` (Unix timestamps), `hasFailures` and `resultType` for this
+endpoint in its OpenAPI document, <https://api.checklyhq.com/openapi.json> (verified 2026-11-09). A
+trigger that was stopped looks back at most one hour. The first check records the current window and
+emits nothing. No webhook code is included.

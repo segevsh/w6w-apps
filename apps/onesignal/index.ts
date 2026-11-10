@@ -75,6 +75,7 @@ import viewApp from "./actions/view-app.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -108,4 +109,5 @@ export default {
   // the Organization-key endpoints are both deliberately out of scope.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

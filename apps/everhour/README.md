@@ -6,7 +6,7 @@ expenses, invoices, the resource-planner schedule, time off, reports, users and 
 
 - App id: `io.w6w.everhour` · categories: `productivity`, `project-management`, `finance`
 - Host: `api.everhour.com` (the only entry in `network.allow`) · no path prefix
-- Source of truth: Everhour's API Blueprint, `https://jsapi.apiary.io/apis/everhour.apib`
+- Source of truth: Everhour's API Blueprint, `https://developers.everhour.com/` (the original API Blueprint at jsapi.apiary.io no longer resolves)
   (73 KB, fetched 2026-10-06), plus unauthenticated live probes of `api.everhour.com` the same
   day. The blueprint calls the API **BETA**.
 - Icon: `https://everhour.com/assets/images/favicon.svg`, saved verbatim (2,189 bytes).
@@ -199,3 +199,20 @@ strings like `ev:123` / `as:456` (the colon stays literal in a path).
 `deno task test` — every action has its own file under `tests/actions/` asserting verb, path,
 query, JSON body, the version header, absence of a credential header, the output shape and an
 error path; plus `tests/index.test.ts`, `tests/lib/`, `tests/auth/` and `tests/health/`.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-client` — New Client | Poll | `client-list` | Each client newly added to the account |
+| `new-invoice` — New Invoice | Poll | `invoice-list` | Each invoice newly created in the account |
+
+Everhour documents that `GET /clients` and `GET /invoices` return the full collection in a single
+response with no pagination support ([pagination](https://developers.everhour.com/pagination.md)).
+Each check diffs that set against the previous check and emits only additions, never edits or
+removals (an account beyond 5000 rows makes the check fail with an error naming that cap). The first
+check only records what exists. Projects, tasks and time records are paged or date-ranged without a
+documented newest-first order, so they have no poll trigger. Everhour also delivers outbound webhooks
+(`POST /hooks`; the `X-Hook-Secret` header is sent once at the registration handshake and is not
+repeated on event deliveries, so deliveries carry no signature) — queued separately
+([webhooks](https://developers.everhour.com/webhooks.md)). Verified 2026-11-10.

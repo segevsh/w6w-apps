@@ -7,6 +7,7 @@ cellular fleet is costing.
 - **Categories** — iot, devops
 - **Auth methods** — access-token
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.particle.io`, `status.particle.io`
 - **Website** — https://www.particle.io
 - **API docs** — https://docs.particle.io/reference/cloud-apis/api/
@@ -177,3 +178,17 @@ consequential path is still gated or checked**, **publishing still defaults to
 private and the device checks still default to on**, and **nothing logs a
 variable value, a function argument or an event payload**, checked on the log
 call's values rather than its keys.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-device` — New Device | poll | `device-list` | each device newly claimed to the account (snapshot diff on device id) |
+
+Mechanism: **snapshot**. `GET /v1/devices` returns the account's whole device list unpaged, sorted by last handshake rather than claim time, so each check compares device ids with the previous check; a device that merely reconnects is not new. The first check records the fleet and emits nothing. A fleet above 5000 devices fails the check with an explicit error.
+
+Trust model: Poll only: nothing is registered with Particle. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://docs.particle.io/reference/cloud-apis/api/#list-devices (verified 2026-11-09)

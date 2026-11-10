@@ -49,6 +49,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newArticle from "./triggers/new-article.ts";
 
 export default {
   actions: [
@@ -75,4 +76,5 @@ export default {
   // for this API — see the module doc above and README.md.
   auth: [bearerToken],
   healthChecks: [service, quota],
+  triggers: [newArticle],
 } satisfies AppDefinition;

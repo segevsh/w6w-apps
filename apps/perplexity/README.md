@@ -5,6 +5,7 @@ standalone web search, and text embeddings via the Perplexity API.
 
 - **Categories** — ai
 - **Auth methods** — api-key
+- **Triggers** — 1 (poll)
 - **Actions** — 5
 - **Egress allowlist** — `api.perplexity.ai`
 - **Website** — https://www.perplexity.ai
@@ -256,3 +257,13 @@ canvas.
 Researched and endpoint-verified 2026-08-16 against `https://docs.perplexity.ai/openapi.json`
 and live probes on `api.perplexity.ai` / `status.perplexity.com`. Status surfaces and the
 Sonar-to-Agent-API migration timeline both move; re-check before relying on either.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-model` — New Model Available | Poll | `list-models` | Each model newly added to the Agent API model catalog |
+
+`new-model` snapshots `GET /v1/models`, a short vendor-wide list returned in one request ([List Models](https://docs.perplexity.ai/api-reference/models-get)), and emits only additions; the first check records what is listed without emitting events (verified 2026-11-10).
+
+Not a trigger: `web-search` is an ad-hoc ranked search, not a persistent record feed ([Search overview](https://docs.perplexity.ai/docs/search/overview)).

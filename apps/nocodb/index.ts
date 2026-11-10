@@ -34,6 +34,7 @@ import tableList from "./actions/table-list.ts";
 import tableGet from "./actions/table-get.ts";
 import viewList from "./actions/view-list.ts";
 import webhookList from "./actions/webhook-list.ts";
+import newRecord from "./triggers/new-record.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -51,6 +52,7 @@ const app: AppDefinition = {
     viewList,
     webhookList,
   ],
+  triggers: [newRecord],
   auth: [apiToken],
   healthChecks: [service, instance, quota],
 };

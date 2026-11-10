@@ -33,6 +33,7 @@ import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newIssue from "./triggers/new-issue.ts";
 
 export default {
   actions: [
@@ -69,4 +70,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newIssue],
 } satisfies AppDefinition;

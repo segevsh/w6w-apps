@@ -169,3 +169,15 @@ deno task lint
 deno task fmt        # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 deno task validate   # @w6w/validator manifest audit
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Record (`new-record`) | poll | `record-list` — by the creation-time field you choose, descending (`sort_field`, `sort_order=desc`) | each newly created record |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `record-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://docs.knack.com/reference/sorting (verified 2026-11-09). Sorting is documented as `sort_field` (the field key) plus `sort_order` (`asc` or `desc`), and https://docs.knack.com/reference/pagination documents `page` / `rows_per_page`. Knack has no table-independent creation order, so you name the field that records creation time on the table you watch; with a field that does not, the trigger sees the wrong rows as new.

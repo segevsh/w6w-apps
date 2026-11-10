@@ -11,6 +11,7 @@ them, and do not modify those apps from here.
 - **Categories** — finance, commerce
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 17
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `www.zohoapis.com`, `www.zohoapis.eu`, `www.zohoapis.in`,
   `www.zohoapis.com.au`, `www.zohoapis.jp`, `www.zohoapis.ca`, `www.zohoapis.com.cn`,
   `www.zohoapis.sa`, `us.zohostatus.com`
@@ -266,3 +267,22 @@ Researched and endpoint-verified 2026-09-22 against `https://www.zoho.com/invent
 plus live probes against all eight `www.zohoapis.<tld>` API hosts, their accounts hosts, and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-item` | poll | `item-list` | a catalog item when it is created |
+| `new-or-updated-item` | poll | `item-list` | a catalog item when it is created or edited |
+
+There is no setup: enable a trigger on a connection and it polls about every 5 minutes.
+
+`new-item` requests `sort_column=created_time&sort_order=D` and `new-or-updated-item` requests `sort_column=last_modified_time&sort_order=D`, 100 items each. Both go through the existing `item-list` action, which gained two optional, default-preserving `sort_column` / `sort_order` parameters (unset, the request is unchanged). Set the `organizationId` trigger parameter, or leave it empty to use the organization recorded on the connection. `new-or-updated-item` keys each item by `item_id` plus `last_modified_time`, so an edit fires again.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- List all the items — `sort_column` "Allowed values: name, sku, rate, purchase_rate, created_time, last_modified_time, reorder_level, stock_on_hand" and `sort_order` "A for ascending and D for descending"; the response carries `created_time` and `last_modified_time`: https://www.zoho.com/inventory/api/v1/items/
+
+Not covered: contacts document `sort_column` (including `created_time` and `last_modified_time`) but no sort direction (https://www.zoho.com/inventory/api/v1/contacts/), so a newest-first contact feed cannot be requested from the docs; sales orders document only `page`, `per_page` and `salesorder_ids` (https://www.zoho.com/inventory/api/v1/salesorders/). The `contact-list` and `salesorder-list` actions therefore have no trigger.

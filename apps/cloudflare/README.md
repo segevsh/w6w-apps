@@ -2,6 +2,7 @@
 
 Consume Cloudflare API
 
+- **Triggers** — 1 (poll)
 - **Categories** — devops
 - **Auth methods** — api-token
 - **Actions** — 8
@@ -131,3 +132,18 @@ Researched and endpoint-verified 2026-08-01 against `developers.cloudflare.com` 
 and n8n's `nodes-base/nodes/Cloudflare` / `credentials/CloudflareApi.credentials.ts` (auth scheme
 cross-check). Status surfaces and deprecations move; re-verify if a probe starts failing for
 everyone at once.
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-dns-record` | New DNS Record | poll (bounded snapshot) | `dns-record-list` | Each DNS record added to a zone since the last check |
+
+The poll calls the same `GET /zones/{zone_id}/dns_records` request as `dns-record-list` with
+`per_page=5000`, so a zone's whole record set arrives in one request, and diffs the record ids
+against the previous check (a zone holding more than 5000 records fails the check with an error
+naming the cap rather than missing records). Cloudflare documents `per_page` (up to 5,000,000) and
+the record `id` / `created_on` fields at
+<https://developers.cloudflare.com/api/resources/dns/subresources/records/methods/list/>
+(verified 2026-11-09). Zones themselves are not polled: Cloudflare caps a zone list at 50 per page.
+The first check records the zone's current records and emits nothing. No webhook code is included.

@@ -6,12 +6,29 @@ liabilities — and manage the Items that connect them.
 - **Categories** — finance, databases
 - **Auth methods** — client-secret, client-secret-sandbox
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `sandbox.plaid.com`, `production.plaid.com`
 - **Website** — https://plaid.com
 - **API docs** — https://plaid.com/docs/api
 
 Paths come from Plaid's reference; the hosts, credential placement and error
 taxonomy were verified live on 2026-08-18.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transaction` — New Transaction | Poll | `transaction-sync` | Each transaction newly added to the Item |
+
+Takes the Item's `accessToken` as a trigger setting. Polled through the `transaction-sync` action
+(`POST /transactions/sync`), Plaid's cursor change feed: the response carries `added`, `modified`,
+`removed` and a `next_cursor` that stays valid once every page is pulled. The first check walks the
+Item's history to its latest cursor and stores only that cursor, emitting nothing; later checks pass the
+stored cursor (up to 5 pages of 100 updates), emit the `added` transactions and store the new cursor.
+`modified` and `removed` are not events of this trigger. Plaid accepts `cursor: "now"` only for
+migrating from `/transactions/get`, so it is not used. Source:
+[Plaid /transactions/sync](https://plaid.com/docs/api/products/transactions/#transactionssync)
+(verified 2026-11-10).
 
 ## Everything is a POST, and the credential goes in the body
 

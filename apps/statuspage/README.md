@@ -197,3 +197,18 @@ per second, so the client names the limit in the error instead.
 - **Page settings, branding and custom domains.** Configured once, by a human.
 - **Postmortems.** Written prose with a publication workflow of their own; an
   automation has nothing useful to say in one.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | Poll | `subscriber-list` | Each newly created subscriber, in any state |
+
+Polled newest-first through `subscriber-list` with its `newestFirst` option, which sends
+`GET /pages/{page_id}/subscribers?sort_field=created_at&sort_direction=desc&limit=100&page=0`: the
+endpoint documents a zero-based `page`, `limit`, and `sort_field=created_at`. `state=all` so a
+subscriber counts as soon as it exists (an email subscriber stays `unconfirmed` until confirmed; the
+vendor's default is `active` only). The first check records what exists without firing; later checks
+emit unseen ids from the newest 100. A `pageId` setting overrides the connection's page. Nothing to set
+up on the vendor side. Incidents and components have no created-since filter or sort order, so they have
+no trigger. Source: [Statuspage API, Get a list of subscribers](https://developer.statuspage.io/#operation/getPagesPageIdSubscribers) (verified 2026-11-10).

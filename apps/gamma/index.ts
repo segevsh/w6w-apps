@@ -62,6 +62,7 @@ import getGammaViewerAnalytics from "./actions/get-gamma-viewer-analytics.ts";
 import getGammaViewerDetailAnalytics from "./actions/get-gamma-viewer-detail-analytics.ts";
 
 import service from "./health/service.ts";
+import newOrUpdatedGammaComment from "./triggers/new-or-updated-gamma-comment.ts";
 
 export default {
   actions: [
@@ -92,6 +93,7 @@ export default {
     getGammaViewerDetailAnalytics,
   ],
   // API key only — see the module comment for why OAuth is left out.
+  triggers: [newOrUpdatedGammaComment],
   auth: [apiKey],
   healthChecks: [service],
 } satisfies AppDefinition;
