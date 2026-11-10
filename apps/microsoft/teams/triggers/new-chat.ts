@@ -16,15 +16,12 @@ const newChat: TriggerDefinition<Record<string, never>> = {
     { key: "chatType", type: "string", label: "Type (oneOnOne, group, meeting)" },
     { key: "topic", type: "string", label: "Topic" },
     { key: "createdDateTime", type: "string", label: "Created at" },
-    { key: "webUrl", type: "string", label: "Link" },
   ],
   sample: {
     id: "19:2da4c29f6d7041eca70b638b43d45437@thread.v2",
     chatType: "group",
     topic: "Launch planning",
     createdDateTime: "2026-11-09T12:00:00Z",
-    webUrl:
-      "https://teams.microsoft.com/l/chat/19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2/0",
   },
   minIntervalMs: TEAMS_MIN_INTERVAL_MS,
   poll({ state }, ctx) {

@@ -308,32 +308,6 @@ export async function checkNewDrafts(
   return { events: events.map((e) => e.values as GmailDraft), nextState };
 }
 
-export const newLabelTrigger: TriggerDefinition<Record<string, never>> = {
-  key: "new-label",
-  title: "New Label",
-  description:
-    "Runs when a new label is created in the mailbox. The run gets the label's id, name, type and visibility settings.",
-  output: NEW_LABEL_OUTPUT,
-  sample: NEW_LABEL_SAMPLE,
-  minIntervalMs: 300_000,
-  poll({ state }, ctx) {
-    return checkNewLabels(state, ctx);
-  },
-};
-
-export const newDraftTrigger: TriggerDefinition<Record<string, never>> = {
-  key: "new-draft",
-  title: "New Draft",
-  description:
-    "Runs when a new draft is saved in the mailbox. The run gets the draft's id and its message and thread ids; use Get Draft for the content.",
-  output: NEW_DRAFT_OUTPUT,
-  sample: NEW_DRAFT_SAMPLE,
-  minIntervalMs: 300_000,
-  poll({ state }, ctx) {
-    return checkNewDrafts(state, ctx);
-  },
-};
-
 // ---------------------------------------------------------------------------------------------
 // New or Updated Thread: a since-filter poll (Gmail threads.list has no documented order).
 // ---------------------------------------------------------------------------------------------
@@ -468,17 +442,3 @@ export async function checkThreads(
     : { v: 1, kind: "ids", seeded: true, ids, cursor: window.until, floor: prior.floor };
   return { events, nextState };
 }
-
-export const newOrUpdatedThreadTrigger: TriggerDefinition<ThreadParams> = {
-  key: "new-or-updated-thread",
-  title: "New or Updated Thread",
-  description:
-    "Runs when a conversation gets a new message (or changes) after the trigger was set up. The run gets the thread's id, snippet and history id; fetch the messages with Get Thread.",
-  params: NEW_OR_UPDATED_THREAD_PARAMS,
-  output: NEW_OR_UPDATED_THREAD_OUTPUT,
-  sample: NEW_OR_UPDATED_THREAD_SAMPLE,
-  minIntervalMs: 60_000,
-  poll({ params, state }, ctx) {
-    return checkThreads(params, state, ctx);
-  },
-};

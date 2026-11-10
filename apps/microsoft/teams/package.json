@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teams",
   "version": "0.2.0",
-  "description": "Read teams and channels, and send channel and chat messages, in Microsoft Teams via the Microsoft Graph API, and trigger a workflow on new channel messages, chats, chat messages, teams, channels and members.",
+  "description": "Read teams and channels, and send channel and chat messages, in Microsoft Teams via the Microsoft Graph API, and trigger a workflow on new messages, chats, teams, channels and members.",
   "license": "MIT",
   "author": {
     "name": "w6w"

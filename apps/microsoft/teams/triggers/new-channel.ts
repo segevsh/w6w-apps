@@ -15,7 +15,7 @@ const newChannel: TriggerDefinition<Params> = {
   key: "new-channel",
   title: "New Channel",
   description:
-    "Fires when a new channel is added to a team. The run gets the channel's id, name, description, type and link.",
+    "Fires when a new channel is added to a team. The run gets the channel's id, name, description and type.",
   params: [
     { key: "teamId", label: "Team ID", type: "string", required: true, hint: "From List Teams." },
   ],
@@ -24,15 +24,12 @@ const newChannel: TriggerDefinition<Params> = {
     { key: "displayName", type: "string", label: "Name" },
     { key: "description", type: "string", label: "Description" },
     { key: "membershipType", type: "string", label: "Type (standard, private, shared)" },
-    { key: "webUrl", type: "string", label: "Link" },
   ],
   sample: {
     id: "19:561082c0f3f847a58069deb8eb300807@thread.skype",
     displayName: "Announcements",
     description: "Company news",
     membershipType: "standard",
-    webUrl:
-      "https://teams.microsoft.com/l/channel/19%3A561082c0f3f847a58069deb8eb300807%40thread.skype/Announcements",
   },
   minIntervalMs: TEAMS_MIN_INTERVAL_MS,
   poll({ params, state }, ctx) {
