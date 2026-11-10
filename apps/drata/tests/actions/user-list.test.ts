@@ -49,3 +49,10 @@ test("user-list: a 403 names the permission problem and keeps Drata's message", 
   assert(err.message.includes("Forbidden resource"), err.message);
   assert(err.message.includes("permission"), err.message);
 });
+
+test("user-list: with no sort input the request carries no sort or sortDir (URL unchanged)", async () => {
+  const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }], null, 1) }]);
+  await userList.execute({ size: 25 }, ctx);
+  assertEquals(queryOf(calls[0].url).has("sort"), false);
+  assertEquals(queryOf(calls[0].url).has("sortDir"), false);
+});
