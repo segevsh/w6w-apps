@@ -1,0 +1,41 @@
+import { webhookTrigger } from "../lib/triggers.ts";
+
+export default webhookTrigger({
+  key: "sms-recipient-response-missed",
+  title: "SMS Response Missed",
+  description:
+    "The run gets each SMS reply a recipient sent that the organization could not handle in time.",
+  trigger: 14,
+  triggerName: "smsRecipientResponseMissed",
+  extended: true,
+  sample: {
+    "triggerId": 14,
+    "triggerName": "smsRecipientResponseMissed",
+    "time": 1763467200000,
+    "taskId": null,
+    "workerId": null,
+    "adminId": null,
+    "task": null,
+    "worker": null,
+    "data": null,
+    "status": null,
+    "etaSeconds": null,
+    "distance": null,
+    "delay": null,
+    "from": "+15555550100",
+    "to": "+15555550199",
+    "body": "Where is my package?",
+    "recipient": null,
+    "routePlanId": null,
+    "dispatchId": null,
+    "actionContext": null,
+    "delivery": {
+      "triggerId": 14,
+      "triggerName": "smsRecipientResponseMissed",
+      "time": 1763467200000,
+      "from": "+15555550100",
+      "to": "+15555550199",
+      "body": "Where is my package?",
+    },
+  },
+});
