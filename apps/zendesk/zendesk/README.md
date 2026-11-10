@@ -5,7 +5,7 @@ Manage Zendesk Support tickets, users and organizations.
 - **Categories** — support, crm
 - **Auth methods** — api-token, oauth2
 - **Actions** — 17
-- **Triggers** — 3 (webhook)
+- **Triggers** — 12 (webhook)
 - **Egress allowlist** — `*.zendesk.com`
 - **Website** — https://www.zendesk.com
 - **API docs** — https://developer.zendesk.com/api-reference/
@@ -17,6 +17,30 @@ Manage Zendesk Support tickets, users and organizations.
 | `new-ticket` — New Ticket | webhook (API-registered) | `zen:event-type:ticket.created` | The new ticket and the event that announced it |
 | `ticket-status-changed` — Ticket Status Changed | webhook (API-registered) | `zen:event-type:ticket.status_changed` | The ticket, with the previous and current status in `event` |
 | `ticket-comment-added` — Ticket Comment Added | webhook (API-registered) | `zen:event-type:ticket.comment_added` | The ticket and the comment (author, body, public or private) in `event` |
+| `ticket-deleted` — Ticket Deleted | webhook (API-registered) | `zen:event-type:ticket.soft_deleted` | The ticket as it was when it was deleted |
+| `ticket-priority-changed` — Ticket Priority Changed | webhook (API-registered) | `zen:event-type:ticket.priority_changed` | The ticket, with the previous and current priority in `event` |
+| `ticket-assignee-changed` — Ticket Assignee Changed | webhook (API-registered) | `zen:event-type:ticket.agent_assignment_changed` | The ticket, with the previous and current assignee id in `event` |
+| `new-user` — New User | webhook (API-registered) | `zen:event-type:user.created` | The new user |
+| `user-deleted` — User Deleted | webhook (API-registered) | `zen:event-type:user.deleted` | The user as it was |
+| `user-details-changed` — User Details Changed | webhook (API-registered) | `zen:event-type:user.details_changed` | The user, with the previous and current details in `event` |
+| `new-organization` — New Organization | webhook (API-registered) | `zen:event-type:organization.created` | The new organization |
+| `organization-deleted` — Organization Deleted | webhook (API-registered) | `zen:event-type:organization.deleted` | The organization as it was |
+| `any-event` — Any Event | webhook (API-registered) | the event types you list in `events` | The event (type, resource id, resource, what changed) for any of the listed types |
+
+**Any Event.** Zendesk has no "all events" subscription value, so `events` is a required comma-separated
+list of event types, with or without the `zen:event-type:` prefix (`ticket.merged, user.role_changed`).
+The catalog is in the event-type reference below (tickets, users, organizations, articles, agent
+availability, messaging, access logs). Zendesk has no single "ticket updated" event: priority, status,
+assignee, tags, group, requester and so on are separate types, so name the ones you need. Only the
+types you list are delivered to the run.
+
+**Not covered.** There is no `organization-updated` trigger: Zendesk reports an organization change as
+`name_changed`, `tags_changed`, `external_id_changed` or `custom_field_changed`, so pick those in Any Event.
+List actions: the ticket, ticket-search, user-search and organization lists are served by the
+`new-ticket`, `new-user` and `new-organization` triggers (the lists are the same records; the ticket
+list action pages by cursor, where Zendesk's `sort_by` does not apply and tickets come oldest first by id,
+so a poll would add nothing the webhook does not already deliver);
+`ticket-field-get-many` returns field definitions (reference data).
 
 **Setup.** None by hand. Subscribing to a trigger calls `POST /api/v2/webhooks` to create an
 event-subscription webhook named `w6w <subscription id>` that delivers to the host's callback URL,
@@ -37,9 +61,12 @@ and starts no run. The signing secret is kept in the subscription state, which t
 unsealed. Zendesk's "Test webhook" button before a webhook exists signs with a fixed dummy secret,
 so such a test is refused by design.
 
-Sources (verified 2026-11-09): https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/ ,
+Sources (verified 2026-11-10): https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/ ,
 https://developer.zendesk.com/documentation/webhooks/verifying/ ,
-https://developer.zendesk.com/api-reference/webhooks/event-types/ticket-events/
+https://developer.zendesk.com/api-reference/webhooks/event-types/ticket-events/ ,
+https://developer.zendesk.com/api-reference/webhooks/event-types/user-events/ ,
+https://developer.zendesk.com/api-reference/webhooks/event-types/organization-events/ ,
+https://developer.zendesk.com/api-reference/webhooks/event-types/webhook-event-types/
 
 ## Health check
 
