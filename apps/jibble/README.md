@@ -1,14 +1,25 @@
 # Jibble
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 10 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | `new-activity` — New Activity | poll | `activity-list` | Each new time-tracking activity |
+| `new-project` — New Project | poll | `project-list` | Each new project |
+| `new-client` — New Client | poll | `client-list` | Each new client |
+| `new-location` — New Location | poll | `location-list` | Each new location |
+| `new-group` — New Group | poll | `group-list` | Each new group (team) |
+| `new-member` — New Member | poll | `member-list` | Each newly added person |
+| `new-or-updated-member` — New or Updated Member | poll | `member-list` | A person who was added or edited |
+| `new-time-entry` — New Time Entry | poll | `time-entry-list` | Each new clock-in / clock-out entry |
+| `new-or-updated-time-entry` — New or Updated Time Entry | poll | `time-entry-list` | A time entry that was created or corrected |
+| `new-time-off-request` — New Time Off Request | poll | `time-off-list` | Each new time-off request for a current or upcoming day |
 
-Jibble documents its API collection at https://docs.api.jibble.io/ and the workspace OData model at https://workspace.prod.jibble.io/v1/$metadata (both verified 2026-11-09); `Activity` carries a `createdAt` (`Edm.DateTimeOffset`), so the trigger's `$orderby=createdAt desc` returns the newest activities first.
+Jibble documents its API collection at https://docs.api.jibble.io/ and the OData models at https://workspace.prod.jibble.io/v1/$metadata and https://time-tracking.prod.jibble.io/v1/$metadata (all verified 2026-11-10). `Activity`, `Project`, `Client`, `Location` and `TimeEntry` carry `createdAt` / `updatedAt` (`Edm.DateTimeOffset`), and `Person` and `Group` inherit both from `Unit`, so the newest-first triggers send `$orderby=createdAt desc` (or `updatedAt desc` for the `new-or-updated-…` pair) with `$top=100&$skip=0`. Time-off requests (`TimeOffOverview`) have no created or updated stamp, so `new-time-off-request` reads the requests that have not ended yet (`$filter=endDate ge <today, UTC>`, page by page until an empty page, at most 5000 rows) and reports ids it has not seen; a request filed for a day that is already past is not seen.
+
+Not covered: `leave-balance-list` (per person and policy balances, recomputed, no id or created stamp) and `timesheet-list` (a computed daily report, not a record feed).
 
 Track time, manage people, and run attendance reports against the **Jibble** time-tracking API.
 
