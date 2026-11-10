@@ -7,7 +7,7 @@ const input = { params: {}, subscriptionId: "sub-1" };
 const ctx = (body: unknown) => mockCtx([{ body }]);
 
 test("new-deal: seeds, emits new rows, retries idempotently, and requests the ordered feed", async () => {
-  const seed = ctx({ data: [{ id: "a" }] });
+  const seed = ctx({ data: [{ id: "a", type: "deals", attributes: {} }] });
   const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
@@ -19,11 +19,23 @@ test("new-deal: seeds, emits new rows, retries idempotently, and requests the or
 
   const first = await trigger.poll!(
     { ...input, state: seeded.nextState },
-    ctx({ data: [{ id: "b" }, { id: "a" }] }).ctx,
+    ctx({
+      data: [{ id: "b", type: "deals", attributes: {} }, {
+        id: "a",
+        type: "deals",
+        attributes: {},
+      }],
+    }).ctx,
   );
   const retry = await trigger.poll!(
     { ...input, state: seeded.nextState },
-    ctx({ data: [{ id: "b" }, { id: "a" }] }).ctx,
+    ctx({
+      data: [{ id: "b", type: "deals", attributes: {} }, {
+        id: "a",
+        type: "deals",
+        attributes: {},
+      }],
+    }).ctx,
   );
   assertEquals(first.events.length, 1);
   assertEquals(retry, first);

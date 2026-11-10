@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/raisely",
   "version": "0.2.0",
-  "description": "Read and manage Raisely campaigns, fundraiser profiles, donations, supporters (users), recurring subscriptions and tags — the peer-to-peer fundraising platform Includes a poll trigger for new campaign.",
+  "description": "Manage Raisely campaigns, profiles, donations, supporters, subscriptions and tags; trigger workflows on new campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"

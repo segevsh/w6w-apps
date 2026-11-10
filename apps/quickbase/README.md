@@ -374,4 +374,4 @@ starts failing for everyone at once.
 | --- | --- | --- | --- |
 | `new-table` — New Table | Poll | `list-tables` | Each newly created table |
 
-Polled through the existing `list-tables` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/quickbase) (verified 2026-11-09).
+Polled through the existing `list-tables` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.quickbase.com/operation/get-app-tables) (verified 2026-11-09).

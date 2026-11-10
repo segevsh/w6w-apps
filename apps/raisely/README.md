@@ -118,4 +118,4 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | --- | --- | --- | --- |
 | `new-campaign` — New Campaign | Poll | `campaign-list` | Each newly created campaign |
 
-Polled through the existing `campaign-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/raisely) (verified 2026-11-09).
+Polled through the existing `campaign-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developers.raisely.com/) (verified 2026-11-09).

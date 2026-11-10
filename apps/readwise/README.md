@@ -246,4 +246,4 @@ cd ../../_tools && deno run --no-check -A audit.ts readwise
 | --- | --- | --- | --- |
 | `new-book` — New Book | Poll | `book-list` | Each newly created book |
 
-Polled through the existing `book-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/readwise) (verified 2026-11-09).
+Polled through the existing `book-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://readwise.io/api_deets) (verified 2026-11-09).

@@ -297,4 +297,4 @@ deno task test
 | --- | --- | --- | --- |
 | `new-order` — New Order | Poll | `order-list` | Each newly created order |
 
-Polled through the existing `order-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/razorpay) (verified 2026-11-09).
+Polled through the existing `order-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://razorpay.com/docs/api/orders/) (verified 2026-11-09).

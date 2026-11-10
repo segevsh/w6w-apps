@@ -368,4 +368,4 @@ No runtime dependencies: `@w6w/types` is types-only.
 | --- | --- | --- | --- |
 | `new-collection` — New Collection | Poll | `collection-list` | Each newly created collection |
 
-Polled through the existing `collection-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/raindrop) (verified 2026-11-09).
+Polled through the existing `collection-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.raindrop.io/v1/collections) (verified 2026-11-09).

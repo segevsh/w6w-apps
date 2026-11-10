@@ -211,4 +211,4 @@ deno task validate       # @w6w/validator CLI, via _tools/audit.ts
 | --- | --- | --- | --- |
 | `new-chat` — New Chat | Poll | `chat-list` | Each newly created chat |
 
-Polled through the existing `chat-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/pushbullet) (verified 2026-11-09).
+Polled through the existing `chat-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://docs.pushbullet.com) (verified 2026-11-09).

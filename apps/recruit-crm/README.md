@@ -75,4 +75,4 @@ and the logo in the spec's `x-logo` answers 403). Nothing was redrawn.
 | --- | --- | --- | --- |
 | `new-job` — New Job | Poll | `job-list` | Each newly created job |
 
-Polled through the existing `job-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/recruit-crm) (verified 2026-11-09).
+Polled through the existing `job-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://api.recruitcrm.io/docs) (verified 2026-11-09).

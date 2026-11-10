@@ -118,4 +118,4 @@ deno task test
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
 
-Polled through the existing `contact-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/refiner) (verified 2026-11-09).
+Polled through the existing `contact-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://refiner.io/docs/api/) (verified 2026-11-09).

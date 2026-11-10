@@ -134,4 +134,4 @@ Left out on purpose; none is a limitation of the app's design, only unbuilt:
 | --- | --- | --- | --- |
 | `new-deal` — New Deal | Poll | `deal-list` | Each newly created deal |
 
-Polled through the existing `deal-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/productive) (verified 2026-11-09).
+Polled through the existing `deal-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.productive.io) (verified 2026-11-09).

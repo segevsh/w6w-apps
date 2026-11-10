@@ -286,4 +286,4 @@ Use `deno task fmt`, never a bare `deno fmt` — the bare form reformats asset f
 | --- | --- | --- | --- |
 | `new-invoice` — New Invoice | Poll | `list-invoices` | Each newly created invoice |
 
-Polled through the existing `list-invoices` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/recurly) (verified 2026-11-09).
+Polled through the existing `list-invoices` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://docs.recurly.com/docs/list-an-invoices) (verified 2026-11-09).

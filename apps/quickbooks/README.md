@@ -185,4 +185,4 @@ once.
 | --- | --- | --- | --- |
 | `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer |
 
-Polled through the existing `customer-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/quickbooks) (verified 2026-11-09).
+Polled through the existing `customer-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer) (verified 2026-11-09).
