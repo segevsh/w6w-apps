@@ -248,3 +248,87 @@ export function feedTrigger(
     },
   };
 }
+
+/**
+ * Every change of the given webhook `field`s (null = all) in a verified Page delivery, in the same
+ * normalized shape as the feed events (`value` keeps the raw change).
+ */
+export function changeEvents(payload: MetaPayload, fields: Set<string> | null): FeedEvent[] {
+  if (payload.object !== "page" || !Array.isArray(payload.entry)) return [];
+  const out: FeedEvent[] = [];
+  for (const entry of payload.entry) {
+    for (const change of entry?.changes ?? []) {
+      const field = str(change?.field);
+      if (!field || (fields !== null && !fields.has(field))) continue;
+      const v = obj(change.value) ?? {};
+      const from = obj(v.from);
+      out.push({
+        pageId: str(entry.id),
+        field,
+        item: str(v.item),
+        verb: str(v.verb),
+        postId: str(v.post_id),
+        commentId: str(v.comment_id),
+        parentId: str(v.parent_id),
+        senderId: str(from?.id ?? v.sender_id),
+        senderName: str(from?.name ?? v.sender_name),
+        message: str(v.message),
+        createdTime: typeof v.created_time === "number" ? v.created_time : null,
+        value: v,
+      });
+    }
+  }
+  return out;
+}
+
+/** Page webhook fields this app's Any-event trigger knows (https://developers.facebook.com/docs/graph-api/webhooks/reference/page/, 2026-11-10). */
+export const PAGE_FIELDS = ["feed", "mention", "ratings", "live_videos", "videos", "group_feed"];
+
+/** `events` param → the webhook fields to keep; empty = all. Throws on a malformed name. */
+export function wantedFields(events: unknown): Set<string> | null {
+  const text = typeof events === "string" ? events : "";
+  const list = text.split(",").map((t) => t.trim()).filter((t) => t !== "");
+  if (list.length === 0) return null;
+  for (const f of list) {
+    if (!/^[a-z_]{1,64}$/.test(f)) {
+      throw new Error(`Not a Meta webhook field name: "${f.slice(0, 40)}".`);
+    }
+  }
+  return new Set(list);
+}
+
+export interface AnyEventParams extends MetaParams {
+  /** Comma-separated Page webhook field names; empty = every field delivered. */
+  events?: string;
+}
+
+/** The Any-event trigger: every field of a verified Page delivery, filtered by the `events` list. */
+export function anyEventTrigger(spec: {
+  key: string;
+  title: string;
+  description: string;
+  sample: FeedEvent;
+}): TriggerDefinition<AnyEventParams, FeedEvent, TriggerState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [...META_PARAMS, {
+      key: "events",
+      label: "Fields",
+      type: "string",
+      default: "",
+      hint:
+        "Comma-separated Page webhook fields to react to (feed, mention, ratings, live_videos, videos, group_feed). Empty = every field Meta delivers to this URL.",
+    }],
+    output: OUTPUT,
+    sample: spec.sample,
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+    onUnsubscribe() {},
+    handleIngest({ raw, params }) {
+      return ingestMeta(raw, params, (p) => changeEvents(p, wantedFields(params.events)));
+    },
+  };
+}
