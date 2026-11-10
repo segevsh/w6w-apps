@@ -1,14 +1,25 @@
 # Unbounce
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-lead` — New Lead | Poll | `page-lead-list` | New leads for a page |
+| `new-page` — New Page | Poll | `page-list` | New pages visible to the connection (any sub-account) |
+| `new-domain` — New Domain | Poll | `sub-account-domain-list` | New custom domains of a sub-account |
+| `new-sub-account` — New Sub-Account | Poll | `account-sub-account-list` | New sub-accounts (Clients) of an account |
+| `new-page-group` — New Page Group | Poll | `sub-account-page-group-list` | New page groups of a sub-account |
+| `new-account` — New Account | Poll | `account-list` | New accounts the connection owns |
 
-Unbounce API reference: https://developer.unbounce.com/api_reference/ (verified 2026-11-09).
+All collection endpoints document `sort_order` (creation date); the triggers request `desc` so the
+newest records come first. `account-page-list`, `sub-account-page-list`, `domain-page-list` and
+`page-group-page-list` return pages that `new-page` already delivers (`GET /pages` spans every
+sub-account), so they have no trigger of their own. Not covered: `page-form-field-list` (a page's
+form field definitions, not records).
+
+Unbounce API reference: https://developer.unbounce.com/api_reference/ (verified 2026-11-10).
 
 Landing pages, pop-ups and sticky bars for conversion campaigns, over the
 [Unbounce REST API v0.4](https://developer.unbounce.com/api_reference/)
