@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cognitoforms",
   "version": "0.2.0",
-  "description": "Read Cognito Forms' forms and schemas, and create, read, update and delete form entries via the Cognito Forms REST API. Webhook triggers start a workflow when a form entry is submitted, updated or deleted (set per form in Cognito Forms; unsigned, the callback URL is the secret).",
+  "description": "Read Cognito Forms' forms and schemas, and create, read, update and delete entries via the REST API, plus webhook triggers for new, updated and deleted entries.",
   "license": "MIT",
   "author": {
     "name": "w6w"

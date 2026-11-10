@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/brex",
   "version": "0.2.0",
-  "description": "Manage Brex users, locations, departments, titles, cards, legal entities and company over the Brex Team API v1.0. A signed webhook trigger starts a workflow on Brex transfer, user, referral, expense and accounting events (registered through the API).",
+  "description": "Manage Brex users, locations, departments, titles, cards, legal entities and company over the Team API, plus a signed webhook trigger for Brex events.",
   "license": "MIT",
   "author": {
     "name": "w6w"

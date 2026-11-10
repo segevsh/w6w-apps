@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/clearout",
   "version": "0.2.0",
-  "description": "Verify emails (instant and bulk), find professional emails, reverse-lookup people and companies, validate names and resolve domain MX/Whois with Clearout. Signed webhook triggers start a workflow when a bulk verification or bulk finder list completes or Form Guard validates an email (webhook set up in the Clearout app).",
+  "description": "Verify emails, find professional emails, reverse-lookup people and companies, validate names and resolve MX/Whois with Clearout, plus signed webhook triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

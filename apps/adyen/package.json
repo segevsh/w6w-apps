@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/adyen",
   "version": "0.2.0",
-  "description": "Take and manage payments on Adyen's Checkout API: sessions, payments, payment links, captures, refunds, cancels, stored payment methods and donations. Triggers start a workflow on a payment authorisation, capture, cancellation or refund (signed webhook, set up in the Customer Area).",
+  "description": "Take and manage Adyen payments: sessions, payments, links, captures, refunds, cancels, stored methods and donations, plus signed webhook triggers for payment events.",
   "license": "MIT",
   "author": {
     "name": "w6w"

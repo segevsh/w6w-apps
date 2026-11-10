@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/airparser",
   "version": "0.2.0",
-  "description": "Parse emails and documents (PDF, DOCX, images, and more) into structured JSON with Airparser's AI extraction. A signed webhook trigger starts a workflow when a document is parsed (set up in the Airparser dashboard).",
+  "description": "Parse emails and documents (PDF, DOCX, images) into structured JSON with Airparser's AI extraction, plus a signed webhook trigger for parsed documents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
