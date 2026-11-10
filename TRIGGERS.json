@@ -6857,12 +6857,14 @@
   },
   {
     "path": "apps/twilio/sendgrid",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-list"
+    ],
+    "pollAction": "list-get-all",
+    "reason": "list-get-all snapshot-diffed (page_size max 1000); contact triggers dropped: contacts/search returns at most 50 rows, no page token or sort (https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts); Event Webhook upgrade queued",
+    "verified": "apps/twilio/sendgrid/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/twilio/twilio",
@@ -6969,27 +6971,34 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "Upstash Redis REST commands run against caller-chosen keys and collections: no account record list with stable ids and no created/updated filter or sort (https://upstash.com/docs/redis/features/restapi)",
+    "verified": "apps/upstash/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/uptimerobot",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-monitor",
+      "new-alert-contact"
+    ],
+    "pollAction": "monitor-list",
+    "reason": "getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/)",
+    "verified": "apps/uptimerobot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/uscreen",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer",
+      "new-invoice",
+      "new-or-updated-invoice"
+    ],
+    "pollAction": "customer-list",
+    "reason": "/customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml)",
+    "verified": "apps/uscreen/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vanta",
@@ -7015,12 +7024,14 @@
   },
   {
     "path": "apps/vbout",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-list"
+    ],
+    "pollAction": "list-list",
+    "reason": "getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json)",
+    "verified": "apps/vbout/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vercel",
@@ -7035,12 +7046,14 @@
   },
   {
     "path": "apps/vero",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "email events (sent, delivered, opened, clicked, bounced, unsubscribed)"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: email-event and customer-update webhooks; the API is write-only so there is no list action to poll (https://help.getvero.com/vero-1/integrations/setting-up-webhooks)",
+    "verified": "apps/vero/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/videoask",
@@ -7066,30 +7079,36 @@
   },
   {
     "path": "apps/wakatime",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-project"
+    ],
+    "pollAction": "project-list",
+    "reason": "projects endpoint lists the user's projects with no paging or order documented: snapshot-diffed; commit-list is per project with no documented order; no webhooks (https://wakatime.com/developers)",
+    "verified": "apps/wakatime/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wappalyzer",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead-list"
+    ],
+    "pollAction": "lists-list",
+    "reason": "GET /v2/lists/ returns the account's lead lists unpaginated: snapshot-diffed (https://www.wappalyzer.com/openapi/v2-public.yaml)",
+    "verified": "apps/wappalyzer/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wati",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-template"
+    ],
+    "pollAction": "templates-list",
+    "reason": "messageTemplates documents page_number/page_size (max 100) and total, no order: bounded template collection snapshot-diffed; contacts-list is unbounded with no order or filter; webhook upgrade queued (https://docs.wati.io/reference/messagetemplate_getmessagetemplates.md)",
+    "verified": "apps/wati/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wave",
@@ -7152,12 +7171,14 @@
   },
   {
     "path": "apps/webinarjam",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-webinar"
+    ],
+    "pollAction": "webinar-list",
+    "reason": "POST /webinars returns a full list of all account webinars in one response: snapshot-diffed (https://support.webinarjam.com/en/collections/19655423-developer-api)",
+    "verified": "apps/webinarjam/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/webscrapingai",
@@ -7230,12 +7251,15 @@
   },
   {
     "path": "apps/wiza",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "list-finished",
+      "reveal-finished"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml)",
+    "verified": "apps/wiza/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/woocommerce",
@@ -7292,27 +7316,29 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "collection actions are tenant-specific offset-paginated reports whose vendor docs sit behind the tenant login, so no created/updated filter, sort or bounded size can be cited (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html)",
+    "verified": "apps/workday/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/workflowy",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-node"
+    ],
+    "pollAction": "node-list",
+    "reason": "GET /nodes?parent_id= is unpaginated and returns every child of a parent unordered: snapshot-diffed; no webhooks (https://workflowy.com/api-reference/)",
+    "verified": "apps/workflowy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/workiz",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "lead-list is ordered and windowed by the scheduled LeadDateTime (start_date until today), not creation, so a lead scheduled outside the window never appears and no created-ordered feed exists (http://developer.workiz.com/api.json)",
+    "verified": "apps/workiz/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/workos",
@@ -7371,21 +7397,25 @@
   },
   {
     "path": "apps/yelp-leads",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": "get-lead-ids-for-business",
+    "reason": "lead_ids documents created_after (inclusive) with after_lead_id paging inside the window: since-filter clamped to the seed time, resumable, deduped by id; Ed25519-signed Leads webhook upgrade queued (https://docs.developer.yelp.com/reference/get-lead-ids-for-business)",
+    "verified": "apps/yelp-leads/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/youcanbookme",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-booking-page"
+    ],
+    "pollAction": "list-profiles",
+    "reason": "GET /{accountId}/profiles returns every booking page unpaginated: snapshot-diffed; list-bookings is cursor-paged by start time with no created order or filter (https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api)",
+    "verified": "apps/youcanbookme/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/youform",
@@ -7424,12 +7454,14 @@
   },
   {
     "path": "apps/zeplin",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-screen"
+    ],
+    "pollAction": "list-screens",
+    "reason": "screens documents limit/offset and sort=created without a direction, so no order is assumed: project screens read in full and snapshot-diffed; webhook upgrade queued (https://docs.zeplin.dev/reference/getprojectscreens.md)",
+    "verified": "apps/zeplin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zerobounce",

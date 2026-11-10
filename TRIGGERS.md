@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 77, manual-webhook: 21, poll: 470, none: 115
+**Totals:** 683 apps — webhook-api: 77, manual-webhook: 23, poll: 482, none: 101
 
 ## webhook-api (77)
 
@@ -92,7 +92,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (21)
+## manual-webhook (23)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -116,9 +116,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tldv | MeetingReady, TranscriptReady | apps/tldv/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list from/to filters the meeting's own date, not when its recording became ready, and no order is documented (https://doc.tldv.io/) |
 | apps/todoist | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/vero | email events (sent, delivered, opened, clicked, bounced, unsubscribed) | apps/vero/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: email-event and customer-update webhooks; the API is write-only so there is no list action to poll (https://help.getvero.com/vero-1/integrations/setting-up-webhooks) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/wiza | list-finished, reveal-finished | apps/wiza/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 
-## poll (470)
+## poll (482)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -550,6 +552,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tremendous | order-list | new-order | apps/tremendous/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): order-list createdAtGte (created_at[gte]); floor/resume per brief 9.8/9.9 |
 | apps/trustpilot | business-unit-reviews-list | new-review | apps/trustpilot/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): orderBy=createdat.desc, per business unit |
 | apps/tumblr | blog-posts-list | new-post | apps/tumblr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action blog-posts-list |
+| apps/twilio/sendgrid | list-get-all | new-list | apps/twilio/sendgrid/README.md Triggers section (verified 2026-11-09) | hand | list-get-all snapshot-diffed (page_size max 1000); contact triggers dropped: contacts/search returns at most 50 rows, no page token or sort (https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts); Event Webhook upgrade queued |
 | apps/twist | message-list | new-message | apps/twist/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): message-list orderBy=desc, per conversation; replaces round-1 not-shipped line |
 | apps/twitch | get-channel-followers | new-follower | apps/twitch/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): get-channel-followers lists most recent follower first (https://dev.twitch.tv/docs/api/reference/#get-channel-followers); needs moderator:read:followers |
 | apps/twitter | tweet-search-recent | new-tweet | apps/twitter/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action tweet-search-recent |
@@ -557,14 +560,21 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/typesense | document-search | new-document | apps/typesense/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a) by user-supplied sortBy (sort_by documented, https://typesense.org/docs/28.0/api/search.html); q=*, strict |
 | apps/unbounce | page-lead-list | new-lead | apps/unbounce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action page-lead-list |
 | apps/upsales | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/uptimerobot | monitor-list | new-monitor, new-alert-contact | apps/uptimerobot/README.md Triggers section (verified 2026-11-09) | hand | getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/) |
+| apps/uscreen | customer-list | new-customer, new-invoice, new-or-updated-invoice | apps/uscreen/README.md Triggers section (verified 2026-11-09) | hand | /customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml) |
 | apps/vanta | issue-list | new-issue | apps/vanta/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-list |
 | apps/vapi | phone-number-list | new-phone-number | apps/vapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action phone-number-list |
+| apps/vbout | list-list | new-list | apps/vbout/README.md Triggers section (verified 2026-11-09) | hand | getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json) |
 | apps/vercel | deployment-event-list | new-deployment-event-list | no | scan | list action deployment-event-list has pagination and order/since params |
 | apps/videoask | conversation-list | new-conversation | apps/videoask/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action conversation-list |
 | apps/vimeo | folder-item-list | new-folder-item-list | no | scan | list action folder-item-list has pagination and order/since params |
+| apps/wakatime | project-list | new-project | apps/wakatime/README.md Triggers section (verified 2026-11-09) | hand | projects endpoint lists the user's projects with no paging or order documented: snapshot-diffed; commit-list is per project with no documented order; no webhooks (https://wakatime.com/developers) |
+| apps/wappalyzer | lists-list | new-lead-list | apps/wappalyzer/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/lists/ returns the account's lead lists unpaginated: snapshot-diffed (https://www.wappalyzer.com/openapi/v2-public.yaml) |
+| apps/wati | templates-list | new-template | apps/wati/README.md Triggers section (verified 2026-11-09) | hand | messageTemplates documents page_number/page_size (max 100) and total, no order: bounded template collection snapshot-diffed; contacts-list is unbounded with no order or filter; webhook upgrade queued (https://docs.wati.io/reference/messagetemplate_getmessagetemplates.md) |
 | apps/wave | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
 | apps/wealthbox | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
 | apps/webinargeek | message-list | new-message | apps/webinargeek/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action message-list |
+| apps/webinarjam | webinar-list | new-webinar | apps/webinarjam/README.md Triggers section (verified 2026-11-09) | hand | POST /webinars returns a full list of all account webinars in one response: snapshot-diffed (https://support.webinarjam.com/en/collections/19655423-developer-api) |
 | apps/webscrapingai | serp-search | new-serp-search | no | scan | list action serp-search has pagination and order/since params |
 | apps/whatconverts | leads-list | new-leads-list | no | scan | list action leads-list has pagination and order/since params |
 | apps/whop | member-list | new-member-list | no | scan | list action member-list has pagination and order/since params |
@@ -573,13 +583,17 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woodpecker | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/wordpress | post-get-all | new-post | apps/wordpress/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-get-all |
 | apps/workable | candidate-list | new-candidate | apps/workable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-list |
+| apps/workflowy | node-list | new-node | apps/workflowy/README.md Triggers section (verified 2026-11-09) | hand | GET /nodes?parent_id= is unpaginated and returns every child of a parent unordered: snapshot-diffed; no webhooks (https://workflowy.com/api-reference/) |
 | apps/workos | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
 | apps/wrike | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
 | apps/wufoo | entry-list | new-entry | apps/wufoo/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
 | apps/xai | list-files | new-files | no | scan | list action list-files has pagination and order/since params |
 | apps/xero | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/yelp-leads | get-lead-ids-for-business | new-lead | apps/yelp-leads/README.md Triggers section (verified 2026-11-09) | hand | lead_ids documents created_after (inclusive) with after_lead_id paging inside the window: since-filter clamped to the seed time, resumable, deduped by id; Ed25519-signed Leads webhook upgrade queued (https://docs.developer.yelp.com/reference/get-lead-ids-for-business) |
+| apps/youcanbookme | list-profiles | new-booking-page | apps/youcanbookme/README.md Triggers section (verified 2026-11-09) | hand | GET /{accountId}/profiles returns every booking page unpaginated: snapshot-diffed; list-bookings is cursor-paged by start time with no created order or filter (https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api) |
 | apps/youform | submission-list | new-submission | apps/youform/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action submission-list |
 | apps/zendesk/zendesk-sell | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/zeplin | list-screens | new-screen | apps/zeplin/README.md Triggers section (verified 2026-11-09) | hand | screens documents limit/offset and sort=created without a direction, so no order is assumed: project screens read in full and snapshot-diffed; webhook upgrade queued (https://docs.zeplin.dev/reference/getprojectscreens.md) |
 | apps/zoho/bigin | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/zoho/zoho | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/zoho/zoho-campaigns | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
@@ -593,7 +607,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (115)
+## none (101)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -684,23 +698,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tidio | ticket-list | apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md) |
 | apps/tidycal |  | apps/tidycal/README.md Triggers section (verified 2026-11-09) | hand | booking-list filters by starts_at/ends_at (the booking's own time, not its creation) and contact-list takes only a page number, neither documents a sort order or created-since filter (https://tidycal.com/developer/docs/) |
 | apps/twilio/segment |  | apps/twilio/segment/README.md Triggers section (verified 2026-11-09) | hand | the HTTP Tracking API actions (identify, track, page, group, alias, batch) are write-only ingestion calls with no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/) |
-| apps/twilio/sendgrid |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/upstash |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/uptimerobot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/uscreen |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/vbout |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/vero |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/wakatime |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/wappalyzer |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/wati |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/webinarjam |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/wiza |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/workday |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/workflowy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/workiz |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/yelp-leads |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/youcanbookme |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zeplin |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/upstash |  | apps/upstash/README.md Triggers section (verified 2026-11-09) | hand | Upstash Redis REST commands run against caller-chosen keys and collections: no account record list with stable ids and no created/updated filter or sort (https://upstash.com/docs/redis/features/restapi) |
+| apps/workday |  | apps/workday/README.md Triggers section (verified 2026-11-09) | hand | collection actions are tenant-specific offset-paginated reports whose vendor docs sit behind the tenant login, so no created/updated filter, sort or bounded size can be cited (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html) |
+| apps/workiz |  | apps/workiz/README.md Triggers section (verified 2026-11-09) | hand | lead-list is ordered and windowed by the scheduled LeadDateTime (start_date until today), not creation, so a lead scheduled outside the window never appears and no created-ordered feed exists (http://developer.workiz.com/api.json) |
 | apps/zerobounce |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoho/zoho-analytics |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoho/zoho-bookings |  | no | scan | no newest-first list action found by scan; vendor events not researched |
