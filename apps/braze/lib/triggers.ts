@@ -1,6 +1,7 @@
 import type { ActionDefinition, HookContext, OutputField, TriggerDefinition } from "@w6w/types";
 import { pollFromListAction, pollSnapshot } from "../../_shared/poll/mod.ts";
 import canvasList from "../actions/canvas-list.ts";
+import catalogItemList from "../actions/catalog-item-list.ts";
 import catalogList from "../actions/catalog-list.ts";
 import contentBlockList from "../actions/content-block-list.ts";
 import emailHardBouncesList from "../actions/email-hard-bounces-list.ts";
@@ -98,6 +99,40 @@ export const newCatalog: TriggerDefinition = {
       emit: { added: true, updated: false },
     });
     return { events: events.map((e) => byName.get(e.key)), nextState };
+  },
+};
+
+/**
+ * `GET /catalogs/{catalog_name}/items` (vendor: https://www.braze.com/docs/api/endpoints/catalogs/catalog_items/synchronous/get_multiple_catalog_items/)
+ * takes the catalog as a path parameter and the spec lists no order or filter, so the chosen
+ * catalog's items are diffed by id (added only).
+ */
+export const newCatalogItem: TriggerDefinition<{ catalogName: string }> = {
+  key: "new-catalog-item",
+  title: "New Catalog Item",
+  description: "The run gets each item newly added to the chosen Braze catalog.",
+  params: [{
+    key: "catalogName",
+    label: "Catalog Name",
+    type: "string",
+    required: true,
+    hint: "The catalog (see New Catalog / List Catalogs) whose items to watch.",
+  }],
+  output: [{ key: "id", type: "string", label: "Item ID" }],
+  sample: { id: "restaurant1" },
+  minIntervalMs: 300_000,
+  async poll({ params, state }, ctx) {
+    const res = await catalogItemList.execute({ catalogName: params.catalogName }, ctx) as {
+      items?: Array<{ id?: string }>;
+    };
+    const items = (res.items ?? []).filter((i) => i.id !== undefined && i.id !== "");
+    const byId = new Map(items.map((i) => [String(i.id), i]));
+    const { events, nextState } = await pollSnapshot({
+      state,
+      rows: [...byId.keys()].map((key) => ({ key, values: { id: key } })),
+      emit: { added: true, updated: false },
+    });
+    return { events: events.map((e) => byId.get(e.key)), nextState };
   },
 };
 
@@ -295,7 +330,7 @@ export const newInvalidPhoneNumber = windowTrigger({
   async load(since, offset, ctx) {
     const res = await smsInvalidPhoneNumberList.execute({
       startDate: ymd(since),
-      endDate: ymd(clock.now()),
+      endDate: ymd(clock.now() + DAY_MS),
       limit: SUPPRESSION_LIMIT,
       offset,
     }, ctx) as { sms?: Row[]; invalid_phone_numbers?: Row[] };

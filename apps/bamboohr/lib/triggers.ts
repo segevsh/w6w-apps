@@ -170,6 +170,10 @@ export const newEmployeeFile: TriggerDefinition<{ employeeId: string }> = {
       result = await listEmployeeFiles.execute({ id: params.employeeId }, ctx) as typeof result;
     } catch (err) {
       if (!(err instanceof Error) || !/BambooHR 404 /.test(err.message)) throw err;
+      // 404 is also what a permission blip looks like: keep the prior snapshot, never wipe it.
+      if ((state as { seeded?: boolean } | undefined)?.seeded) {
+        return { events: [], nextState: state };
+      }
     }
     const files = (result.categories ?? []).flatMap((c) =>
       (c.files ?? []).filter((f) => f.id !== undefined).map((f) => ({

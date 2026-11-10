@@ -7,6 +7,7 @@ import newCharge from "../../triggers/new-charge.ts";
 import newRefund from "../../triggers/new-refund.ts";
 import newSubscription from "../../triggers/new-subscription.ts";
 import newPlan from "../../triggers/new-plan.ts";
+import newCustomerEvent from "../../triggers/new-customer-event.ts";
 import newGoal from "../../triggers/new-goal.ts";
 import newSource from "../../triggers/new-source.ts";
 
@@ -168,4 +169,29 @@ describe("snapshot triggers (plans, goals, sources)", () => {
       assertEquals(retry.events, first.events);
     });
   }
+});
+
+describe("new-customer-event (snapshot, parameterised by customer)", () => {
+  test("seeds, emits only the added event, requests the chosen customer's log, retries idempotently", async () => {
+    const params = { sourceId: "src1", customerOid: "cus_1" };
+    const wrap = (ids: string[]) => ({
+      body: { events: ids.map((id) => ({ id, type: "t" })), meta: meta(false) },
+    });
+    const runIt = (state: unknown, ids: string[]) => {
+      const m = mockCtx([wrap(ids)]);
+      return newCustomerEvent.poll!({ params, subscriptionId: "sub-1", state }, m.ctx).then((
+        r,
+      ) => ({ ...r, calls: m.calls }));
+    };
+    const seed = await runIt({}, ["a"]);
+    assertEquals(seed.events, []);
+    assertEquals(
+      seed.calls[0].url,
+      "https://api.baremetrics.com/v1/src1/customers/cus_1/events?per_page=200&page=0",
+    );
+    const first = await runIt(seed.nextState, ["a", "b"]);
+    const retry = await runIt(seed.nextState, ["a", "b"]);
+    assertEquals(first.events, [{ id: "b", type: "t" }]);
+    assertEquals(retry.events, first.events);
+  });
 });

@@ -80,6 +80,7 @@ import quota from "./health/quota.ts";
 import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
 import newCanvas from "./triggers/new-canvas.ts";
 import newCatalog from "./triggers/new-catalog.ts";
+import newCatalogItem from "./triggers/new-catalog-item.ts";
 import newContentBlock from "./triggers/new-content-block.ts";
 import newEmailHardBounce from "./triggers/new-email-hard-bounce.ts";
 import newEmailUnsubscribe from "./triggers/new-email-unsubscribe.ts";
@@ -128,6 +129,7 @@ export default {
     newOrUpdatedCanvas,
     newSegment,
     newCatalog,
+    newCatalogItem,
     newContentBlock,
     newOrUpdatedContentBlock,
     newEmailUnsubscribe,

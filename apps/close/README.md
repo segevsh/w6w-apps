@@ -6,7 +6,7 @@ v1**.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 21
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Egress allowlist** — `api.close.com`
 - **Website** — https://close.com
 - **API docs** — https://developer.close.com/api

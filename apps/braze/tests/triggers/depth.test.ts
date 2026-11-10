@@ -7,6 +7,7 @@ import newCanvas from "../../triggers/new-canvas.ts";
 import newSegment from "../../triggers/new-segment.ts";
 import newCatalog from "../../triggers/new-catalog.ts";
 import updatedCanvas from "../../triggers/new-or-updated-canvas.ts";
+import newCatalogItem from "../../triggers/new-catalog-item.ts";
 import newContentBlock from "../../triggers/new-content-block.ts";
 import updatedContentBlock from "../../triggers/new-or-updated-content-block.ts";
 import newUnsubscribe from "../../triggers/new-email-unsubscribe.ts";
@@ -57,6 +58,25 @@ describe("newest-first lists", () => {
       assertEquals(retry.events, first.events);
     });
   }
+});
+
+describe("new-catalog-item (snapshot, parameterised by catalog)", () => {
+  test("seeds, emits only the added item, requests the chosen catalog, retries idempotently", async () => {
+    const go = (state: unknown, ids: string[]) => {
+      const m = mockCtx([{ body: { items: ids.map((id) => ({ id })) } }], opts);
+      return newCatalogItem.poll!(
+        { params: { catalogName: "shops 1" }, subscriptionId: "sub-1", state },
+        m.ctx,
+      ).then((r) => ({ ...r, calls: m.calls }));
+    };
+    const seed = await go({}, ["a"]);
+    assertEquals(seed.events, []);
+    assertEquals(seed.calls[0].url, `${HOST}/catalogs/shops%201/items`);
+    const first = await go(seed.nextState, ["a", "b"]);
+    const retry = await go(seed.nextState, ["a", "b"]);
+    assertEquals(first.events, [{ id: "b" }]);
+    assertEquals(retry.events, first.events);
+  });
 });
 
 describe("new-catalog (snapshot)", () => {
@@ -138,10 +158,8 @@ const windowCases: WindowCase[] = [
     key: "sms",
     pageSize: 500,
     rec: (c) => ({ phone: `+1555${++seq}`, invalid_detected_at: iso(c), reason: "deactivated" }),
-    seedUrl:
-      `${HOST}/sms/invalid_phone_numbers?start_date=2026-11-10&end_date=2026-11-10&limit=500&offset=0`,
-    resumeUrl:
-      `${HOST}/sms/invalid_phone_numbers?start_date=2026-11-10&end_date=2026-11-10&limit=500&offset=2500`,
+    seedUrl: `${HOST}/sms/invalid_phone_numbers?${dated}&limit=500&offset=0`,
+    resumeUrl: `${HOST}/sms/invalid_phone_numbers?${dated}&limit=500&offset=2500`,
   },
 ];
 
@@ -212,6 +230,30 @@ describe("since-filter windows", () => {
       assertEquals(new Set(all).size, MAX_PAGES * c.pageSize + 1);
     });
   }
+
+  test("content blocks: an edited block (old created_at, new last_edited) fires only the updated trigger", async () => {
+    clock.now = () => T0;
+    const seededU = await run(updatedContentBlock, {}, [{ body: { content_blocks: [] } }]);
+    const seededN = await run(newContentBlock, {}, [{ body: { content_blocks: [] } }]);
+    clock.now = () => T0 + 300_000;
+    const edited = {
+      content_block_id: "cb-edit",
+      created_at: iso(OLD),
+      last_edited: iso(T0 + 200_000),
+    };
+    const body = { content_blocks: [edited] };
+    const upd = await run(updatedContentBlock, seededU.nextState, [{ body }]);
+    assertEquals(upd.events, [edited]);
+    clock.now = () => T0 + 600_000;
+    const again = { ...edited, last_edited: iso(T0 + 500_000) };
+    const upd2 = await run(updatedContentBlock, upd.nextState, [{
+      body: { content_blocks: [again, edited] },
+    }]);
+    assertEquals(upd2.events, [again]);
+    clock.now = () => T0 + 300_000;
+    const created = await run(newContentBlock, seededN.nextState, [{ body }]);
+    assertEquals(created.events, []);
+  });
 
   test("new-or-updated-canvas: an edited canvas is a new event", async () => {
     clock.now = () => T0;

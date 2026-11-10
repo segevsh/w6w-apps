@@ -46,6 +46,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newCharge from "./triggers/new-charge.ts";
+import newCustomerEvent from "./triggers/new-customer-event.ts";
 import newGoal from "./triggers/new-goal.ts";
 import newPlan from "./triggers/new-plan.ts";
 import newRefund from "./triggers/new-refund.ts";
@@ -87,5 +88,14 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newCustomer, newSubscription, newCharge, newRefund, newPlan, newGoal, newSource],
+  triggers: [
+    newCustomer,
+    newSubscription,
+    newCharge,
+    newRefund,
+    newPlan,
+    newGoal,
+    newSource,
+    newCustomerEvent,
+  ],
 } satisfies AppDefinition;

@@ -1,6 +1,7 @@
 import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import { pollFromListAction, pollSnapshot } from "../../_shared/poll/mod.ts";
 import chargeList from "../actions/charge-list.ts";
+import customerEventsList from "../actions/customer-events-list.ts";
 import goalsList from "../actions/goals-list.ts";
 import planList from "../actions/plan-list.ts";
 import refundList from "../actions/refund-list.ts";
@@ -207,6 +208,41 @@ export const newPlan: TriggerDefinition<{ sourceId: string }> = {
         items: (res.plans as Array<{ oid?: string }>) ?? [],
         more: res.meta?.pagination?.has_more === true,
       };
+    });
+  },
+};
+
+/**
+ * `GET /v1/{source_id}/customers/{oid}/events` lists one customer's event log (pagination only, no
+ * order or date filter), so the first MAX_SNAPSHOT_PAGES pages are diffed by event id, added only.
+ */
+export const newCustomerEvent: TriggerDefinition<{ sourceId: string; customerOid: string }> = {
+  key: "new-customer-event",
+  title: "New Customer Event",
+  description: "The run gets each newly recorded event of the chosen customer.",
+  params: [SOURCE_PARAM, {
+    key: "customerOid",
+    label: "Customer OID",
+    type: "string",
+    required: true,
+    hint: "The customer (List Customers) whose events to watch.",
+  }],
+  output: [
+    { key: "id", type: "string", label: "Event ID" },
+    { key: "type", type: "string", label: "Type" },
+    { key: "timestamp", type: "number", label: "Timestamp" },
+  ],
+  sample: { id: "evt_1", type: "subscription_started", timestamp: 1788000000 },
+  minIntervalMs: 300_000,
+  poll({ params, state }, ctx) {
+    return snapshot<{ id?: string }>(state, "id", async (page) => {
+      const res = await customerEventsList.execute({
+        source_id: params.sourceId,
+        oid: params.customerOid,
+        per_page: PAGE_SIZE,
+        page,
+      }, ctx) as Paged & { events?: Array<{ id?: string }> };
+      return { items: res.events ?? [], more: res.meta?.pagination?.has_more === true };
     });
   },
 };

@@ -50,6 +50,21 @@ test("new-employee-file: a 404 (no accessible categories) is an empty list, othe
   );
   assertEquals(empty.events, []);
   assertEquals((empty.nextState as { seeded?: boolean }).seeded, true);
+  const seeded = await trigger.poll!(
+    { ...input, state: {} },
+    mockCtx([{ body: listing(file(1)) }]).ctx,
+  );
+  const blip = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{ status: 404, statusText: "Not Found", body: "none" }]).ctx,
+  );
+  assertEquals(blip.events, []);
+  assertEquals(blip.nextState, seeded.nextState);
+  const back = await trigger.poll!(
+    { ...input, state: blip.nextState },
+    mockCtx([{ body: listing(file(1)) }]).ctx,
+  );
+  assertEquals(back.events, []);
   let thrown = false;
   try {
     await trigger.poll!(
