@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/tapfiliate",
-  "version": "0.2.0",
-  "description": "Manage affiliate programs, affiliates, customers, conversions, commissions and payments through the Tapfiliate REST API, and start workflows on new conversions.",
+  "version": "0.3.0",
+  "description": "Manage affiliate programs, affiliates, customers, conversions, commissions and payments through the Tapfiliate REST API, and start workflows on new conversions, customers and clicks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://tapfiliate.com/docs/rest/"
     ],
-    "longDescription": "Tapfiliate is an affiliate marketing platform: programs define how affiliates are paid, affiliates promote via referral links or coupons, and customers/conversions they bring in generate commissions that flow into payments.\n\nThis app covers that whole lifecycle — creating and managing affiliates, affiliate groups and prospects; tracking customers and conversions and attributing them to an affiliate via referral code, coupon, click id or tracking id; adding, approving and disapproving commissions; enrolling and approving affiliates into programs; and recording or cancelling payments. A small clicks surface (Enterprise-plan-only per the vendor's own docs) supports a REST-only tracking integration with no JS snippet.\n\nA New Conversion trigger polls the conversion list and starts a workflow for each conversion created after it was set up.\n\nHealth checks track Tapfiliate's own status page (a SorryApp-hosted page, anchored on its \"Tapfiliate API\" component specifically) alongside the account's live rate-limit headroom.",
+    "longDescription": "Tapfiliate is an affiliate marketing platform: programs define how affiliates are paid, affiliates promote via referral links or coupons, and customers/conversions they bring in generate commissions that flow into payments.\n\nThis app covers that whole lifecycle — creating and managing affiliates, affiliate groups and prospects; tracking customers and conversions and attributing them to an affiliate via referral code, coupon, click id or tracking id; adding, approving and disapproving commissions; enrolling and approving affiliates into programs; and recording or cancelling payments. A small clicks surface (Enterprise-plan-only per the vendor's own docs) supports a REST-only tracking integration with no JS snippet.\n\nPoll triggers start a workflow for each new conversion, customer or click created after the trigger was set up, and for each new program, affiliate group, payment to an affiliate or program membership of an affiliate.\n\nHealth checks track Tapfiliate's own status page (a SorryApp-hosted page, anchored on its \"Tapfiliate API\" component specifically) alongside the account's live rate-limit headroom.",
     "categories": [
       "marketing",
       "crm"

@@ -39,6 +39,10 @@ import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
 import newContact from "./triggers/new-contact.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newAccount from "./triggers/new-account.ts";
+import newList from "./triggers/new-list.ts";
+import newSequence from "./triggers/new-sequence.ts";
+import newSequenceActivity from "./triggers/new-sequence-activity.ts";
 
 import peopleEnrich from "./actions/people-enrich.ts";
 import peopleBulkEnrich from "./actions/people-bulk-enrich.ts";
@@ -155,5 +159,12 @@ export default {
   // user's own account, not for a workspace connecting its own — see auth/api-key.ts.
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
-  triggers: [newContact, newOrUpdatedContact],
+  triggers: [
+    newContact,
+    newOrUpdatedContact,
+    newAccount,
+    newList,
+    newSequence,
+    newSequenceActivity,
+  ],
 } satisfies AppDefinition;

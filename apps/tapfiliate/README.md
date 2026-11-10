@@ -6,7 +6,7 @@ Manage affiliate programs, affiliates, customers, conversions, commissions and p
 - **Categories** — marketing, crm
 - **Auth methods** — api-key
 - **Actions** — 46
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.tapfiliate.com` (the `service` check adds `status.tapfiliate.com` to
   its own hook allowlist, never to the app's)
@@ -181,13 +181,37 @@ deno task validate    # manifest + icon-legibility audit
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-conversion` — New Conversion | Poll | `conversion-list` | Each conversion created after the trigger was set up |
+| `new-customer` — New Customer | Poll | `customer-list` | Each customer created after the trigger was set up |
+| `new-click` — New Click | Poll | `click-list` | Each click recorded after the trigger was set up (Enterprise plan) |
+| `new-program` — New Program | Poll | `program-list` | Each program that appears on the account |
+| `new-affiliate-group` — New Affiliate Group | Poll | `affiliate-group-list` | Each affiliate group that appears on the account |
+| `new-affiliate-payment` — New Affiliate Payment | Poll | `affiliate-payments-list` | Each new payment made to the chosen affiliate (`affiliateId`) |
+| `new-affiliate-program` — New Affiliate Program Membership | Poll | `affiliate-programs-list` | Each program the chosen affiliate (`affiliateId`) newly applies to or joins |
+| `new-program-affiliate` — New Program Affiliate | Poll | `program-affiliates-list` | Each affiliate newly added to or joining the chosen program (`programId`) |
+| `new-affiliate` — New Affiliate | Poll | `affiliate-list` | Each affiliate that newly appears on the account |
 
-`GET /conversions/` has no sort order and only a day-granular `date_from` / `date_to` ("a day in UTC"),
-so each check asks for the window one day wider on both sides and keeps a row only if its own
-`created_at` lies in the exact window. The first check stores the start time and reads nothing; later
-checks read from two minutes before the previous check (never before the start), up to 4 pages of 25
-per check, resume a larger window from the saved page on the next check, and drop ids already emitted.
-A conversion has no update stamp, so there is no "new or updated" trigger; `click-list` is
-Enterprise-plan only and is not polled. Source:
-[Tapfiliate API reference, List all conversions](https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions)
-(verified 2026-11-10).
+`GET /conversions/`, `GET /customers/` and `GET /clicks/` have no sort order and only a day-granular
+`date_from` / `date_to` ("a day in UTC"), so each check asks for the window one day wider on both
+sides and keeps a row only if its own `created_at` lies in the exact window. (The customers page does not say which timestamp its date filter applies to; the one-day widening assumes it filters on creation.) The first check stores
+the start time and reads nothing; later checks read from two minutes before the previous check (never
+before the start), up to 4 pages of 25 per check, resume a larger window from the saved page on the
+next check, and drop ids already emitted. Programs, affiliate groups, affiliates, one program's affiliates and one affiliate's payments or
+program memberships have no usable order or date filter, so they are read in full: each check reads the whole list and diffs the ids
+against the previous check (the first check records them and emits nothing).
+
+Not covered (no trigger), by reason:
+
+- no order guarantee or no documented direction, no date filter, unbounded at 25 rows per page —
+  `commission-list` ("returns commissions in no guaranteed order"), `affiliate-prospect-list`,
+  `payment-list`; a page walk can miss or repeat rows (API reference, Pagination)
+- balances report — `balance-list` (a snapshot of non-zero balances, rate-limited to 10 per minute)
+- reference data — `program-commission-types-list` (a program's commission rules)
+
+Tapfiliate's own webhook triggers (affiliate, prospect, conversion, commission, customer and payment
+events, set up in the dashboard, unsigned) are not wired here yet.
+
+Sources: [Tapfiliate API reference, List all conversions](https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions),
+[List all customers](https://developers.tapfiliate.com/api-reference/customers/list-all-customers),
+[List all clicks](https://developers.tapfiliate.com/api-reference/clicks/list-all-clicks),
+[Pagination](https://developers.tapfiliate.com/api-reference/introduction),
+[Webhooks](https://developers.tapfiliate.com/automation/webhooks) (verified 2026-11-10).
