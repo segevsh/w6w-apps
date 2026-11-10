@@ -1,5 +1,5 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import listGetLeads from "../actions/list-get-leads.ts";
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
@@ -8,9 +8,9 @@ export const clock = { now: (): number => Date.now() };
 /** The since-filter is re-read this far back, so a lead added mid-check is not missed. */
 const OVERLAP_MS = 120_000;
 const PAGE_SIZE = 100;
-/** At most this many pages (1000 leads) inside one overlap window; more fails loudly. */
+/** Pages read per check; a larger window resumes from its offset on the next check (brief 9.8). */
 const MAX_PAGES = 10;
-const MAX_EVENTS = 500;
+type Lead = Record<string, unknown>;
 /** At least MAX_EVENTS plus one overlap re-list, so an id emitted last check is never evicted. */
 const SEEN_WINDOW = 1000;
 
@@ -29,33 +29,35 @@ export default {
   output: [{ key: "id", type: "string", label: "Lead ID" }],
   sample: { id: "lead-1", firstName: "Ada" },
   minIntervalMs: 300_000,
-  async poll({ params, state }, ctx: HookContext) {
-    const checkedAt = clock.now();
-    const prior = state as { cursor?: unknown } | null;
-    const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-    const createdFrom = new Date(cursor - OVERLAP_MS).toISOString();
-    const { events, nextState } = await pollNewItems<Record<string, unknown>>({
+  poll({ params, state }, ctx: HookContext) {
+    return pollWindow<Lead, number>({
       state,
-      maxPages: 1,
-      maxEvents: MAX_EVENTS,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
       seenWindow: SEEN_WINDOW,
       idOf: (lead) => String(lead.id ?? lead.leadId ?? ""),
-      async fetchPage() {
-        const items: Array<Record<string, unknown>> = [];
-        for (let page = 0; page < MAX_PAGES; page++) {
-          const res = await listGetLeads.execute({
-            listId: params.listId,
-            createdFrom,
-            limit: PAGE_SIZE,
-            offset: page * PAGE_SIZE,
-          }, ctx) as { items?: Array<Record<string, unknown>> };
-          const got = res.items ?? [];
-          items.push(...got);
-          if (got.length < PAGE_SIZE) return { items };
-        }
-        throw new Error(`new-lead: more than ${MAX_PAGES * PAGE_SIZE} leads in one check window`);
+      // A lead without a parseable `createdAt` is kept (README).
+      tsOf: (lead) => {
+        const ms = Date.parse(String(lead.createdAt ?? ""));
+        return Number.isNaN(ms) ? undefined : ms;
+      },
+      async load(since, offset, until) {
+        // Continuation pages are bounded by the window start so arrivals cannot shift the offset.
+        const res = await listGetLeads.execute({
+          listId: params.listId,
+          createdFrom: new Date(since).toISOString(),
+          ...(offset === undefined ? {} : { createdTo: new Date(until).toISOString() }),
+          limit: PAGE_SIZE,
+          offset: offset ?? 0,
+        }, ctx) as { items?: Lead[] };
+        const got = res.items ?? [];
+        return {
+          items: got,
+          next: got.length >= PAGE_SIZE ? (offset ?? 0) + PAGE_SIZE : undefined,
+        };
       },
     });
-    return { events, nextState: { ...nextState, cursor: checkedAt } };
   },
 } satisfies TriggerDefinition<{ listId: number }>;

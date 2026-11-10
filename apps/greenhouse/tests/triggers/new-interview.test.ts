@@ -4,8 +4,8 @@ import { listPage, mockCtx } from "../_helpers.ts";
 import trigger, { clock } from "../../triggers/new-interview.ts";
 
 const params = {};
-const A = { id: 1 };
-const B = { id: 2 };
+const A = { id: 1, created_at: "2026-11-09T11:00:00Z" };
+const B = { id: 2, created_at: "2026-11-09T12:02:00Z" };
 const ctxFor = (items: unknown[]) => {
   const r = [listPage(items)];
   return mockCtx(r);
