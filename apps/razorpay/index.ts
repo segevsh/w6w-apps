@@ -97,6 +97,7 @@ import invoiceList from "./actions/invoice-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [
@@ -161,4 +162,5 @@ export default {
   // (`mcp.razorpay.com`) authenticates its own MCP server, not this REST API.
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newOrder],
 } satisfies AppDefinition;

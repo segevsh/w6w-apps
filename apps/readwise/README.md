@@ -1,5 +1,7 @@
 # Readwise
 
+- **Triggers** — 1 (poll)
+
 Create, list and export highlights and books, manage highlight/book tags, and read or complete the
 Daily Review, on the classic **Readwise API v2**.
 
@@ -237,3 +239,16 @@ how `_tools/audit.ts` resolves its own import map, not of this app. Run the audi
 ```bash
 cd ../../_tools && deno run --no-check -A audit.ts readwise
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-book` — New or Updated Book | Poll | `book-list` | Each book, article, tweet or podcast that is new or was updated, e.g. by new highlights (event id = `id:updated`) |
+
+- Readwise API, List Books: "updated__gt – filter by last updated datetime (greater than)". The trigger calls `book-list` with `updated__gt = last check − 120 s`, `page_size=100`, following `next` up to 3 pages, deduping by `id:updated`.
+- There is no creation-time filter or sort, so a pure `new-book` trigger would fire for old books the first time they get a highlight; only the honest new-or-updated trigger ships.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://readwise.io/api_deets.

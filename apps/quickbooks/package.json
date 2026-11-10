@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/quickbooks",
-  "version": "0.1.3",
-  "description": "Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, accounts and reports.",
+  "version": "0.2.0",
+  "description": "Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, accounts and reports. Includes poll triggers for new customer and new or updated customer.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.intuit.com/app/developer/qbo/docs/api/accounting"
     ],
-    "longDescription": "QuickBooks Online is where a lot of small-business accounting actually happens, and this app puts the core of it under workflow control: customers, invoices, items, vendors, payments, bills and the chart of accounts, plus a Profit and Loss report and a raw query action for anything else in the ledger.\n\nCreating and updating these records follows QuickBooks' own rules rather than assuming a generic REST shape: updates require the record's current version token and apply only the fields a workflow actually supplied, so two processes editing the same invoice can't silently overwrite each other's changes. The raw query action is there deliberately, covering entities like journal entries or tax codes that don't have a dedicated action of their own, so a workflow isn't blocked on waiting for one to be added.\n\nEmployees, purchase orders, deposits, and operations like voiding a transaction or emailing a PDF invoice are left out of this first pass — most of what they'd need is still reachable read-only through the same raw query action, which is exactly the escape hatch it's there for.",
+    "longDescription": "QuickBooks Online is where a lot of small-business accounting actually happens, and this app puts the core of it under workflow control: customers, invoices, items, vendors, payments, bills and the chart of accounts, plus a Profit and Loss report and a raw query action for anything else in the ledger.\n\nCreating and updating these records follows QuickBooks' own rules rather than assuming a generic REST shape: updates require the record's current version token and apply only the fields a workflow actually supplied, so two processes editing the same invoice can't silently overwrite each other's changes. The raw query action is there deliberately, covering entities like journal entries or tax codes that don't have a dedicated action of their own, so a workflow isn't blocked on waiting for one to be added.\n\nEmployees, purchase orders, deposits, and operations like voiding a transaction or emailing a PDF invoice are left out of this first pass — most of what they'd need is still reachable read-only through the same raw query action, which is exactly the escape hatch it's there for.\n\nPoll triggers start workflows when a customer is created or updated.",
     "categories": [
       "finance"
     ],
@@ -33,7 +33,12 @@
         "developer.api.intuit.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

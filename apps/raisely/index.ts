@@ -49,6 +49,8 @@ import tagRecordRemove from "./actions/tag-record-remove.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
 
 export default {
   actions: [
@@ -85,4 +87,5 @@ export default {
   // offered, because a credential in a query string is logged everywhere.
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newCampaign, newOrUpdatedCampaign],
 } satisfies AppDefinition;

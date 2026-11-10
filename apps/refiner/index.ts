@@ -46,6 +46,7 @@ import responseTag from "./actions/response-tag.ts";
 import segmentAddContact from "./actions/segment-add-contact.ts";
 import segmentList from "./actions/segment-list.ts";
 import segmentRemoveContact from "./actions/segment-remove-contact.ts";
+import newSurvey from "./triggers/new-survey.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -71,6 +72,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [api, service, quota],
+  triggers: [newSurvey],
 };
 
 export default app;

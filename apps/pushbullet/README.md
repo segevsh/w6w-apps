@@ -1,5 +1,7 @@
 # Pushbullet
 
+- **Triggers** — 2 (poll)
+
 Send push notifications, links, files and SMS/MMS across devices, plus one-to-one chats and
 broadcast channels, on the **Pushbullet API v2**.
 
@@ -202,3 +204,17 @@ deno task lint         # deno lint
 deno task fmt           # format (lineWidth 100, semicolons, double quotes)
 deno task validate       # @w6w/validator CLI, via _tools/audit.ts
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-chat` — New Chat | Poll (snapshot) | `chat-list` | Each chat that appears in the list for the first time |
+| `new-or-updated-chat` — New or Updated Chat | Poll | `chat-list` | Each chat that is new or was modified (event id = `iden:modified`) |
+
+- Pushbullet's docs: "Any objects modified since that time will be returned, most recently modified first." So `chat-list` is a MODIFIED-ordered feed: `new-or-updated-chat` reads it newest-first (page 1, `active=true`, limit 100), but it cannot say which chat is new.
+- `new-chat` therefore diffs the whole chat list (one page, `limit=500`, `active=true`; the documented maximum is 500) with the snapshot kit, emitting added chats only. If a cursor shows the list exceeds one page the check fails loudly rather than guess.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://docs.pushbullet.com/ (Syncing Changes; limit default/maximum 500).
