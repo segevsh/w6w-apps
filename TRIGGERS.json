@@ -3597,12 +3597,17 @@
   },
   {
     "path": "apps/lokalise",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "project",
+      "key",
+      "translation",
+      "task"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: project, key, translation and task events",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/loop-returns",
@@ -3650,21 +3655,24 @@
   },
   {
     "path": "apps/lusha",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "prospect",
+      "company-signal"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: prospect and company signal subscriptions",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/mailcheck",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "email-validation API lists batch-operation jobs, not durable created records",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/mailchimp/mailchimp",
@@ -3679,12 +3687,18 @@
   },
   {
     "path": "apps/mailchimp/mandrill",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "send",
+      "bounce",
+      "open",
+      "click",
+      "reject"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: send, bounce, open, click and reject events (https://mailchimp.com/developer/transactional/docs/webhooks/)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/mailerlite",
@@ -3779,30 +3793,36 @@
   },
   {
     "path": "apps/marketo",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "Smart Campaign lead events"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: Smart Campaign-triggered lead events",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/mastodon",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-notification"
+    ],
+    "pollAction": "notification-list",
+    "reason": "notification-list is newest-first and supports forward paging with min_id",
+    "verified": "apps/mastodon/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/matrix",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-room-message"
+    ],
+    "pollAction": "get-messages",
+    "reason": "get-messages supports backwards (newest-first) room timeline paging; trigger keeps only m.room.message events (https://spec.matrix.org/latest/client-server-api/)",
+    "verified": "apps/matrix/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mattermost",
@@ -3886,12 +3906,15 @@
   },
   {
     "path": "apps/messagebird",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "inbound",
+      "message-status"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: inbound and message-status events",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/meta/facebook",
@@ -3910,18 +3933,18 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/meta/facebook-custom-audiences",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "custom-audience lists are cursor paged without documented newest-first ordering, a since filter, or bounded collection guarantee",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/meta/facebook-lead-ads",
@@ -3936,12 +3959,16 @@
   },
   {
     "path": "apps/meta/facebook-messenger",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "messaging",
+      "postback",
+      "delivery"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: messaging, postback and delivery events",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/meta/instagram-for-business",
@@ -3982,27 +4009,34 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "scheduled-post listing requires a caller-supplied date range and lacks a documented newest-first or since-cursor contract",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/azure-blob",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "BlobCreated",
+      "BlobDeleted"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: BlobCreated and BlobDeleted Event Grid events",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/azuredevops",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-build",
+      "new-work-item",
+      "new-or-updated-work-item"
+    ],
+    "pollAction": "build-list",
+    "reason": "build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax)",
+    "verified": "apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/excel",
@@ -4072,12 +4106,15 @@
   },
   {
     "path": "apps/microsoft/powerbi",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-refresh",
+      "new-or-updated-refresh"
+    ],
+    "pollAction": "list-refresh-history",
+    "reason": "refresh history is a bounded collection (20-60 entries per dataset) with stable requestId (https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history)",
+    "verified": "apps/microsoft/powerbi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/sharepoint",
@@ -4103,21 +4140,28 @@
   },
   {
     "path": "apps/mighty-networks",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "member",
+      "post",
+      "event"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/api/webhooks.md)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/millionverifier",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-bulk-file",
+      "new-or-updated-bulk-file"
+    ],
+    "pollAction": "bulk-list-files",
+    "reason": "bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/)",
+    "verified": "apps/millionverifier/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mindee",

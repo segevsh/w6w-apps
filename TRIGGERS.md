@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 50, manual-webhook: 17, poll: 399, none: 217
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 404, none: 204
 
-## webhook-api (50)
+## webhook-api (58)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -44,9 +44,17 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/jotform | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/lemlist | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | comment, cycle, issue, project | apps/linear/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/lokalise | project, key, translation, task | no | hand | webhook candidate queued for a webhook node: project, key, translation and task events |
+| apps/lusha | prospect, company-signal | no | hand | webhook candidate queued for a webhook node: prospect and company signal subscriptions |
+| apps/mailchimp/mandrill | send, bounce, open, click, reject | no | hand | webhook candidate queued for a webhook node: send, bounce, open, click and reject events (https://mailchimp.com/developer/transactional/docs/webhooks/) |
 | apps/mailerlite | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/mailgun | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
+| apps/marketo | Smart Campaign lead events | no | hand | webhook candidate queued for a webhook node: Smart Campaign-triggered lead events |
 | apps/mautic | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/messagebird | inbound, message-status | no | hand | webhook candidate queued for a webhook node: inbound and message-status events |
+| apps/meta/facebook-messenger | messaging, postback, delivery | no | hand | webhook candidate queued for a webhook node: messaging, postback and delivery events |
+| apps/microsoft/azure-blob | BlobCreated, BlobDeleted | no | hand | webhook candidate queued for a webhook node: BlobCreated and BlobDeleted Event Grid events |
+| apps/mighty-networks | member, post, event | no | hand | webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/api/webhooks.md) |
 | apps/mindee | inference.processed | apps/mindee/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll |
 | apps/monday | create_pulse, change_column_value | apps/monday/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: board and item events; existing board/item lists have no documented newest-first order or creation-since filter |
 | apps/murf | dubbing_job.completed | apps/murf/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter |
@@ -87,7 +95,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (399)
+## poll (404)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -299,6 +307,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/maintainx | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/manus | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
 | apps/manychat | list-flows | new-flows | no | scan | list action list-flows has pagination and order/since params |
+| apps/mastodon | notification-list | new-notification | apps/mastodon/README.md Triggers section (verified 2026-11-09) | hand | notification-list is newest-first and supports forward paging with min_id |
+| apps/matrix | get-messages | new-room-message | apps/matrix/README.md Triggers section (verified 2026-11-09) | hand | get-messages supports backwards (newest-first) room timeline paging; trigger keeps only m.room.message events (https://spec.matrix.org/latest/client-server-api/) |
 | apps/mattermost | post-search | new-post-search | no | scan | list action post-search has pagination and order/since params |
 | apps/meilisearch | document-list | new-document-list | no | scan | list action document-list has pagination and order/since params |
 | apps/meistertask | checklist-item-list | new-checklist-item-list | no | scan | list action checklist-item-list has pagination and order/since params |
@@ -307,14 +317,17 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mercury | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
 | apps/meta/instagram-for-business | list-media | new-media | no | scan | list action list-media has pagination and order/since params |
 | apps/metabase | search | new-record | no | scan | list action search has pagination and order/since params |
+| apps/microsoft/azuredevops | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
 | apps/microsoft/excel | list-workbooks | new-workbooks | no | scan | list action list-workbooks has pagination and order/since params |
 | apps/microsoft/microsoft-entra-id | list-deleted-items | new-deleted-items | no | scan | list action list-deleted-items has pagination and order/since params |
 | apps/microsoft/microsoft-todo | list-task-changes | new-task-changes | no | scan | list action list-task-changes has pagination and order/since params |
 | apps/microsoft/onedrive | list-changes | file-changed | no | hand | shipped poll trigger(s) over list action list-changes |
 | apps/microsoft/onenote | list-notebooks | new-notebooks | no | scan | list action list-notebooks has pagination and order/since params |
 | apps/microsoft/outlook | list-messages | new-email | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
+| apps/microsoft/powerbi | list-refresh-history | new-refresh, new-or-updated-refresh | apps/microsoft/powerbi/README.md Triggers section (verified 2026-11-09) | hand | refresh history is a bounded collection (20-60 entries per dataset) with stable requestId (https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history) |
 | apps/microsoft/sharepoint | list-items | new-list-item | no | hand | shipped poll trigger(s) over list action list-items |
 | apps/microsoft/teams | list-channel-messages | new-channel-message | apps/microsoft/teams/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-channel-messages |
+| apps/millionverifier | bulk-list-files | new-bulk-file, new-or-updated-bulk-file | apps/millionverifier/README.md Triggers section (verified 2026-11-09) | hand | bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/) |
 | apps/miro | board-list | new-board-list | no | scan | list action board-list has pagination and order/since params |
 | apps/missive | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/mixmax | unsubscribe-list | new-unsubscribe | no | hand | shipped poll trigger(s) over list action unsubscribe-list |
@@ -491,7 +504,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (217)
+## none (204)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -591,23 +604,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/litellm |  | no | hand | no actions: a model-provider connection used only by the host's model layer |
 | apps/livechat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/lob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/lokalise |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/lusha |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mailcheck |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mailchimp/mandrill |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/marketo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mastodon |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/matrix |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/messagebird |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/meta/facebook-conversions |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/meta/facebook-custom-audiences |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/meta/facebook-messenger |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/metricool |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/microsoft/azure-blob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/microsoft/azuredevops |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/microsoft/powerbi |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mighty-networks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/millionverifier |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/mailcheck |  | no | hand | email-validation API lists batch-operation jobs, not durable created records |
+| apps/meta/facebook-conversions |  | no | hand | dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists |
+| apps/meta/facebook-custom-audiences |  | no | hand | custom-audience lists are cursor paged without documented newest-first ordering, a since filter, or bounded collection guarantee |
+| apps/metricool |  | no | hand | scheduled-post listing requires a caller-supplied date range and lacks a documented newest-first or since-cursor contract |
 | apps/mistral |  | apps/mistral/README.md Triggers section (verified 2026-11-09) | hand | stateless AI inference API; its model list is a capability catalog, not a changing user-record feed |
 | apps/motion |  | apps/motion/README.md Triggers section (verified 2026-11-09) | hand | task and project actions use opaque cursors with no documented creation-time order or since filter |
 | apps/msg91 |  | apps/msg91/README.md Triggers section (verified 2026-11-09) | hand | no fetchable MSG91 webhook documentation found (docs.msg91.com/reference/webhooks 404); existing lists are templates, numbers, analytics and windowed delivery logs, not a stable new-record collection |
