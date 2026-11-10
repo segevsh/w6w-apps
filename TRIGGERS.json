@@ -2289,16 +2289,16 @@
     "path": "apps/gitlab",
     "mechanism": "webhook-api",
     "candidates": [
-      "comment",
-      "issue",
-      "merge-request",
-      "pipeline",
       "push",
+      "merge-request",
+      "issue",
+      "comment",
+      "pipeline",
       "release"
     ],
     "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/gitlab/README.md Triggers section (verified 2026-11-09)",
+    "reason": "API-registered project webhook (POST /projects/:id/hooks); onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time",
+    "verified": "https://docs.gitlab.com/api/version/ and https://docs.gitlab.com/user/project/integrations/webhooks/ (conductor-verified 2026-11-09)",
     "source": "hand"
   },
   {
