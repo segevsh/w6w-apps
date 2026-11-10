@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
-import trigger, { clock } from "../../triggers/new-order.ts";
+import trigger, { clock, parseUtc } from "../../triggers/new-order.ts";
 const item = (id: number) => ({ id });
 const T0 = 1_794_182_400_000;
 const page = (ids: number[], nextOffset?: number) => ({
@@ -92,4 +92,24 @@ test("new-order never emits an order created before the seed, however many pages
   const fresh = { id: 99, order_date: "2026-11-09T00:06:00Z" };
   const c3 = await poll(c2.r.nextState, [{ body: pageOf([fresh, old(8)]) }]);
   assertEquals(c3.r.events, [fresh]);
+});
+
+test("new-order reads a zone-less order_date as UTC whatever the host time zone is", async () => {
+  const old = { id: 1, order_date: "2026-11-08 23:59:00" };
+  const fresh = { id: 2, order_date: "2026-11-09 00:06:00" };
+  const withData = (data: unknown[]) => ({ ...page([]), data });
+  clock.now = () => T0;
+  const seeded = await poll({}, [{ body: withData([]) }]);
+  assertEquals(seeded.r.events, []);
+  clock.now = () => T0 + 300_000;
+  // On a UTC-5 host a local read puts `old` at 04:59Z, after the floor; as UTC it is before it.
+  const next = await poll(seeded.r.nextState, [{ body: withData([fresh, old]) }]);
+  assertEquals(next.r.events, [fresh]);
+});
+
+test("parseUtc: zone-less date-times are UTC, marked ones are untouched", () => {
+  assertEquals(parseUtc("2026-11-09 00:06:00"), Date.UTC(2026, 10, 9, 0, 6, 0));
+  assertEquals(parseUtc("2026-11-09T00:06:00"), Date.UTC(2026, 10, 9, 0, 6, 0));
+  assertEquals(parseUtc("2026-11-09T00:06:00Z"), Date.UTC(2026, 10, 9, 0, 6, 0));
+  assertEquals(parseUtc("2026-11-09T01:06:00+01:00"), Date.UTC(2026, 10, 9, 0, 6, 0));
 });
