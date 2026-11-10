@@ -1,5 +1,7 @@
 # Workflowy
 
+Triggers: not shipped — node-list is explicitly unordered outline traversal and has no since filter (https://workflowy.com/api-reference/).
+
 Capture, edit, organise and export [WorkFlowy](https://workflowy.com) outline nodes over the public
 API v1 (`https://workflowy.com/api/v1`). Reference: <https://workflowy.com/api-reference/>.
 

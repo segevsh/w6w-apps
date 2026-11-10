@@ -1,5 +1,7 @@
 # Wati
 
+Triggers: not shipped — contacts and templates are offset-paginated without a documented creation/update order or since filter; inbound events are webhook candidates (https://docs.wati.io/).
+
 Send WhatsApp template and session messages, manage contacts, and read
 conversation history through Wati's WhatsApp Team Inbox / Business API
 platform — each customer's own tenant endpoint.

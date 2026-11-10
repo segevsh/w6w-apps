@@ -1,5 +1,7 @@
 # UptimeRobot
 
+Triggers: not shipped — monitor and alert-contact lists are offset-paginated without a documented creation/update order or since filter (https://uptimerobot.com/api/legacy/).
+
 Manage monitors and alert contacts, and check account status, via the UptimeRobot API v2.
 
 - **Categories** — monitoring

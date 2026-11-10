@@ -1,5 +1,9 @@
 # Workiz
 
+## Triggers
+
+`new-lead` polls Workiz's documented LeadDateTime-descending lead list; the first check seeds and later checks emit unseen leads. Source: http://developer.workiz.com/api.json (verified 2026-11-09).
+
 Manage the team, leads and jobs of a home-service business — and the payments
 recorded against a job — through Workiz's public API.
 

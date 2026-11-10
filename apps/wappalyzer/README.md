@@ -1,5 +1,9 @@
 # Wappalyzer
 
+## Triggers
+
+`new-lead-list` snapshots the documented account lead-list collection and emits additions only. Source: https://www.wappalyzer.com/openapi/v2-public.yaml (verified 2026-11-09).
+
 Website technology intelligence: look up the tech stack behind up to ten URLs, discover a
 company's serving subdomains, verify an email address, and build technographic lead lists.
 

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/workiz",
-  "version": "0.1.0",
-  "description": "Schedule jobs, work leads, and read the team and payments of a home-service business over the Workiz API.",
+  "version": "0.2.0",
+  "description": "Schedule Workiz jobs and leads, and trigger workflows on new leads.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "workiz.statuspage.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

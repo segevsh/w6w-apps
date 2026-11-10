@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zeplin",
-  "version": "0.1.0",
-  "description": "Read Zeplin projects, screens, components, colors, text styles, design tokens and styleguides, and comment on screens, through the Zeplin API.",
+  "version": "0.2.0",
+  "description": "Read Zeplin design handoff data and trigger workflows on new screens.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "api.zeplin.dev"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,5 +1,9 @@
 # WakaTime
 
+## Triggers
+
+`new-project` snapshots the user's project collection and emits additions only. Source: https://wakatime.com/developers (verified 2026-11-09).
+
 Read coding-time stats, daily summaries, durations, heartbeats, projects, commits, goals and
 private leaderboards from **WakaTime**, and send heartbeats and external durations, over the
 **WakaTime API v1**.

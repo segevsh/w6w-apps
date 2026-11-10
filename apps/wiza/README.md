@@ -1,5 +1,7 @@
 # Wiza
 
+Triggers: not shipped — the existing contact export is scoped to a user-selected enrichment list and vendor docs give no bounded collection or creation order for a general feed (https://docs.wiza.co/swagger/v1/openapi.yaml).
+
 Reveal contacts, enrich lists and companies, search Wiza's prospect and company databases, resolve
 filter values and read the credit balance, over the **Wiza API**.
 

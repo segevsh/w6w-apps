@@ -1,5 +1,7 @@
 # VBOUT
 
+Triggers: not shipped — contact and campaign lists are paginated without a documented creation/update order or since filter (https://api.vbout.com/1).
+
 Marketing automation (email, contacts, social, goals) driven through the VBOUT REST API
 (`https://api.vbout.com/1`). 26 actions centred on the email-marketing surface.
 

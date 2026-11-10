@@ -1,5 +1,9 @@
 # Zeplin
 
+## Triggers
+
+`new-screen` polls a project's `sort=created` screen feed; the first check seeds and later checks emit unseen screens. Source: https://docs.zeplin.dev/llms.txt (verified 2026-11-09).
+
 Read and update Zeplin design handoff data from a workflow: projects, screens and their versions
 (image, layers, assets), notes and comments, components, colors, text styles, design tokens and
 styleguides. API reference: <https://docs.zeplin.dev/llms.txt> (per-operation OpenAPI 3.0.2

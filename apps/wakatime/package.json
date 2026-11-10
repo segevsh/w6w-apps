@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wakatime",
-  "version": "0.1.1",
-  "description": "Read coding-time stats, summaries, durations, projects, goals and leaderboards from WakaTime, and send heartbeats and external durations.",
+  "version": "0.2.0",
+  "description": "Read WakaTime coding data and trigger workflows on new projects.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "api.wakatime.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

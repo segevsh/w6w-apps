@@ -1,5 +1,7 @@
 # Upstash Redis
 
+Triggers: not shipped — REST commands operate on caller-selected Redis keys and collections, not a stable account record feed (https://upstash.com/docs/redis/features/restapi).
+
 **This app is Upstash Redis over Upstash's HTTP REST API — not generic/raw Redis.** w6w Apps run
 in a network-less sandbox that reaches the network only via `ctx.fetch` over HTTP(S) to hosts on a
 static allowlist; there is no raw TCP socket access. Generic Redis speaks the RESP wire protocol

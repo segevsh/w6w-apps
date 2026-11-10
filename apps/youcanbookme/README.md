@@ -1,5 +1,9 @@
 # YouCanBookMe
 
+## Triggers
+
+`new-booking-page` snapshots the account's booking-page collection and emits additions only. Source: https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api (verified 2026-11-09).
+
 List, read, create, reschedule/cancel and delete YouCanBookMe (YCBM) bookings; list and read the
 booking pages ("profiles") behind them; add appointment types and team members to a booking page.
 

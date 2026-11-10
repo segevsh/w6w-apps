@@ -11,6 +11,7 @@ import createAppointmentType from "./actions/create-appointment-type.ts";
 import createTeamMember from "./actions/create-team-member.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBookingPage from "./triggers/new-booking-page.ts";
 
 export default {
   actions: [
@@ -30,4 +31,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newBookingPage],
 } satisfies AppDefinition;

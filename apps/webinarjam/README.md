@@ -1,5 +1,7 @@
 # WebinarJam / EverWebinar
 
+Triggers: not shipped — webinar-list is an unpaginated account collection, but the existing app cannot type-check because `auth/api-key.ts` passes an `Uint8Array` request body to a string-only helper (https://support.webinarjam.com/en/collections/19655423-developer-api).
+
 Read webinars, register attendees, list registrants and unsubscribe leads across WebinarJam
 (live webinars) and EverWebinar (automated, scheduled replays) — the same vendor's two
 products, over one shared account-wide API key.

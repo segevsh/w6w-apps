@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wappalyzer",
-  "version": "0.1.0",
-  "description": "Look up the technologies behind any website, discover its subdomains, verify an email address, and build technographic lead lists.",
+  "version": "0.2.0",
+  "description": "Look up website technologies, build lead lists, and trigger workflows on new lead lists.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.wappalyzer.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,5 +1,7 @@
 # Workday
 
+Triggers: not shipped — Workday collection actions are offset-paginated tenant reports without a documented creation/update order or since filter (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html).
+
 Workday HCM over the **Workday REST API**: workers, jobs, organizations, absence and time off, person
 contact information and time tracking, plus one write (request time off). 25 actions across five
 services, per tenant, as the Integration System User behind a Workday API client.

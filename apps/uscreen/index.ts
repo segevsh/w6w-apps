@@ -42,6 +42,7 @@ import contentSchedule from "./actions/content-schedule.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -81,4 +82,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;

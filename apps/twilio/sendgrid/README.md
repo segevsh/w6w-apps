@@ -1,5 +1,7 @@
 # SendGrid
 
+Triggers: not shipped — existing contact/list reads are `perform` actions and expose pagination but no documented newest-first, since-created, or bounded collection feed (https://docs.sendgrid.com/api-reference).
+
 Consume SendGrid API
 
 - **Categories** — email, communication

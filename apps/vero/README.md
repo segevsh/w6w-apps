@@ -1,5 +1,7 @@
 # Vero
 
+Triggers: not shipped — the published API surface is event/identity mutation only and has no existing list action or account record feed (https://help.getvero.com/api-reference/overview).
+
 Identify, track, tag, alias, delete, and subscribe/unsubscribe users via Vero's write-side Track
 API.
 

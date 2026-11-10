@@ -1,5 +1,9 @@
 # Uscreen
 
+## Triggers
+
+`new-customer` polls the newest-first customer feed through `customer-list`; the first check seeds and later checks emit unseen customers. Source: https://uscreen.io/api/publisher.yml (verified 2026-11-09).
+
 Video membership / OTT platform ([uscreen.tv](https://www.uscreen.tv)): customers, product
 access, subscriptions, group (team) seats, invoices, offers, content visibility and view analytics
 over the Uscreen **Publisher API**.
