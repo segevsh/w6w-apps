@@ -164,4 +164,11 @@ acculynx/
 Run from this directory: `deno task validate && deno task check && deno task lint && deno task fmt &&
 deno task test`.
 
-Triggers: not shipped — job invoices are a per-job sub-resource and the API reference does not state what its descending sort orders by (https://apidocs.acculynx.com/reference/)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job` — New Job | Poll | `job-list` | Each newly created job |
+| `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each newly created or modified job |
+
+`job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest. Source: [AccuLynx Get Jobs](https://apidocs.acculynx.com/reference/getjobs) (verified 2026-11-09).

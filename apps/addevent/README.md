@@ -132,4 +132,4 @@ deno task test        # unit tests (87 cases across every action, auth and healt
 | --- | --- | --- | --- |
 | `new-event-template` — New Event Template | Poll | `event-template-list` | Each newly created event template |
 
-Polled through `event-template-list`, which the API documents newest-first. Source: [AddEvent API docs](https://www.addevent.com/c/documentation/calendar-events-api) (verified 2026-11-09).
+Polled through `event-template-list`, which the API documents newest-first. Source: [AddEvent List event templates](https://docs.addevent.com/reference/list-event-templates) (verified 2026-11-09).

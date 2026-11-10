@@ -251,4 +251,10 @@ paths — confirmed via the GitHub API to be Algolia's org repo and not a fork),
 plus live probes of `status.algolia.com`. Status surfaces move; re-check if a
 probe starts failing for everyone at once.
 
-Triggers: not shipped — `search-multi` is a caller-defined federated search request, not a persistent record list ([Algolia Search API docs](https://www.algolia.com/doc/rest-api/search/)).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-index` — New Index | Poll | `index-list` | Each index newly added to the application |
+
+`index-list` walks the bounded account index collection and snapshots its stable index names, emitting additions only. Source: [Algolia list indices API](https://www.algolia.com/doc/rest-api/search/#tag/Indices/operation/listIndices) (verified 2026-11-09).

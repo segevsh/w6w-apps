@@ -47,6 +47,7 @@
  *     hatch**.
  */
 import type { AppDefinition } from "@w6w/types";
+import newIndex from "./triggers/new-index.ts";
 import apiKey from "./auth/api-key.ts";
 
 import search from "./actions/search.ts";
@@ -107,4 +108,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newIndex],
 } satisfies AppDefinition;

@@ -84,4 +84,4 @@ only the business id and name.
 | --- | --- | --- | --- |
 | `new-invoice` — New Invoice | Poll | `invoice-list` | Each newly created invoice |
 
-Polled through `invoice-list` ordered by descending issue date. Source: [Anchor API docs](https://docs.sayanchor.com/reference/get-started) (verified 2026-11-09).
+Polled through `invoice-list` ordered by descending issue date. Source: [Anchor List invoices](https://docs.sayanchor.com/reference/listinvoices-1) (verified 2026-11-09).

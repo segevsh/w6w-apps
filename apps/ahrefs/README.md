@@ -78,3 +78,11 @@ public/free endpoints, the history/by-country Site Explorer reports (`*-history`
 Management **write** (projects, keywords, competitors, prompts, reports) and Social Media write. The
 read shapes of the covered endpoints are verified; the writes were left out to keep the app to
 confirmed, low-risk reads.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-project` — New Project | Poll | `project-list` | Each project newly added to the account collection |
+
+`project-list` is the bounded management-project collection, keyed by its stable `project_id`; the snapshot trigger emits added projects only. Source: [Ahrefs Management API](https://docs.ahrefs.com/docs/api/reference/endpoint-management-projects) (verified 2026-11-09).

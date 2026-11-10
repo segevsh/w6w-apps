@@ -126,4 +126,11 @@ for cancelling or stopping a message.
 - Referenced tag names that do not exist are silently ignored; `country` defaults to US as soon as any
   other address part is sent.
 
-Triggers: not shipped — the People API says people are not ordered by newest `modified_date` first, and this action has no safe cursor-carrying poll path (https://actionnetwork.org/docs/v2/people)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-person` — New Person | Poll | `person-list` | Each person created since the prior check |
+| `new-or-updated-person` — New or Updated Person | Poll | `person-list` | Each person modified since the prior check |
+
+The People endpoint supports OData `created_date` and `modified_date` filters; the triggers retain a rolling cursor and walk every matching page. Source: [Action Network People API](https://actionnetwork.org/docs/v2/people) (verified 2026-11-09).

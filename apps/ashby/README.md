@@ -282,4 +282,10 @@ Transport failures keep their own meaning: `401` means no key arrived, and `403`
 means the key is deactivated or lacks that endpoint's module permission, which
 is granted in the Ashby app rather than here.
 
-Triggers: not shipped — `user.list` has a sync token only after a complete cursor walk, but the existing action cannot carry a cursor between bounded change checks (https://developers.ashbyhq.com/reference/userlist)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | Poll | `candidate-list` | Each candidate created since the prior check |
+
+`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-09).

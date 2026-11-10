@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newProject from "./triggers/new-project.ts";
 import anchorList from "./actions/anchor-list.ts";
 import backlinkBrokenList from "./actions/backlink-broken-list.ts";
 import backlinkList from "./actions/backlink-list.ts";
@@ -59,6 +60,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newProject],
 };
 
 export default app;

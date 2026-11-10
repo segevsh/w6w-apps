@@ -333,4 +333,11 @@ audit the way that actually resolves both import maps —
 `cd ../../_tools && deno run --no-check -A audit.ts apollo` — passes with **0 errors, 0 warnings**
 (and the identical command reports the same 0/0 for `apify`).
 
-Triggers: not shipped — deal-list offers no creation-order or created/updated-since field; its `closed_date` sort is not a new-deal feed (https://docs.apollo.io/reference/apollo-api)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-search` | Each newly created contact |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-search` | Each newly created or modified contact |
+
+`contact-search` uses `contact_created_at` and `contact_updated_at`; Apollo documents each as most-recent-first. Source: [Apollo Search Contacts](https://docs.apollo.io/reference/search-for-contacts) (verified 2026-11-09).

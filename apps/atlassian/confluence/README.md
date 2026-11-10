@@ -268,4 +268,4 @@ a probe starts failing for everyone at once.
 | `new-page` — New Page | Poll | `page-list` | Each newly created page |
 | `new-or-updated-page` — New or Updated Page | Poll | `page-list` | Each newly created or modified page |
 
-Polled through `page-list` with `sort=-created-date` and `sort=-modified-date`. Source: [Confluence pages API](https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/) (verified 2026-11-09).
+Polled through `page-list` with `sort=-created-date` and `sort=-modified-date`. Source: [Confluence OpenAPI](https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json) (verified 2026-11-09).
