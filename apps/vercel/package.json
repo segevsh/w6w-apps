@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vercel",
-  "version": "0.2.0",
-  "description": "Ship and inspect Vercel deployments and trigger workflows on new deployments.",
+  "version": "0.3.0",
+  "description": "Ship and inspect Vercel deployments and trigger workflows on new deployments, projects, domains, aliases and environment variables.",
   "license": "MIT",
   "author": {
     "name": "w6w"
