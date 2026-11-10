@@ -97,3 +97,19 @@ test("contact-list: a 200 whose body is not a data array is an error", async () 
   const { ctx } = mockCtx([{ body: { nope: true } }]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "no `data` array");
 });
+
+test("contact-list: maps the created/updated date windows onto Simplero's DateFilter keys", async () => {
+  const { ctx, calls } = mockCtx([{ body: listBody([]) }]);
+  await action.execute({
+    createdFrom: "2026-11-08",
+    createdTo: "2026-11-10",
+    updatedFrom: "2026-11-09",
+  }, ctx);
+  assertEquals(queryOf(calls[0].url), {
+    "created_at[preset]": "custom",
+    "created_at[from]": "2026-11-08",
+    "created_at[to]": "2026-11-10",
+    "updated_at[preset]": "custom",
+    "updated_at[from]": "2026-11-09",
+  });
+});
