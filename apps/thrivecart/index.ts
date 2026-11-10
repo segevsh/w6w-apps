@@ -90,6 +90,22 @@ import newPurchase from "./triggers/new-purchase.ts";
 import subscriptionPayment from "./triggers/subscription-payment.ts";
 import subscriptionCancelled from "./triggers/subscription-cancelled.ts";
 import thrivecartEvent from "./triggers/thrivecart-event.ts";
+import newBumpPurchase from "./triggers/new-bump-purchase.ts";
+import newUpsellPurchase from "./triggers/new-upsell-purchase.ts";
+import newDownsellPurchase from "./triggers/new-downsell-purchase.ts";
+import paymentDeclined from "./triggers/payment-declined.ts";
+import orderRefunded from "./triggers/order-refunded.ts";
+import subscriptionPaymentFailed from "./triggers/subscription-payment-failed.ts";
+import cartAbandoned from "./triggers/cart-abandoned.ts";
+import subscriptionPaused from "./triggers/subscription-paused.ts";
+import subscriptionResumed from "./triggers/subscription-resumed.ts";
+import affiliateCreated from "./triggers/affiliate-created.ts";
+import affiliateApproved from "./triggers/affiliate-approved.ts";
+import commissionEarned from "./triggers/commission-earned.ts";
+import newProduct from "./triggers/new-product.ts";
+import newBump from "./triggers/new-bump.ts";
+import newUpsell from "./triggers/new-upsell.ts";
+import newDownsell from "./triggers/new-downsell.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -143,7 +159,28 @@ export default {
   // Access token only. The collection documents a bearer credential; a
   // separate OAuth2 app flow exists for third-party apps but is not part of
   // the published collection this app was built from — see auth/api-token.ts.
-  triggers: [newPurchase, subscriptionPayment, subscriptionCancelled, thrivecartEvent],
+  triggers: [
+    newPurchase,
+    subscriptionPayment,
+    subscriptionCancelled,
+    thrivecartEvent,
+    newBumpPurchase,
+    newUpsellPurchase,
+    newDownsellPurchase,
+    paymentDeclined,
+    orderRefunded,
+    subscriptionPaymentFailed,
+    cartAbandoned,
+    subscriptionPaused,
+    subscriptionResumed,
+    affiliateCreated,
+    affiliateApproved,
+    commissionEarned,
+    newProduct,
+    newBump,
+    newUpsell,
+    newDownsell,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
