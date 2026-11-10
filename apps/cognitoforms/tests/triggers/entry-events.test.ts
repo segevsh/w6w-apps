@@ -31,7 +31,7 @@ const call = (body: unknown, method = "POST") => ({
   subscriptionId: "sub_1",
 });
 
-const ingest = async (t: typeof submitted, input: ReturnType<typeof call>) =>
+const ingest = (t: typeof submitted, input: ReturnType<typeof call>) =>
   t.handleIngest!(input, mockCtx().ctx);
 
 test("app declares the three webhook triggers with output and sample and no params", () => {
