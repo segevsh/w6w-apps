@@ -6,6 +6,7 @@ support platform, over the **Pylon API**.
 - **Categories** — support, crm
 - **Auth methods** — api-token (`Authorization: Bearer <token>`, plus a US/EU region field)
 - **Actions** — 30
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (status.usepylon.com, `API` component), `api` (unsigned
   reachability on the connection's region host), `quota` (declared unavailable, informational)
   + the derived `auth:api-token`
@@ -61,4 +62,10 @@ reply, custom fields and custom objects, email, knowledge base, macros, tasks an
 forms, training data, surveys, feature requests, call recordings, attachments, audit logs, user
 roles, user update, team create/update, and the activities, files and highlights endpoints.
 
-Triggers: not shipped — account, contact and issue lists are cursor feeds with no documented newest-first order or updated-since filter in the existing actions (https://docs.usepylon.com/pylon-docs/developer/api)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-issue` | poll | `issue-list` | Each newly created support issue |
+
+`new-issue` runs `issue-list` over a short created-time window (`start_time` = last check minus two minutes, `end_time` = now; the API allows up to 365 days) with `limit` 200 and follows `nextCursor` for up to three pages, de-duplicating on issue id. The first check records what exists without firing. Source: [API reference](https://docs.usepylon.com/pylon-docs/developer/api) (verified 2026-11-09).

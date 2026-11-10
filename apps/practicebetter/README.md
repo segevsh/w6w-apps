@@ -8,6 +8,7 @@ Better's own events instead of polling for them.
 - **Categories** — crm, calendar, finance
 - **Auth methods** — client credentials (`custom`)
 - **Actions** — 26
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:client-credentials`
 - **Egress allowlist** — `api.practicebetter.io` (the token endpoint and every action) and
   `status.practicebetter.io` (the `service` check). The documentation host
@@ -116,7 +117,6 @@ envelope:
 { "count": 128, "hasMore": true, "items": [] }
 ```
 
-Triggers: not shipped — client-record modification filters exist but the action response exposes no documented stable timestamp/id pair for a safe since cursor (https://api-docs.practicebetter.io/swagger.json)
 
 `pageParams`, `pageOutput`, `pageQuery` and `Page<T>` in [`lib/client.ts`](lib/client.ts) declare
 that shape once, so the nine list actions cannot drift apart, and list actions return the envelope
@@ -238,3 +238,12 @@ deno task fmt
 deno task test      # 167 tests, no network
 deno task validate  # the pack's conformance auditor
 ```
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-client-record` | poll | `list-client-records` | Each newly created client record (list is newest first) |
+| `new-or-updated-client-record` | poll | `list-client-records` | Each client record when created or modified (`modified_gte`) |
+
+`new-client-record` relies on Practice Better's documented order for `GET /consultant/records`: records "are returned in descending order, with the most recent records appearing first based on date created"; the first check records what exists without firing. `new-or-updated-client-record` passes `modified_gte` (last check minus two minutes) and de-duplicates on `id:dateModified`, so an edit is a new event. Source: [API reference](https://api-docs.practicebetter.io/swagger.json) (verified 2026-11-09).

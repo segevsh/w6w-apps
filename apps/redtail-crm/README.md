@@ -6,6 +6,7 @@ built for financial advisors — over Redtail's public REST API.
 - **Categories** — crm
 - **Auth methods** — database-credentials (custom: API Key + Username + Password, exchanged for a `user_key`)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `crm.redtailtechnology.com`
 - **Website** — https://www.redtailtechnology.com
 - **API docs** — https://documenter.getpostman.com/view/7873823/SVzxXyzn ("TWAPI Documentation")
@@ -220,4 +221,10 @@ unexpected request fails rather than hanging. `UNAUTHORIZED_401`, `FORBIDDEN_403
 `NO_CONTENT_204` in that file are the live/collection-measured responses reused everywhere those
 failure and success modes are asserted.
 
-Triggers: not shipped — contact, activity and opportunity list actions paginate without a documented creation order or changed-since filter (https://documenter.getpostman.com/view/7873823/SVzxXyzn)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-contact` | poll | `contact-search` | Each contact when created or updated (`updated_since`) |
+
+`new-or-updated-contact` runs `contact-search` with the documented `updated_since` parameter set to the last check minus two minutes and de-duplicates on `id:updated_at`, so an edit is a new event. The action exposes no paging, so one request is made per check. The first check records what exists without firing. Source: [API reference](https://documenter.getpostman.com/view/7873823/SVzxXyzn) (verified 2026-11-09).

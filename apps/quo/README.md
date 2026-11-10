@@ -11,6 +11,7 @@ whole workspace, on the **Quo Public API v1**.
 - **Categories** — communication, crm
 - **Auth methods** — api-key
 - **Actions** — 43
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.quo.com` (the `service` check adds `status.quo.com` to its own hook
   allowlist, never to the app's)
@@ -227,4 +228,11 @@ promise the header exists, so a future removal shouldn't fail a target outright.
 `<link rel="icon">` tags on `quo.com`'s own HTML — the current vendor mark, not the legacy
 OpenPhone one.
 
-Triggers: not shipped — call and message lists require a phone number and participant scope, and no existing list action documents a global created-order feed (https://www.quo.com/docs/mdx/api-reference/introduction)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` | poll | `conversation-list` | Each newly created shared-inbox conversation (`createdAfter`) |
+| `new-or-updated-conversation` | poll | `conversation-list` | Each conversation when created or updated (`updatedAfter`) |
+
+Both triggers run `conversation-list` with the documented `createdAfter` / `updatedAfter` filter set to the last check minus two minutes, `maxResults` 100, following `nextPageToken` for up to three pages and de-duplicating by id (`id:updatedAt` for the updated trigger). The first check records what exists without firing. Source: [API reference](https://www.quo.com/docs/mdx/api-reference/introduction) (verified 2026-11-09).

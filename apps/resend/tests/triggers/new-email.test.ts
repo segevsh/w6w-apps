@@ -22,3 +22,9 @@ test("new-email seeds, emits, retries, and requests the literal bounded email pa
   assertEquals(first.events, [email("b")]);
   assertEquals(retry, first);
 });
+
+test("new-email asks for the full 100-item page, not the action's default cap of 50", async () => {
+  const sixty = Array.from({ length: 60 }, (_, i) => email(`e${i}`));
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx(sixty).ctx);
+  assertEquals((seeded.nextState as { ids: string[] }).ids.length, 60);
+});

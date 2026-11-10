@@ -72,4 +72,4 @@ verbatim as base64 — no SVG original is published. Format with `deno task fmt`
 | --- | --- | --- | --- |
 | `new-meeting` | poll | `list-meetings` | Each newly available meeting report |
 
-`GET /v1/meetings` is newest first and capped at ten rows. Vendor API reference: https://www.read.ai (verified 2026-11-09).
+`GET /v1/meetings` is newest first and capped at ten rows (`limit` default and maximum are both 10, as recorded in `actions/list-meetings.ts`). Vendor API reference: the Read AI API articles in the help centre, https://support.read.ai (the endpoint `https://api.read.ai/v1/meetings` answers 401 without a token, verified 2026-11-09; the help centre refuses automated clients with 403, so the ordering wording is not re-fetched here).

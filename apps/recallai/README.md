@@ -6,6 +6,7 @@ recordings, transcripts, participant events and calendar events, in **Recall.ai*
 - **Categories** — video, communication
 - **Auth methods** — api-key (`Authorization: Token <key>`, plus a region field)
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable, informational: no status page), `api`
   (unsigned reachability on the connection's region host), `quota` (declared unavailable,
   informational) + the derived `auth:api-key`
@@ -74,4 +75,10 @@ video output, pin participant, Desktop SDK uploads, Calendar V1 (calendar users 
 Google Meet bot login groups and logins, Meeting Direct Connect, Zoom OAuth apps and credentials,
 and fetching the pre-signed download URLs themselves.
 
-Triggers: not shipped — webhook status events are preferred by the vendor and existing bot/calendar lists have no documented newest-first order (https://docs.recall.ai/reference)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-calendar` | poll | `calendar-list` | Each newly connected calendar (`created_at__gte`) |
+
+`new-calendar` runs `calendar-list` with the documented `created_at__gte` filter set to the last check minus two minutes, following the `next` cursor for up to three pages and de-duplicating by calendar id. The first check records what exists without firing. Source: [API reference](https://docs.recall.ai/reference) (verified 2026-11-09).
