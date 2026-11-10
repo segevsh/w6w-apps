@@ -6,7 +6,7 @@ the other communities on the Stack Exchange network, over the public **Stack Exc
 - **Categories** — developer-tools, search
 - **Auth methods** — api-key (application `key`, sent as a query parameter)
 - **Actions** — 39, all read-only
-- **Triggers** — 2 (poll)
+- **Triggers** — 11 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /info`), `quota` (signed `GET /info`, reads `quota_remaining` / `quota_max`) + the derived
   `auth:api-key`
@@ -103,5 +103,22 @@ building: pass a filter name or id instead); `/revisions` and `/posts/{ids}/revi
 | --- | --- | --- | --- |
 | `new-answer` — New Answer | Poll (newest first) | `user-answer-list` | Each newly created answer by the chosen users |
 | `new-or-updated-answer` — New or Updated Answer | Poll (most recent activity first) | `user-answer-list` | Each answer that is new or has new activity |
+| `new-comment` — New Comment | Poll (newest first) | `comment-list` | Each newly created comment on the selected site |
+| `new-or-updated-associated-account` — New or Updated Associated Account | Poll (bounded snapshot) | `user-associated-list` | Each added or changed site account for the selected network account |
+| `new-or-updated-user-badge` — New or Updated User Badge | Poll (bounded snapshot) | `user-badge-list` | Each badge a selected user earns for the first time, or whose award count rises |
+| `new-user-reputation-change` — New Reputation Change | Poll (`fromdate` filter, newest first) | `user-reputation-list` | Each new reputation change of the selected users |
+| `new-tag-synonym` — New Tag Synonym | Poll (newest first) | `tag-synonym-list` | Each newly created tag synonym on the selected site |
+| `new-question` — New Question | Poll (newest first) | `question-list` | Each newly created question on the selected site |
+| `new-or-updated-question` — New or Updated Question | Poll (most recent activity first) | `question-list` | Each question that is new or has new activity |
+| `new-user` — New User | Poll (newest first) | `user-list` | Each newly created user on the selected site |
+| `new-or-updated-user` — New or Updated User | Poll (most recently modified first) | `user-list` | Each user that is new or has been modified |
 
 Polled through the `user-answer-list` action with `sort=creation&order=desc` (new) and `sort=activity&order=desc` (new or updated; the id includes `last_activity_date`, so a later edit is a new event). The first check records what exists without firing; later checks emit only unseen items. Source: the API reference states "The sorts accepted by this method operate on the following fields of the answer object: activity – last_activity_date, creation – creation_date, votes – score" ([answers-on-users](https://api.stackexchange.com/docs/answers-on-users), verified 2026-11-09).
+
+Questions, comments and users use their documented `creation` order with `order=desc`; the update triggers use `activity` for questions and `modified` for users, with the activity stamp included in the id. Associated accounts use a bounded (500-row) snapshot because the endpoint has no chronological sort. Sources: [questions](https://api.stackexchange.com/docs/questions), [comments](https://api.stackexchange.com/docs/comments), [users](https://api.stackexchange.com/docs/users), and [associated accounts](https://api.stackexchange.com/docs/associated-users), verified 2026-11-10.
+
+Not covered by a distinct poll: `badge-list`, `privilege-list`, `site-list`, `tag-list`, `tag-related-list`, and `tag-synonym-list` are reference/configuration catalogues; `moderator-list` is an administrative roster; `tag-top-answerer-list`, `tag-top-asker-list`, and `user-tag-list` are ranked analytics; `user-badge-list` and `user-reputation-list` have no chronological sort/filter and can be unbounded. The other question, answer, comment and search actions return records covered by the matching primary poll above.
+
+Tag synonyms use the documented `creation` sort. Reputation changes have no sort parameter and no id of their own: the trigger asks `/users/{ids}/reputation` for `fromdate` = last check minus two minutes (the API answers newest first by `on_date`), dedupes on `user_id:post_id:vote_type:on_date`, never fires for changes dated before the first check, and drains a window longer than five pages across successive checks. A user's badges use a bounded snapshot (up to 1000 rows) keyed by `user_id:badge_id`, so a new badge and a repeat award (`award_count`) are both events. Sources: [reputation-on-users](https://api.stackexchange.com/docs/reputation-on-users), [badges-on-users](https://api.stackexchange.com/docs/badges-on-users), [tag-synonyms](https://api.stackexchange.com/docs/tag-synonyms), verified 2026-11-10.
+
+Not covered: reference catalogues (badges, privileges, sites, moderators), ranked analytics (related tags, top answerers/askers, a user's tags) and the tag catalogue, which has no creation-time sort.
