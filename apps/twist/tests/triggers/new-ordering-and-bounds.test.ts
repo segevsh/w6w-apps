@@ -33,7 +33,8 @@ describe("whole-collection snapshot triggers hold past 200 records", () => {
         assertEquals(out.events, []);
         state = out.nextState;
       }
-      const grown = [...all, { id: 451 }];
+      // Record 1 is edited in place: an edit is not a "new" record.
+      const grown = [{ id: 1, name: "renamed" }, ...all.slice(1), { id: 451 }];
       const out = await c.trigger.poll!({ ...input, state }, mockCtx([{ body: grown }]).ctx);
       assertEquals(out.events, [{ id: 451 }]);
       const after = await c.trigger.poll!(

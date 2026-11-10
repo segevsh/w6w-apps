@@ -27,7 +27,7 @@ export function collectionSnapshot(
       const items = (result as { items?: Array<Record<string, unknown>> }).items ?? [];
       const { events, nextState } = await pollSnapshot({
         state,
-        emit: { added: true },
+        emit: { added: true, updated: false },
         rows: items.map((item) => ({ key: String(item.id ?? ""), values: item })),
       });
       return { events: events.map((e) => e.values), nextState };
