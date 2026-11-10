@@ -37,6 +37,12 @@ import workItemQuery from "./actions/work-item-query.ts";
 import newBuild from "./triggers/new-build.ts";
 import newWorkItem from "./triggers/new-work-item.ts";
 import newOrUpdatedWorkItem from "./triggers/new-or-updated-work-item.ts";
+import newCommit from "./triggers/new-commit.ts";
+import newPullRequest from "./triggers/new-pull-request.ts";
+import newRepository from "./triggers/new-repository.ts";
+import newBranch from "./triggers/new-branch.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
+import newProject from "./triggers/new-project.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -62,7 +68,17 @@ const app: AppDefinition = {
   ],
   auth: [pat],
   healthChecks: [service, organization, quota],
-  triggers: [newBuild, newWorkItem, newOrUpdatedWorkItem],
+  triggers: [
+    newBuild,
+    newWorkItem,
+    newOrUpdatedWorkItem,
+    newCommit,
+    newPullRequest,
+    newRepository,
+    newBranch,
+    newPipeline,
+    newProject,
+  ],
 };
 
 export default app;

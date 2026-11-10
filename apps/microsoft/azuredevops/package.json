@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/azuredevops",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Work an Azure DevOps organization, poll for pipeline runs and work items, and manage repositories, pull requests and work items.",
   "license": "MIT",
   "author": {
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://learn.microsoft.com/rest/api/azure/devops"
     ],
-    "longDescription": "Azure DevOps brings an organization's repositories, pipelines and work items into a workflow. Browse repositories and branches, read commit history, and open, inspect and comment on pull requests — as a draft by default, since merging stays a human decision this app deliberately never automates. Pipeline actions list, run, queue and cancel builds, read a run's artifacts and results, poll for new pipeline runs, and poll for new or changed work items, distinguishing a genuine pass from one that only partially succeeded.\n\nWork items are the deepest integration: create and update Bugs, Tasks, User Stories or whatever a project's process defines, and query with WIQL — resolved into full field data automatically, since Azure DevOps's own query API only returns bare IDs. Custom fields pass through untouched alongside the well-known ones, so a team's own tracking fields keep working.\n\nThe app also normalizes some of Azure DevOps's rougher edges for a workflow author: branch names work whether an endpoint expects a bare name or a full ref, and reviewer votes are read by their meaning rather than their raw numeric encoding. It deliberately never deletes or merges anything, and never edits pipeline definitions or branch policies — those stay in version control and in human hands.",
+    "longDescription": "Azure DevOps brings an organization's repositories, pipelines and work items into a workflow. Browse repositories and branches, read commit history, and open, inspect and comment on pull requests — as a draft by default, since merging stays a human decision this app deliberately never automates. Pipeline actions list, run, queue and cancel builds, read a run's artifacts and results, poll for new pipeline runs, commits, pull requests, repositories, branches, pipelines and projects, and poll for new or changed work items, distinguishing a genuine pass from one that only partially succeeded.\n\nWork items are the deepest integration: create and update Bugs, Tasks, User Stories or whatever a project's process defines, and query with WIQL — resolved into full field data automatically, since Azure DevOps's own query API only returns bare IDs. Custom fields pass through untouched alongside the well-known ones, so a team's own tracking fields keep working.\n\nThe app also normalizes some of Azure DevOps's rougher edges for a workflow author: branch names work whether an endpoint expects a bare name or a full ref, and reviewer votes are read by their meaning rather than their raw numeric encoding. It deliberately never deletes or merges anything, and never edits pipeline definitions or branch policies — those stay in version control and in human hands.",
     "categories": [
       "version-control",
       "devops",
