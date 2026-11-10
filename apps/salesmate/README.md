@@ -103,6 +103,10 @@ sample rule (created after 1970) is used so the call returns everything. Output 
 
 ## Deprecation
 
+## Triggers
+
+- `new-contact` and `new-or-updated-contact` poll Salesmate's documented v4 contact search ordering by `contact.createdAt` and `contact.lastModifiedAt` (verified 2026-11-09): https://apidocs.salesmate.io/
+
 The reference's banner: "We will be deprecating the v1 and v3 versions of the Salesmate APIs by May 1,
 2023." This app uses **v4 only**. Products (`/v1/products`, `/v3/products/search`) are documented only on
 v1/v3, so they are **not covered**.

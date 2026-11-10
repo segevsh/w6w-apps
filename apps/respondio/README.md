@@ -1,5 +1,7 @@
 # respond.io
 
+Triggers: not shipped — the contact list documents cursor pagination but no created/updated ordering or since filter (https://developers.respond.io/)
+
 Manage contacts, conversations, and messages across WhatsApp, SMS, Messenger, Instagram, email and
 other channels, on the **respond.io Developer API v2**.
 

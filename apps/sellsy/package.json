@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sellsy",
-  "version": "0.1.0",
-  "description": "Search, read and write Sellsy CRM and invoicing data: companies, individuals, contacts, opportunities, tasks, estimates, invoices, items and webhooks.",
+  "version": "0.2.0",
+  "description": "Search and manage Sellsy CRM data, and poll for new or updated companies.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.sellsy",
+    "build": { "include": ["../_shared"] },
     "displayName": "Sellsy",
     "apiDocs": [
       "https://api.sellsy.com/doc/v2/"

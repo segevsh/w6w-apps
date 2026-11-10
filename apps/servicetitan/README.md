@@ -1,5 +1,9 @@
 # ServiceTitan
 
+## Triggers
+
+- `new-customer` and `new-or-updated-customer` use ServiceTitan's `createdOnOrAfter` and `modifiedOnOrAfter` customer filters (verified 2026-11-09): https://developer.servicetitan.io/docs/apis/tenant-crm-v2
+
 Customers, service locations, leads, jobs, appointments and the people who run them, on the
 **ServiceTitan v2 REST API** (`api.servicetitan.io`).
 

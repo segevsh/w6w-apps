@@ -1,5 +1,9 @@
 # ServiceNow
 
+## Triggers
+
+- `new-table-record` and `new-or-updated-table-record` use documented Table API encoded queries and `ORDERBYDESC` on `sys_created_on`/`sys_updated_on` (verified 2026-11-09): https://www.servicenow.com/docs/bundle/xanadu-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html
+
 Manage ServiceNow incidents, plus any other table, via the Table API.
 
 - **Categories** — support, devops

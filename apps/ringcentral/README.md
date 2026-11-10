@@ -1,5 +1,7 @@
 # RingCentral
 
+Triggers: not shipped — the call-log and message-store lists expose date ranges but no documented created-record ordering for a lossless poll (https://platform.ringcentral.com/restapi)
+
 Send SMS, read the message store and call log, look up extensions and the company directory, place
 RingOut calls and read presence — on the **RingCentral Platform API v1.0**.
 

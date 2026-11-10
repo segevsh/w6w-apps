@@ -57,6 +57,10 @@ numeric page-number paging (limited to the first 100,000 results).
 
 ## Not covered
 
+## Triggers
+
+- `new-company` and `new-or-updated-company` poll Sellsy's company search ordered by `created_at` and `updated_at` (verified 2026-11-09): https://api.sellsy.com/doc/v2/
+
 Add or edit estimate/invoice/order lines (`/estimates`, `/invoices` create and update with their
 document-line model), credit notes, orders, deliveries, proposals, subscriptions, items create/update,
 custom fields, smart tags, addresses, files upload, calendar events, phone calls, emails, listings,

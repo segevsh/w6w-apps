@@ -213,6 +213,10 @@ calls out fixes it, rather than implying a quota that refills.
 
 ## Errors
 
+## Triggers
+
+- `new-or-updated-shipment` polls Shippo's documented recent shipment activity feed (verified 2026-11-09): https://docs.goshippo.com/api-reference/shipments/list-all-shipments
+
 Shippo answers auth failures as `{"detail": "..."}`, and the text itself
 distinguishes three cases, all reproduced live 2026-09-05: no header at all
 ("Authentication credentials were not provided."), the right scheme with a

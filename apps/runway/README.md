@@ -1,5 +1,7 @@
 # Runway
 
+Triggers: not shipped — listed avatars, voices, routers, and workflows have no documented created/updated cursor or bounded collection guarantee (https://docs.dev.runwayml.com/)
+
 Generate video, images, speech and sound effects, poll the tasks to completion, run saved
 workflows and Model Routers, and read credits and usage, over the **Runway developer API**
 (`api.dev.runwayml.com`).

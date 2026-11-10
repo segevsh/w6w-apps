@@ -1,5 +1,7 @@
 # SavvyCal
 
+Triggers: not shipped — events can be ordered by scheduled time, not documented creation or modification time (https://docs.savvycal.com/)
+
 Scheduling links: list, create, update, duplicate, toggle and delete links; read open time slots;
 book and cancel events; manage webhooks; read SavvyCal workflows. App id `io.w6w.savvycal`, API
 `https://api.savvycal.com/v1` (the "SavvyCal Meetings" API).

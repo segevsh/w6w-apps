@@ -1,5 +1,7 @@
 # Sanity
 
+Triggers: not shipped — the existing document query is caller-defined GROQ rather than a fixed, bounded record feed (https://www.sanity.io/docs/http-reference)
+
 Query and mutate a Sanity Content Lake from a workflow — GROQ queries,
 transactional document mutations, publishing, revision history and dataset
 management.

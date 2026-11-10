@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/servicetitan",
-  "version": "0.1.0",
-  "description": "Manage ServiceTitan customers, locations, leads, jobs, appointments, technicians and business units.",
+  "version": "0.2.0",
+  "description": "Manage ServiceTitan customers and field-service operations, and poll for new or updated customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.servicetitan",
+    "build": { "include": ["../_shared"] },
     "displayName": "ServiceTitan",
     "apiDocs": [
       "https://developer.servicetitan.io/docs/"

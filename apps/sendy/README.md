@@ -1,5 +1,7 @@
 # Sendy
 
+Triggers: not shipped — brand and list reads have no documented bounded snapshot or created/updated cursor (https://sendy.co/api)
+
 Manage subscribers and send campaigns on a self-hosted Sendy newsletter
 installation.
 

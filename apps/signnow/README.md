@@ -1,5 +1,7 @@
 # SignNow
 
+Triggers: not shipped — the existing folder-tree read has no documented created/updated order or bounded snapshot contract (https://docs.signnow.com/docs/signnow/reference)
+
 Send documents out for signature, track and cancel invites, download signed PDFs, work from
 templates, manage folders, and subscribe a webhook to document/user events, against **SignNow's
 REST API**.

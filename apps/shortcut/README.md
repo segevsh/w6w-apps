@@ -1,5 +1,7 @@
 # Shortcut
 
+Triggers: not shipped — existing paginated story and epic reads do not expose a documented created/updated sort or since filter (https://developer.shortcut.com/api/rest/v3)
+
 Manage Shortcut Stories, Epics, Iterations, Workflows and Labels — the project-management tool
 formerly known as Clubhouse — on the **Shortcut REST API v3**.
 

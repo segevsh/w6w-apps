@@ -215,6 +215,10 @@ an SVG wrapper — the same pattern this pack uses for every other vendor withou
 
 ## Links
 
+## Triggers
+
+- `new-document` polls SignRequest's newest-first documents endpoint (verified 2026-11-09): https://signrequest.com/api/v1/docs/#documents
+
 Every URL below was verified live on 2026-09-05.
 
 - Vendor: <https://signrequest.com/>

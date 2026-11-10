@@ -1,5 +1,7 @@
 # Sierra Interactive
 
+Triggers: not shipped — the app has individual lead lookup and reference-data lists, not a documented change feed for leads (https://api.sierrainteractivedev.com/)
+
 Leads, notes, tasks, saved listings, listing requests and action plans in
 [Sierra Interactive](https://www.sierrainteractive.com/), the real-estate CRM, over its API at
 `https://api.sierrainteractivedev.com`. Every path, verb, parameter and body field comes from the
