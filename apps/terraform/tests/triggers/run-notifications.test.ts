@@ -164,7 +164,8 @@ test("a SHA-256 signature is not accepted in place of the SHA-512 one", async ()
 });
 
 test("signature header missing → throws", async () => {
-  await assertRejects(() => ingest(runCompleted, call(payload())) as Promise<unknown>);
+  const err = await assertRejects(() => ingest(runCompleted, call(payload())) as Promise<unknown>);
+  assert(/signature header is missing/.test(err.message));
 });
 
 test("rawBody absent → throws (never re-serialises the parsed body)", async () => {

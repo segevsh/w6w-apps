@@ -149,7 +149,8 @@ test("the hash covers the type: a signed document_sent cannot be replayed as doc
 test("hash missing → throws", async () => {
   const b = body().replace(/"hash":"[0-9a-f]+",/, "");
   assert(!b.includes('"hash"'));
-  await assertRejects(() => ingest(documentCompleted, call(b)) as Promise<unknown>);
+  const err = await assertRejects(() => ingest(documentCompleted, call(b)) as Promise<unknown>);
+  assert(/missing/.test(err.message));
 });
 
 test("rawBody absent → throws (never re-serialises the parsed body)", async () => {
