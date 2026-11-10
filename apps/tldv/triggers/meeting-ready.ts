@@ -14,7 +14,7 @@ const meetingReady = webhookTrigger({
     meetingId: "meeting-123",
     name: "Team Standup Meeting",
     happenedAt: "2026-11-09T10:00:00Z",
-    url: "https://app.tldv.io/meetings/meeting-123",
+    url: null,
     duration: 1800,
     organizer: { name: "Ada Lovelace", email: "ada@example.com" },
     invitees: [{ name: "Grace Hopper", email: "grace@example.com" }],
