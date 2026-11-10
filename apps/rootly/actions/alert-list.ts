@@ -8,6 +8,8 @@ interface Input {
   environments?: string;
   groups?: string;
   labels?: string;
+  created_at_gte?: string;
+  updated_at_gte?: string;
   include?: string[] | string;
   page_number?: number;
   page_size?: number;
@@ -58,6 +60,18 @@ const alertList: ActionDefinition<Input> = {
       label: "Labels",
       type: "string",
       hint: "Label filter.",
+    },
+    {
+      key: "created_at_gte",
+      label: "Created at or after",
+      type: "string",
+      hint: "Only alerts created at or after this time, ISO 8601 (filter[created_at][gte]).",
+    },
+    {
+      key: "updated_at_gte",
+      label: "Updated at or after",
+      type: "string",
+      hint: "Only alerts updated at or after this time, ISO 8601 (filter[updated_at][gte]).",
     },
     {
       key: "include",
@@ -111,6 +125,8 @@ const alertList: ActionDefinition<Input> = {
         "filter[environments]": input.environments,
         "filter[groups]": input.groups,
         "filter[labels]": input.labels,
+        "filter[created_at][gte]": input.created_at_gte,
+        "filter[updated_at][gte]": input.updated_at_gte,
         "include": strList(input.include)?.join(","),
         "page[number]": input.page_number,
         "page[size]": input.page_size,
