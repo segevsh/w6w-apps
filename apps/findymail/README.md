@@ -7,7 +7,7 @@ searches, manage contact and exclusion lists, monitor buying signals and read cr
 - **Categories** — email, marketing
 - **Auth methods** — api-key (`Authorization: Bearer <token>`)
 - **Actions** — 35
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** — `service` (declared unavailable — Findymail publishes no status page), `api`
   (unsigned reachability), `quota` (finder and verifier credit balances) + the derived `auth:api-key`
 - **Egress allowlist** — `app.findymail.com`
@@ -90,10 +90,20 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 | Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
 |---|---|---|---|
 | `new-list` — New Contact List | poll (snapshot) | Get the list of contact lists (`GET /api/lists`) | each newly created contact list |
+| `new-signal` — New Signal | poll (since-filter) | `list-signals` (`GET /api/signals`, `date_from`, 100 per page) | each signal newly detected by your monitors (optional `signal_type`, `monitor_id`) |
+| `new-monitor` — New Signal Monitor | poll (newest first) | `list-monitors` (`GET /api/signals/monitors`) | each newly created signal monitor |
+| `new-exclusion-list` — New Exclusion List | poll (snapshot) | `list-exclusion-lists` (`GET /api/intellimatch/exclusion-lists`) | each newly created exclusion list |
+| `new-list-contact` — New Contact in List | poll (snapshot) | `list-contacts` (`GET /api/contacts/get/{id}`) | each contact newly saved to the chosen list (`id`) |
 
 Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
 
 Trust model: the `list-lists` action; the collection is one unpaginated response of the account's contact lists (a handful, far below the 5000-row snapshot cap), diffed on each check with additions only. Renames are not events. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+`new-signal` calls the `list-signals` request with `date_from` set to the UTC day of the previous check minus two minutes (OpenAPI: "Filter signals detected on or after this date (format: YYYY-MM-DD)"), `per_page=100` (the documented maximum), up to 10 pages per check, and drops signals whose own `detected_at` is before that moment or before the first check; a longer window is resumed on the next check. `new-monitor` relies on the documented order ("ordered by most recent first"). `new-exclusion-list` and `new-list-contact` diff the whole unpaginated response by id with the poll kit (additions only; more than 5000 rows fails the check naming the cap, and a contact list larger than one response fails loudly).
+
+Not covered: `find-email-by-linkedin`, `find-email-by-name`, `find-employees`, `find-phone`, `lookalike-search` (credit-consuming lookups, not record feeds); `search-technologies` (Findymail's technology catalogue — reference data); `list-excluded-domains` (configuration the account's own users write with `add-excluded-domains`; the OpenAPI documents no sort order and no `per_page` maximum for it).
+
+Vendor docs: <https://app.findymail.com/docs> and <https://app.findymail.com/docs/openapi.yaml> (verified 2026-11-10).
 
 Intellimatch search stays an action: it starts a credit-consuming task, so it is not a feed.
 
