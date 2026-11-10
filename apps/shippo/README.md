@@ -6,6 +6,7 @@ track it to the door, and validate an address before it costs a return.
 - **Categories** — commerce, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.goshippo.com` (the `service` health check adds
   `status.goshippo.com`)
 - **Website** — https://goshippo.com
@@ -213,10 +214,6 @@ calls out fixes it, rather than implying a quota that refills.
 
 ## Errors
 
-## Triggers
-
-- `new-or-updated-shipment` polls Shippo's documented recent shipment activity feed (verified 2026-11-09): https://docs.goshippo.com/api-reference/shipments/list-all-shipments
-
 Shippo answers auth failures as `{"detail": "..."}`, and the text itself
 distinguishes three cases, all reproduced live 2026-09-05: no header at all
 ("Authentication credentials were not provided."), the right scheme with a
@@ -226,3 +223,15 @@ entirely ("Invalid access token." — e.g. sending `Bearer` instead of
 object (Shippo's own `BadRequest` schema is `additionalProperties: true` —
 its shape is not fixed), surfaced field by field. A `429` names the
 per-minute rate-limits doc rather than implying a quota that refills.
+
+## Triggers
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-shipment` — New Shipment | poll | `shipment-list` (`object_created_gte`) | the new shipment |
+
+The first check only records the time (`floor`) and emits nothing, and anything created (`object_created`) before that time is never emitted. Each later check re-reads `object_created_gte` from the last drained cursor minus 2 minutes, remembers up to 500 emitted ids and skips them. A window larger than 200 shipments is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained. Shippo's list documents no order, so none is relied on: pages are read with a fixed `since`, the page number is kept until `next` is empty, and the id dedupe absorbs a row that moves between pages. There is no updated-since filter, so there is no "updated" trigger.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `shipment-list` with the connection's credentials.
+
+Vendor docs: https://docs.goshippo.com/api-reference/shipments/list-all-shipments (verified 2026-11-09: `object_created_gte`, `results` max 100, `page`, and `next` in the response)

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/shippo",
   "version": "0.2.0",
-  "description": "Rate parcels, buy labels, track shipments, and poll for shipment activity.",
+  "description": "Rate parcels, buy labels, track shipments, and poll for new shipments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

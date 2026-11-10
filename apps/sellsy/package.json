@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sellsy",
   "version": "0.2.0",
-  "description": "Search and manage Sellsy CRM data, and poll for new or updated companies.",
+  "description": "Search, read and write Sellsy CRM and invoicing data: companies, individuals, contacts, opportunities, tasks, estimates, invoices, items and webhooks, and poll for new or updated companies.",
   "license": "MIT",
   "author": {
     "name": "w6w"

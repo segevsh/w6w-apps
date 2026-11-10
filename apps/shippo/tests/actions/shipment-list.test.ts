@@ -19,5 +19,5 @@ test("shipment-list: reads GET /shipments with pagination params", async () => {
 test("shipment-list: is read-only and offers paging params", () => {
   assertEquals(action.type, "read");
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
-  assertEquals(keys, ["results", "page"]);
+  assertEquals(keys, ["results", "page", "objectCreatedGte"]);
 });

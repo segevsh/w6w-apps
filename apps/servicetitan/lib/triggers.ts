@@ -1,42 +1,56 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { type IdsState, pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollSinceWindow, type WindowState } from "./since-window.ts";
 import customerList from "../actions/customer-list.ts";
 
 export const clock = { now: (): number => Date.now() };
 const OVERLAP_MS = 120_000;
+const PAGE = 100;
 
-interface CustomerState extends IdsState {
-  cursor: string;
+interface Customer {
+  id?: unknown;
+  createdOn?: unknown;
+  modifiedOn?: unknown;
 }
 
-function since(cursor: string): string {
-  return new Date(new Date(cursor).getTime() - OVERLAP_MS).toISOString();
+function parseTime(value: unknown): number | undefined {
+  if (typeof value !== "string") return undefined;
+  const ms = Date.parse(value);
+  return Number.isNaN(ms) ? undefined : ms;
 }
 
-async function check(state: unknown, ctx: HookContext, updated: boolean) {
-  const now = new Date(clock.now()).toISOString();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "string" ? prior.cursor : now;
-  const { events, nextState } = await pollNewItems<unknown>({
+/**
+ * ServiceTitan documents no list order, so this never relies on one: a window is read page by page
+ * with a fixed `since`, the page number is persisted until `hasMore` is false, and the id dedupe
+ * absorbs any row that moves between pages.
+ */
+function check(
+  state: unknown,
+  ctx: HookContext,
+  updated: boolean,
+): Promise<{ events: unknown[]; nextState: WindowState }> {
+  return pollSinceWindow<Customer>({
     state,
-    maxPages: 1,
-    maxEvents: 100,
-    seenWindow: 200,
-    idOf: (item) => {
-      const row = item as { id?: unknown; modifiedOn?: unknown };
-      return updated ? `${row.id ?? ""}:${row.modifiedOn ?? ""}` : String(row.id ?? "");
-    },
-    async fetchPage() {
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    firstPos: 1,
+    step: 1,
+    maxPages: 2,
+    maxEvents: 2 * PAGE,
+    seenWindow: 500,
+    idOf: (row) => updated ? `${row.id ?? ""}:${row.modifiedOn ?? ""}` : String(row.id ?? ""),
+    stampOf: (row) => parseTime(updated ? row.modifiedOn : row.createdOn),
+    async fetchPage(sinceMs, page) {
+      const since = new Date(sinceMs).toISOString();
       const result = await customerList.execute(
         updated
-          ? { modifiedOnOrAfter: since(cursor), page: 1, pageSize: 100 }
-          : { createdOnOrAfter: since(cursor), page: 1, pageSize: 100 },
+          ? { modifiedOnOrAfter: since, page, pageSize: PAGE }
+          : { createdOnOrAfter: since, page, pageSize: PAGE },
         ctx,
-      ) as { data?: unknown[] };
-      return { items: result.data ?? [] };
+      ) as { data?: Customer[]; hasMore?: boolean };
+      const items = result.data ?? [];
+      return { items, more: result.hasMore ?? items.length >= PAGE };
     },
   });
-  return { events, nextState: { ...nextState, cursor: now } as CustomerState };
 }
 
 export const newCustomerTrigger: TriggerDefinition = {

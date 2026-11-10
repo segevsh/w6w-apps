@@ -1,6 +1,6 @@
 # Sendy
 
-Triggers: not shipped — brand and list reads have no documented bounded snapshot or created/updated cursor (https://sendy.co/api)
+Triggers: not shipped — brand-list and list-list are installation configuration reads (list-list needs a brand id per call) with no created/updated field or since filter documented, so neither a newest-first, since-filtered nor snapshot shape is claimed (https://sendy.co/api, checked 2026-11-09)
 
 Manage subscribers and send campaigns on a self-hosted Sendy newsletter
 installation.

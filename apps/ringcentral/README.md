@@ -1,13 +1,12 @@
 # RingCentral
 
-Triggers: not shipped — the call-log and message-store lists expose date ranges but no documented created-record ordering for a lossless poll (https://platform.ringcentral.com/restapi)
-
 Send SMS, read the message store and call log, look up extensions and the company directory, place
 RingOut calls and read presence — on the **RingCentral Platform API v1.0**.
 
 - **Categories** — communication, productivity
 - **Auth methods** — oauth2 (Authorization Code + PKCE), jwt-bearer (JWT Bearer grant, custom)
 - **Actions** — 13
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 declared absences (`service`, `quota`) + 1 live probe (`api`) + the derived
   `auth:oauth2` and `auth:jwt-bearer`
 - **Egress allowlist** — `platform.ringcentral.com` (this is also the only host any health check
@@ -358,3 +357,16 @@ deno task test
 `deno task validate` passes `--config ./deno.json` explicitly, matching this pack's `apify` app —
 see `apify/README.md` for why: without it, `_tools/audit.ts` picks up `_tools/deno.json` instead of
 this app's own config.
+
+## Triggers
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-call-log-record` — New Call Log Record | poll | `call-log-list` (`dateFrom`) | the call log record |
+| `new-message` — New Message | poll | `message-store-list` (`dateFrom`, `availability: Alive`) | the message (SMS, voicemail, fax or pager) |
+
+The first check only records the time (`floor`) and emits nothing, and anything started (`startTime`) / created (`creationTime`) before that time is never emitted. Each later check re-reads `dateFrom` from the last drained cursor minus 30 minutes for the call log (a call is written to the log when it ends) and 2 minutes for messages, remembers up to 500 emitted ids and skips them. A window larger than 200 records is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained. RingCentral's list is not relied on for order: pages are read with a fixed `dateFrom`, the page number is kept while `navigation.nextPage` is present, and the id dedupe absorbs a row that moves between pages. Params `accountId` / `extensionId` default to `~` (the connection's own account and extension).
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `call-log-list` with the connection's credentials.
+
+Vendor docs: https://netstorage.ringcentral.com/dpw/api-reference/specs/rc-platform.yml (RingCentral's published OpenAPI, verified 2026-11-09: `dateFrom` / `dateTo` on both list operations, `page` / `perPage`, record `id`, call `startTime`, message `creationTime`)

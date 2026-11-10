@@ -1,49 +1,63 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { type IdsState, pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollSinceWindow, type WindowState } from "./since-window.ts";
 import tableRecordGetMany from "../actions/table-record-get-many.ts";
 
 export const clock = { now: (): number => Date.now() };
 const OVERLAP_MS = 120_000;
+const PAGE = 100;
 
 interface TableParams {
   table: string;
 }
-interface TableState extends IdsState {
-  cursor: string;
+interface Row {
+  sys_id?: unknown;
+  sys_created_on?: unknown;
+  sys_updated_on?: unknown;
 }
 
-function serviceNowTime(iso: string): string {
-  return new Date(new Date(iso).getTime() - OVERLAP_MS).toISOString().slice(0, 19).replace(
-    "T",
-    " ",
-  );
+/** ServiceNow encoded-query datetime: `YYYY-MM-DD HH:MM:SS`, UTC. */
+function serviceNowTime(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 19).replace("T", " ");
 }
 
-async function check(params: TableParams, state: unknown, ctx: HookContext, updated: boolean) {
-  const now = new Date(clock.now()).toISOString();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "string" ? prior.cursor : now;
+function parseTime(value: unknown): number | undefined {
+  if (typeof value !== "string") return undefined;
+  const ms = Date.parse(`${value.replace(" ", "T")}Z`);
+  return Number.isNaN(ms) ? undefined : ms;
+}
+
+function check(
+  params: TableParams,
+  state: unknown,
+  ctx: HookContext,
+  updated: boolean,
+): Promise<{ events: unknown[]; nextState: WindowState }> {
   const stamp = updated ? "sys_updated_on" : "sys_created_on";
-  const { events, nextState } = await pollNewItems<unknown>({
+  return pollSinceWindow<Row>({
     state,
-    maxPages: 1,
-    maxEvents: 100,
-    seenWindow: 200,
-    idOf: (item) => {
-      const row = item as { sys_id?: unknown; sys_updated_on?: unknown };
-      return updated ? `${row.sys_id ?? ""}:${row.sys_updated_on ?? ""}` : String(row.sys_id ?? "");
-    },
-    async fetchPage() {
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    floorGranularityMs: 1000,
+    firstPos: 0,
+    step: PAGE,
+    backup: 10,
+    maxPages: 2,
+    maxEvents: 2 * PAGE,
+    seenWindow: 500,
+    idOf: (row) =>
+      updated ? `${row.sys_id ?? ""}:${row.sys_updated_on ?? ""}` : String(row.sys_id ?? ""),
+    stampOf: (row) => parseTime(row[stamp]),
+    async fetchPage(sinceMs, offset) {
       const result = await tableRecordGetMany.execute({
         table: params.table,
-        query: `${stamp}>=${serviceNowTime(cursor)}^ORDERBYDESC${stamp}`,
-        limit: 100,
-        offset: 0,
-      }, ctx) as { result?: unknown[] };
-      return { items: result.result ?? [] };
+        query: `${stamp}>=${serviceNowTime(sinceMs)}^ORDERBY${stamp}^ORDERBYsys_id`,
+        limit: PAGE,
+        offset,
+      }, ctx) as { result?: Row[] };
+      const items = result.result ?? [];
+      return { items, more: items.length >= PAGE };
     },
   });
-  return { events, nextState: { ...nextState, cursor: now } as TableState };
 }
 
 export const newTableRecordTrigger: TriggerDefinition<TableParams> = {

@@ -57,10 +57,6 @@ numeric page-number paging (limited to the first 100,000 results).
 
 ## Not covered
 
-## Triggers
-
-- `new-company` and `new-or-updated-company` poll Sellsy's company search ordered by `created_at` and `updated_at` (verified 2026-11-09): https://api.sellsy.com/doc/v2/
-
 Add or edit estimate/invoice/order lines (`/estimates`, `/invoices` create and update with their
 document-line model), credit notes, orders, deliveries, proposals, subscriptions, items create/update,
 custom fields, smart tags, addresses, files upload, calendar events, phone calls, emails, listings,
@@ -78,3 +74,18 @@ endpoints are deprecated by Sellsy. Use `extra`/`filters` JSON for fields the fo
   The `oauth2` method's code exchange is performed by the host, not this app, and was not exercised
   against a live client.
 - Needs a real Sellsy account to run end to end; the unit tests use a mocked `ctx.fetch`.
+
+## Triggers
+
+- **Triggers** — 2 (poll)
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-company` — New Company | poll | `company-search` (`order: created_at`, desc) | the new company |
+| `new-or-updated-company` — New or Updated Company | poll | `company-search` (`order: updated_at`, desc) | a company created or updated (each new `updated_at` is a new event) |
+
+Each check reads the first 100 companies sorted newest-first by the chosen field and emits the ones it has not seen; the first check records the current page and emits nothing.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `company-search` with the connection's credentials.
+
+Vendor docs: https://api.sellsy.com/doc/v2/dist/sellsy.v2.latest.yaml (the OpenAPI document; the company search `order` fields were confirmed against it on 2026-11-09)

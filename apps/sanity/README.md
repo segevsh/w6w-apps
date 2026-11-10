@@ -1,6 +1,6 @@
 # Sanity
 
-Triggers: not shipped — the existing document query is caller-defined GROQ rather than a fixed, bounded record feed (https://www.sanity.io/docs/http-reference)
+Triggers: not shipped — document-query runs caller-supplied GROQ (no fixed feed), and dataset-list / project-list are small account-configuration lists with no row cap stated in the cited reference, so no bounded snapshot is claimed; document mutations are a webhook candidate queued for a webhook node (https://www.sanity.io/docs/webhooks, checked 2026-11-09)
 
 Query and mutate a Sanity Content Lake from a workflow — GROQ queries,
 transactional document mutations, publishing, revision history and dataset

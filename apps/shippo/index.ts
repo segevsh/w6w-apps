@@ -29,7 +29,7 @@ import trackCreate from "./actions/track-create.ts";
 import trackGet from "./actions/track-get.ts";
 import refundCreate from "./actions/refund-create.ts";
 import carrierAccountList from "./actions/carrier-account-list.ts";
-import newOrUpdatedShipment from "./triggers/new-or-updated-shipment.ts";
+import newShipment from "./triggers/new-shipment.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -50,7 +50,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, account, quota],
-  triggers: [newOrUpdatedShipment],
+  triggers: [newShipment],
 };
 
 export default app;
