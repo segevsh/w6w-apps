@@ -12,7 +12,7 @@ import { invokeTriggerHook, loadApp } from "@w6w/runtime";
 import type { Connection } from "@w6w/types";
 
 const APP_DIR = fromFileUrl(new URL("../../", import.meta.url));
-const KEYS = ["row-added", "row-added-or-updated", "row-updated"];
+const KEYS = ["new-sheet", "row-added", "row-added-or-updated", "row-updated"];
 
 const connection: Connection = {
   manifestVersion: "1",

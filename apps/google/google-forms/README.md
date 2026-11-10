@@ -5,7 +5,7 @@ Create and update Google Forms, manage publish state, and read form responses.
 - **Categories** — forms, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 12
-- **Triggers** — 2 (poll)
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `forms.googleapis.com`, `www.googleapis.com`
 - **Website** — https://www.google.com/forms/about/
 - **API docs** — https://developers.google.com/forms/api/reference/rest
@@ -206,7 +206,23 @@ reference pages under `developers.google.com/forms/api`. Status surfaces move; r
 | --- | --- | --- | --- |
 | `new-form` — New Form | poll | `list-forms` | Each newly created Google Form |
 | `new-or-updated-form` — New or Updated Form | poll | `list-forms` | Each newly created or updated Google Form |
+| `new-response` — New Form Response | poll | `response-list` with `filter=timestamp > N` | Each response newly submitted to the chosen form (`formId` param), with its answers |
 
 Source: <https://developers.google.com/drive/api/reference/rest/v3/files/list> (verified 2026-11-09).
 
-Both triggers request a page of 200, matching the kit's 200-id seen window.
+Both form triggers request a page of 200, matching the kit's 200-id seen window.
+
+`new-response` takes a required `formId` (an ID or a pasted form URL). The first check stores the
+current time and emits nothing; a response created before that moment is never emitted. Each later
+check sends the `response-list` request with `filter=timestamp > <newest submission seen − 120 s>` and
+`pageSize=200` (Google documents no order for the list, so every page of the window is read and
+responses are de-duplicated by `responseId`). It reads at most 3 pages per check; a larger window
+continues on the next check and the cursor only moves once the last page was read. An edited response
+(a new `lastSubmittedTime`) is not emitted again. The trigger checks at most every 5 minutes.
+
+Not covered: Forms watches (`forms.watches`) deliver only to a Cloud Pub/Sub topic, which a w6w user
+cannot receive from; the response poll delivers the same submissions.
+
+Sources (verified 2026-11-10): https://developers.google.com/workspace/forms/api/reference/rest/v1/forms.responses/list
+(filter `timestamp > N` / `>= N`, RFC 3339 UTC, up to 5000 per page, no documented order) and
+https://developers.google.com/workspace/forms/api/guides/push-notifications (Pub/Sub is the only target).

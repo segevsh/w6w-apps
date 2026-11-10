@@ -1,6 +1,12 @@
 import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
 import eventChanged from "./triggers/event-changed.ts";
+import newEvent from "./triggers/new-event.ts";
+import eventUpdated from "./triggers/event-updated.ts";
+import eventCancelled from "./triggers/event-cancelled.ts";
+import eventStarted from "./triggers/event-started.ts";
+import eventEnded from "./triggers/event-ended.ts";
+import newCalendar from "./triggers/new-calendar.ts";
 import serviceAccount from "./auth/service-account.ts";
 import listCalendars from "./actions/list-calendars.ts";
 import getAvailability from "./actions/get-availability.ts";
@@ -25,6 +31,14 @@ export default {
     quickCreateEvent,
   ],
   auth: [oauth2, serviceAccount],
-  triggers: [eventChanged],
+  triggers: [
+    eventChanged,
+    newEvent,
+    eventUpdated,
+    eventCancelled,
+    eventStarted,
+    eventEnded,
+    newCalendar,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
