@@ -8,9 +8,9 @@
   },
   "tasks": {
     "test": "deno test -A tests/",
-    "check": "deno check index.ts actions/ health/ lib/ tests/",
-    "fmt": "deno fmt index.ts actions/ health/ lib/ tests/",
-    "lint": "deno lint index.ts actions/ health/ lib/ tests/",
+    "check": "deno check index.ts actions/ health/ lib/ triggers/ tests/",
+    "fmt": "deno fmt index.ts actions/ health/ lib/ triggers/ tests/",
+    "lint": "deno lint index.ts actions/ health/ lib/ triggers/ tests/",
     "validate": "deno run --no-check -A --config ./deno.json ../../_tools/audit.ts hackernews"
   },
   "fmt": {

@@ -93,6 +93,10 @@ create-and-render signed GET URL, `GET /v1/image/{id}[.format]` rendering/croppi
 two groups return or need binary or signed-URL handling; the management groups are infrastructure,
 not rendering, and have their own per-minute limits.
 
+## Triggers
+
+`new-image` polls the newest-first image list every five minutes; its first poll only seeds state. Source: https://docs.htmlcsstoimage.com (verified 2026-11-09).
+
 ## Icon
 
 `assets/icon.svg` is the vendor's own mark, byte-for-byte from

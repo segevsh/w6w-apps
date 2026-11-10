@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/htmlcsstoimage",
-  "version": "0.1.0",
-  "description": "Render HTML/CSS, web pages and saved templates to images and PDFs with HTML/CSS to Image (hcti.io).",
+  "version": "0.2.0",
+  "description": "Render HTML/CSS, web pages and saved templates to images and PDFs with HTML/CSS to Image (hcti.io), and poll for new images.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "hcti.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/heygen",
-  "version": "0.1.0",
-  "description": "Generate AI avatar videos, translate videos into new languages, and manage voices, avatars, assets and templates on HeyGen.",
+  "version": "0.2.0",
+  "description": "Generate AI avatar videos, translate videos into new languages, manage voices, avatars, assets and templates on HeyGen, and poll for new videos.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "api.heygen.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -21,6 +21,7 @@ import templateList from "./actions/template-list.ts";
 import templateVersionsList from "./actions/template-versions-list.ts";
 import templateDelete from "./actions/template-delete.ts";
 import usageGet from "./actions/usage-get.ts";
+import newImage from "./triggers/new-image.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -41,5 +42,6 @@ export default {
     usageGet,
   ],
   auth: [basic],
+  triggers: [newImage],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

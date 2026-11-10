@@ -166,6 +166,10 @@ and returns a ready `audio_url` directly.
   limit.
 - **`auth:api-key`** — derived automatically from the Auth method's `test` hook.
 
+## Triggers
+
+`new-video` polls HeyGen's newest-first video list every five minutes; its first poll only seeds state. Source: https://developers.heygen.com/docs (verified 2026-11-09).
+
 ## Icon
 
 `assets/icon.png`, 192×192 PNG with alpha, downloaded verbatim from HeyGen's own developer-docs
