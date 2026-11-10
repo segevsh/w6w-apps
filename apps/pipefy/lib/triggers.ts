@@ -1,4 +1,5 @@
 import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
+import { header, randomSecret, requireSecret, timingSafeEqual } from "../../_shared/webhook/mod.ts";
 import { gqlInput, PipefyClient } from "./client.ts";
 
 /**
@@ -7,18 +8,24 @@ import { gqlInput, PipefyClient } from "./client.ts";
  *   - `onSubscribe` registers the callback URL with the `createWebhook` GraphQL mutation for one
  *     pipe (`pipe_id`) or one database table (`table_id`) and one action (`card.create`,
  *     `card.done`, `card.move`).
- *   - `onUnsubscribe` removes it with `deleteWebhook(input: {id})`; a webhook Pipefy no longer
- *     has ("not found") counts as deleted.
+ *   - `onUnsubscribe` removes it with `deleteWebhook(input: {id}) { success }`; a webhook Pipefy
+ *     no longer has ("not found" in a GraphQL error) counts as deleted.
  *   - `handleIngest` parses the `{ data: { action, card, ... } }` payload and drops a delivery
  *     whose action is not the one this trigger registered.
  *
- * Trust model: Pipefy's webhook documentation describes no signature, secret or timestamp on a
- * delivery, so there is nothing to verify. The callback URL the host mints for the subscription is
- * the only secret; anyone holding it can post an event. The README says so.
+ * Trust model: Pipefy documents no signature and no timestamp on a delivery, but `CreateWebhookInput`
+ * has `headers: Json` ("the webhook custom JSON headers", a JSON-encoded string), sent with every
+ * delivery. So `onSubscribe` registers a fresh `randomSecret()` as the `X-W6W-Webhook-Secret` header
+ * (kept in subscription state; the host does not redact a custom header in stored events) and `handleIngest`
+ * compares it in constant time before parsing (D5 (1)). It is a shared secret, not a signature: it
+ * does not prove the body is unmodified and a captured delivery can be replayed.
  *
  * Docs (verified 2026-11-10): https://developers.pipefy.com/reference/pipe-table-webhooks and
  * https://developers.pipefy.com/docs/webhooks
  */
+
+/** Custom delivery header carrying the per-subscription secret. */
+const SECRET_HEADER = "X-W6W-Webhook-Secret";
 
 export interface TriggerParams {
   pipeId?: string;
@@ -28,6 +35,8 @@ export interface TriggerParams {
 /** What `onSubscribe` returns and the host persists on the subscription. */
 export interface TriggerState {
   webhookId: string;
+  /** The shared secret registered as the `X-W6W-Webhook-Secret` delivery header. */
+  secret: string;
 }
 
 /** The run's `trigger.event`: one card event. */
@@ -84,9 +93,10 @@ function idStr(v: unknown): string | null {
     : null;
 }
 
-/** True for the "no such webhook" answer `PipefyClient` throws. */
+/** True for the "no such webhook" GraphQL error; the client's own `404 Not Found` is not one. */
 function isGone(err: unknown): boolean {
-  return err instanceof Error && /resource_not_found|not found/i.test(err.message);
+  return err instanceof Error &&
+    /^Pipefy GraphQL error:.*(resource_not_found|not found)/is.test(err.message);
 }
 
 /** The pipe or table the user chose, as the `createWebhook` argument. */
@@ -143,8 +153,10 @@ export function webhookTrigger(
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const repo = chooseRepo(params);
+      const secret = randomSecret();
       const input = gqlInput({
         actions: [spec.action],
+        headers: JSON.stringify({ [SECRET_HEADER]: secret }),
         name: `w6w ${spec.title}`,
         ...repo,
         url: callbackUrl,
@@ -155,24 +167,32 @@ export function webhookTrigger(
       const webhook = asObject(asObject(data.createWebhook)?.webhook);
       const id = idStr(webhook?.id);
       if (!id) throw new Error("Pipefy created the webhook but returned no id.");
-      return { webhookId: id };
+      return { webhookId: id, secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
       const id = idStr((state as Partial<TriggerState> | undefined)?.webhookId);
       if (!id) return;
       try {
-        await new PipefyClient(ctx).send(
-          `mutation { deleteWebhook(input: ${gqlInput({ id })}) }`,
+        const data = await new PipefyClient(ctx).send<Record<string, unknown>>(
+          `mutation { deleteWebhook(input: ${gqlInput({ id })}) { success } }`,
         );
+        if (asObject(data.deleteWebhook)?.success === false) {
+          throw new Error("Pipefy rejected deleteWebhook");
+        }
       } catch (err) {
         if (!isGone(err)) throw err;
       }
     },
 
-    handleIngest({ raw }) {
+    handleIngest({ raw, state }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Pipefy delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const secret = requireSecret((state as Partial<TriggerState> | undefined)?.secret);
+      const got = header(raw, SECRET_HEADER);
+      if (got === undefined || !timingSafeEqual(got, secret)) {
+        throw new Error("Pipefy delivery refused: the secret header is missing or wrong.");
       }
       const event = normalizeDelivery(raw.body, spec.action);
       return event ? [event] : [];

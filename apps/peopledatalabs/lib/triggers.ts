@@ -53,7 +53,8 @@ const HEADER_NAME_PARAM: Param = {
   label: "Header Name",
   type: "string",
   advanced: true,
-  hint: "The header that carries the shared key. Defaults to Authorization.",
+  hint:
+    "The header that carries the shared key. Defaults to Authorization. Keep it: any other name stores the key readable in event history.",
 };
 
 const OUTPUT: OutputField[] = [

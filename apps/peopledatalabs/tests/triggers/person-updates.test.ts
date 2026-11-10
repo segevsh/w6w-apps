@@ -125,3 +125,31 @@ test("a refusal never echoes the key, the header value or the body", async () =>
     }
   }
 });
+
+test("a header that extends or truncates the key is refused", async () => {
+  for (const v of [KEY + "x", KEY.slice(0, -1)]) {
+    await assert.rejects(
+      async () => await ingest(call({ headers: { Authorization: v } })),
+      /shared key does not match/,
+    );
+  }
+});
+
+test("the key is checked before the body is parsed", async () => {
+  await assert.rejects(
+    async () =>
+      await ingest(call({ headers: { Authorization: "Bearer wrong" }, rawBody: "not json" })),
+    /shared key does not match/,
+  );
+});
+
+test("a short key is still compared", async () => {
+  await assert.rejects(
+    async () => await ingest(call({ headers: { Authorization: "k" } }), { sharedKey: "kk" }),
+    /shared key does not match/,
+  );
+  assert.equal(
+    evs(await ingest(call({ headers: { Authorization: "k" } }), { sharedKey: "k" })).length,
+    1,
+  );
+});

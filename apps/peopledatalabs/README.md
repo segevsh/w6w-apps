@@ -32,7 +32,7 @@ The search and enrichment endpoints compute or query external data and expose no
 **Setup (manual).**
 
 1. Subscribe the `person-updates` trigger in w6w, giving it a **Shared Key**: a long random string, entered as the exact header value you will tell PDL to send (for example `Bearer <random string>`). Copy the callback URL it shows.
-2. Give your PDL team that URL as the Target URL (it must be https), the header (default name `Authorization`; if you pick another name, put it in the trigger's **Header Name** param) with that value, and the filters you want.
+2. Give your PDL team that URL as the Target URL (it must be https), the header `Authorization` with that value (use `Authorization`: w6w redacts that header in stored event history, but a custom name set in the trigger's advanced **Header Name** param is stored readable, key included, in the event's raw record), and the filters you want.
 3. Each delivery arrives as one event with the batch of ids; look the people up with the enrich actions.
 
 **Trust model.** PDL does not sign deliveries. Its documentation says the registered headers should at a minimum carry a shared key for secure authorization, so the trigger refuses any delivery whose header is missing or differs from the Shared Key (constant-time comparison, an unset key is refused before any comparison), and reads the body only after that. A shared key is not a signature: it proves the sender knows the key, not that the body is unmodified, and a captured delivery could be replayed because there is no timestamp. Keep the key and the callback URL private.
