@@ -5,7 +5,7 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 - **Categories** — communication
 - **Auth methods** — api-key
 - **Actions** — 2
-- **Triggers** — 2 (webhook)
+- **Triggers** — 5 (webhook)
 - **Egress allowlist** — `api.twilio.com`
 - **Website** — https://www.twilio.com
 - **API docs** — https://www.twilio.com/docs/usage/api
@@ -16,6 +16,9 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 |---|---|---|---|
 | `incoming-message` — Incoming Message | webhook (manual) | an SMS/MMS sent to your Twilio number | message SID, from, to, text, media URLs, all parameters |
 | `message-status` — Message Status Update | webhook (manual) | a delivery status callback for a message you sent | message SID, status, error code, all parameters |
+| `call-status` — Call Status Update | webhook (manual) | a status callback for a call (`initiated`, `ringing`, `in-progress`, `completed`, `busy`, `failed`, `no-answer`, `canceled`) | call SID, status, direction, duration, all parameters |
+| `call-summary-complete` — Call Summary Complete | webhook (manual, Event Streams) | `com.twilio.voice.insights.call-summary.complete` | the event and its Voice Insights summary data |
+| `any-event` — Any Event | webhook (manual, Event Streams) | any Event Streams type your sink delivers, filtered by the `events` param (empty = all) | the event and its data |
 
 **Setup (manual webhook).** Twilio webhooks are set per phone number, messaging service or message, not through an API this app calls.
 
@@ -23,9 +26,13 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 2. Paste it into the number's (or messaging service's) **A message comes in** webhook, method `POST`; for status updates, use it as the `StatusCallback` URL.
 3. Paste your **Auth Token** (Twilio Console, Account info) into the trigger's `authToken` param.
 
-**Trust model.** `X-Twilio-Signature` must equal the base64 HMAC-SHA1, keyed by the Auth Token, of the callback URL followed by every POST parameter as name + value sorted by name. A missing or empty Auth Token, a missing signature or a mismatch refuses the delivery. Only form-encoded webhooks are accepted. Twilio expects TwiML as the reply to an incoming message; the host replies with a JSON acknowledgement, not TwiML, so Twilio may log a warning per inbound message (not verified); answer through the Send SMS action.
+**Setup (Event Streams: `call-summary-complete`, `any-event`).** Create a webhook sink pointing at the trigger's callback URL and subscribe it to the event types you want (Twilio Console, or the CLI: `twilio api:events:v1:sinks:create --description <text> --sink-configuration '{"destination":"<callback URL>","method":"POST"}' --sink-type webhook`, then create a subscription for the sink). Twilio delivers a JSON array of CloudEvents; each one becomes a run. Paste your **Auth Token** into the trigger's `authToken` param. This app does not create the sink itself: that needs `events.twilio.com`, a host outside this app's egress allowlist.
 
-Sources (verified 2026-11-09): https://www.twilio.com/docs/usage/webhooks/webhooks-security , https://www.twilio.com/docs/messaging/guides/webhook-request
+**Not covered.** Incoming voice calls are not a trigger: Twilio requires TwiML as the reply to the Voice webhook and the host can only answer with JSON or plain text. This app has no list or search actions, so there is nothing to poll.
+
+**Trust model.** `X-Twilio-Signature` must equal the base64 HMAC-SHA1, keyed by the Auth Token, of the callback URL followed by every POST parameter as name + value sorted by name. A missing or empty Auth Token, a missing signature or a mismatch refuses the delivery. Form-encoded webhooks (SMS, MMS, status callbacks) are verified this way. An Event Streams delivery has a JSON body, which Twilio signs as the callback URL with `?bodySHA256=<SHA-256 hex of the raw body>` appended and no form parameters; the body is verified over its raw bytes before it is parsed. Twilio expects TwiML as the reply to an incoming message; the host replies with a JSON acknowledgement, not TwiML, so Twilio may log a warning per inbound message (not verified); answer through the Send SMS action.
+
+Sources (verified 2026-11-10): https://www.twilio.com/docs/usage/webhooks/webhooks-security , https://www.twilio.com/docs/messaging/guides/webhook-request , https://www.twilio.com/docs/voice/api/call-resource#statuscallback , https://www.twilio.com/docs/events/webhook-quickstart
 
 ## Health check
 
