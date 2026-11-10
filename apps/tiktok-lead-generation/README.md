@@ -172,4 +172,4 @@ Researched and endpoint-verified live 2026-09-05 by direct HTTP probing of
 rendered content, which this app's tooling could not fetch. Re-verify against the live
 portal directly (in a real browser session) before extending this app's scope.
 
-Triggers: not shipped — TikTok does offer an event subscription API that covers leads ("Create a subscription"), but its documentation pages render their bodies client-side, so the lead event names, the delivery format and the verification scheme cannot be read from the vendor, and the existing paged lead retrievals have no verified order or since filter (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3, checked 2026-11-10)
+Triggers: not shipped — TikTok does offer an event subscription API that covers leads ("Create a subscription"), but its documentation pages render their bodies client-side, so the lead event names, the delivery format and the verification scheme cannot be read from the vendor, and the existing paged lead retrievals have no verified order or since filter (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3, verified 2026-11-10)

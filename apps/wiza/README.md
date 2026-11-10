@@ -1,6 +1,6 @@
 # Wiza
 
-Triggers: not shipped — Wiza's only webhook is a per-job completion callback (`callback_url` on create-list, create-prospect-list and start-individual-reveal, or the account's default webhook URL) for lists and reveals the caller starts through the API, not a subscribable account event stream, and the list-shaped actions read one caller-selected list (https://docs.wiza.co/swagger/v1/openapi.yaml, checked 2026-11-10)
+Triggers: not shipped — Wiza's only webhook is a per-job completion callback (`callback_url` on create-list, create-prospect-list and start-individual-reveal, or the account's default webhook URL) for lists and reveals the caller starts through the API, not a subscribable account event stream, and the list-shaped actions read one caller-selected list (https://docs.wiza.co/swagger/v1/openapi.yaml, verified 2026-11-10)
 
 Reveal contacts, enrich lists and companies, search Wiza's prospect and company databases, resolve
 filter values and read the credit balance, over the **Wiza API**.
