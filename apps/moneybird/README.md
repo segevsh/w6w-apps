@@ -1,6 +1,15 @@
 # Moneybird
 
-Triggers: not shipped — webhook candidate queued for a webhook node: contact and sales-invoice events; existing lists expose no documented newest-first order or created-since filter (https://developer.moneybird.com/api/webhooks/)
+- **Triggers** — 2 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-sales-invoice` — New Sales Invoice | poll | `sales-invoice-list`, filter `created_after:<cursor − 10 min>` | Each newly created sales invoice |
+| `new-or-updated-sales-invoice` — New or Updated Sales Invoice | poll | `sales-invoice-list`, filter `updated_after:<cursor − 10 min>` | Each sales invoice that is new or edited since the last check (ID plus `updated_at` is the event identity) |
+
+Both triggers call the existing List Sales Invoices action with a one-page (100) `filter`. Moneybird's filter replaces its defaults (including the `period:this_year` window), so a bare `created_after` / `updated_after` reaches every invoice; both filters are documented as exclusive ISO 8601 UTC times, hence the ten-minute overlap plus ID deduplication. The first check seeds and emits nothing. Limit: more than 100 invoices created or changed inside the overlap window in one check would be cut to the first page. Contacts are not polled: `contact-list` exposes no `filter` parameter (an additive parameter was left out of this batch). Verified 2026-11-10 at https://developer.moneybird.com/api/sales_invoices.
 
 Manage contacts and sales invoices in [Moneybird](https://www.moneybird.com/), the Dutch online
 accounting and invoicing service.
