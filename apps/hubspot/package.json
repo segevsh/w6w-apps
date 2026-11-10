@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hubspot",
-  "version": "0.2.1",
-  "description": "Work with HubSpot CRM: contacts, companies, deals, tickets, engagements, lists, owners and forms.",
+  "version": "0.3.0",
+  "description": "Work with HubSpot CRM: contacts, companies, deals, tickets, engagements, lists, owners and forms. Triggers fire on new and edited contacts, companies, deals and tickets, new forms and owners, and on HubSpot webhook events verified with the app client secret.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.hubspot.com/docs/api/overview"
     ],
-    "longDescription": "HubSpot covers the core CRM objects a workflow needs to keep in sync — contacts, companies, deals and tickets can each be created, updated, fetched, listed, searched and deleted, with contacts additionally upsertable and batch-creatable, updatable and deletable for higher-volume syncs.\n\nEngagement objects — calls, emails, meetings, notes and tasks — can be logged against a record, and associations between two CRM objects can be created or removed directly, so a workflow can build the same relationships (a deal tied to a company, a ticket tied to a contact) a person would set up by hand. Lists and forms are supported too: contacts can be added to or removed from a static list, and a HubSpot form can be submitted programmatically the same way a website visitor would fill it in.\n\nA fit for syncing leads and deals from another system into HubSpot, automating engagement logging, or routing form submissions and list membership as part of a larger marketing or sales workflow.",
+    "longDescription": "HubSpot covers the core CRM objects a workflow needs to keep in sync — contacts, companies, deals and tickets can each be created, updated, fetched, listed, searched and deleted, with contacts additionally upsertable and batch-creatable, updatable and deletable for higher-volume syncs.\n\nEngagement objects — calls, emails, meetings, notes and tasks — can be logged against a record, and associations between two CRM objects can be created or removed directly, so a workflow can build the same relationships (a deal tied to a company, a ticket tied to a contact) a person would set up by hand. Lists and forms are supported too: contacts can be added to or removed from a static list, and a HubSpot form can be submitted programmatically the same way a website visitor would fill it in.\n\nA fit for syncing leads and deals from another system into HubSpot, automating engagement logging, or routing form submissions and list membership as part of a larger marketing or sales workflow.\n\nTriggers: poll triggers watch for new and edited contacts, companies, deals and tickets and for new forms and owners, and webhook triggers fire on contact, company, deal and ticket created, updated and deleted events (or any HubSpot event you choose), verified with the HubSpot app client secret.",
     "categories": [
       "crm",
       "marketing"
