@@ -38,6 +38,8 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newAsset from "./triggers/new-asset.ts";
 import newOrUpdatedAsset from "./triggers/new-or-updated-asset.ts";
+import newEntry from "./triggers/new-entry.ts";
+import newOrUpdatedEntry from "./triggers/new-or-updated-entry.ts";
 import newRelease from "./triggers/new-release.ts";
 import newBranch from "./triggers/new-branch.ts";
 
@@ -80,5 +82,5 @@ export default {
   ],
   auth: [managementToken],
   healthChecks: [service, quota],
-  triggers: [newAsset, newOrUpdatedAsset, newRelease, newBranch],
+  triggers: [newAsset, newOrUpdatedAsset, newEntry, newOrUpdatedEntry, newRelease, newBranch],
 } satisfies AppDefinition;

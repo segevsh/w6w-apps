@@ -2,18 +2,22 @@
 
 ## Triggers
 
-- **Triggers** — 4 (poll)
+- **Triggers** — 6 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-asset` | poll | `list-assets` | Each newly created asset (`desc=created_at`) |
 | `new-or-updated-asset` | poll | `list-assets` | Each asset created or edited since the last check (`desc=updated_at`, id + `updated_at`) |
+| `new-entry` | poll (since filter) | `list-entries` | Each new entry of one content type (`contentTypeUid` required; `query` `created_at` `$gt`) |
+| `new-or-updated-entry` | poll (since filter) | `list-entries` | Each entry of one content type that is new or edited, once per update (`query` `updated_at` `$gt`) |
 | `new-release` | poll | `list-releases` | Each newly created release (whole list compared, walked with `limit=100`/`skip`) |
 | `new-branch` | poll | `list-branches` | Each newly created branch (whole list compared, walked with `limit=100`/`skip`) |
 
 `list-assets` takes a `desc` field (sort descending) and returns up to 100 per call; page 1 holds the newest.
 
-Not covered: entries (`list-entries` — the Content Management API reference documents no sort or created/updated filter for Get all entries, so there is no newest-first or since request to poll), content types and global fields (schema definitions), locales and environments (reference/configuration), webhooks and workflows (admin configuration).
+Entries are read with the `query` JSON filter the Get all Entries reference documents (CDA Queries syntax, `$gt` on `created_at` / `updated_at`), from two minutes before the previous check, at most 500 events per check (the oldest first, holding its position until the window is drained); entries from before the trigger was enabled are ignored. No sort parameter is sent.
+
+Not covered: content types and global fields (schema definitions), locales and environments (reference/configuration), webhooks and workflows (admin configuration).
 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
