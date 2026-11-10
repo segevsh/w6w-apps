@@ -2,18 +2,22 @@
 
 ## Triggers
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 4 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-asset` | poll | `list-assets` | Each newly created asset (`desc=created_at`) |
 | `new-or-updated-asset` | poll | `list-assets` | Each asset created or edited since the last check (`desc=updated_at`, id + `updated_at`) |
+| `new-release` | poll | `list-releases` | Each newly created release (whole list compared, walked with `limit=100`/`skip`) |
+| `new-branch` | poll | `list-branches` | Each newly created branch (whole list compared, walked with `limit=100`/`skip`) |
 
 `list-assets` takes a `desc` field (sort descending) and returns up to 100 per call; page 1 holds the newest.
 
+Not covered: entries (`list-entries` — the Content Management API reference documents no sort or created/updated filter for Get all entries, so there is no newest-first or since request to poll), content types and global fields (schema definitions), locales and environments (reference/configuration), webhooks and workflows (admin configuration).
+
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Vendor reference: <https://www.contentstack.com/docs/developers/apis/content-management-api> (verified 2026-11-09).
+Vendor reference: <https://www.contentstack.com/docs/developers/apis/content-management-api> (verified 2026-11-10).
 
 ## Auth
 
