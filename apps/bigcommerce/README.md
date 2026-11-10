@@ -5,6 +5,8 @@ webhooks** from a workflow, over the REST Management API (`api.bigcommerce.com`)
 
 38 actions, one auth method, five declared health checks.
 
+- **Triggers** — 5 (poll)
+
 ## Sources
 
 Everything in this app was verified on **2026-08-11** against, in order of authority:
@@ -271,8 +273,15 @@ Every `perform` action declares `idempotent` explicitly, and honestly:
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-order` — New Order | Poll | `order-list` | Each newly created order |
+| `new-product` — New Product | Poll | `product-list`, `date_modified` descending | Each newly seen product |
+| `new-or-updated-product` — New or Updated Product | Poll | `product-list`, `date_modified` descending | Each product whose modification time changes |
+| `new-customer` — New Customer | Poll | `customer-list`, `date_created` descending | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list`, `date_modified` descending | Each customer whose modification time changes |
 
-Polled newest-first through the `order-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developer.bigcommerce.com/docs/rest-management/orders) (verified 2026-11-09).
+Polled newest-first through their listed actions; the first check records what exists without firing,
+later checks emit only unseen items. The catalog and customer sort tokens are from BigCommerce's
+[Catalog OpenAPI index](https://docs.bigcommerce.com/docs/rest-catalog/openapi.json). Source:
+[vendor docs](https://developer.bigcommerce.com/docs/rest-management/orders) (verified 2026-11-10).
 
 ## Health checks
 
