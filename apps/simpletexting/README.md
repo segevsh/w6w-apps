@@ -4,7 +4,7 @@ Send SMS/MMS, manage contacts, lists, segments and custom fields, send campaigns
 webhooks to messaging events, on **SimpleTexting's API v2**.
 
 - **Categories** — communication, marketing
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 - **Auth methods** — api-key
 - **Actions** — 27
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
@@ -146,6 +146,17 @@ deno task test        # unit tests, every action + auth + both health checks
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact. |
+| `new-contact` — New Contact | poll | `contact-list` | Each contact newly added to the account. |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each contact that is added or updated (an update is a new event). |
+
+SimpleTexting's Get all Contacts documents `direction` ("By default, results are sorted by the
+'updated' field") and `since` ("List contacts updated since a specified date"); it offers no
+created-time sort or filter, so a newest-first read would surface edited old contacts as new. Both
+triggers are therefore **since-filter** polls: each check calls the `contact-list` request
+`GET /api/contacts?page=<n>&size=100&since=<previous check − 2 min>&direction=desc`, reads up to
+three pages, and resumes a longer window from the saved page on the next check (the cursor advances
+only once the window is drained). `new-contact` keeps rows whose `created` falls inside the window;
+`new-or-updated-contact` keys each event on `contactId:updated`. The first check only records the
+cursor.
 
 Vendor documentation: https://api-doc.simpletexting.com/ (verified 2026-11-09).
