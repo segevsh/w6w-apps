@@ -115,6 +115,6 @@ Status surfaces move; re-check if a probe starts failing for everyone at once.
 | --- | --- | --- | --- |
 | `new-subscriber` — New Subscriber | Poll | `list-subscribers` | Each newly created subscriber |
 
-Each check calls `list-subscribers` with `status=all` and the documented `subscribed_after` filter set two minutes before the previous check, and de-duplicates by id; the first check only records.
+Each check calls `list-subscribers` with `status=all` and the documented `subscribed_after` filter set two minutes before the previous check, and de-duplicates by id; the first check only records. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
 
 Source: [Drip API: list all subscribers](https://developer.drip.com/#list-all-subscribers) (verified 2026-11-09).

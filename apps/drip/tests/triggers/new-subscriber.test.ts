@@ -43,3 +43,58 @@ test("new-subscriber: seeds, emits only new items, retries idempotently, and sen
     clock.now = original;
   }
 });
+
+// Brief §9.8: a window of maxPages + 1 full pages is walked across checks from a persisted
+// position; every item is emitted exactly once and the cursor moves only after the drain.
+
+test("new-subscriber: a window of maxPages + 1 full pages drains across checks, each item once", async () => {
+  const original = clock.now;
+  clock.now = () => 1_700_000_000_000;
+  const ITEMS = Array.from({ length: 400 }, (_, n) => ({
+    id: `i${n}`,
+    created_at: new Date(1_700_000_000_000 - 100_000 + n * 100).toISOString(),
+  }));
+  const ctx = {
+    log: () => {},
+    connection: { display: { accountId: "1234567" } },
+    fetch: (_input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof _input === "string"
+        ? _input
+        : _input instanceof URL
+        ? _input.toString()
+        : _input.url;
+      const q = new URL(url).searchParams;
+      const start = (Number(q.get("page") ?? "1") - 1) * 100;
+      return Promise.resolve(
+        new Response(JSON.stringify({ subscribers: ITEMS.slice(start, start + 100) }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    },
+  } as unknown as Parameters<NonNullable<typeof trigger.poll>>[1];
+  try {
+    const seeded = await trigger.poll!({ ...input, state: {} }, ctx);
+    let state: unknown = {
+      ...(seeded.nextState as object),
+      cursor: 1_700_000_000_000 - 200_000,
+      ids: [],
+    };
+    const emitted: string[] = [];
+    let resumed = false;
+    for (let check = 0; check < 12; check++) {
+      const out = await trigger.poll!({ ...input, state }, ctx);
+      state = out.nextState;
+      emitted.push(...out.events.map((e) => String((e as { id: unknown }).id)));
+      if ((state as { resume?: unknown }).resume) resumed = true;
+      if (emitted.length === 400 && !(state as { resume?: unknown }).resume) break;
+    }
+    assertEquals(resumed, true);
+    assertEquals(emitted.length, 400);
+    assertEquals(new Set(emitted).size, 400);
+    assertEquals((state as { resume?: unknown }).resume, undefined);
+    assertEquals((state as { cursor: number }).cursor, 1_700_000_000_000);
+  } finally {
+    clock.now = original;
+  }
+});

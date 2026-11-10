@@ -34,3 +34,16 @@ test("new-member: seeds, emits only new members, retries idempotently, lists /te
   assertEquals(first.events, [member("b")]);
   assertEquals(retry, first);
 });
+
+test("new-member: a role change on a known member emits nothing (updated is off)", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} },
+    mockCtx([response([member("a"), member("b")])]).ctx,
+  );
+  const promoted = { ...member("a"), role: "admin" };
+  const out = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([response([promoted, member("b")])]).ctx,
+  );
+  assertEquals(out.events, []);
+});

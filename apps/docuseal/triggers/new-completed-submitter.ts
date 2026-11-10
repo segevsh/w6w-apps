@@ -11,7 +11,8 @@ export default sinceTrigger({
       completedAfter: since,
       returnAll: true,
     }, ctx);
-    return Array.isArray(result) ? result : [];
+    // returnAll drains the whole window in one call, so there is never a resume position.
+    return { items: Array.isArray(result) ? result : [] };
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   stampOf: (item) =>

@@ -6,9 +6,11 @@ export default sinceTrigger({
   key: "new-subscriber",
   title: "New Subscriber",
   description: "The run gets each newly created Drip subscriber.",
-  async load(since, _params, ctx) {
+  async load(since, _params, ctx, at) {
     const out: unknown[] = [];
-    for (let page = 1; page <= 3; page++) {
+    const first = Number(at) || 1;
+    let next: string | undefined;
+    for (let page = first; page < first + 3; page++) {
       const result = await (listSubscribers as ActionDefinition).execute({
         status: "all",
         subscribedAfter: since,
@@ -18,8 +20,9 @@ export default sinceTrigger({
       const batch = result.subscribers ?? [];
       out.push(...batch);
       if (batch.length < 100) break;
+      if (page === first + 2) next = String(page + 1);
     }
-    return out;
+    return { items: out, next };
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   stampOf: (item) => Date.parse(String((item as { created_at?: unknown }).created_at ?? "")) || 0,

@@ -14,9 +14,10 @@ export default sinceTrigger<{ eventId?: string }>({
     type: "string",
     hint: "Only orders for this DICE GraphQL event ID. Leave empty for every event.",
   }],
-  async load(since, params, ctx) {
+  async load(since, params, ctx, at) {
     const out: unknown[] = [];
-    let after: string | undefined;
+    let after: string | undefined = at;
+    let next: string | undefined;
     for (let page = 0; page < 3; page++) {
       const result = await (ordersList as ActionDefinition).execute({
         purchasedAfter: since,
@@ -27,8 +28,9 @@ export default sinceTrigger<{ eventId?: string }>({
       out.push(...rows(result));
       if (!result.page?.hasMore || !result.page.nextCursor) break;
       after = result.page.nextCursor;
+      if (page === 2) next = after;
     }
-    return out;
+    return { items: out, next };
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   stampOf: (item) => Date.parse(String((item as { purchasedAt?: unknown }).purchasedAt ?? "")) || 0,

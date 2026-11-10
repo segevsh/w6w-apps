@@ -143,6 +143,6 @@ to DICE's press kit. `icon.dark.svg` is the pack's sanctioned white-ink variant 
 | `new-return` — New Return | Poll | `returns-list` | Each newly recorded ticket return |
 | `new-ticket-transfer` — New Ticket Transfer | Poll | `ticket-transfers-list` | Each newly recorded ticket transfer |
 
-Each check calls the existing list action with its documented on-or-after filter (`purchasedAfter`, `returnedAfter`, `transferredAfter`) set two minutes before the previous check and de-duplicates by id; the first check only records what exists. An optional Event ID narrows the feed.
+Each check calls the existing list action with its documented on-or-after filter (`purchasedAfter`, `returnedAfter`, `transferredAfter`) set two minutes before the previous check and de-duplicates by id; the first check only records what exists. An optional Event ID narrows the feed. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
 
 Source: [DICE partner GraphQL API](https://partners-endpoint.dice.fm/graphql/docs/index.html) (verified 2026-11-09).

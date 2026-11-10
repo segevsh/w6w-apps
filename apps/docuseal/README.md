@@ -183,6 +183,6 @@ Declared `unavailable`, `severity: "informational"` for the same reason as
 | --- | --- | --- | --- |
 | `new-completed-submitter` — New Completed Submitter | Poll | `submitter-list` | Each submitter who has just completed signing |
 
-Each check calls `submitter-list` with the documented `completed_after` filter set two minutes before the previous check and de-duplicates by submitter id; the first check only records.
+Each check calls `submitter-list` with the documented `completed_after` filter set two minutes before the previous check and de-duplicates by submitter id; the first check only records. `returnAll` reads the whole window in one check.
 
 Source: [DocuSeal API: list all submitters](https://www.docuseal.com/docs/api#list-all-submitters) (verified 2026-11-09).

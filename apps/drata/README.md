@@ -110,6 +110,6 @@ error formatting), `lib/params.ts` (shared inputs and enums), `tests/` (mocked `
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each new audit event |
 
-Each check calls `event-list` with `createdAtStartDate` set two minutes before the previous check and de-duplicates by event id; the first check only records.
+Each check calls `event-list` with `createdAtStartDate` set two minutes before the previous check and de-duplicates by event id; the first check only records. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
 
 Source: [Drata API v2](https://developers.drata.com/openapi/reference/v2/overview/) (verified 2026-11-09).

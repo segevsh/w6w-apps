@@ -6,9 +6,10 @@ export default sinceTrigger({
   key: "new-event",
   title: "New Event",
   description: "The run gets each new Drata audit event (who changed what, when).",
-  async load(since, _params, ctx) {
+  async load(since, _params, ctx, at) {
     const out: unknown[] = [];
-    let cursor: string | undefined;
+    let cursor: string | undefined = at;
+    let next: string | undefined;
     for (let page = 0; page < 3; page++) {
       const result = await (eventList as ActionDefinition).execute({
         createdAtStartDate: since,
@@ -18,8 +19,9 @@ export default sinceTrigger({
       out.push(...(result.items ?? []));
       if (!result.nextCursor) break;
       cursor = result.nextCursor;
+      if (page === 2) next = cursor;
     }
-    return out;
+    return { items: out, next };
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   stampOf: (item) => Date.parse(String((item as { createdAt?: unknown }).createdAt ?? "")) || 0,
