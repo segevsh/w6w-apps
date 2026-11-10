@@ -1,7 +1,5 @@
 # Vero
 
-Triggers: not shipped — the Vero API is write-only (identify, track, alias, tags, unsubscribe): there is no list endpoint to poll and no existing list action; email-event webhooks (sent, delivered, opened, clicked, bounced, unsubscribed, ...) are a queued webhook candidate (https://help.getvero.com/vero-1/integrations/setting-up-webhooks, verified 2026-11-09).
-
 Identify, track, tag, alias, delete, and subscribe/unsubscribe users via Vero's write-side Track
 API.
 
@@ -12,6 +10,7 @@ API.
 - **Website** — https://www.getvero.com
 - **API docs** — https://help.getvero.com/api-reference/overview (redirected from
   `developers.getvero.com/?bash`, which is the URL Vero's own site links to)
+- **Triggers** — 1 (webhook)
 
 ## Two different Vero APIs — this app only calls one
 
@@ -184,3 +183,21 @@ Researched and endpoint-verified 2026-09-01 against Vero's own docs (`help.getve
 Mintlify redirect target of `developers.getvero.com/?bash`), each endpoint's embedded OpenAPI
 schema, and confirmed live against `https://api.getvero.com/api/v2`. Status and docs surfaces move;
 re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `vero-event` — Vero Event | webhook (manual, unsigned) | `sent`, `delivered`, `opened`, `clicked`, `failed`, `bounced`, `converted`, `unsubscribed`, `resubscribed`, `complained`, `user_created`, `user_updated` (all of them, or the ones named in its `events` param) | event type and time, user id and email, campaign, message id, bounce type, code and message, opening or clicking client, a user update's property and tag changes, the full delivery |
+
+**Setup (manual).** Vero's webhooks are set up in Vero, not through the Track API, and Vero sends all of them to one notification address, so this app has one trigger rather than one per event.
+
+1. Subscribe the trigger and copy its callback URL.
+2. In Vero go to **Settings → Integrations → Webhooks**, enter the callback URL as the notification address, and choose which webhook events to send. The **Test URL** button posts an example delivery to the URL.
+3. Optionally set the trigger's `events` param (comma-separated types) to start runs for only some of the types Vero sends; empty means all.
+
+Only one trigger can use the notification address, since Vero accepts a single one. Vero does not retry a failed delivery.
+
+**Trust model.** Vero does not sign its webhooks: its setup page describes no signature, secret or signing header, so there is nothing to verify and none is invented. **The callback URL is the secret.** The host issues it per subscription as a long unguessable id; anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON body that carries a `type`.
+
+Docs (verified 2026-11-10): https://help.getvero.com/vero-1/integrations/setting-up-webhooks
