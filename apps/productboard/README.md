@@ -8,7 +8,7 @@ teams and members, and manage webhook subscriptions — over the **Productboard 
   checks** (plus 1 derived `auth:*`)
 - **Egress** `api.productboard.com` only. The status host is on the `service` check's own
   allowlist, never the app's.
-- **Triggers** — 2 (poll)
+- **Triggers** — 12 (poll)
 
 ## Which source this was built from
 
@@ -426,9 +426,28 @@ deno task test       # 221 unit tests, mocked HookContext, no network
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-note` — New Note | Poll | `note-list` | Each note created since the previous check |
+| `new-note` — New Note | Poll | `note-list` | Each note created since the previous check (`note-search` returns the same records) |
 | `new-or-updated-note` — New or Updated Note | Poll | `note-list` | Each note created or edited since the previous check (the id carries `updatedAt`) |
+| `new-entity` — New Entity | Poll | `entity-search` | Each feature, initiative, objective, release or other entity created since the previous check (`entity-list` returns the same records) |
+| `new-or-updated-entity` — New or Updated Entity | Poll | `entity-search` | Each entity created or edited since the previous check (the id carries `updatedAt`) |
+| `new-team` — New Team | Poll | `team-list` | Each newly created team (`team-search` returns the same records) |
+| `new-or-updated-team` — New or Updated Team | Poll | `team-list` | Each team created or changed |
+| `new-member` — New Member | Poll | `member-list` | Each member newly added to the workspace (`member-search` returns the same records) |
+| `new-team-member` — New Team Member | Poll | `team-member-list` | Each member newly added to the team you pick |
+| `new-entity-relationship` — New Entity Relationship | Poll | `entity-relationship-list` | Each relationship newly added to the entity you pick |
+| `new-note-relationship` — New Note Relationship | Poll | `note-relationship-list` | Each customer or entity link newly added to the note you pick |
+| `new-jira-integration-connection` — New Jira Connection | Poll | `jira-integration-connection-list` | Each entity newly linked to a Jira issue in the integration you pick |
+| `new-plugin-integration-connection` — New Plugin Connection | Poll | `plugin-integration-connection-list` | Each entity newly connected through the plugin integration you pick |
 
-Productboard documents `createdFrom` / `updatedFrom` on `GET /v2/notes` (inclusive bounds) but no sort order, so the triggers call the existing `note-list` action with the filter set to the previous check minus a 10-minute overlap and de-duplicate by id. The first check records the current window without emitting events.
+How each one polls:
 
-Source: [List notes](https://developer.productboard.com/reference/listnotes) (verified 2026-11-10).
+- The note triggers call `note-list` with `createdFrom` / `updatedFrom` set to the previous check minus 10 minutes (Productboard documents both as inclusive date bounds but no sort order) and de-duplicate by id.
+- The entity triggers call `entity-search` with `filter.createdAt.from` / `filter.updatedAt.from` set the same way (`EntitySearchFilter` date ranges in the entities OpenAPI document; `entity-list` has no date filter).
+- Both kinds only emit records created (or, for the updated ones, changed) after the trigger's first check, and a window that holds more than 5 pages of 100 drains across checks without skipping or repeating a record.
+- The team, member, team-member, relationship and integration-connection triggers read the whole (small, bounded) list on every check and emit ids that were not there before; `new-or-updated-team` also emits a team whose row changed. A list past 50 pages fails the check with a clear error instead of looping. Member rows have no timestamps, so there is no updated sibling; disabled and invitation-pending members are not in the list, as in `member-list`.
+
+Not covered (no trigger, by design): `entity-configuration-list`, `note-configuration-list`, `entity-field-value-list` (workspace field and option definitions); `member-activity-list` (analytics output); `jira-integration-list`, `plugin-integration-list`, `webhook-list` (integration and webhook configuration).
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Sources: [List notes](https://developer.productboard.com/reference/listnotes), the entities, teams, members and notes OpenAPI documents under <https://developer.productboard.com/v2/openapi> (verified 2026-11-10).
