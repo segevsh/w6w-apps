@@ -26,7 +26,6 @@ const trigger: TriggerDefinition = {
     { key: "event_id", type: "number", label: "Event ID" },
     { key: "member_name", type: "string", label: "Member name" },
     { key: "member_email", type: "string", label: "Member email" },
-    { key: "rsvp_status", type: "string", label: "RSVP status" },
     { key: "rsvp_date", type: "string", label: "RSVP date" },
   ],
   sample: {
@@ -34,7 +33,6 @@ const trigger: TriggerDefinition = {
     event_id: 2,
     member_name: "Sample Member",
     member_email: "member@example.com",
-    rsvp_status: "yes",
     rsvp_date: "2026-11-09T10:51:43.834Z",
   },
   minIntervalMs: 300_000,
