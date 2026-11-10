@@ -88,6 +88,16 @@ import keyModified from "./triggers/key-modified.ts";
 import translationUpdated from "./triggers/translation-updated.ts";
 import taskCreated from "./triggers/task-created.ts";
 import taskClosed from "./triggers/task-closed.ts";
+import anyEvent from "./triggers/any-event.ts";
+import commentAdded from "./triggers/comment-added.ts";
+import contributorAdded from "./triggers/contributor-added.ts";
+import contributorDeleted from "./triggers/contributor-deleted.ts";
+import fileImported from "./triggers/file-imported.ts";
+import keyDeleted from "./triggers/key-deleted.ts";
+import languageAdded from "./triggers/language-added.ts";
+import newProject from "./triggers/new-project.ts";
+import taskDeleted from "./triggers/task-deleted.ts";
+import translationProofread from "./triggers/translation-proofread.ts";
 
 export default {
   actions: [
@@ -136,7 +146,23 @@ export default {
   // API token only. Lokalise's OAuth2 flow requires a manual, per-integration
   // registration via their support chat — there is no self-service app
   // registry — so it is not implemented here. See README.
-  triggers: [keyAdded, keyModified, translationUpdated, taskCreated, taskClosed],
+  triggers: [
+    keyAdded,
+    keyModified,
+    translationUpdated,
+    taskCreated,
+    taskClosed,
+    keyDeleted,
+    commentAdded,
+    contributorAdded,
+    contributorDeleted,
+    languageAdded,
+    translationProofread,
+    fileImported,
+    taskDeleted,
+    anyEvent,
+    newProject,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;
