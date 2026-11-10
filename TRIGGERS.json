@@ -5188,9 +5188,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "request inbox actions fetch or shift one known request and expose no bounded list of new requests",
+    "verified": "apps/postbin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/postgres",
@@ -5205,12 +5205,14 @@
   },
   {
     "path": "apps/posthog",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "event"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: event delivery; existing offset lists lack documented order",
+    "verified": "apps/posthog/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/postmark",
@@ -5225,12 +5227,15 @@
   },
   {
     "path": "apps/practicebetter",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-client-record",
+      "new-or-updated-client-record"
+    ],
+    "pollAction": "list-client-records",
+    "reason": "GET /consultant/records is documented newest-created first and takes modified_gte; webhook subscriptions also exist (see webhooks file)",
+    "verified": "apps/practicebetter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/printavo",
@@ -5256,12 +5261,14 @@
   },
   {
     "path": "apps/printnode",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-printjob"
+    ],
+    "pollAction": "printjob-list",
+    "reason": "GET /printjobs is documented newest first",
+    "verified": "apps/printnode/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/processstreet",
@@ -5313,9 +5320,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "enrichment and search endpoints compute or look up supplied prospects rather than list account records",
+    "verified": "apps/prospeo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pushbullet",
@@ -5340,39 +5347,47 @@
   },
   {
     "path": "apps/pylon",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue"
+    ],
+    "pollAction": "issue-list",
+    "reason": "GET /issues lists issues created inside start_time..end_time; polled over a short window per check",
+    "verified": "apps/pylon/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/qdrant",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-collection"
+    ],
+    "pollAction": "collection-list",
+    "reason": "the complete collection directory is returned in one bounded GET /collections response",
+    "verified": "apps/qdrant/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/quaderno",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoice"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "invoice-list is documented newest first",
+    "verified": "apps/quaderno/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/qualtrics",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "event subscription"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: Qualtrics event subscriptions; existing lists have no safe creation order",
+    "verified": "apps/qualtrics/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/quickbase",
@@ -5402,18 +5417,21 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless chart, QR, barcode and image rendering API has no account record lists",
+    "verified": "apps/quickchart/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/quo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation",
+      "new-or-updated-conversation"
+    ],
+    "pollAction": "conversation-list",
+    "reason": "GET /v1/conversations takes createdAfter and updatedAfter; call/message webhooks also exist (see webhooks file)",
+    "verified": "apps/quo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/raindrop",
@@ -5463,12 +5481,14 @@
   },
   {
     "path": "apps/read-ai",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-meeting"
+    ],
+    "pollAction": "list-meetings",
+    "reason": "GET /v1/meetings is newest first and bounded to ten records",
+    "verified": "apps/read-ai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/readwise",
@@ -5483,12 +5503,14 @@
   },
   {
     "path": "apps/recallai",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-calendar"
+    ],
+    "pollAction": "calendar-list",
+    "reason": "GET /api/v2/calendars/ takes created_at__gte; bot status webhooks also exist (see webhooks file)",
+    "verified": "apps/recallai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recharge",
@@ -5527,9 +5549,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "candidate, client, job and deal lists paginate by page number with no documented newest-first order or since filter",
+    "verified": "apps/recruiterflow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recurly",
@@ -5556,12 +5578,14 @@
   },
   {
     "path": "apps/redtail-crm",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-contact"
+    ],
+    "pollAction": "contact-search",
+    "reason": "GET /contacts/search takes the documented updated_since filter; responses carry meta.total_pages, the action now takes page, and the trigger resumes across checks",
+    "verified": "apps/redtail-crm/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/refiner",
@@ -5600,12 +5624,16 @@
   },
   {
     "path": "apps/rendex",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "watch.changed",
+      "watch.recovered",
+      "watch.error"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: Rendex Watch changed, recovered and error events",
+    "verified": "apps/rendex/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/replicate",
@@ -5632,12 +5660,14 @@
   },
   {
     "path": "apps/resend",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-email"
+    ],
+    "pollAction": "email-list",
+    "reason": "GET /emails is documented newest first",
+    "verified": "apps/resend/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/respondio",
