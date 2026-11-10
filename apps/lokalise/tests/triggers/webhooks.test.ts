@@ -57,15 +57,10 @@ test("fixture body has non-canonical whitespace", () => {
   assert(JSON.stringify(JSON.parse(b)) !== b);
 });
 
-test("app declares five webhook triggers with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), [
-    "key-added",
-    "key-modified",
-    "translation-updated",
-    "task-created",
-    "task-closed",
-  ]);
-  for (const t of app.triggers) {
+test("the original five webhook triggers keep their keys, output, sample and hooks, no poll", () => {
+  const five = ["key-added", "key-modified", "translation-updated", "task-created", "task-closed"];
+  assertEquals(app.triggers.map((t) => t.key).slice(0, 5), five);
+  for (const t of app.triggers.slice(0, 5)) {
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);

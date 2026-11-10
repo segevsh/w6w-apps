@@ -6,7 +6,7 @@ on the **Lokalise REST API v2**.
 - **Categories** — developer-tools, cms
 - **Auth methods** — api-token
 - **Actions** — 31
-- **Triggers** — 5 (webhook)
+- **Triggers** — 15 (14 webhook, 1 poll)
 - **Health checks** — 3 (`service`, `quota`, `request-rate`) + the derived `auth:api-token`
 - **Egress allowlist** — `api.lokalise.com` (the `service` check adds `status.lokalise.com` to its
   own hook allowlist, never to the app's)
@@ -32,21 +32,35 @@ around that core content, plus **contributors** (who can translate what), **comm
 
 ## Triggers
 
-5 webhook triggers (API-registered, shared-secret header).
+14 webhook triggers (API-registered, shared-secret header) and 1 poll.
 
-| Trigger | Mechanism | Vendor event | The run gets |
+| Trigger | Mechanism | Vendor event or wrapped list action | The run gets |
 |---|---|---|---|
 | `key-added` — Key Added | webhook (API-registered) | `project.key.added` (and the bulk `project.keys.added`) | event, project, branch, user, time, the key or list of keys |
 | `key-modified` — Key Modified | webhook (API-registered) | `project.key.modified` (and the bulk `project.keys.modified`) | event, project, branch, user, time, the key or list of keys |
+| `key-deleted` — Key Deleted | webhook (API-registered) | `project.keys.deleted` | event, project, branch, user, time, the removed keys |
 | `translation-updated` — Translation Updated | webhook (API-registered) | `project.translation.updated` (and the bulk `project.translations.updated`) | event, project, branch, user, time, the translation (new and previous value) or list |
+| `translation-proofread` — Translation Reviewed | webhook (API-registered) | `project.translation.proofread` (and the bulk `project.translations.proofread`) | event, project, branch, user, time, the translation (value, reviewed flag) or list |
+| `comment-added` — Comment Added | webhook (API-registered) | `project.key.comment.added` | event, project, branch, user, time, the comment |
+| `contributor-added` — Contributor Added | webhook (API-registered) | `project.contributor.added` | event, project, branch, user, time, the contributor |
+| `contributor-deleted` — Contributor Removed | webhook (API-registered) | `project.contributor.deleted` | event, project, branch, user, time, the contributor |
+| `language-added` — Language Added | webhook (API-registered) | `project.languages.added` | event, project, branch, user, time, the added languages |
+| `file-imported` — File Uploaded | webhook (API-registered) | `project.imported` | event, project, branch, user, time, the import (file name, format, keys inserted, updated, skipped) |
 | `task-created` — Task Created | webhook (API-registered) | `project.task.created` | event, project, branch, user, time, the task |
 | `task-closed` — Task Closed | webhook (API-registered) | `project.task.closed` | event, project, branch, user, time, the task |
+| `task-deleted` — Task Deleted | webhook (API-registered) | `project.task.deleted` | event, project, branch, user, time, the task |
+| `any-event` — Any Event | webhook (API-registered) | every name in the create-a-webhook `events` list, or the comma-separated `events` you give (e.g. `project.key.comment.added`, `project.snapshot`, `project.exported`, `team.order.created`) | event, project, branch, user, time, the event's own object and the full event data |
+| `new-project` — New Project | poll (every 5 min) | `GET /projects` (`project-list`, `limit=5000`, snapshot diff) | the new project |
 
-**Setup.** Pick the `projectId` (and optionally a `branch`). Subscribing registers the callback URL with `POST /projects/{project_id}/webhooks` for the trigger's event and stores the secret Lokalise returns with the subscription; unsubscribing deletes the webhook with `DELETE /projects/{project_id}/webhooks/{webhook_id}` (a webhook Lokalise no longer has counts as deleted). The token needs the **Manage settings** admin right and the `write_webhooks` scope. Lokalise disables a webhook handler that fails for 24 hours; re-enable it in the project settings.
+**Setup.** Pick the `projectId` (and optionally a `branch`). Subscribing registers the callback URL with `POST /projects/{project_id}/webhooks` for the trigger's event (the Any Event trigger: your `events` list, or every event the API accepts when it is empty; Lokalise has no wildcard) and stores the secret Lokalise returns with the subscription; unsubscribing deletes the webhook with `DELETE /projects/{project_id}/webhooks/{webhook_id}` (a webhook Lokalise no longer has counts as deleted). The token needs the **Manage settings** admin right and the `write_webhooks` scope. Lokalise disables a webhook handler that fails for 24 hours; re-enable it in the project settings.
 
 **Trust model.** Lokalise does not sign requests. It sends the webhook's secret in the `X-Secret` header of every delivery; the trigger refuses a delivery whose stored secret is unset, whose header is missing, or that does not match (constant-time compare), before it parses the body. The secret proves the sender knows it; it does not bind the event data, and a captured delivery could be replayed, so keep the callback URL private. Lokalise also publishes the IPs its webhooks come from (listed in the webhook guide) if you want to restrict the source at your edge.
 
-Docs (verified 2026-11-10): https://developers.lokalise.com/docs/webhooks-guide, https://developers.lokalise.com/docs/webhook-events and https://developers.lokalise.com/reference/create-a-webhook
+`new-project` has no webhook counterpart (Lokalise sends no project-created event; `project.deleted` is the only project-level one), so it polls `GET /projects` — the projects a token reaches are one bounded page (`limit` up to 5000) and each check diffs it against the last. It reports projects, never edits or removals.
+
+Not covered as triggers: `language-list-system` (Lokalise's static catalogue of languages), `team-list` (the teams the token's user belongs to: account set-up data) and `webhook-list` (the project's own webhook subscriptions: configuration, not content). The key, translation, comment, contributor, language, file and task lists are delivered by the webhook triggers above.
+
+Docs (verified 2026-11-10): https://developers.lokalise.com/docs/webhooks-guide, https://developers.lokalise.com/docs/webhook-events, https://developers.lokalise.com/reference/create-a-webhook and https://developers.lokalise.com/reference/list-all-projects
 
 ## The findings that would have cost someone a day
 
