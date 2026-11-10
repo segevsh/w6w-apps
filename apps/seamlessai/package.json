@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/seamlessai",
   "version": "0.3.0",
-  "description": "Search Seamless.AI's B2B contact and company database, research the records you pick, and manage the lists, campaigns, tasks and saved searches around them. Polling trigger: New Task, with documented polling limits for other list feeds.",
+  "description": "Search Seamless.AI's B2B contact and company database and manage its lists, campaigns, tasks and saved searches. Polling trigger: New Task.",
   "license": "MIT",
   "author": {
     "name": "w6w"
