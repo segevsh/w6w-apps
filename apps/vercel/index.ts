@@ -71,6 +71,13 @@ import userGet from "./actions/user-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newDeployment from "./triggers/new-deployment.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newDomain from "./triggers/new-domain.ts";
+import newProjectDomain from "./triggers/new-project-domain.ts";
+import newEnvVar from "./triggers/new-env-var.ts";
+import newOrUpdatedEnvVar from "./triggers/new-or-updated-env-var.ts";
+import newAlias from "./triggers/new-alias.ts";
 
 export default {
   actions: [
@@ -111,5 +118,14 @@ export default {
   ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
-  triggers: [newDeployment],
+  triggers: [
+    newDeployment,
+    newProject,
+    newOrUpdatedProject,
+    newDomain,
+    newProjectDomain,
+    newEnvVar,
+    newOrUpdatedEnvVar,
+    newAlias,
+  ],
 } satisfies AppDefinition;

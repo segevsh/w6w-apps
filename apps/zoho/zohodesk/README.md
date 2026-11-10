@@ -10,7 +10,7 @@ confuse the four, and do not modify `apps/zoho/zoho/`, `apps/zoho/zohobooks/` or
 - **Categories** — support
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 27
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Egress allowlist** — `desk.zoho.com`, `desk.zoho.eu`, `desk.zoho.in`, `desk.zoho.com.au`,
   `desk.zoho.jp`, `desk.zohocloud.ca`, `desk.zoho.com.cn`, `desk.zoho.sa`, `desk.zoho.sg`,
   `desk.zoho.ae`
@@ -268,13 +268,27 @@ hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-c
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` | poll | `contact-list` | a Zoho Desk contact when it is created |
+| `new-ticket` | poll | `ticket-list` | a Zoho Desk ticket when it is created |
+| `new-account` | poll | `account-list` | an account (customer company) when it is created |
+| `new-agent` | poll | `agent-list` | an agent newly added to the organization |
+| `new-department` | poll | `department-list` | a department newly created in the organization |
+| `new-ticket-thread` | poll | `ticket-thread-list` | a new conversation thread on one ticket (`ticketId` required) |
+| `new-ticket-comment` | poll | `ticket-comment-list` | a new comment on one ticket (`ticketId` required) |
+| `new-ticket-attachment` | poll | `ticket-attachment-list` | a new attachment on one ticket (`ticketId` required) |
 
 There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
 
-Requests `sortBy=-createdTime`, 100 contacts. Set the `orgId` trigger parameter, or leave it empty to use the organization recorded on the connection. The list response does not carry a modified stamp, so there is no new-or-updated trigger.
+`new-contact`, `new-ticket` and `new-account` request `sortBy=-createdTime`, 100 records (page 1 is the newest). `new-agent` and `new-department` read the first 100 of a short list and diff the ids. Set the `orgId` trigger parameter, or leave it empty to use the organization recorded on the connection. The contact, ticket and account lists document no modified-time sort (tickets: dueDate, recentThread, createdTime, ticketNumber; accounts: accountName, createdTime), so there is no new-or-updated trigger.
+
+The three per-ticket triggers take a required `ticketId` (the `id` of `new-ticket`). Threads list newest first by default (`sendDateTime`, descending when `sortBy` is omitted); comments request `sortBy=-commentedTime` and attachments `sortBy=-createdTime`, 100 records (https://desk.zoho.com/DeskAPIDocument, verified 2026-11-10).
+
+Not covered: `search-records` (free-text search across modules, relevance-ranked: the same tickets, contacts and accounts are delivered by the triggers above) and `organization-list` (setup discovery: it only finds the `orgId`).
 
 **Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
 
-**Vendor docs (verified 2026-11-09).**
+**Vendor docs (verified 2026-11-10).**
 
 - List contacts — "Sort by a specific attribute: firstName, lastName, or createdTime. The default sorting order is ascending. A - prefix denotes descending order of sorting.": https://desk.zoho.com/DeskAPIDocument
+- List tickets — "Key that sorts the tickets by a specific attribute: dueDate, recentThread, createdTime, or ticketNumber ... A - prefix denotes a descending order of sorting.": https://desk.zoho.com/DeskAPIDocument
+- List accounts — "Key that sorts the accounts by a specific attribute: accountName or createdTime ... A - prefix denotes descending order of sorting": https://desk.zoho.com/DeskAPIDocument
+- List agents, departments — plain `from`/`limit` lists: https://desk.zoho.com/DeskAPIDocument

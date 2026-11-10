@@ -86,6 +86,16 @@ import likeRemove from "./actions/like-remove.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newVideo from "./triggers/new-video.ts";
+import newFolder from "./triggers/new-folder.ts";
+import newOrUpdatedFolder from "./triggers/new-or-updated-folder.ts";
+import newShowcase from "./triggers/new-showcase.ts";
+import newOrUpdatedShowcase from "./triggers/new-or-updated-showcase.ts";
+import newFolderVideo from "./triggers/new-folder-video.ts";
+import newFolderItem from "./triggers/new-folder-item.ts";
+import newShowcaseVideo from "./triggers/new-showcase-video.ts";
+import newComment from "./triggers/new-comment.ts";
+import newCommentReply from "./triggers/new-comment-reply.ts";
+import newSearchVideo from "./triggers/new-search-video.ts";
 
 export default {
   actions: [
@@ -139,5 +149,17 @@ export default {
   // `auth/access-token.ts`.
   auth: [accessToken],
   healthChecks: [service, quota],
-  triggers: [newVideo],
+  triggers: [
+    newVideo,
+    newFolder,
+    newOrUpdatedFolder,
+    newShowcase,
+    newOrUpdatedShowcase,
+    newFolderVideo,
+    newFolderItem,
+    newShowcaseVideo,
+    newComment,
+    newCommentReply,
+    newSearchVideo,
+  ],
 } satisfies AppDefinition;
