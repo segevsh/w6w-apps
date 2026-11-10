@@ -3851,12 +3851,37 @@
       "submission-edited",
       "dispatch-created",
       "workflow-handoff-created",
-      "submission-status-changed"
+      "submission-status-changed",
+      "any-event",
+      "new-form",
+      "new-user",
+      "new-customer",
+      "new-site",
+      "new-project",
+      "new-group",
+      "new-department",
+      "new-department-user",
+      "new-form-assigned-user",
+      "new-submission",
+      "new-dispatch"
     ],
-    "pollAction": null,
-    "reason": "API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks); unsigned (no signature documented), callback URL is the secret; delivery body undocumented so passed through whole",
+    "pollAction": "form-list",
+    "reason": "shipped: API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks) for the five documented event types plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; 9 snapshot polls for the collections without a webhook event; 2 created_at since-filter polls (new-submission, new-dispatch) for users who cannot register webhooks (Company Admin/Designer only, one webhook per form and event)",
     "verified": "apps/gocanvas/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "reference-data-list": "reference/static data: lookup tables behind form dropdowns, not business records",
+      "form-report-list": "report definitions attached to one form (form_report_definition), report configuration rather than records",
+      "webhook-list": "webhook administration: every webhook configured on the form incl. company-wide ones, not business records",
+      "submission-revision-list": "revision history of one individual submission; the parent is a single record, not something a user picks as a feed (edits arrive via submission-edited)"
+    },
+    "events": {
+      "submission_create": "submission-created",
+      "submission_edit": "submission-edited",
+      "dispatch_create": "dispatch-created",
+      "workflow_handoff_create": "workflow-handoff-created",
+      "submission_custom_status_change": "submission-status-changed"
+    }
   },
   {
     "path": "apps/gocardless",

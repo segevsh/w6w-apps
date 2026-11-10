@@ -12,12 +12,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1947 triggers, 2335 unaccounted list actions in 513 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
-| apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
 | apps/chatbase | 0 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
@@ -588,6 +587,7 @@ depth: 682 apps, 1947 triggers, 2335 unaccounted list actions in 513 apps, n8n-p
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
 | apps/givebutter | 8 | 11 | 0 |
+| apps/gocanvas | 17 | 15 | 0 |
 | apps/google/gmail | 4 | 4 | 0 |
 | apps/google/google-calendar | 7 | 2 | 0 |
 | apps/google/google-drive | 5 | 3 | 0 |
@@ -712,7 +712,7 @@ depth: 682 apps, 1947 triggers, 2335 unaccounted list actions in 513 apps, n8n-p
 | apps/formstack | 2 | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/github | 15 | any-event, fork, issue-comment, issue, pull-request-review-comment, pull-request-review, pull-request, push, ref-created, ref-deleted, release, repository-event, star, workflow-job, workflow-run | apps/github/README.md Triggers section (verified 2026-11-10) | hand | shipped: repository webhook registered through the vendor API (POST /repos/{owner}/{repo}/hooks); 14 named event triggers plus Any Event, X-Hub-Signature-256 HMAC-SHA256 verified |
 | apps/gitlab | 13 | any-event, comment, deployment, issue, job, merge-request, milestone, new-project, pipeline, push, release, tag-push, wiki-page | apps/gitlab/README.md Triggers section (verified 2026-11-10) | hand | API-registered project webhook (POST /projects/:id/hooks); 11 named event triggers, the `new-project` poll trigger and Any Event; onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
-| apps/gocanvas | 5 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks); unsigned (no signature documented), callback URL is the secret; delivery body undocumented so passed through whole |
+| apps/gocanvas | 17 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed, any-event, new-form, new-user, new-customer, new-site, new-project, new-group, new-department, new-department-user, new-form-assigned-user, new-submission, new-dispatch | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | shipped: API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks) for the five documented event types plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; 9 snapshot polls for the collections without a webhook event; 2 created_at since-filter polls (new-submission, new-dispatch) for users who cannot register webhooks (Company Admin/Designer only, one webhook per form and event) |
 | apps/goto-webinar | 5 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation |
 | apps/gumroad | 2 | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/heartbeat | 19 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created, mention, direct-message, abandoned-invitation, any-event, new-channel, new-channel-category, new-group, new-course, new-invitation, new-video, new-direct-message | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat |
