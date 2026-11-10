@@ -5218,11 +5218,19 @@
     "path": "apps/jumpcloud",
     "mechanism": "poll",
     "candidates": [
-      "new-user"
+      "new-command",
+      "new-command-result",
+      "new-organization",
+      "new-system",
+      "new-system-group",
+      "new-user",
+      "new-user-group",
+      "new-user-group-member",
+      "new-user-sshkey"
     ],
     "pollAction": "user-list",
-    "reason": "user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml)",
-    "verified": "apps/jumpcloud/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Poll: user/device newest-first (sort=-created), command results (sort=-requestTime), snapshots of commands, organizations, user/device groups, group members and SSH keys (https://docs.jumpcloud.com/api/1.0/index.yaml, /api/2.0/index.yaml); every list action is behind a trigger.",
+    "verified": "apps/jumpcloud/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5395,13 +5403,23 @@
     "path": "apps/kustomer",
     "mechanism": "poll",
     "candidates": [
+      "new-conversation",
       "new-customer",
-      "new-or-updated-customer"
+      "new-kobject",
+      "new-message",
+      "new-note",
+      "new-or-updated-customer",
+      "new-team",
+      "new-user"
     ],
     "pollAction": "customer-list",
-    "reason": "customer-list sort=-createdAt / -updatedAt (https://developer.kustomer.com/api/core-resources/get-customers)",
-    "verified": "apps/kustomer/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll: customers newest-first and new-or-updated, conversations and KObjects sort=desc (newest first; conversation order inferred from sibling endpoints), snapshots of messages/notes per conversation, teams and users (https://developer.kustomer.com/api/core-resources/get-conversations).",
+    "verified": "apps/kustomer/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "klass-list": "reference data: custom object type (Klass) definitions, not records",
+      "satisfaction-survey-list": "configuration data: CSAT survey form definitions, not records"
+    }
   },
   {
     "path": "apps/kvcore",
@@ -6032,12 +6050,22 @@
     "path": "apps/manychat",
     "mechanism": "poll",
     "candidates": [
-      "new-flow"
+      "new-flow",
+      "new-growth-tool",
+      "new-tag"
     ],
     "pollAction": "list-flows",
-    "reason": "getFlows returns the Page's whole flow set in one call: pollSnapshot, added only",
-    "verified": "apps/manychat/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll: flows, tags and growth tools as unpaged whole-collection snapshots (https://api.manychat.com/swagger); field/topic definitions and keyed subscriber lookups skipped.",
+    "verified": "apps/manychat/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-bot-fields": "reference data: bot field definitions",
+      "list-custom-fields": "reference data: custom field definitions",
+      "list-otn-topics": "configuration data: one-time-notification topic definitions",
+      "find-subscriber-by-system-field": "keyed lookup of one subscriber by a required email or phone; ManyChat has no list-all-subscribers operation, so there is no collection to poll (https://api.manychat.com/swagger)",
+      "find-subscribers-by-custom-field": "keyed lookup by a required custom-field id and value (max 100 matches); no list-all-subscribers operation to poll (https://api.manychat.com/swagger)",
+      "find-subscribers-by-name": "keyed lookup by a required name (max 100 matches); no list-all-subscribers operation to poll (https://api.manychat.com/swagger)"
+    }
   },
   {
     "path": "apps/marketo",
@@ -6137,13 +6165,29 @@
     "path": "apps/mem",
     "mechanism": "poll",
     "candidates": [
-      "new-task",
-      "new-or-updated-task"
+      "new-collection",
+      "new-follow-up",
+      "new-note",
+      "new-or-updated-collection",
+      "new-or-updated-follow-up",
+      "new-or-updated-note",
+      "new-or-updated-project",
+      "new-or-updated-task",
+      "new-project",
+      "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI.",
-    "verified": "apps/mem/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll: tasks, notes, collections, follow-ups and projects, each new and new-or-updated via order_by (https://docs.mem.ai/api-reference/openapi.json); search twins covered, related-notes skipped.",
+    "verified": "apps/mem/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "collection-search": "new-collection",
+      "note-search": "new-note",
+      "note-extended-search": "new-note"
+    },
+    "skipped": {
+      "note-related-list": "relevance-scored suggestions derived from one given note (similarity ranking), not a record feed"
+    }
   },
   {
     "path": "apps/memberstack",
@@ -6663,12 +6707,21 @@
     "path": "apps/mongodb-atlas",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-alert",
+      "new-cluster",
+      "new-database-user",
+      "new-event",
+      "new-flex-cluster",
+      "new-organization",
+      "new-project"
     ],
     "pollAction": "event-list",
-    "reason": "event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented.",
-    "verified": "apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll: project events since-filter (shape b), plus snapshots of open alerts, clusters, flex clusters, database users, organizations and projects (https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/); process-list skipped.",
+    "verified": "apps/mongodb-atlas/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "process-list": "infrastructure inventory: host:port nodes behind existing clusters churn on maintenance and failover, not new records; new clusters are delivered by new-cluster and new-flex-cluster"
+    }
   },
   {
     "path": "apps/moonclerk",
