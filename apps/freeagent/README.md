@@ -6,7 +6,7 @@ tasks and users.
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 28
-- **Triggers** — 2 (poll)
+- **Triggers** — 12 (poll)
 - **Egress allowlist** — `api.freeagent.com`
 - **Website** — https://www.freeagent.com
 - **API docs** — https://dev.freeagent.com/docs
@@ -199,9 +199,25 @@ Poll triggers built on the app's existing `contact-list` action (same client, en
 |---|---|---|---|
 | `new-contact` — New Contact | poll | `contact-list` | Each newly created FreeAgent contact (customer or supplier), oldest first. |
 | `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each FreeAgent contact that is newly created or edited, once per edit. |
+| `new-invoice` — New Invoice | poll | `invoice-list` | Each newly created invoice (`sort=-created_at`). |
+| `new-or-updated-invoice` — New or Updated Invoice | poll | `invoice-list` | Each invoice that is newly created or edited, once per edit (`sort=-updated_at`). |
+| `new-project` — New Project | poll | `project-list` | Each newly created project (`sort=-created_at`). |
+| `new-or-updated-project` — New or Updated Project | poll | `project-list` | Each project that is newly created or edited, once per edit. |
+| `new-task` — New Task | poll | `task-list` | Each newly created task (`sort=-created_at`, one page). |
+| `new-or-updated-task` — New or Updated Task | poll | `task-list` | Each task that is newly created or edited, once per edit. |
+| `new-user` — New User | poll (snapshot) | `user-list` | Each user newly added to the account. |
+| `new-timeslip` — New Timeslip | poll (since-filter) | `timeslip-list` | Each timeslip created after the trigger was enabled. |
+| `new-expense` — New Expense | poll (since-filter) | `expense-list` | Each expense created after the trigger was enabled. |
+| `new-bank-transaction` — New Bank Transaction | poll (since-filter) | `bank-transaction-list` | Each bank transaction created after the trigger was enabled, for the chosen bank account. |
 
 How the feed is read: `GET /v2/contacts` with `sort=-created_at` / `sort=-updated_at` ("to sort in descending order, the sort parameter can be prefixed with a hyphen"); contacts carry no id field, so their `url` is the identity.
 
+Invoices and projects are read newest first with `sort=-created_at` / `sort=-updated_at` (100 per page, one page per check); tasks the same with the API's default page size (the task list takes no page argument). Users are a small unpaged list, so that trigger diffs the ids between checks.
+
+Timeslips, expenses and bank transactions have no sort argument, so those triggers use the documented `updated_since` filter: every check asks for `updated_since = last check - 2 minutes`, reads up to 3 pages of 100, and dedupes by `url`. The first check stores the time it ran as a floor and reads nothing; later checks ignore any record whose `created_at` is before that floor, so enabling the trigger never replays history and an old record that is merely edited never fires. If a window holds more than 3 pages the trigger remembers the page it stopped at and continues there on the next check; the check time only moves forward once the window is drained.
+
+Not covered: none; every list action has a trigger (the bank-transaction trigger asks for the bank account to watch).
+
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 
-Vendor docs: <https://dev.freeagent.com/docs/contacts> (verified 2026-11-09).
+Vendor docs (verified 2026-11-10): <https://dev.freeagent.com/docs/contacts>, <https://dev.freeagent.com/docs/invoices>, <https://dev.freeagent.com/docs/projects>, <https://dev.freeagent.com/docs/tasks>, <https://dev.freeagent.com/docs/users>, <https://dev.freeagent.com/docs/timeslips>, <https://dev.freeagent.com/docs/expenses>, <https://dev.freeagent.com/docs/bank_transactions>.

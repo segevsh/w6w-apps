@@ -83,6 +83,16 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newTask from "./triggers/new-task.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newUser from "./triggers/new-user.ts";
+import newTimeslip from "./triggers/new-timeslip.ts";
+import newExpense from "./triggers/new-expense.ts";
+import newBankTransaction from "./triggers/new-bank-transaction.ts";
 
 export default {
   actions: [
@@ -123,7 +133,20 @@ export default {
     userList,
     userGet,
   ],
-  triggers: [newContact, newOrUpdatedContact],
+  triggers: [
+    newContact,
+    newOrUpdatedContact,
+    newInvoice,
+    newOrUpdatedInvoice,
+    newProject,
+    newOrUpdatedProject,
+    newTask,
+    newOrUpdatedTask,
+    newUser,
+    newTimeslip,
+    newExpense,
+    newBankTransaction,
+  ],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
