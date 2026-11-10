@@ -64,3 +64,5 @@ signature verification, and the MCP server.
 
 `assets/icon.svg` wraps the vendor's own PNG mark (`https://rendex.dev/apple-icon`, 180×180).
 The vendor's `icon.svg` draws its "R" with a font-dependent `<text>` element, so it is not used.
+
+Triggers: not shipped — watches can deliver documented watch.changed webhooks, while the existing watch list has no stated bounded collection limit (https://rendex.dev/docs/watch)

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/quaderno",
-  "version": "0.1.0",
-  "description": "Create invoices, credit notes and expenses, manage contacts and products, and calculate sales tax with Quaderno.",
+  "version": "0.2.0",
+  "description": "Create invoices, credit notes and expenses, manage contacts and products, calculate sales tax, and trigger workflows for new invoices with Quaderno.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "*.quadernoapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

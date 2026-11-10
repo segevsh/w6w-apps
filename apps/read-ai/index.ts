@@ -24,9 +24,11 @@ import getLiveMeeting from "./actions/get-live-meeting.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMeeting from "./triggers/new-meeting.ts";
 
 export default {
   actions: [listMeetings, listAllMeetings, getMeeting, getLiveMeeting],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newMeeting],
 } satisfies AppDefinition;

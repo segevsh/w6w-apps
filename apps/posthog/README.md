@@ -163,3 +163,5 @@ Researched and endpoint-verified 2026-08-01 against PostHog's official docs (`po
 `posthog/rate_limit.py`), and n8n's PostHog node/credentials for structural comparison. Status
 surfaces and undocumented internal routes move without notice; re-verify before trusting anything
 in this file that isn't in PostHog's own published docs or schema.
+
+Triggers: not shipped — person, cohort, insight and feature-flag lists are offset-paginated without a documented order or change filter (https://posthog.com/docs/api)

@@ -32,6 +32,7 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCalendar from "./triggers/new-calendar.ts";
 
 export default {
   actions: [
@@ -67,4 +68,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newCalendar],
 } satisfies AppDefinition;

@@ -35,6 +35,7 @@ import aliasUpdate from "./actions/alias-update.ts";
 import snapshotCreate from "./actions/snapshot-create.ts";
 import snapshotList from "./actions/snapshot-list.ts";
 import instanceInfo from "./actions/instance-info.ts";
+import newCollection from "./triggers/new-collection.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -60,6 +61,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, instance, collectionsHealth, quota],
+  triggers: [newCollection],
 };
 
 export default app;

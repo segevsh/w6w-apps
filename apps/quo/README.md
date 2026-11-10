@@ -11,6 +11,7 @@ whole workspace, on the **Quo Public API v1**.
 - **Categories** — communication, crm
 - **Auth methods** — api-key
 - **Actions** — 43
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.quo.com` (the `service` check adds `status.quo.com` to its own hook
   allowlist, never to the app's)
@@ -226,3 +227,12 @@ promise the header exists, so a future removal shouldn't fail a target outright.
 (`https://cdn.quo.com/favicon/android-chrome-512x512.png`, 512×512, 4,886 bytes), sourced from the
 `<link rel="icon">` tags on `quo.com`'s own HTML — the current vendor mark, not the legacy
 OpenPhone one.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` | poll | `conversation-list` | Each newly created shared-inbox conversation (`createdAfter`) |
+| `new-or-updated-conversation` | poll | `conversation-list` | Each conversation when created or updated (`updatedAfter`) |
+
+Both triggers run `conversation-list` with the documented `createdAfter` / `updatedAfter` filter set to the last check minus two minutes, `maxResults` 100, following `nextPageToken` for up to three pages and de-duplicating by id (`id:updatedAt` for the updated trigger). A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation (`updatedAt` for the updated trigger) stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://www.quo.com/docs/mdx/api-reference/introduction) (verified 2026-11-09).

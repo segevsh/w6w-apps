@@ -55,3 +55,5 @@ create/update/open/close, custom-field and reference-data lists, `document/get`.
 
 `assets/icon.svg` embeds Recruiterflow's own web-clip mark (`rf_webclip.png`, 256x256) verbatim as a
 base64 PNG inside an SVG wrapper; the vendor serves no SVG (`/favicon.svg` is a 404 page).
+
+Triggers: not shipped — candidate, client, job and deal lists paginate by page number with no documented newest-first order or since filter (https://recruiterflow.com/swagger.yml)
