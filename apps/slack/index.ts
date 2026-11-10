@@ -60,6 +60,29 @@ import incidents from "./health/incidents.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
 import event from "./triggers/event.ts";
+import appMentionTrigger from "./triggers/app-mention.ts";
+import reactionAddedTrigger from "./triggers/reaction-added.ts";
+import reactionRemovedTrigger from "./triggers/reaction-removed.ts";
+import messageEditedTrigger from "./triggers/message-edited.ts";
+import messageDeletedTrigger from "./triggers/message-deleted.ts";
+import channelCreatedTrigger from "./triggers/channel-created.ts";
+import channelRenamedTrigger from "./triggers/channel-renamed.ts";
+import channelArchivedTrigger from "./triggers/channel-archived.ts";
+import channelUnarchivedTrigger from "./triggers/channel-unarchived.ts";
+import channelDeletedTrigger from "./triggers/channel-deleted.ts";
+import memberJoinedChannelTrigger from "./triggers/member-joined-channel.ts";
+import memberLeftChannelTrigger from "./triggers/member-left-channel.ts";
+import fileCreatedTrigger from "./triggers/file-created.ts";
+import fileSharedTrigger from "./triggers/file-shared.ts";
+import fileDeletedTrigger from "./triggers/file-deleted.ts";
+import teamJoinTrigger from "./triggers/team-join.ts";
+import userUpdatedTrigger from "./triggers/user-updated.ts";
+import usergroupCreatedTrigger from "./triggers/usergroup-created.ts";
+import usergroupUpdatedTrigger from "./triggers/usergroup-updated.ts";
+import usergroupMembersChangedTrigger from "./triggers/usergroup-members-changed.ts";
+import starAddedTrigger from "./triggers/star-added.ts";
+import starRemovedTrigger from "./triggers/star-removed.ts";
+import newSearchMatchTrigger from "./triggers/new-search-match.ts";
 
 export default {
   actions: [
@@ -119,6 +142,32 @@ export default {
     userGroupGetUsers,
   ],
   auth: [accessToken, oauth2],
-  triggers: [newMessage, event],
+  triggers: [
+    newMessage,
+    event,
+    appMentionTrigger,
+    reactionAddedTrigger,
+    reactionRemovedTrigger,
+    messageEditedTrigger,
+    messageDeletedTrigger,
+    channelCreatedTrigger,
+    channelRenamedTrigger,
+    channelArchivedTrigger,
+    channelUnarchivedTrigger,
+    channelDeletedTrigger,
+    memberJoinedChannelTrigger,
+    memberLeftChannelTrigger,
+    fileCreatedTrigger,
+    fileSharedTrigger,
+    fileDeletedTrigger,
+    teamJoinTrigger,
+    userUpdatedTrigger,
+    usergroupCreatedTrigger,
+    usergroupUpdatedTrigger,
+    usergroupMembersChangedTrigger,
+    starAddedTrigger,
+    starRemovedTrigger,
+    newSearchMatchTrigger,
+  ],
   healthChecks: [service, incidents, quota],
 } satisfies AppDefinition;

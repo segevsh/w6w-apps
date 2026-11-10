@@ -51,8 +51,10 @@ test("fixture: the body is not canonical JSON", () => {
 });
 
 test("app: declares both triggers with output and sample, no unsigned path", () => {
-  assert.deepEqual(app.triggers.map((t) => t.key), ["new-message", "event"]);
-  for (const t of app.triggers) {
+  // The poll trigger (new-search-match) has no delivery to sign; every webhook trigger does.
+  const hooks = app.triggers.filter((t) => typeof t.poll !== "function");
+  assert.deepEqual(hooks.slice(0, 2).map((t) => t.key), ["new-message", "event"]);
+  for (const t of hooks) {
     assert.ok(t.output.length > 0);
     assert.notEqual(t.sample, undefined);
     assert.equal(t.params!.find((p) => p.key === "signingSecret")!.type, "secret");
