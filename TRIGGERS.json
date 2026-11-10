@@ -6393,12 +6393,21 @@
     "path": "apps/lob",
     "mechanism": "poll",
     "candidates": [
-      "new-address"
+      "new-address",
+      "new-bank-account",
+      "new-check",
+      "new-letter",
+      "new-postcard",
+      "new-self-mailer",
+      "new-template"
     ],
     "pollAction": "address-list",
-    "reason": "address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list)",
-    "verified": "apps/lob/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "7 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/lob/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "template-version-list": "versions of one template, not something a workflow picks (per-parent list, parent not user-pickable)"
+    }
   },
   {
     "path": "apps/lodgify",
@@ -6509,12 +6518,22 @@
     "path": "apps/loop-returns",
     "mechanism": "poll",
     "candidates": [
-      "new-order"
+      "new-bulk-operation",
+      "new-customer",
+      "new-label-request",
+      "new-or-updated-return",
+      "new-order",
+      "new-return"
     ],
     "pollAction": "order-list",
-    "reason": "shipped poll trigger(s) over list action order-list",
-    "verified": false,
-    "source": "hand"
+    "reason": "6 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/loop-returns/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "destination-list": "reference data: Loop's configured return destinations (static configuration)",
+      "webhook-list": "webhook configuration of the account, not a record feed",
+      "return-notes-list": "notes of one return (per-parent list; the return is not something a user would pick)"
+    }
   },
   {
     "path": "apps/loops",
@@ -6760,12 +6779,21 @@
     "path": "apps/maileroo",
     "mechanism": "poll",
     "candidates": [
-      "new-domain"
+      "new-domain",
+      "new-email-log",
+      "new-template",
+      "new-verification"
     ],
     "pollAction": "list-domains",
-    "reason": "shipped poll trigger(s) over list action list-domains",
-    "verified": false,
-    "source": "hand"
+    "reason": "4 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/maileroo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-suppressions": "no documented order, filter or timestamps and unbounded (https://maileroo.com/docs/api/)",
+      "list-scheduled-emails": "no documented order or filter and unbounded (https://maileroo.com/docs/api/)",
+      "list-applications": "credential sets (sending applications), configuration not records",
+      "list-sender-profiles": "OTP/sender configuration, not a record feed"
+    }
   },
   {
     "path": "apps/mailersend",
@@ -7156,14 +7184,23 @@
     "path": "apps/microsoft/azuredevops",
     "mechanism": "poll",
     "candidates": [
+      "new-branch",
       "new-build",
-      "new-work-item",
-      "new-or-updated-work-item"
+      "new-commit",
+      "new-or-updated-work-item",
+      "new-pipeline",
+      "new-project",
+      "new-pull-request",
+      "new-repository",
+      "new-work-item"
     ],
     "pollAction": "build-list",
-    "reason": "build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax)",
-    "verified": "apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "9 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "build-artifact-list": "artifacts of one build run (per-parent list, parent not user-pickable)"
+    }
   },
   {
     "path": "apps/microsoft/excel",
@@ -7683,12 +7720,19 @@
     "path": "apps/nationbuilder",
     "mechanism": "poll",
     "candidates": [
+      "new-custom-field",
+      "new-donation",
+      "new-event",
+      "new-list",
+      "new-or-updated-donation",
+      "new-or-updated-person",
       "new-person",
-      "new-or-updated-person"
+      "new-person-on-list",
+      "new-tag"
     ],
     "pollAction": "person-list",
-    "reason": "wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit",
-    "verified": "apps/nationbuilder/README.md Triggers section (verified 2026-11-09)",
+    "reason": "9 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/nationbuilder/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -9017,13 +9061,25 @@
     "path": "apps/raindrop",
     "mechanism": "poll",
     "candidates": [
+      "new-backup",
       "new-bookmark",
-      "new-collection"
+      "new-collaborator",
+      "new-collection",
+      "new-sub-collection",
+      "new-tag"
     ],
     "pollAction": "raindrop-search",
-    "reason": "poll: raindrop-search sort=-created (documented default newest first); new-collection is a snapshot diff of collection-list",
-    "verified": "apps/raindrop/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "6 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons",
+    "verified": "apps/raindrop/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "collection-sharing-list": "new-collaborator"
+    },
+    "skipped": {
+      "highlight-list": "vendor documents only page/perpage: no sort or filter, sample lists oldest first, unbounded (https://developer.raindrop.io/v1/highlights)",
+      "filter-list": "counts and histograms for a collection (analytics output), not records",
+      "cover-search": "static icon library (reference data)"
+    }
   },
   {
     "path": "apps/raisely",

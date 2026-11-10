@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -38,13 +38,8 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/tidycal | 0 | 8 | 8 |
 | apps/google/google-ads | 0 | 7 | 7 |
 | apps/google/looker | 0 | 7 | 7 |
-| apps/lob | 1 | 8 | 7 |
-| apps/loop-returns | 1 | 8 | 7 |
-| apps/maileroo | 1 | 8 | 7 |
 | apps/metabase | 0 | 7 | 7 |
-| apps/microsoft/azuredevops | 3 | 8 | 7 |
 | apps/newrelic | 0 | 7 | 7 |
-| apps/raindrop | 2 | 9 | 7 |
 | apps/redtail-crm | 1 | 8 | 7 |
 | apps/replicate | 1 | 8 | 7 |
 | apps/salesloft | 1 | 8 | 7 |
@@ -94,7 +89,6 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/microsoft/microsoft-todo | 0 | 6 | 6 |
 | apps/microsoft/powerbi | 2 | 7 | 6 |
 | apps/miro | 1 | 7 | 6 |
-| apps/nationbuilder | 2 | 7 | 6 |
 | apps/odoo | 2 | 7 | 6 |
 | apps/oncehub | 1 | 7 | 6 |
 | apps/onepassword | 0 | 6 | 6 |
@@ -581,13 +575,16 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/littlegreenlight | 9 | 8 | 0 |
 | apps/livechat | 4 | 8 | 0 |
 | apps/livestorm | 9 | 13 | 0 |
+| apps/lob | 7 | 8 | 0 |
 | apps/lofty | 5 | 10 | 0 |
 | apps/lokalise | 15 | 11 | 0 |
+| apps/loop-returns | 6 | 8 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/lusha | 7 | 9 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
 | apps/mailchimp/mandrill | 13 | 5 | 0 |
 | apps/mailerlite | 14 | 6 | 0 |
+| apps/maileroo | 4 | 8 | 0 |
 | apps/maintainx | 12 | 10 | 0 |
 | apps/manus | 7 | 10 | 0 |
 | apps/manychat | 3 | 9 | 0 |
@@ -595,6 +592,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/mem | 10 | 9 | 0 |
 | apps/mercury | 9 | 10 | 0 |
 | apps/meta/instagram-for-business | 4 | 10 | 0 |
+| apps/microsoft/azuredevops | 9 | 8 | 0 |
 | apps/microsoft/microsoft-entra-id | 10 | 10 | 0 |
 | apps/microsoft/onedrive | 8 | 6 | 0 |
 | apps/microsoft/outlook | 4 | 5 | 0 |
@@ -606,6 +604,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/mollie | 9 | 15 | 0 |
 | apps/mongodb-atlas | 7 | 8 | 0 |
 | apps/mural | 9 | 12 | 0 |
+| apps/nationbuilder | 9 | 7 | 0 |
 | apps/netlify | 7 | 5 | 0 |
 | apps/ninox | 3 | 9 | 0 |
 | apps/notion | 42 | 30 | 0 |
@@ -630,6 +629,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/productive | 2 | 17 | 0 |
 | apps/pylon | 8 | 13 | 0 |
 | apps/quo | 6 | 9 | 0 |
+| apps/raindrop | 6 | 9 | 0 |
 | apps/razorpay | 12 | 12 | 0 |
 | apps/recharge | 12 | 10 | 0 |
 | apps/ringover | 6 | 11 | 0 |
@@ -1038,13 +1038,13 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/littlegreenlight | 9 | constituent-search | new-constituent, new-or-updated-constituent, new-gift, new-or-updated-gift, new-appeal, new-campaign, new-fund, new-group, new-constituent-note | apps/littlegreenlight/README.md Triggers section (verified 2026-11-10) | hand | constituent-search and gift-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; sort-less appeal/campaign/fund/group/note indexes read whole and diffed by id (https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/gifts.json) |
 | apps/livechat | 4 | list-archives | new-chat-thread, new-agent, new-group, new-tag | apps/livechat/README.md Triggers section (verified 2026-11-10) | hand | list-archives with the documented filters.from since-filter and sort_order desc; bounded unpaginated configuration lists (agents, groups, tags) diffed by id/name (https://platform.text.com/docs/management/configuration-api) |
 | apps/livestorm | 9 | event-list | new-event, new-or-updated-event, new-session, new-or-updated-session, new-session-registrant, new-or-updated-session-registrant, new-session-question, new-session-recording, new-user | apps/livestorm/README.md Triggers section (verified 2026-11-10) | hand | since-filter polls (filter[created_since]/[updated_since]) over event-list, session-list and session-people-list, plus whole-collection snapshots for questions, recordings and users (https://developers.livestorm.co/reference/get_sessions) |
-| apps/lob | 1 | address-list | new-address | apps/lob/README.md Triggers section (verified 2026-11-09) | hand | address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list) |
+| apps/lob | 7 | address-list | new-address, new-bank-account, new-check, new-letter, new-postcard, new-self-mailer, new-template | apps/lob/README.md Triggers section (verified 2026-11-10) | hand | 7 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/lofty | 5 | lead-list | new-appointment, new-lead, new-note, new-task, new-team-member | apps/lofty/README.md Triggers section (verified 2026-11-10) | hand | new-lead is newest-first (sort=CreateTime desc); tasks, appointments, notes (per lead) and team members have no sort or filter so they diff the whole list by id (https://api.lofty.com/docs/) |
-| apps/loop-returns | 1 | order-list | new-order | no | hand | shipped poll trigger(s) over list action order-list |
+| apps/loop-returns | 6 | order-list | new-bulk-operation, new-customer, new-label-request, new-or-updated-return, new-order, new-return | apps/loop-returns/README.md Triggers section (verified 2026-11-10) | hand | 6 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/loops | 1 | transactional-list | new-transactional | apps/loops/README.md Triggers section (verified 2026-11-09) | hand | vendor: list transactional emails 'most recently created first' (https://loops.so/docs/api-reference/list-transactional-emails) |
 | apps/loyverse | 2 | receipt-list | new-receipt, new-or-updated-receipt | apps/loyverse/README.md Triggers section (verified 2026-11-09) | hand | new-receipt: receipt-list newest first per the action; updated: updated_at_min=cursor-120s following the vendor cursor, ids id:updated_at |
 | apps/luma | 1 | calendar-events-list | new-calendar-event | apps/luma/README.md Triggers section (verified 2026-11-09) | hand | sortDirection=desc on the only vendor sort column start_at; ordered by START time, documented limit (https://docs.luma.com/reference/get_v1-calendars-events-list) |
-| apps/maileroo | 1 | list-domains | new-domain | no | hand | shipped poll trigger(s) over list action list-domains |
+| apps/maileroo | 4 | list-domains | new-domain, new-email-log, new-template, new-verification | apps/maileroo/README.md Triggers section (verified 2026-11-10) | hand | 4 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/mailersend | 1 | list-sender-identities | new-sender-identity | apps/mailersend/README.md Triggers section (verified 2026-11-09) | hand | order_by=created_at&order=desc (vendor default asc) per developers.mailersend.com sender-identity page |
 | apps/mailjet | 1 | list-messages | new-message | apps/mailjet/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
 | apps/maintainx | 12 | workorder-list | new-asset, new-location, new-meter, new-or-updated-asset, new-or-updated-part, new-or-updated-work-order, new-part, new-team, new-user, new-vendor, new-work-order, new-work-order-comment | apps/maintainx/README.md Triggers section (verified 2026-11-10) | hand | shape a: sort=-createdAt\|-updatedAt on work orders, assets, parts (https://api.getmaintainx.com/v1/openapi.json); locations, meters, teams, users, vendors, work order comments diff the cursor-read list by id |
@@ -1059,7 +1059,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/memberstack | 1 | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
 | apps/mercury | 9 | customer-list | new-account, new-account-statement, new-card, new-category, new-customer, new-invoice, new-recipient, new-transaction, new-user | apps/mercury/README.md Triggers section (verified 2026-11-10) | hand | order=desc on every list endpoint (https://docs.mercury.com/reference/listtransactions); sorted field not named by the vendor, newest-created-first is the expected order |
 | apps/meta/instagram-for-business | 4 | list-media | new-media, new-comment, new-story, new-instagram-account | apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-10) | hand | Media and comments edges are newest first; stories and managed Pages with a linked Instagram account are small bounded snapshots. |
-| apps/microsoft/azuredevops | 3 | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
+| apps/microsoft/azuredevops | 9 | build-list | new-branch, new-build, new-commit, new-or-updated-work-item, new-pipeline, new-project, new-pull-request, new-repository, new-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-10) | hand | 9 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/microsoft/excel | 2 | list-workbooks | new-workbook, new-or-updated-workbook | apps/microsoft/excel/README.md Triggers section (verified 2026-11-09) | hand | list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp). |
 | apps/microsoft/microsoft-entra-id | 10 | list-deleted-items | new-deleted-item, new-user, new-group, new-application, new-service-principal, new-group-member, new-group-owner, new-user-membership, new-directory-role, new-directory-role-member | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-10) | hand | Users, groups, applications and service principals sorted by createdDateTime desc; memberships, owners, roles as bounded snapshots. |
 | apps/microsoft/onedrive | 8 | list-changes | file-changed, new-file, new-folder, file-updated, folder-updated, item-deleted, new-permission, new-drive | apps/microsoft/onedrive/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over list-changes (delta: created/updated/deleted files and folders), list-permissions and list-drives (bounded snapshots); Graph drive webhooks not shipped: notifications carry no item data and expire in under 30 days with no renewal hook (https://learn.microsoft.com/en-us/graph/api/resources/subscription) |
@@ -1079,7 +1079,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/mongodb-atlas | 7 | event-list | new-alert, new-cluster, new-database-user, new-event, new-flex-cluster, new-organization, new-project | apps/mongodb-atlas/README.md Triggers section (verified 2026-11-10) | hand | Poll: project events since-filter (shape b), plus snapshots of open alerts, clusters, flex clusters, database users, organizations and projects (https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/); process-list skipped. |
 | apps/moonclerk | 1 | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
 | apps/mural | 9 | mural-list | new-mural, new-or-updated-mural, new-workspace, new-room, new-room-folder, new-room-member, new-mural-user, new-mural-tag, new-widget | apps/mural/README.md Triggers section (verified 2026-11-10) | hand | new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn; workspaces, rooms, folders, members, mural users, tags and widgets are compared as bounded lists (next-token paging). |
-| apps/nationbuilder | 2 | person-list | new-person, new-or-updated-person | apps/nationbuilder/README.md Triggers section (verified 2026-11-09) | hand | wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit |
+| apps/nationbuilder | 9 | person-list | new-custom-field, new-donation, new-event, new-list, new-or-updated-donation, new-or-updated-person, new-person, new-person-on-list, new-tag | apps/nationbuilder/README.md Triggers section (verified 2026-11-10) | hand | 9 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/ninox | 3 | record-list | new-or-updated-record, record-changes, schema-changes | apps/ninox/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/nocodb | 1 | record-list | new-record | apps/nocodb/README.md Triggers section (verified 2026-11-09) | hand | wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table |
 | apps/nocrm | 1 | lead-get-many | new-lead | apps/nocrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action lead-get-many |
@@ -1132,7 +1132,7 @@ depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-p
 | apps/quickbase | 1 | list-tables | new-table | apps/quickbase/README.md Triggers section (verified 2026-11-09) | hand | poll snapshot: list-tables returns the bounded whole set as one array; added only |
 | apps/quickbooks | 2 | customer-list | new-customer, new-or-updated-customer | apps/quickbooks/README.md Triggers section (verified 2026-11-09) | hand | poll: customer-list ORDERBY MetaData.CreateTime / LastUpdatedTime DESC (Intuit page not curl-able; not live-verified) |
 | apps/quo | 6 | conversation-list | new-conversation, new-or-updated-conversation, new-call, new-message, new-user, new-phone-number | apps/quo/README.md Triggers section (verified 2026-11-10) | hand | since-filter (createdAfter) polls over conversations, calls and messages; id snapshots over the bounded user and phone-number lists; call/message webhooks also exist (see webhooks file); users are read 50 per page (the documented maximum) |
-| apps/raindrop | 2 | raindrop-search | new-bookmark, new-collection | apps/raindrop/README.md Triggers section (verified 2026-11-09) | hand | poll: raindrop-search sort=-created (documented default newest first); new-collection is a snapshot diff of collection-list |
+| apps/raindrop | 6 | raindrop-search | new-backup, new-bookmark, new-collaborator, new-collection, new-sub-collection, new-tag | apps/raindrop/README.md Triggers section (verified 2026-11-10) | hand | 6 poll triggers over the app's list actions; newest-first lists use the documented order, since-filter triggers carry stall and flood guards, bounded lists are snapshot diffs; skipped list actions carry specific reasons |
 | apps/raisely | 2 | campaign-list | new-campaign, new-or-updated-campaign | apps/raisely/README.md Triggers section (verified 2026-11-09) | hand | poll: campaign-list sort=createdAt\|updatedAt order=desc (documented sort/order params) |
 | apps/razorpay | 12 | order-list | new-order, new-payment, new-refund, new-settlement, new-invoice, new-subscription, new-customer, new-dispute, new-item, new-plan, new-payment-link, new-order-payment | apps/razorpay/README.md Triggers section (verified 2026-11-10) | hand | poll since-filter: from=<last check-120s> with skip paging on orders, payments, refunds, settlements, invoices and subscriptions (openapi.json documents from/to/count/skip); customers, disputes, items, plans, payment links and an order's payments have no date filter and are compared as bounded lists. |
 | apps/rdstation | 1 | list-contacts | new-contact | apps/rdstation/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
