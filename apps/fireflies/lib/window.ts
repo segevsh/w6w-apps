@@ -43,6 +43,8 @@ export async function pollWindow<T, P extends Pos>(o: {
   pageSize: number;
   seenWindow: number;
   idOf(item: T): string;
+  /** Creation time (ms) of an item, from the field the since-filter compares; undefined = unknown. */
+  tsOf(item: T): number | undefined;
   load(since: number, pos: P | undefined): Promise<{ items: T[]; next?: P }>;
 }): Promise<{ events: T[]; nextState: Record<string, unknown> }> {
   const s = (o.state && typeof o.state === "object" ? o.state : {}) as Record<string, unknown>;
@@ -51,12 +53,29 @@ export async function pollWindow<T, P extends Pos>(o: {
   const resume = seeded ? resumeOf(s.resume) : undefined;
   const since = resume ? resume.since : cursor - o.overlapMs;
 
+  if (!seeded) {
+    // Seed without reading: records that exist now are never events, whatever a later window holds.
+    const seed = await pollNewItems<T>({
+      state: o.state,
+      maxPages: 1,
+      maxEvents: 1,
+      seenWindow: o.seenWindow,
+      idOf: o.idOf,
+      fetchPage: () => Promise.resolve({ items: [] }),
+    });
+    return { events: [], nextState: { ...seed.nextState, cursor: o.now, floor: o.now } };
+  }
+  const floor = typeof s.floor === "number" ? s.floor : undefined;
+
   const items: T[] = [];
   let pos = resume?.pos as P | undefined;
   let more = false;
-  for (let page = 0; page < (seeded ? o.maxPages : 1); page++) {
+  for (let page = 0; page < o.maxPages; page++) {
     const res = await o.load(since, pos);
-    items.push(...res.items);
+    for (const item of res.items) {
+      const ts = o.tsOf(item);
+      if (floor === undefined || ts === undefined || ts >= floor) items.push(item);
+    }
     pos = res.items.length > 0 ? res.next : undefined;
     more = pos !== undefined;
     if (!more) break;
@@ -70,8 +89,6 @@ export async function pollWindow<T, P extends Pos>(o: {
     idOf: o.idOf,
     fetchPage: () => Promise.resolve({ items }),
   });
-  if (!seeded) return { events: polled.events, nextState: { ...polled.nextState, cursor: o.now } };
-
   if (more) {
     const head = resume ? resume.head : items.map(o.idOf).slice(0, o.maxPages * o.pageSize);
     return {
@@ -79,6 +96,7 @@ export async function pollWindow<T, P extends Pos>(o: {
       nextState: {
         ...polled.nextState,
         cursor,
+        floor,
         resume: { since, started: resume?.started ?? o.now, pos, head },
       },
     };
@@ -89,6 +107,6 @@ export async function pollWindow<T, P extends Pos>(o: {
     : [...polled.nextState.ids.filter((id) => !head.includes(id)), ...head].slice(-o.seenWindow);
   return {
     events: polled.events,
-    nextState: { ...polled.nextState, ids, cursor: resume?.started ?? o.now },
+    nextState: { ...polled.nextState, ids, cursor: resume?.started ?? o.now, floor },
   };
 }

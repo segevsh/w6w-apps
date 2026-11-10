@@ -4,6 +4,7 @@ import transcriptSearch from "../actions/transcript-search.ts";
 
 interface Transcript {
   id?: unknown;
+  dateString?: unknown;
 }
 
 const PAGE_SIZE = 50;
@@ -50,6 +51,13 @@ const trigger: TriggerDefinition = {
       pageSize: PAGE_SIZE,
       seenWindow: 1000,
       idOf: (transcript) => String(transcript.id ?? ""),
+      // `fromDate` compares the meeting date.
+      tsOf: (transcript) => {
+        const ms = typeof transcript.dateString === "string"
+          ? Date.parse(transcript.dateString)
+          : NaN;
+        return Number.isNaN(ms) ? undefined : ms;
+      },
       async load(since, skip) {
         const out = await transcriptSearch.execute!({
           fromDate: new Date(since).toISOString(),

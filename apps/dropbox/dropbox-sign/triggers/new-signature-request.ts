@@ -4,6 +4,7 @@ import { pollWindow } from "../lib/window.ts";
 
 interface SignatureRequest {
   signature_request_id?: unknown;
+  created_at?: unknown;
 }
 
 const DAY_MS = 86_400_000;
@@ -48,6 +49,10 @@ const trigger: TriggerDefinition = {
       pageSize: PAGE_SIZE,
       seenWindow: 1000,
       idOf: (item) => String(item.signature_request_id ?? ""),
+      // `created_at` is whole unix seconds; count the second's end so a request made after the seed
+      // in the seed's own second is not mistaken for an earlier one.
+      tsOf: (item) =>
+        typeof item.created_at === "number" ? item.created_at * 1000 + 999 : undefined,
       async load(since, page = 1) {
         const body = await new DropboxSignClient(ctx).request<{
           signature_requests?: SignatureRequest[];

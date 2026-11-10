@@ -30,8 +30,14 @@ test("new-transcript: seeds, emits only unseen transcripts, retries idempotently
 
     const first = mockCtx([page("b", "a")]);
     const retry = mockCtx([page("b", "a")]);
-    const result = await trigger.poll!({ ...input, state: seeded.nextState }, first.ctx);
-    const repeated = await trigger.poll!({ ...input, state: seeded.nextState }, retry.ctx);
+    const result = await trigger.poll!({
+      ...input,
+      state: { ...(seeded.nextState as object), ids: ["a"], floor: 0 },
+    }, first.ctx);
+    const repeated = await trigger.poll!({
+      ...input,
+      state: { ...(seeded.nextState as object), ids: ["a"], floor: 0 },
+    }, retry.ctx);
     assertEquals(result.events, [transcript("b")]);
     assertEquals(repeated, result);
 
@@ -85,4 +91,53 @@ test("new-transcript: a window of five full pages is emitted exactly once across
   });
   assertEquals(seen.length, 202);
   assertEquals(new Set(seen).size, 202);
+});
+
+test("new-transcript: seeding reads nothing, and records that predate the seed never fire, even over 5 full pages", async () => {
+  const OLD = "2026-11-10T00:00:00Z";
+  const NEW = "2026-11-10T00:33:00Z";
+  const rec = (id: string, at: string) => ({ id, title: `Meeting ${id}`, dateString: at });
+  const full = (n: number, last: boolean) => ({
+    body: {
+      data: { transcripts: Array.from({ length: 50 }, (_, i) => rec(`p${n}-${i}`, OLD)) },
+    },
+  });
+  let state: unknown;
+  await withClock("2026-11-10T00:30:00Z", async () => {
+    const { ctx, calls } = mockCtx([{ body: { data: { transcripts: [rec("a", OLD)] } } }]);
+    const seeded = await trigger.poll!({ ...input, state: {} }, ctx);
+    assertEquals(seeded.events, []);
+    assertEquals(calls.length, 0);
+    assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
+    assertEquals(
+      (seeded.nextState as { floor?: number }).floor,
+      Date.parse("2026-11-10T00:30:00Z"),
+    );
+    state = seeded.nextState;
+  });
+  await withClock("2026-11-10T00:35:00Z", async () => {
+    const { ctx, calls } = mockCtx([
+      full(1, false),
+      full(2, false),
+      full(3, false),
+      full(4, false),
+    ]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(calls.length, 4);
+    assertEquals(result.events, []);
+    state = result.nextState;
+  });
+  await withClock("2026-11-10T00:40:00Z", async () => {
+    const { ctx } = mockCtx([full(5, false), { body: { data: { transcripts: [] } } }]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(result.events, []);
+    state = result.nextState;
+  });
+  await withClock("2026-11-10T00:45:00Z", async () => {
+    const { ctx } = mockCtx([{
+      body: { data: { transcripts: [rec("old1", OLD), rec("fresh", NEW)] } },
+    }]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(result.events, [rec("fresh", NEW)]);
+  });
 });

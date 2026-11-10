@@ -4,6 +4,7 @@ import articlesCollect from "../actions/articles-collect.ts";
 
 interface Article {
   id?: unknown;
+  crawled?: unknown;
 }
 
 const OVERLAP_MS = 120_000;
@@ -55,6 +56,8 @@ const trigger: TriggerDefinition<{ streamId: string }> = {
       pageSize: PAGE_SIZE,
       seenWindow: 1000,
       idOf: (article) => String(article.id ?? ""),
+      // `newerThan` compares the crawl time.
+      tsOf: (article) => typeof article.crawled === "number" ? article.crawled : undefined,
       async load(since, continuation) {
         const page = await articlesCollect.execute!({
           streamId: params.streamId,

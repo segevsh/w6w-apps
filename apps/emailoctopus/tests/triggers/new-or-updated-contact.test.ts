@@ -11,6 +11,16 @@ const contact = (id: string, updated: string) => ({
   last_updated_at: updated,
 });
 
+async function withClock<T>(iso: string, fn: () => Promise<T>): Promise<T> {
+  const real = Date.now;
+  Date.now = () => Date.parse(iso);
+  try {
+    return await fn();
+  } finally {
+    Date.now = real;
+  }
+}
+
 test("new-or-updated-contact: seeds, emits an edited contact again, retries idempotently, and requests last_updated_at.gte", async () => {
   const seed = mockCtx([{ body: { data: [contact("a", "2026-11-09T12:00:00Z")] } }]);
   const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
@@ -86,4 +96,53 @@ test("new-or-updated-contact: a window of six full pages is emitted exactly once
   });
   assertEquals(seen.length, 600);
   assertEquals(new Set(seen).size, 600);
+});
+
+test("new-or-updated-contact: seeding reads nothing, and records that predate the seed never fire, even over 6 full pages", async () => {
+  const OLD = "2026-11-10T00:00:00Z";
+  const NEW = "2026-11-10T00:33:00Z";
+  const rec = (id: string, at: string) => contact(id, at);
+  const full = (n: number, last: boolean) => ({
+    body: {
+      data: Array.from({ length: 100 }, (_, i) => rec(`p${n}-${i}`, OLD)),
+      ...(last ? {} : { paging: { next: { starting_after: `tok${n}` } } }),
+    },
+  });
+  let state: unknown;
+  await withClock("2026-11-10T00:30:00Z", async () => {
+    const { ctx, calls } = mockCtx([{ body: { data: [rec("a", OLD)] } }]);
+    const seeded = await trigger.poll!({ ...input, state: {} }, ctx);
+    assertEquals(seeded.events, []);
+    assertEquals(calls.length, 0);
+    assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
+    assertEquals(
+      (seeded.nextState as { floor?: number }).floor,
+      Date.parse("2026-11-10T00:30:00Z"),
+    );
+    state = seeded.nextState;
+  });
+  await withClock("2026-11-10T00:35:00Z", async () => {
+    const { ctx, calls } = mockCtx([
+      full(1, false),
+      full(2, false),
+      full(3, false),
+      full(4, false),
+      full(5, false),
+    ]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(calls.length, 5);
+    assertEquals(result.events, []);
+    state = result.nextState;
+  });
+  await withClock("2026-11-10T00:40:00Z", async () => {
+    const { ctx } = mockCtx([full(6, true)]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(result.events, []);
+    state = result.nextState;
+  });
+  await withClock("2026-11-10T00:45:00Z", async () => {
+    const { ctx } = mockCtx([{ body: { data: [rec("old1", OLD), rec("fresh", NEW)] } }]);
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(result.events, [rec("fresh", NEW)]);
+  });
 });

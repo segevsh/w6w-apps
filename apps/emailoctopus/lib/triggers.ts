@@ -45,6 +45,11 @@ export function pollContacts(
     pageSize: PAGE_SIZE,
     seenWindow: 1000,
     idOf: o.idOf,
+    tsOf: (contact) => {
+      const at = contact[o.filter === "createdAtGte" ? "created_at" : "last_updated_at"];
+      const ms = typeof at === "string" ? Date.parse(at) : NaN;
+      return Number.isNaN(ms) ? undefined : ms;
+    },
     async load(since, startingAfter) {
       const out = await listContacts.execute!({
         listId: o.listId,
