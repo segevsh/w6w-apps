@@ -47,7 +47,14 @@ import groupUserAdd from "./actions/group-user-add.ts";
 import groupUserRemove from "./actions/group-user-remove.ts";
 import profileGet from "./actions/profile-get.ts";
 import newDashboard from "./triggers/new-dashboard.ts";
+import newClient from "./triggers/new-client.ts";
 import newDataSource from "./triggers/new-data-source.ts";
+import newDataSourceInstance from "./triggers/new-data-source-instance.ts";
+import newGroup from "./triggers/new-group.ts";
+import newGroupUser from "./triggers/new-group-user.ts";
+import newKlip from "./triggers/new-klip.ts";
+import newKlipClientInstance from "./triggers/new-klip-client-instance.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -96,5 +103,15 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newDashboard, newDataSource],
+  triggers: [
+    newDashboard,
+    newDataSource,
+    newKlip,
+    newUser,
+    newGroup,
+    newClient,
+    newDataSourceInstance,
+    newGroupUser,
+    newKlipClientInstance,
+  ],
 } satisfies AppDefinition;
