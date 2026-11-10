@@ -1,6 +1,6 @@
 # Mighty Networks
 
-Triggers: not shipped — webhook candidate queued for a webhook node: member, post and event activity (https://api.mightynetworks.com/).
+Triggers: not shipped — webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/llms.txt).
 
 Run a [Mighty Networks](https://www.mightynetworks.com) community — members, spaces, posts,
 comments, events and RSVPs, invitations, tags, plans and course content — through the **Admin API**.

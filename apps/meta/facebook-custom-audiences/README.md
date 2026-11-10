@@ -1,6 +1,6 @@
 # Facebook Custom Audiences
 
-Triggers: not shipped — custom-audience lists are cursor paged with no documented newest-first ordering, since filter, or bounded collection guarantee (https://developers.facebook.com/docs/marketing-api/audiences/reference/custom-audience/).
+Triggers: not shipped — custom-audience lists are cursor paged with no documented newest-first ordering, since filter, or bounded collection guarantee (https://developers.facebook.com/docs/marketing-api/reference/custom-audience/).
 
 Create and manage Meta **custom audiences** — customer lists, their members, and lookalikes —
 through the Marketing API, with Meta's required SHA-256 customer-data hashing applied

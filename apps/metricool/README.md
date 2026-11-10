@@ -1,6 +1,6 @@
 # Metricool
 
-Triggers: not shipped — scheduled-post listing requires a caller-supplied date range and does not document a newest-first or since-cursor contract (https://help.metricool.com/en/article/metricool-api-1nq27ie/).
+Triggers: not shipped — scheduled-post listing requires a caller-supplied date range and does not document a newest-first or since-cursor contract (https://app.metricool.com/api).
 
 Manage Metricool brands, schedule and edit social posts, and read analytics and competitor data
 through the Metricool REST API (`https://app.metricool.com/api`, OpenAPI at
