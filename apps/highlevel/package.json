@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/highlevel",
   "version": "0.2.0",
-  "description": "Work with HighLevel (GoHighLevel) CRM: contacts, opportunities, pipelines, calendars, conversations and location metadata, plus webhook triggers for new contacts, opportunities, appointments and inbound messages.",
+  "description": "Work with HighLevel (GoHighLevel) CRM: contacts, opportunities, pipelines, calendars, conversations and locations, plus webhook triggers for new contacts, opportunities, appointments and messages.",
   "license": "MIT",
   "author": {
     "name": "w6w"

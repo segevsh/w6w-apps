@@ -60,19 +60,20 @@ export function parseBody(
   rawBody: unknown,
   contentType: string | null,
 ): { data: Record<string, unknown> | null; text: string | null } {
-  let b = body;
+  let b: unknown = body;
   if ((b === undefined || b === null) && typeof rawBody === "string") b = rawBody;
   if (b === undefined || b === null || b === "") return { data: null, text: null };
   if (typeof b === "string") {
+    const text: string = b;
     try {
-      b = JSON.parse(b);
+      b = JSON.parse(text);
     } catch {
       if (contentType === "application/x-www-form-urlencoded") {
         const out: Record<string, unknown> = {};
-        for (const [k, v] of new URLSearchParams(b)) out[k] = v;
+        for (const [k, v] of new URLSearchParams(text)) out[k] = v;
         return { data: out, text: null };
       }
-      return { data: null, text: b };
+      return { data: null, text };
     }
   }
   const obj = asObject(b);
