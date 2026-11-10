@@ -6960,12 +6960,12 @@
     "path": "apps/upsales",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Id-crawl poll trigger: sort=id with id=gt:<last id> (documented crawl form), resume position + seed floor.",
+    "verified": "apps/upsales/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/upstash",
@@ -7038,12 +7038,12 @@
     "path": "apps/vercel",
     "mechanism": "poll",
     "candidates": [
-      "new-deployment-event-list"
+      "new-deployment"
     ],
-    "pollAction": "deployment-event-list",
-    "reason": "list action deployment-event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "deployment-list",
+    "reason": "Documented since-filter poll trigger on deployment-list (since + until paging), resume position + seed floor.",
+    "verified": "apps/vercel/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vero",
@@ -7071,12 +7071,12 @@
     "path": "apps/vimeo",
     "mechanism": "poll",
     "candidates": [
-      "new-folder-item-list"
+      "new-video"
     ],
-    "pollAction": "folder-item-list",
-    "reason": "list action folder-item-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "video-list",
+    "reason": "Newest-first video-list poll trigger.",
+    "verified": "apps/vimeo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wakatime",
@@ -7115,23 +7115,25 @@
     "path": "apps/wave",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer",
+      "new-or-updated-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Created and modified customer ordering.",
+    "verified": "apps/wave/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wealthbox",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Since-filter (updated_since) poll triggers for new and new-or-updated contacts, resume position + seed floor.",
+    "verified": "apps/wealthbox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/webex",
@@ -7183,36 +7185,36 @@
   },
   {
     "path": "apps/webscrapingai",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-serp-search"
+      "serp-search"
     ],
-    "pollAction": "serp-search",
-    "reason": "list action serp-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "serp-search is a query-driven search result, not a persistent record feed (https://docs.webscraping.ai/web-scraping-api/serp-api/)",
+    "verified": "apps/webscrapingai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/whatconverts",
     "mechanism": "poll",
     "candidates": [
-      "new-leads-list"
+      "new-lead"
     ],
     "pollAction": "leads-list",
-    "reason": "list action leads-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Descending leads list poll trigger.",
+    "verified": "apps/whatconverts/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/whop",
     "mechanism": "poll",
     "candidates": [
-      "new-member-list"
+      "new-membership"
     ],
-    "pollAction": "member-list",
-    "reason": "list action member-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "membership-list",
+    "reason": "Created-at descending membership list.",
+    "verified": "apps/whop/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wise",
@@ -7232,23 +7234,23 @@
     "path": "apps/wistia",
     "mechanism": "poll",
     "candidates": [
-      "new-folder-list"
+      "new-media"
     ],
-    "pollAction": "folder-list",
-    "reason": "list action folder-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "media-list",
+    "reason": "Created descending media list.",
+    "verified": "apps/wistia/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wix",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "CreatedDate descending contact list.",
+    "verified": "apps/wix/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wiza",
@@ -7281,14 +7283,14 @@
   },
   {
     "path": "apps/woodpecker",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-user-list"
+      "prospect-list"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "prospect-list/prospect-search have sort and diff (changed-since) but the reference is script-rendered and no creation stamp or prospect update field could be confirmed (https://developers.woodpecker.co/)",
+    "verified": "apps/woodpecker/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wordpress",
@@ -7345,23 +7347,23 @@
     "path": "apps/workos",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Oldest-first event feed read with after/range_start: persisted last-event-id resume position + seed floor.",
+    "verified": "apps/workos/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wrike",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Created-date descending task search (sortOrder Desc, the documented casing).",
+    "verified": "apps/wrike/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/wufoo",
@@ -7378,12 +7380,12 @@
     "path": "apps/xai",
     "mechanism": "poll",
     "candidates": [
-      "new-files"
+      "new-file"
     ],
     "pollAction": "list-files",
-    "reason": "list action list-files has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Created-at descending file list.",
+    "verified": "apps/xai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/xero",
