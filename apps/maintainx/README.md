@@ -6,7 +6,7 @@ Work orders, assets, locations, parts, users, teams, vendors and meters in
 comes from the vendor's OpenAPI 3.0 document (`/v1/openapi.json`, fetched
 2026-10-06) and was spot-checked against the live host. App id `io.w6w.maintainx`.
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 13 (poll)
 
 ## Auth
 
@@ -100,7 +100,19 @@ asset path.
 | --- | --- | --- | --- |
 | `new-work-order` — New Work Order | Poll | `workorder-list` | Each newly created work order |
 | `new-or-updated-work-order` — New or Updated Work Order | Poll | `workorder-list` | Each work order that was created or edited |
+| `new-asset` — New Asset | Poll | `asset-list` | Each newly created asset |
+| `new-or-updated-asset` — New or Updated Asset | Poll | `asset-list` | Each asset that was created or edited |
+| `new-part` — New Part | Poll | `part-list` | Each newly created spare part |
+| `new-or-updated-part` — New or Updated Part | Poll | `part-list` | Each part that was created or edited (stock changes included) |
+| `new-location` — New Location | Poll | `location-list` | Each newly created location |
+| `new-meter` — New Meter | Poll | `meter-list` | Each newly created meter |
+| `new-team` — New Team | Poll | `team-list` | Each newly created team |
+| `new-user` — New User | Poll | `user-list` | Each newly added user |
+| `new-vendor` — New Vendor | Poll | `vendor-list` | Each newly created vendor |
+| `new-work-order-comment` — New Work Order Comment | Poll | `workorder-comment-list` | Each new comment on one work order (Work order ID param) |
 
-`GET /workorders` takes an explicit `sort` (`-createdAt` / `-updatedAt`; a `-` prefix is descending), so the triggers send `sort=-createdAt` or `sort=-updatedAt` with `limit=100` and read the first page. The edited-record trigger dedupes on `id:updatedAt`. The users list (`user-list`) is not used: the vendor documents no sort or default order for `GET /users`. The first check records what exists without firing; later checks emit only unseen items.
+`GET /workorders`, `/assets` and `/parts` take an explicit `sort` (`-createdAt` / `-updatedAt`; a `-` prefix is descending), so those triggers send `sort=-createdAt` or `sort=-updatedAt` with `limit=100` and read the first page. The edited-record triggers dedupe on `id:updatedAt`. `GET /locations`, `/meters`, `/teams`, `/users`, `/vendors` and `/workorders/{id}/comments` document no sort or since filter, so those triggers read the whole list through `nextCursor` (`limit=200`, at most 25 pages = 5000 rows, more throws) and report ids not seen at the last check. The first check records what exists without firing.
+
+Not covered: `organization-list` (the organizations the API key can reach: tenant configuration, not business records).
 
 Source: [vendor OpenAPI document](https://api.getmaintainx.com/v1/openapi.json) (verified 2026-11-10).
