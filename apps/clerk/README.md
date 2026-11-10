@@ -6,7 +6,7 @@ sessions, and sign-in tokens — through the **Backend API**.
 - **Categories** — security, developer-tools
 - **Auth methods** — secret-key
 - **Actions** — 30
-- **Triggers** — 2 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 2 (`service`, `instance`) + the derived `auth:secret-key`
 - **Egress allowlist** — `api.clerk.com` (the `service` check adds `status.clerk.com` to its own
   hook allowlist, never to the app's)
@@ -107,14 +107,22 @@ instances,"* pointing instead at **Sign-in Tokens** for a backend-issued session
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-user` — New User | Poll | `user-list` | Each newly created user |
-| `new-or-updated-user` — New or Updated User | Poll | `user-list` | Each user created or changed (id + updated_at) |
+| `new-user` — New User | poll | `user-list` | Each newly created user |
+| `new-or-updated-user` — New or Updated User | poll | `user-list` | Each user created or changed |
+| `new-organization` — New Organization | poll | `organization-list` | Each newly created organization |
+| `new-organization-role` — New Organization Role | poll | `organization-role-list` | Each newly created role |
+| `new-organization-membership` — New Organization Member | poll | `organization-membership-list` | Each user added to the chosen organization |
+| `new-organization-invitation` — New Organization Invitation | poll | `organization-invitation-list` | Each invitation to the chosen organization |
+| `new-invitation` — New Invitation | poll | `invitation-list` | Each application invitation (no accept link) |
+| `new-session` — New Session | poll | `session-list` | Each session started by the chosen user (no token) |
+
+Organizations, organization roles, organization invitations and sessions are newest-first by Clerk's documented default order; application invitations and organization members are requested with `order_by=-created_at`. Invitation accept links and session tokens are removed from every event. Source: [Clerk Backend API](https://clerk.com/docs/reference/backend-api) (verified 2026-11-10).
 
 Polled newest-first through `user-list` with its (new, optional) `orderBy` input sent as `order_by=-created_at` / `-updated_at`; Clerk documents `order_by` with `+`/`-` direction prefixes over `created_at` and `updated_at`. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://clerk.com/docs/reference/backend-api/tag/Users) (verified 2026-11-09).
+Source: [vendor docs](https://clerk.com/docs/reference/backend-api/tag/Users) (verified 2026-11-10).
 
 ## Health checks
 

@@ -106,6 +106,12 @@ import instance from "./health/instance.ts";
 
 import newUser from "./triggers/new-user.ts";
 import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newOrganizationRole from "./triggers/new-organization-role.ts";
+import newOrganizationMembership from "./triggers/new-organization-membership.ts";
+import newOrganizationInvitation from "./triggers/new-organization-invitation.ts";
+import newInvitation from "./triggers/new-invitation.ts";
+import newSession from "./triggers/new-session.ts";
 export default {
   actions: [
     // users
@@ -148,5 +154,14 @@ export default {
   ],
   auth: [secretKey],
   healthChecks: [service, instance],
-  triggers: [newUser, newOrUpdatedUser],
+  triggers: [
+    newUser,
+    newOrUpdatedUser,
+    newOrganization,
+    newOrganizationRole,
+    newOrganizationMembership,
+    newOrganizationInvitation,
+    newInvitation,
+    newSession,
+  ],
 } satisfies AppDefinition;
