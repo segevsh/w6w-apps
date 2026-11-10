@@ -7,7 +7,7 @@ import { clock } from "../../lib/triggers.ts";
 clock.now = () => Date.parse("2026-11-09T12:00:00Z");
 
 const input = { params: {}, subscriptionId: "sub-1" };
-const T0 = Date.parse("2026-11-09T11:59:00Z");
+const T0 = Date.parse("2026-11-09T12:00:30Z"); // after the seed (clock 12:00), brief 9.9
 const conv = (session_id: string, updated_at = T0, created_at = T0) => ({
   session_id,
   created_at,

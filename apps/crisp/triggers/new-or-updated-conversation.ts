@@ -1,11 +1,15 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import listConversations from "../actions/list-conversations.ts";
 import { clock } from "../lib/triggers.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 
 const PER_PAGE = 50;
 /** Look-back before the previous check, so a conversation updated late is still seen. */
 const OVERLAP_MS = 120_000;
+/** Per-check ceiling: 3 pages of 50; a longer window is resumed on the next check (brief 9.8). */
+const MAX_PAGES = 3;
+const MAX_EVENTS = 150;
+const SEEN_WINDOW = MAX_EVENTS + PER_PAGE;
 
 interface Conversation {
   session_id?: string;
@@ -16,7 +20,9 @@ interface Conversation {
  * Since-filter poll (brief 9.1 b). `list-conversations` documents no sort, but Crisp documents
  * `filter_date_start` ("when to start relative to conversation update date",
  * https://docs.crisp.chat/references/rest-api/v1/#list-conversations-in-a-website). Each check asks
- * for conversations updated since `cursor - overlap` and dedupes by `session_id:updated_at`.
+ * for conversations updated since `cursor - overlap` and dedupes by `session_id:updated_at`. A
+ * window longer than `MAX_PAGES` pages is resumed from the persisted page on the next check (brief
+ * 9.8); the seed stores `floor = now` and later checks drop conversations stamped before it (9.9).
  */
 const trigger: TriggerDefinition = {
   key: "new-or-updated-conversation",
@@ -38,29 +44,34 @@ const trigger: TriggerDefinition = {
     updated_at: 1762646460000,
   },
   minIntervalMs: 300_000,
-  async poll({ state }, ctx) {
-    const now = clock.now();
-    const prior = state as { seeded?: boolean; cursor?: number } | undefined;
-    const since = typeof prior?.cursor === "number" ? prior.cursor : now;
-    const filterDateStart = new Date(since - OVERLAP_MS).toISOString();
-    const { events, nextState } = await pollNewItems<Conversation>({
+  poll({ state }, ctx) {
+    return pollWindow<Conversation, number>({
       state,
-      maxPages: 3,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PER_PAGE,
+      seenWindow: SEEN_WINDOW,
       idOf: (c) => `${c.session_id ?? ""}:${c.updated_at ?? ""}`,
-      async fetchPage(token) {
-        const pageNumber = token === undefined ? 1 : Number(token);
+      tsOf: (c) => toMs(c.updated_at),
+      async load(sinceMs, pos) {
+        const pageNumber = pos ?? 1;
         const res = await listConversations.execute(
-          { pageNumber, perPage: PER_PAGE, filterDateStart },
+          {
+            pageNumber,
+            perPage: PER_PAGE,
+            filterDateStart: new Date(sinceMs).toISOString(),
+          },
           ctx,
         );
-        const items = Array.isArray(res) ? res as Conversation[] : [];
+        const all = Array.isArray(res) ? res as Conversation[] : [];
         return {
-          items,
-          nextPageToken: items.length >= PER_PAGE ? String(pageNumber + 1) : undefined,
+          items: all,
+          next: all.length >= PER_PAGE ? pageNumber + 1 : undefined,
+          read: all.length,
         };
       },
     });
-    return { events, nextState: { ...nextState, cursor: now } };
   },
 };
 

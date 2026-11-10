@@ -1,5 +1,5 @@
 import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "./window.ts";
 import contactList from "../actions/contact-list.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
@@ -19,11 +19,6 @@ export interface Contact {
   updated_at?: string;
 }
 
-/** The kit's ids envelope plus the epoch ms of the last successful check. */
-interface CursorState {
-  cursor?: number;
-}
-
 export const CONTACT_OUTPUT: OutputField[] = [
   { key: "id", type: "number", label: "Contact ID" },
   { key: "name", type: "string", label: "Name" },
@@ -34,48 +29,33 @@ export const CONTACT_OUTPUT: OutputField[] = [
 
 const FIELDS = "id,etag,name,type,primary_email_address,primary_phone_number,created_at,updated_at";
 
-/** `GET /contacts.json` with `created_since` / `updated_since`; Clio lists by `id(asc)`. */
-async function fetchSince(since: string, mode: "new" | "updated", ctx: HookContext) {
-  const out: Contact[] = [];
-  let pageToken: string | undefined;
-  for (let i = 0; i < MAX_PAGES; i++) {
-    const res = await contactList.execute({
-      ...(mode === "new" ? { createdSince: since } : { updatedSince: since }),
-      fields: FIELDS,
-      limit: 100,
-      pageToken,
-    }, ctx) as { items?: Contact[]; nextPageToken?: string };
-    out.push(...(res.items ?? []));
-    pageToken = res.nextPageToken;
-    if (!pageToken) break;
-  }
-  return out;
-}
-
-async function check(
-  mode: "new" | "updated",
-  state: unknown,
-  ctx: HookContext,
-) {
-  const checkedAt = clock.now();
-  const prior = state as CursorState | undefined;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const since = new Date(cursor - OVERLAP_MS).toISOString();
-  const stampOf = (r: Contact) => (mode === "new" ? r.created_at : r.updated_at) ?? "";
-  const { events, nextState } = await pollNewItems<Contact>({
+/**
+ * `GET /contacts.json` with `created_since` / `updated_since`, listed by `id(asc)`. A window longer
+ * than `MAX_PAGES` pages is resumed from the persisted page token on the next check and the cursor
+ * moves only once it drains (brief 9.8); the seed stores `floor = now` and later checks drop
+ * contacts stamped before it (brief 9.9).
+ */
+function check(mode: "new" | "updated", state: unknown, ctx: HookContext) {
+  return pollWindow<Contact, string>({
     state,
-    maxPages: 1,
-    maxEvents: MAX_EVENTS,
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: 100,
     seenWindow: SEEN_WINDOW,
     idOf: (r) => (mode === "new" ? String(r.id) : `${r.id}:${r.updated_at}`),
-    async fetchPage() {
-      const all = await fetchSince(since, mode, ctx);
-      // The kit wants newest-first pages.
-      all.sort((a, b) => (stampOf(a) < stampOf(b) ? 1 : stampOf(a) > stampOf(b) ? -1 : 0));
-      return { items: all };
+    tsOf: (r) => toMs(mode === "new" ? r.created_at : r.updated_at),
+    async load(sinceMs, pageToken) {
+      const since = new Date(sinceMs).toISOString();
+      const res = await contactList.execute({
+        ...(mode === "new" ? { createdSince: since } : { updatedSince: since }),
+        fields: FIELDS,
+        limit: 100,
+        pageToken,
+      }, ctx) as { items?: Contact[]; nextPageToken?: string };
+      return { items: res.items ?? [], next: res.nextPageToken };
     },
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
 }
 
 export const newTrigger: TriggerDefinition = {
