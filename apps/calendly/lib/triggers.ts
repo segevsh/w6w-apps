@@ -24,15 +24,20 @@ import { CalendlyClient, uuidOf } from "./client.ts";
  * OAuth connections: Calendly signs an OAuth app's webhooks with the app's own key, so the
  * optional `signingKey` param carries it (D5 (2)); it overrides the generated one.
  *
- * Docs (verified 2026-11-09):
+ * Docs (verified 2026-11-10):
  *   https://developer.calendly.com/api-docs/overview/webhooks/webhook-signatures
  *   https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription
+ *   https://developer.calendly.com/api-docs/calendly-api/webhooks/get-sample-webhook-data
  */
 
 /** Calendly's documented replay tolerance, in seconds. */
 export const TOLERANCE_SEC = 180;
 
-export type CalendlyEvent = "invitee.created" | "invitee.canceled";
+export type CalendlyEvent =
+  | "invitee.created"
+  | "invitee.canceled"
+  | "invitee_no_show.created"
+  | "invitee_no_show.deleted";
 
 export interface TriggerParams {
   scope?: "organization" | "user";
@@ -300,6 +305,301 @@ export function webhookTrigger(
       const event = normalizeDelivery(parsed);
       if (event.event !== spec.event) return [];
       return [event];
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Round 3: the rest of Calendly's event catalog (event types, routing forms, the Any-event
+// trigger). The invitee / no-show events above share `webhookTrigger`; everything below carries
+// a generic delivery envelope `{ event, created_at, created_by, payload }`.
+// ---------------------------------------------------------------------------------------------
+
+/** Every event `POST /webhook_subscriptions` accepts (create-webhook-subscription, 2026-11-10). */
+export const KNOWN_EVENTS = [
+  "invitee.created",
+  "invitee.canceled",
+  "invitee_no_show.created",
+  "invitee_no_show.deleted",
+  "event_type.created",
+  "event_type.deleted",
+  "event_type.updated",
+  "meeting_recap.created",
+  "meeting_recap.updated",
+  "meeting_recap.deleted",
+  "routing_form_submission.created",
+  "contact.created",
+  "contact.updated",
+  "contact.deleted",
+] as const;
+
+/**
+ * What an empty "Events" param subscribes to: the events every Calendly plan, scope and auth
+ * scope allows. Calendly has no "all events" value, and the rest need a paid plan or a single
+ * scope (routing forms: organization only; meeting recaps: user only), so they are opt-in.
+ */
+export const DEFAULT_ANY_EVENTS: string[] = [
+  "invitee.created",
+  "invitee.canceled",
+  "invitee_no_show.created",
+  "invitee_no_show.deleted",
+  "event_type.created",
+  "event_type.updated",
+  "event_type.deleted",
+];
+
+/** `invitee.created, event_type.updated` → the validated list; empty → the default list. */
+export function parseEvents(input: unknown): string[] {
+  if (input === undefined || input === null || input === "") return [...DEFAULT_ANY_EVENTS];
+  if (typeof input !== "string") {
+    throw new Error("Calendly events must be a comma-separated list of event names.");
+  }
+  const names = [...new Set(input.split(/[\s,]+/).filter((n) => n !== ""))];
+  if (names.length === 0) return [...DEFAULT_ANY_EVENTS];
+  const known: readonly string[] = KNOWN_EVENTS;
+  const unknown = names.filter((n) => !known.includes(n));
+  if (unknown.length > 0) {
+    throw new Error(
+      `Calendly has no event named ${unknown.join(", ")}. Known events: ${
+        KNOWN_EVENTS.join(", ")
+      }.`,
+    );
+  }
+  return names;
+}
+
+/** Calendly allows routing-form events on the organization scope and recaps on the user scope. */
+export function checkScope(events: string[], scope: "organization" | "user"): void {
+  const routing = events.some((e) => e.startsWith("routing_form_submission."));
+  const recap = events.some((e) => e.startsWith("meeting_recap."));
+  if (routing && scope !== "organization") {
+    throw new Error(
+      "Calendly allows routing_form_submission.created only on the organization scope; choose 'Whole organization'.",
+    );
+  }
+  if (recap && scope !== "user") {
+    throw new Error(
+      "Calendly allows meeting_recap events only on the user scope; choose 'Only my events'.",
+    );
+  }
+  if (routing && recap) {
+    throw new Error(
+      "Calendly needs separate subscriptions for routing_form_submission and meeting_recap events (different scopes).",
+    );
+  }
+}
+
+/** The run's `trigger.event` for every non-invitee event. */
+export interface ResourceEvent {
+  event: string;
+  createdAt: string | null;
+  createdBy: string | null;
+  uri: string | null;
+  name: string | null;
+  email: string | null;
+  [extra: string]: unknown;
+  payload: Record<string, unknown>;
+}
+
+/** The state of a resource / Any-event subscription. */
+export interface ResourceState {
+  webhookUuid: string;
+  events: string[];
+  scope: "organization" | "user";
+  secret: string | null;
+}
+
+export interface ResourceParams extends TriggerParams {
+  events?: string;
+}
+
+/** The delivery envelope → one event (throws on a body that is not a Calendly delivery). */
+export function normalizeResource(
+  body: unknown,
+  extract?: (payload: Record<string, unknown>) => Record<string, unknown>,
+): ResourceEvent {
+  const delivery = asObject(body);
+  const payload = asObject(delivery?.payload);
+  const event = str(delivery?.event);
+  if (!delivery || !payload || !event) {
+    throw new Error("Not a Calendly webhook delivery: expected `event` and `payload`.");
+  }
+  return {
+    event,
+    createdAt: str(delivery.created_at),
+    createdBy: str(delivery.created_by),
+    uri: str(payload.uri),
+    name: str(payload.name),
+    email: str(payload.email),
+    ...(extract ? extract(payload) : {}),
+    payload,
+  };
+}
+
+const BASE_OUTPUT: OutputField[] = [
+  { key: "event", type: "string", label: "Event" },
+  { key: "createdAt", type: "string", label: "Created At" },
+  { key: "createdBy", type: "string", label: "Created By (User URI)" },
+  { key: "uri", type: "string", label: "Resource URI" },
+  { key: "name", type: "string", label: "Name" },
+  { key: "email", type: "string", label: "Email" },
+];
+const PAYLOAD_OUTPUT: OutputField = { key: "payload", type: "object", label: "Full Payload" };
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Calendly events, e.g. invitee.created, event_type.updated. Empty = invitee.created, invitee.canceled, invitee_no_show.created/deleted and event_type.created/updated/deleted. Also available: routing_form_submission.created (organization scope), meeting_recap.created/updated/deleted (user scope), contact.created/updated/deleted (paid plans).",
+};
+
+/** Create the subscription for `events` and return the state the host persists. */
+async function register(
+  events: string[],
+  params: TriggerParams,
+  callbackUrl: string,
+  ctx: HookContext,
+): Promise<ResourceState> {
+  const scope = params.scope === "user" ? "user" : "organization";
+  checkScope(events, scope);
+  const client = new CalendlyClient(ctx);
+  const me = await client.request<{
+    resource?: { uri?: unknown; current_organization?: unknown };
+  }>("/users/me");
+  const organization = str(me?.resource?.current_organization);
+  const user = str(me?.resource?.uri);
+  if (!organization || !user) {
+    throw new Error("Calendly returned no organization for this user.");
+  }
+  const own = params.signingKey ? null : randomSecret();
+  const body: Record<string, unknown> = { url: callbackUrl, events, organization, scope };
+  if (scope === "user") body.user = user;
+  if (own) body.signing_key = own;
+  const created = await client.request<{ resource?: { uri?: unknown } }>(
+    "/webhook_subscriptions",
+    { method: "POST", body },
+  );
+  const uri = str(created?.resource?.uri);
+  if (!uri) throw new Error("Calendly created the webhook but returned no uri.");
+  return { webhookUuid: uuidOf(uri), events, scope, secret: own };
+}
+
+async function unregister(state: unknown, ctx: HookContext): Promise<void> {
+  const uuid = str((state as Partial<ResourceState> | undefined)?.webhookUuid);
+  if (!uuid) return;
+  try {
+    await new CalendlyClient(ctx).request(
+      `/webhook_subscriptions/${encodeURIComponent(uuid)}`,
+      { method: "DELETE" },
+    );
+  } catch (err) {
+    if (!isGone(err)) throw err;
+  }
+}
+
+/** Verify, parse and normalize one delivery. Signature first; nothing is parsed before it. */
+async function ingest(
+  raw: { method: string; rawBody?: unknown; headers: Record<string, string> },
+  secret: unknown,
+  now: number,
+  extract?: (payload: Record<string, unknown>) => Record<string, unknown>,
+): Promise<ResourceEvent> {
+  if (raw.method.toUpperCase() !== "POST") {
+    throw new Error(`Calendly delivers webhooks with POST, not ${raw.method}.`);
+  }
+  const body = await verifySignature(raw, secret, now);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Calendly delivery refused: the body is not JSON.");
+  }
+  return normalizeResource(parsed, extract);
+}
+
+export interface ResourceTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  event: string;
+  /** Scopes the vendor allows for this event (default both). */
+  organizationOnly?: boolean;
+  extraOutput?: OutputField[];
+  extract?: (payload: Record<string, unknown>) => Record<string, unknown>;
+  sample: ResourceEvent;
+}
+
+/** One named non-invitee event (event types, routing forms). */
+export function resourceTrigger(
+  spec: ResourceTriggerSpec,
+  now: () => number = Date.now,
+): TriggerDefinition<TriggerParams, ResourceEvent, ResourceState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.organizationOnly ? [SIGNING_KEY_PARAM] : [SCOPE_PARAM, SIGNING_KEY_PARAM],
+    output: [...BASE_OUTPUT, ...(spec.extraOutput ?? []), PAYLOAD_OUTPUT],
+    sample: spec.sample,
+
+    async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
+      return await register(
+        [spec.event],
+        spec.organizationOnly ? { ...params, scope: "organization" } : params,
+        callbackUrl,
+        ctx,
+      );
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      return await unregister(state, ctx);
+    },
+
+    async handleIngest({ raw, params, state }) {
+      const event = await ingest(raw, params?.signingKey || state?.secret, now(), spec.extract);
+      return event.event === spec.event ? [event] : [];
+    },
+  };
+}
+
+/** The Any-event trigger: one subscription for the events listed in the `events` param. */
+export function anyEventTrigger(
+  now: () => number = Date.now,
+): TriggerDefinition<ResourceParams, ResourceEvent, ResourceState> {
+  return {
+    key: "any-event",
+    title: "Any Event",
+    description:
+      "Fires for any Calendly event you choose (bookings, cancellations, no-shows, event type changes, routing form submissions, contacts, meeting recaps). The run gets the event name, who created it, the resource URI and the full payload.",
+    params: [EVENTS_PARAM, SCOPE_PARAM, SIGNING_KEY_PARAM],
+    output: [...BASE_OUTPUT, PAYLOAD_OUTPUT],
+    sample: {
+      event: "event_type.updated",
+      createdAt: "2026-11-10T10:00:00.000000Z",
+      createdBy: "https://api.calendly.com/users/AAAAAAAAAAAAAAAA",
+      uri: "https://api.calendly.com/event_types/AAAAAAAAAAAAAAAA",
+      name: "30 Minute Meeting",
+      email: null,
+      payload: {
+        uri: "https://api.calendly.com/event_types/AAAAAAAAAAAAAAAA",
+        name: "30 Minute Meeting",
+        active: true,
+      },
+    },
+
+    async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
+      return await register(parseEvents(params.events), params, callbackUrl, ctx);
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      return await unregister(state, ctx);
+    },
+
+    async handleIngest({ raw, params, state }) {
+      const event = await ingest(raw, params?.signingKey || state?.secret, now());
+      const wanted = state?.events ?? parseEvents(params?.events);
+      return wanted.includes(event.event) ? [event] : [];
     },
   };
 }

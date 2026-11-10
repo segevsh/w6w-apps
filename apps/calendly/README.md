@@ -6,7 +6,7 @@ scheduling links and manage webhook subscriptions.
 - **Categories** — calendar, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 12
-- **Triggers** — 2 (webhook)
+- **Triggers** — 9 (webhook)
 - **Egress allowlist** — `api.calendly.com`
 - **Website** — https://calendly.com
 - **API docs** — https://developer.calendly.com/api-docs
@@ -39,17 +39,50 @@ either the full URI or the bare UUID.
 |---|---|---|---|
 | `invitee-created` — Invitee Scheduled | webhook (API-registered) | `invitee.created` | the invitee, event time and location, answers |
 | `invitee-canceled` — Invitee Canceled | webhook (API-registered) | `invitee.canceled` | the invitee, the canceled meeting, the reason |
+| `invitee-no-show-created` — Invitee Marked No-Show | webhook (API-registered) | `invitee_no_show.created` | the invitee, the missed meeting, the no-show record (in `payload.no_show`) |
+| `invitee-no-show-deleted` — Invitee No-Show Removed | webhook (API-registered) | `invitee_no_show.deleted` | the invitee and the meeting |
+| `event-type-created` — Event Type Created | webhook (API-registered) | `event_type.created` | name, slug, scheduling URL, duration, kind, active |
+| `event-type-updated` — Event Type Updated | webhook (API-registered) | `event_type.updated` | the same fields after the change |
+| `event-type-deleted` — Event Type Deleted | webhook (API-registered) | `event_type.deleted` | the same fields of the deleted event type |
+| `routing-form-submission-created` — Routing Form Submitted | webhook (API-registered, organization scope) | `routing_form_submission.created` | the form, the answers, the routing result |
+| `any-event` — Any Event | webhook (API-registered) | the `events` param (any of the 14 below) | event name, creator, resource URI, name, email and the full payload |
+
+Calendly's event catalog (create-webhook-subscription): `invitee.created`, `invitee.canceled`,
+`invitee_no_show.created`, `invitee_no_show.deleted`, `event_type.created`, `event_type.updated`,
+`event_type.deleted`, `routing_form_submission.created`, `meeting_recap.created`,
+`meeting_recap.updated`, `meeting_recap.deleted`, `contact.created`, `contact.updated`,
+`contact.deleted`. The last six (recaps, contacts) have no named trigger because this app has no
+actions for those records: reach them through **Any Event**.
+
+**Any Event.** Calendly has no "all events" value, so the `events` param is the subscription's event
+list (comma-separated). Left empty it subscribes to `invitee.created`, `invitee.canceled`,
+`invitee_no_show.created`/`.deleted` and `event_type.created`/`.updated`/`.deleted`: the events every
+plan allows. Opt in explicitly to `routing_form_submission.created` (organization scope only),
+`meeting_recap.*` (user scope only) and `contact.*`; those need a paid plan (Calendly answers
+`403 Please upgrade to a paid Calendly account` otherwise), and routing forms and recaps cannot share
+one subscription. An unknown event name or a wrong scope is refused before any request is made.
+Deliveries for events outside the subscribed list are acknowledged without starting a run.
+
+**Not covered by a poll.** `event-type-get-many` is delivered by `event-type-created`;
+`invitee-get-many` by `invitee-created` (same Invitee records);
+`webhook-subscription-get-many` lists this app's own webhook configuration (admin data). No poll for
+`scheduled-event-get-many`: it can only be ordered or filtered by `start_time`
+(<https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-scheduled-events>), so a
+newly booked meeting cannot be found by polling; new bookings arrive through `invitee-created`, which
+carries the scheduled event.
 
 ### Setup
 
 Subscribing looks up the connected user (`GET /users/me`) and runs `POST /webhook_subscriptions` for
-the one event, with a random per-subscription `signing_key` kept in the subscription's state;
+the trigger's event (or the Any Event list), with a random per-subscription `signing_key` kept in the subscription's state;
 unsubscribing runs `DELETE /webhook_subscriptions/{uuid}` (already gone counts as deleted). Scope
 defaults to the whole organization; choose "Only my events" to limit it to the connected user.
 **OAuth connections:** Calendly signs an OAuth app's webhooks with the app's own webhook signing key,
 so paste it into the trigger's *Signing key* param; with a personal access token leave it blank.
 The OAuth flow requests `users:read`, `event_types:read`, `scheduled_events:read`, `scheduling_links:write`, `webhooks:read` and `webhooks:write` (developer.calendly.com/scopes, checked 2026-11-09); a newly created Calendly OAuth app is granted nothing until scopes are requested.
-Webhook subscriptions need a Calendly plan that allows them.
+Webhook subscriptions need a Calendly plan that allows them. `routing_form_submission.created` needs the
+`routing_forms:read` scope: a personal access token has it, but the OAuth flow here does not request it
+(add it to the OAuth app before using that trigger with OAuth).
 
 ### Trust model
 
@@ -59,7 +92,7 @@ time, and a timestamp more than 180 seconds (Calendly's documented 3 minute tole
 refused. A missing, malformed or wrong signature, an absent raw body or an unset key refuses the
 delivery.
 
-Docs (verified 2026-11-09): https://developer.calendly.com/api-docs/overview/webhooks/webhook-signatures, https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription
+Docs (verified 2026-11-10): https://developer.calendly.com/api-docs/overview/webhooks/webhook-signatures, https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription, https://developer.calendly.com/api-docs/calendly-api/webhooks/get-sample-webhook-data
 
 ## Health check
 
