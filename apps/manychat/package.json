@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/manychat",
   "version": "0.3.0",
-  "description": "Manage Manychat subscribers, tags, custom fields, bot fields and automations, and send Flows or dynamic content over Messenger, Instagram, WhatsApp and Telegram. Trigger workflows on new records. Includes 3 poll triggers.",
+  "description": "Manage Manychat subscribers, tags, custom fields, bot fields and automations, and send Flows or dynamic content over Messenger, Instagram, WhatsApp and Telegram. Includes 3 poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

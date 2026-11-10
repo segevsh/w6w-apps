@@ -1,5 +1,8 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
-import action from "../actions/kobject-list.ts";
+import type { ActionDefinition } from "@w6w/types";
+import listAction from "../actions/kobject-list.ts";
+
+const action = listAction as unknown as ActionDefinition;
 
 export default pollFromListAction({
   key: "new-kobject",

@@ -1,5 +1,8 @@
 import { snapshotTrigger } from "../lib/triggers.ts";
-import action from "../actions/note-list.ts";
+import type { ActionDefinition } from "@w6w/types";
+import listAction from "../actions/note-list.ts";
+
+const action = listAction as unknown as ActionDefinition;
 
 export default snapshotTrigger({
   key: "new-note",
