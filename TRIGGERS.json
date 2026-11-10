@@ -389,12 +389,31 @@
     "path": "apps/ashby",
     "mechanism": "poll",
     "candidates": [
-      "new-candidate"
+      "new-candidate",
+      "new-application",
+      "new-application-feedback",
+      "new-interview-schedule",
+      "new-job",
+      "new-job-posting",
+      "new-offer",
+      "new-user"
     ],
     "pollAction": "candidate-list",
-    "reason": "Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist).",
-    "verified": "apps/ashby/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over createdAfter-filtered list actions (https://developers.ashbyhq.com/reference/candidatelist) plus whole-collection snapshots for users and job postings",
+    "verified": "apps/ashby/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "candidate-search": "new-candidate"
+    },
+    "skipped": {
+      "archive-reason-list": "reference data (archive reasons), reference data that changes rarely, not an event stream",
+      "department-list": "reference data (departments), reference data that changes rarely, not an event stream",
+      "interview-stage-list": "reference data (interview stages of a plan), reference data that changes rarely, not an event stream",
+      "location-list": "reference data (locations), reference data that changes rarely, not an event stream",
+      "source-list": "reference data (candidate sources), reference data that changes rarely, not an event stream",
+      "candidate-note-list": "per-parent list: requires one candidateId and a candidate is not a parent a user would pick; no created-after filter",
+      "interview-event-list": "per-parent list: requires one interviewScheduleId, not a parent a user would pick; new schedules are delivered by new-interview-schedule"
+    }
   },
   {
     "path": "apps/assemblyai",
@@ -4276,12 +4295,33 @@
     "path": "apps/keap",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-campaign",
+      "new-campaign-sequence",
+      "new-company",
+      "new-email",
+      "new-opportunity",
+      "new-or-updated-opportunity",
+      "new-or-updated-order",
+      "new-or-updated-product",
+      "new-or-updated-subscription",
+      "new-or-updated-tag",
+      "new-or-updated-task",
+      "new-order",
+      "new-tag",
+      "new-tagged-contact",
+      "new-task",
+      "new-user"
     ],
     "pollAction": "contact-list",
-    "reason": "shipped poll trigger(s) over list action contact-list",
-    "verified": "apps/keap/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first poll triggers using each list action's documented order_by (https://crm.infusionsoft.com/app/v3/api-docs/V2)",
+    "verified": "apps/keap/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-notes-list": "per-parent list: requires one contactId and a contact is not a parent a user would pick",
+      "contact-tags-list": "per-parent list: requires one contactId and a contact is not a parent a user would pick; tag applications are delivered per tag by new-tagged-contact",
+      "opportunity-stage-list": "reference data (pipeline stages), configuration that changes rarely, not an event stream"
+    }
   },
   {
     "path": "apps/kintone",
@@ -6252,12 +6292,30 @@
     "path": "apps/podium",
     "mechanism": "poll",
     "candidates": [
-      "new-conversation"
+      "new-conversation",
+      "new-feedback",
+      "new-location",
+      "new-or-updated-appointment",
+      "new-or-updated-call",
+      "new-or-updated-campaign",
+      "new-or-updated-contact",
+      "new-or-updated-review",
+      "new-review",
+      "new-review-invite",
+      "new-user"
     ],
     "pollAction": "conversation-list",
-    "reason": "shipped poll trigger(s) over list action conversation-list",
-    "verified": "apps/podium/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first and updated-since poll triggers over /v4 list actions plus whole-collection snapshots for locations and users",
+    "verified": "apps/podium/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-attribute-list": "field definitions (contact attributes), reference data not records",
+      "contact-tag-list": "reference data (organisation-level tag definitions), not an event stream; not paginated",
+      "template-list": "message template configuration, reference data that changes rarely",
+      "webhook-list": "admin configuration (the user's own webhook subscriptions), not an event stream",
+      "review-summary-list": "analytics output (per-location counts and average rating), not records",
+      "message-list": "per-parent list: requires one conversation_uid and a conversation is not a parent a user would pick; new conversations are delivered by new-conversation"
+    }
   },
   {
     "path": "apps/postbin",

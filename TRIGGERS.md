@@ -12,17 +12,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
 | apps/heartbeat | 8 | 16 | 16 |
-| apps/ashby | 1 | 16 | 15 |
 | apps/gocanvas | 5 | 15 | 15 |
-| apps/keap | 1 | 17 | 15 |
-| apps/podium | 1 | 16 | 15 |
 | apps/twist | 1 | 16 | 15 |
 | apps/acculynx | 2 | 15 | 14 |
 | apps/document360 | 2 | 15 | 14 |
@@ -612,6 +609,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/airtable | 3 | 2 | 0 |
 | apps/asana | 9 | 5 | 0 |
+| apps/ashby | 8 | 16 | 0 |
 | apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
@@ -638,6 +636,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/insightly | 8 | 4 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
 | apps/kajabi | 18 | 19 | 0 |
+| apps/keap | 17 | 17 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
 | apps/knack | 1 | 1 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
@@ -655,6 +654,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/pardot | 2 | 0 | 0 |
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
+| apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
 | apps/productive | 2 | 17 | 0 |
@@ -816,7 +816,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/apify | 1 | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
 | apps/apitemplateio | 1 | list-objects | new-object | apps/apitemplateio/README.md Triggers section (verified 2026-11-09) | hand | list-objects is documented by the existing action as a most-recent-first generated-object feed |
 | apps/apollo | 2 | contact-search | new-contact, new-or-updated-contact | apps/apollo/README.md Triggers section (verified 2026-11-09) | hand | Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts). |
-| apps/ashby | 1 | candidate-list | new-candidate | apps/ashby/README.md Triggers section (verified 2026-11-09) | hand | Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist). |
+| apps/ashby | 8 | candidate-list | new-candidate, new-application, new-application-feedback, new-interview-schedule, new-job, new-job-posting, new-offer, new-user | apps/ashby/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over createdAfter-filtered list actions (https://developers.ashbyhq.com/reference/candidatelist) plus whole-collection snapshots for users and job postings |
 | apps/assemblyai | 1 | transcript-list | new-transcript | apps/assemblyai/README.md Triggers section (verified 2026-11-09) | hand | AssemblyAI documents transcript-list as newest-to-oldest |
 | apps/atlassian/confluence | 2 | page-list | new-page, new-or-updated-page | apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09) | hand | Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). |
 | apps/atlassian/jira-data-center | 1 | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
@@ -1009,7 +1009,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/jumpcloud | 1 | user-list | new-user | apps/jumpcloud/README.md Triggers section (verified 2026-11-09) | hand | user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml) |
 | apps/justcall | 1 | contact-list | new-contact | apps/justcall/README.md Triggers section (verified 2026-11-09) | hand | contact-list order=desc by contact id, documented as most-recently-added first (https://developer.justcall.io/reference/contacts_list_v21) |
 | apps/kajabi | 18 | contact-list | new-contact, new-customer, new-order, new-order-item, new-purchase, new-or-updated-purchase, new-form-submission, new-contact-note, new-or-updated-contact-note, new-transaction, new-payout, new-offer, new-product, new-course, new-form, new-contact-tag, new-contact-offer, new-offer-product | apps/kajabi/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover the record feeds; reference lists (sites, tag names, custom-field definitions) are intentionally skipped. |
-| apps/keap | 1 | contact-list | new-contact | apps/keap/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
+| apps/keap | 17 | contact-list | new-contact, new-campaign, new-campaign-sequence, new-company, new-email, new-opportunity, new-or-updated-opportunity, new-or-updated-order, new-or-updated-product, new-or-updated-subscription, new-or-updated-tag, new-or-updated-task, new-order, new-tag, new-tagged-contact, new-task, new-user | apps/keap/README.md Triggers section (verified 2026-11-10) | hand | newest-first poll triggers using each list action's documented order_by (https://crm.infusionsoft.com/app/v3/api-docs/V2) |
 | apps/kintone | 1 | comments-list | new-comment | apps/kintone/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action comments-list |
 | apps/kit | 1 | list-subscribers | new-subscriber | apps/kit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-subscribers |
 | apps/klaviyo | 2 | get-profiles | new-profile, new-or-updated-profile | apps/klaviyo/README.md Triggers section (verified 2026-11-09) | hand | get-profiles sorted -created / -updated, both documented sort fields (https://developers.klaviyo.com/en/reference/get_profiles) |
@@ -1115,7 +1115,7 @@ depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-p
 | apps/planningcenter | 2 | list-event-instances | new-event-instance, new-or-updated-event-instance | apps/planningcenter/README.md Triggers section (verified 2026-11-09) | hand | list-event-instances order=-created_at / -updated_at (orderable per https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) |
 | apps/plivo | 2 | list-messages | new-message, new-call | apps/plivo/README.md Triggers section (verified 2026-11-09) | hand | list-messages (message_time__gt) and list-calls (end_time__gte) take documented time filters (since-filter shape, dedupe by uuid); signed message/call callbacks recorded in webhooks file. |
 | apps/podio | 1 | task-list | new-task | apps/podio/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by created_on descending. |
-| apps/podium | 1 | conversation-list | new-conversation | apps/podium/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action conversation-list |
+| apps/podium | 11 | conversation-list | new-conversation, new-feedback, new-location, new-or-updated-appointment, new-or-updated-call, new-or-updated-campaign, new-or-updated-contact, new-or-updated-review, new-review, new-review-invite, new-user | apps/podium/README.md Triggers section (verified 2026-11-10) | hand | newest-first and updated-since poll triggers over /v4 list actions plus whole-collection snapshots for locations and users |
 | apps/postgres | 1 | query | new-row | no | hand | shipped poll trigger(s) over list action query |
 | apps/postmark | 1 | list-outbound-messages | new-outbound-message | apps/postmark/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-outbound-messages |
 | apps/practicebetter | 2 | list-client-records | new-client-record, new-or-updated-client-record | apps/practicebetter/README.md Triggers section (verified 2026-11-09) | hand | GET /consultant/records is documented newest-created first and takes modified_gte; webhook subscriptions also exist (see webhooks file) |
