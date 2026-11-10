@@ -1,6 +1,14 @@
 # OneSignal
 
-Triggers: not shipped — webhook candidate queued for a webhook node: web-push delivery, click, and dismiss events; existing reads lack a documented newest-first order or creation-since filter (https://documentation.onesignal.com/docs/webhooks)
+- **Triggers** — 1 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | poll | `view-messages` (`GET /notifications`, limit 50, offset 0) | Each newly queued message (push, email or SMS) |
+
+The trigger calls the existing List Messages action for page 1 only. OneSignal documents that "Results are sorted by queued_at in descending order", so page 1 is newest-first; the first check seeds its ID window and emits nothing, and later checks emit only unseen message IDs. Verified 2026-11-10 at https://documentation.onesignal.com/reference/view-messages. Delivery-event webhooks (https://documentation.onesignal.com/docs/webhooks) are not wired.
 
 Send push, email, and SMS messages, manage Users, Subscriptions, and Segments, and record custom
 events, on OneSignal's current REST API.
