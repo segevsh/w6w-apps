@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gusto",
-  "version": "0.2.0",
-  "description": "Read and update a Gusto payroll account — employees, contractors, compensation, payrolls, pay schedules, time off and departments, with new-event triggers.",
+  "version": "0.3.0",
+  "description": "Read and update a Gusto payroll account — employees, contractors, compensation, payrolls, pay schedules, time off and departments — with polling triggers for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"

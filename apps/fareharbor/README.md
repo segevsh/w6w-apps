@@ -5,7 +5,7 @@ Booking software for tour and activity operators. This app reads FareHarbor's co
 bookings, over the External API.
 
 - App id: `io.w6w.fareharbor` · categories: `calendar`, `commerce`
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - Host: `fareharbor.com` (the only entry in `network.allow`) · API prefix `/api/external/v1`
 - Source of truth: FareHarbor's OpenAPI 3.1 document, the file the Redoc page at
   developer.fareharbor.com loads
@@ -101,10 +101,28 @@ a mocked `HookContext`.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-booking` — New Booking | Poll | `booking-list-by-create-date` | Each newly created booking of one company (minimal record: `pk`, `uuid`, `status`) |
+| `new-item` — New Item | Poll | `item-list` | Each bookable item created for one company |
+| `new-or-updated-item` — New or Updated Item | Poll | `item-list` | Each item that is new or whose listed fields changed |
+| `new-user` — New User | Poll | `user-list` | Each user added to one company |
+| `new-agent` — New Agent | Poll | `agent-list` | Each agent added to one affiliate company (affiliate keys only) |
+| `new-company` — New Company | Poll | `company-list` | Each company the API keys newly gain access to |
 
 Each check lists bookings created today and yesterday (UTC calendar days, which the endpoint filters
 on) and dedupes by `pk`, so a booking created just before midnight is still delivered. The first check
 only records what exists. Fetch the full booking with `booking-get`. FareHarbor's support-configured
 booking notifications are a separate, not yet shipped webhook path. Source:
 [FareHarbor External API](https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home)
-(`get-bookings-by-create-date`, verified 2026-11-09).
+(`get-bookings-by-create-date`, verified 2026-11-10).
+
+The spec's list endpoints (`items/`, `users/`, `agents/`, `companies/`) document no created/updated filter and no
+newest-first order, so the other triggers re-read the whole collection through the existing list action and diff it with the
+shared snapshot kit: the first check records what exists and emits nothing, `new-…` fires for a `pk` (or, for companies, a
+`shortname`) not seen before, and `new-or-updated-item` also fires when a listed field changes. Collections over 5000 rows fail
+the check loudly. Source: [FareHarbor External API](https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home)
+(verified 2026-11-10). `booking-list-by-availability` lists the bookings of one availability, the record type
+`new-booking` already delivers.
+
+Not covered: `availability-list-by-date`, `availability-list-by-date-range` (schedule slots are generated in advance, so any
+rolling date window would report slots entering the window as new every day), `availability-lodging-list` and
+`crew-member-list` (relations of one availability), `checkin-status-list`, `role-list` (definitions), `desk-list`, `lodging-list`
+(affiliate desk and pickup-location configuration).
