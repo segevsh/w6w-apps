@@ -13,7 +13,7 @@ platform for roofing and exterior contractors, over its v2 REST API.
 - **Website** — https://acculynx.com/
 - **API docs** — https://apidocs.acculynx.com/reference/
 - **Status page** — https://status.acculynx.com/
-- **Triggers** — 2 (poll)
+- **Triggers** — 4 (poll)
 
 > Everything below was verified on 2026-10-06 against AccuLynx's own API reference (a ReadMe site
 > whose server-rendered pages embed the full OpenAPI document, v2.2614.0, 105 paths) plus live
@@ -171,5 +171,7 @@ deno task test`.
 | --- | --- | --- | --- |
 | `new-job` — New Job | Poll | `job-list` | Each newly created job |
 | `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each newly created or modified job |
+| `new-contact` — New Contact | Poll | `contact-search` | Each newly created contact |
+| `new-invoice` — New Invoice | Poll | `job-invoices-list` | Each new invoice for the job you choose |
 
-`job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest. Source: [AccuLynx Get Jobs](https://apidocs.acculynx.com/reference/getjobs) (verified 2026-11-09).
+`job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest. `contact-search` requests `CreatedDate` descending and invoice polling requests descending order. Source: [AccuLynx API reference](https://apidocs.acculynx.com/reference/) (verified 2026-11-10).
