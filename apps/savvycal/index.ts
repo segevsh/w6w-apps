@@ -37,6 +37,19 @@ import quota from "./health/quota.ts";
 import eventCreated from "./triggers/event-created.ts";
 import eventCanceled from "./triggers/event-canceled.ts";
 import eventRescheduled from "./triggers/event-rescheduled.ts";
+import eventRequested from "./triggers/event-requested.ts";
+import eventApproved from "./triggers/event-approved.ts";
+import eventDeclined from "./triggers/event-declined.ts";
+import eventChanged from "./triggers/event-changed.ts";
+import eventCheckoutCompleted from "./triggers/event-checkout-completed.ts";
+import eventAttendeeAdded from "./triggers/event-attendee-added.ts";
+import eventAttendeeCanceled from "./triggers/event-attendee-canceled.ts";
+import pollResponseCreated from "./triggers/poll-response-created.ts";
+import pollResponseUpdated from "./triggers/poll-response-updated.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newLink from "./triggers/new-link.ts";
+import newWorkflow from "./triggers/new-workflow.ts";
+import newWorkflowRule from "./triggers/new-workflow-rule.ts";
 
 export default {
   actions: [
@@ -62,7 +75,24 @@ export default {
     workflowList,
     workflowRulesList,
   ],
-  triggers: [eventCreated, eventCanceled, eventRescheduled],
+  triggers: [
+    eventCreated,
+    eventCanceled,
+    eventRescheduled,
+    eventRequested,
+    eventApproved,
+    eventDeclined,
+    eventChanged,
+    eventCheckoutCompleted,
+    eventAttendeeAdded,
+    eventAttendeeCanceled,
+    pollResponseCreated,
+    pollResponseUpdated,
+    anyEvent,
+    newLink,
+    newWorkflow,
+    newWorkflowRule,
+  ],
   auth: [personalAccessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

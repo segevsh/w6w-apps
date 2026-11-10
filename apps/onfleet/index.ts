@@ -57,6 +57,21 @@ import taskCompleted from "./triggers/task-completed.ts";
 import taskFailed from "./triggers/task-failed.ts";
 import taskAssigned from "./triggers/task-assigned.ts";
 import taskUpdated from "./triggers/task-updated.ts";
+import taskDeleted from "./triggers/task-deleted.ts";
+import taskUnassigned from "./triggers/task-unassigned.ts";
+import taskCloned from "./triggers/task-cloned.ts";
+import taskEta from "./triggers/task-eta.ts";
+import taskArrival from "./triggers/task-arrival.ts";
+import taskDelayed from "./triggers/task-delayed.ts";
+import workerDuty from "./triggers/worker-duty.ts";
+import workerCreated from "./triggers/worker-created.ts";
+import workerDeleted from "./triggers/worker-deleted.ts";
+import workerUpdated from "./triggers/worker-updated.ts";
+import smsRecipientResponseMissed from "./triggers/sms-recipient-response-missed.ts";
+import smsRecipientOptOut from "./triggers/sms-recipient-opt-out.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newTeam from "./triggers/new-team.ts";
+import newHub from "./triggers/new-hub.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -93,7 +108,29 @@ const app: AppDefinition = {
     recipientUpdate,
     recipientFind,
   ],
-  triggers: [taskCreated, taskStarted, taskCompleted, taskFailed, taskAssigned, taskUpdated],
+  triggers: [
+    taskCreated,
+    taskStarted,
+    taskCompleted,
+    taskFailed,
+    taskAssigned,
+    taskUpdated,
+    taskDeleted,
+    taskUnassigned,
+    taskCloned,
+    taskEta,
+    taskArrival,
+    taskDelayed,
+    workerDuty,
+    workerCreated,
+    workerDeleted,
+    workerUpdated,
+    smsRecipientResponseMissed,
+    smsRecipientOptOut,
+    anyEvent,
+    newTeam,
+    newHub,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 };

@@ -5,7 +5,7 @@ Manage Mautic contacts, segments, companies, campaigns and email sends.
 - **Categories** — marketing, email, crm
 - **Auth methods** — client-credentials (OAuth2 Client Credentials grant)
 - **Actions** — 28
-- **Triggers** — 4 (webhook)
+- **Triggers** — 18 (14 webhook, 4 poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://www.mautic.org
 - **API docs** — https://developer.mautic.org (redirects to
@@ -155,6 +155,20 @@ building this app — the shape is taken from the documentation's own example.
 | `contact-updated` — Contact Updated | webhook (API-registered) | `mautic.lead_post_save_update` | The contact after the update |
 | `contact-deleted` — Contact Deleted | webhook (API-registered) | `mautic.lead_post_delete` | The id of the deleted contact |
 | `form-submitted` — Form Submitted | webhook (API-registered) | `mautic.form_on_submit` | The submission (form, contact, submitted values) |
+| `company-saved` — Company Created or Updated | webhook (API-registered) | `mautic.company_post_save` | The company after the save |
+| `company-deleted` — Company Deleted | webhook (API-registered) | `mautic.company_post_delete` | The id of the deleted company |
+| `contact-points-changed` — Contact Points Changed | webhook (API-registered) | `mautic.lead_points_change` | The contact and the old/new points |
+| `contact-channel-subscription-changed` — Contact Channel Subscription Changed | webhook (API-registered) | `mautic.lead_channel_subscription_changed` | The contact, the channel, the old/new status |
+| `contact-company-changed` — Contact Company Changed | webhook (API-registered) | `mautic.lead_company_change` | The contact, the company, and whether it was added |
+| `email-sent` — Email Sent | webhook (API-registered) | `mautic.email_on_send` | The email, the contact, subject and sent HTML |
+| `email-opened` — Email Opened | webhook (API-registered) | `mautic.email_on_open` | The email and the contact (opens are unreliable: proxies and bots load the pixel) |
+| `sms-sent` — Text Message Sent | webhook (API-registered) | `mautic.sms_on_send` | The SMS id, the contact and the content |
+| `page-hit` — Page Hit | webhook (API-registered) | `mautic.page_on_hit` | The page visit |
+| `any-event` — Any Event | webhook (API-registered) | the event types you list in `events` (empty = all 13 in the catalog) | One run per payload: event type, time, record id, payload |
+| `new-campaign` — New Campaign | poll (5 min) | `GET /api/campaigns` (`campaign-list`), snapshot of ids | The campaign |
+| `new-segment` — New Segment | poll (5 min) | `GET /api/segments` (`segment-list`), snapshot of ids | The segment |
+| `new-email` — New Email | poll (5 min) | `GET /api/emails` (`email-list`), snapshot of ids | The email |
+| `new-tag` — New Tag | poll (5 min) | `GET /api/tags` (`tag-list`), snapshot of ids | The tag |
 
 **Setup.** None by hand, but the Mautic API user needs the Webhooks permissions. Subscribing
 generates a random 64-character secret and calls `POST /api/hooks/new` (`name`, `webhookUrl`,
@@ -162,7 +176,7 @@ generates a random 64-character secret and calls `POST /api/hooks/new` (`name`, 
 and deletes a webhook already pointing at its callback URL. Unsubscribing calls
 `DELETE /api/hooks/{id}/delete` (one Mautic no longer has counts as deleted). If Mautic is set to
 queue webhook events, one delivery can carry several payloads (and several event types); the
-trigger emits one run per payload of its own event type.
+trigger emits one run per payload of its own event type. `any-event` registers one webhook for all the event types you list (Mautic's `triggers` field takes a list).
 
 **Trust model.** Mautic signs every webhook, and the trigger never accepts an unsigned
 delivery. Each delivery is checked, before anything is parsed, against the `Webhook-Signature`
@@ -173,9 +187,12 @@ missing header, an unset secret or a body that was not delivered raw refuses the
 host stores one failed row and starts no run. The secret is kept in the subscription state, which
 the host stores unsealed.
 
-Sources (verified 2026-11-09): https://devdocs.mautic.org/en/7.1/rest_api/webhooks.html ,
+Sources (verified 2026-11-10): https://devdocs.mautic.org/en/7.1/rest_api/webhooks.html ,
 https://devdocs.mautic.org/en/7.1/webhooks/getting_started.html ,
-https://devdocs.mautic.org/en/7.1/webhooks/events/index.html
+https://devdocs.mautic.org/en/7.1/webhooks/events/index.html ,
+https://devdocs.mautic.org/en/7.1/rest_api/{campaigns,segments,emails,tags}.html (the four polls)
+
+Not covered as their own triggers: `contact-list` (its records arrive through `new-contact`, `contact-updated`) and `company-list` (through `company-saved`). Campaigns, segments and tags have no webhook event in Mautic's catalog, hence the polls; the polls read the whole list every check and refuse more than 5000 rows.
 
 ## Health checks
 

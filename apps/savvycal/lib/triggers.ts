@@ -79,13 +79,47 @@ const OUTPUT: OutputField[] = [
 ];
 
 function sampleFor(type: string): SavvyCalEvent {
+  if (!type.startsWith("event.")) {
+    // poll.response.*: the payload is a poll response, not an event.
+    return {
+      type,
+      deliveryId: "payload_7RDQF0G5VT8PAV4ERN90B5Q27Y",
+      occurredAt: "2026-11-10T10:30:00Z",
+      eventId: null,
+      summary: null,
+      state: null,
+      startAt: null,
+      endAt: null,
+      duration: null,
+      linkId: null,
+      linkName: null,
+      organizerName: null,
+      organizerEmail: null,
+      attendees: [],
+      url: null,
+      cancelReason: null,
+      rescheduleReason: null,
+      data: {
+        id: "pr_01J5KCDZ5PKRFGT8V2WD9Y8H6X",
+        display_name: "Ada Lovelace",
+        email: "ada@example.com",
+        poll: { id: "poll_01J5KCBX3NKRFGT8V2WD9Y8H6X", name: "Meeting with Ada" },
+      },
+    };
+  }
   return {
     type,
     deliveryId: "payload_7RDQF0G5VT8PAV4ERN90B5Q27Y",
     occurredAt: "2026-11-10T10:30:00Z",
     eventId: "event_01KKGY70MFPCECSQ6KM6FMDPC3",
     summary: "30 Minute Meeting with Ada Lovelace",
-    state: type === "event.canceled" ? "canceled" : "confirmed",
+    state: type === "event.canceled"
+      ? "canceled"
+      : type === "event.declined"
+      ? "declined"
+      : type === "event.requested"
+      ? "awaiting_approval"
+      : "confirmed",
     startAt: "2026-11-20T14:00:00Z",
     endAt: "2026-11-20T14:30:00Z",
     duration: 30,
@@ -149,7 +183,10 @@ export function normalizeDelivery(body: string): SavvyCalEvent {
   const d = asObject(parsed);
   const type = str(d?.type);
   if (!d || !type) throw new Error("Not a SavvyCal webhook delivery: expected a type.");
-  const p = asObject(d.payload) ?? {};
+  const payload = asObject(d.payload) ?? {};
+  // `event.changed`, `event.attendee.*` and `workflow.action.triggered` nest the event under
+  // `payload.event`; poll responses carry no event at all. Every other type is flat.
+  const p = asObject(payload.event) ?? (type.startsWith("poll.") ? {} : payload);
   const link = asObject(p.link);
   const organizer = asObject(p.organizer);
   return {
@@ -170,9 +207,29 @@ export function normalizeDelivery(body: string): SavvyCalEvent {
     url: str(p.url),
     cancelReason: str(p.cancel_reason),
     rescheduleReason: str(p.reschedule_reason),
-    data: p,
+    data: payload,
   };
 }
+
+/** Every delivery type SavvyCal documents (https://docs.savvycal.com/developers/webhooks, 2026-11-10). */
+export const EVENT_TYPES = [
+  "event.created",
+  "event.requested",
+  "event.approved",
+  "event.declined",
+  "event.rescheduled",
+  "event.changed",
+  "event.canceled",
+  "event.checkout.pending",
+  "event.checkout.expired",
+  "event.checkout.completed",
+  "event.attendee.added",
+  "event.attendee.canceled",
+  "event.attendee.rescheduled",
+  "poll.response.created",
+  "poll.response.updated",
+  "workflow.action.triggered",
+] as const;
 
 export interface WebhookTriggerSpec {
   key: string;
@@ -180,17 +237,41 @@ export interface WebhookTriggerSpec {
   description: string;
   /** The SavvyCal delivery type this trigger fires on, e.g. `event.created`. */
   type: string;
+  /** Any-event: the user lists delivery types in the `events` param (empty = every type). */
+  anyOf?: boolean;
+}
+
+/** `events` param → the delivery types to keep; empty = all. Throws on a type SavvyCal does not have. */
+export function wantedTypes(events: unknown): Set<string> | null {
+  const text = typeof events === "string" ? events : "";
+  const list = text.split(",").map((t) => t.trim()).filter((t) => t !== "");
+  if (list.length === 0) return null;
+  for (const t of list) {
+    if (!(EVENT_TYPES as readonly string[]).includes(t)) {
+      throw new Error(`Unknown SavvyCal event type "${t.slice(0, 60)}".`);
+    }
+  }
+  return new Set(list);
 }
 
 /** Build one SavvyCal event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<Record<string, never>, SavvyCalEvent, TriggerState> {
+): TriggerDefinition<Record<string, unknown>, SavvyCalEvent, TriggerState> {
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [],
+    params: spec.anyOf
+      ? [{
+        key: "events",
+        label: "Events",
+        type: "string",
+        default: "",
+        hint:
+          "Comma-separated SavvyCal event types (event.created, event.changed, poll.response.created, workflow.action.triggered, …). Empty = every type.",
+      }]
+      : [],
     output: OUTPUT,
     sample: sampleFor(spec.type),
 
@@ -217,12 +298,16 @@ export function webhookTrigger(
       }
     },
 
-    async handleIngest({ raw, state }) {
+    async handleIngest({ raw, state, params }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`SavvyCal delivers webhooks with POST, not ${raw.method}.`);
       }
       const body = await verifySignature(raw, state?.secret);
       const event = normalizeDelivery(body);
+      if (spec.anyOf) {
+        const wanted = wantedTypes((params as { events?: unknown } | undefined)?.events);
+        return wanted === null || wanted.has(event.type) ? [event] : [];
+      }
       return event.type === spec.type ? [event] : [];
     },
   };

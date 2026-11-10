@@ -6,7 +6,7 @@ and hubs, and get notified as tasks move through Onfleet.
 - **Categories** — commerce, productivity
 - **Auth methods** — api-key
 - **Actions** — 32
-- **Triggers** — 6 (webhook)
+- **Triggers** — 21 (18 webhook, 3 poll)
 - **Egress allowlist** — `onfleet.com` (the `service` health check adds
   `status.onfleet.com`)
 - **Website** — https://onfleet.com
@@ -186,7 +186,7 @@ containers doc recommends exactly that.
 
 ## Triggers
 
-Webhook triggers that register themselves through `POST /webhooks` (the same endpoint as the
+Webhook triggers (one Onfleet webhook per event — Onfleet binds a single trigger to each webhook) that register themselves through `POST /webhooks` (the same endpoint as the
 `webhook-create` action) and delete their webhook again on unsubscribe.
 
 | Trigger | Mechanism | Vendor event | What the run gets |
@@ -197,6 +197,21 @@ Webhook triggers that register themselves through `POST /webhooks` (the same end
 | `task-failed` — Task Failed | webhook (API) | trigger `4` taskFailed | …with failure notes in `task` |
 | `task-assigned` — Task Assigned | webhook (API) | trigger `9` taskAssigned | …plus `workerId` |
 | `task-updated` — Task Updated | webhook (API) | trigger `7` taskUpdated | The updated `task` |
+| `task-deleted` — Task Deleted | webhook (API) | trigger `8` taskDeleted | `task`, `taskId` |
+| `task-unassigned` — Task Unassigned | webhook (API) | trigger `10` taskUnassigned | `task`, `taskId` |
+| `task-cloned` — Task Cloned | webhook (API) | trigger `13` taskCloned | `task` (a clone does not fire Task Created) |
+| `task-eta` — Task ETA Reached | webhook (API) | trigger `1` taskEta | `task`, `etaSeconds`; you set the threshold (seconds) |
+| `task-arrival` — Worker Arriving | webhook (API) | trigger `2` taskArrival | `task`, `distance`; you set the threshold (meters) |
+| `task-delayed` — Task Delayed | webhook (API) | trigger `12` taskDelayed | `task`, `delay`; you set the threshold (seconds) |
+| `worker-duty` — Worker On/Off Duty | webhook (API) | trigger `5` workerDuty | `worker`, `status` (1 on, 0 off) |
+| `worker-created` — Worker Created | webhook (API) | trigger `15` workerCreated | `worker`, `adminId` |
+| `worker-deleted` — Worker Deleted | webhook (API) | trigger `16` workerDeleted | `worker`, `adminId` |
+| `worker-updated` — Worker Updated | webhook (API) | trigger `25` workerUpdated | `worker`, `adminId` |
+| `sms-recipient-response-missed` — SMS Response Missed | webhook (API) | trigger `14` smsRecipientResponseMissed | `from`, `to`, `body` |
+| `sms-recipient-opt-out` — SMS Recipient Opt-Out | webhook (API) | trigger `17` SMSRecipientOptOut | `recipient` |
+| `any-event` — Any Event | webhook (API) | every documented trigger that needs no threshold (route plans, jobs, …) | the whole `delivery` plus the usual fields; the `events` parameter (names or ids, comma-separated; empty = all) picks which webhooks are registered |
+| `new-team` — New Team | poll (5 min) | `GET /teams` (`team-list`), snapshot of ids | The team |
+| `new-hub` — New Hub | poll (5 min) | `GET /hubs` (`hub-list`), snapshot of ids | The hub |
 
 Setup: paste the organization's **Webhook secret** (dashboard → Configuration → API & Webhook →
 Show Secret; a hexadecimal string) into the trigger. Onfleet signs every delivery with it.
@@ -211,4 +226,13 @@ printable ASCII, 256 characters.
 
 Vendor docs: <https://docs.onfleet.com/reference/webhooks>,
 <https://docs.onfleet.com/reference/secrets> (HMAC) and
-<https://docs.onfleet.com/reference/validation> (the `check` handshake), verified 2026-11-09.
+<https://docs.onfleet.com/reference/validation> (the `check` handshake),
+<https://docs.onfleet.com/reference/list-teams> and <https://docs.onfleet.com/reference/list-hubs>
+(the two polls), verified 2026-11-10.
+
+Not covered as their own triggers: `task-list` and `worker-list` (their records arrive through
+`task-created` / `worker-created`; note Onfleet does not fire Task Created for tasks imported from the
+dashboard), `worker-list-by-location` (a radius search around coordinates, not a record feed) and
+`webhook-list` (webhook configuration, not data). Threshold events (`taskEta`, `taskArrival`,
+`taskDelayed`, and the documented `predictedTaskDelay` / `taskPredictedEta`) need a threshold per
+webhook; the first three have their own triggers, and Any Event skips the others.
