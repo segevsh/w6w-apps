@@ -76,3 +76,7 @@ passes only on a 200 carrying a numeric `project_id`; a rejection is read from t
   404s, so there is no feed.
 - `quota` — see item 3 above. `informational`.
 - `auth:client-credentials` — derived from the auth `test` hook above.
+
+## Triggers
+
+- **New Ticket** wraps `ticket-list`. Vendor API reference: https://developers.tidio.com/llms.txt (verified 2026-11-09).

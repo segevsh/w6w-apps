@@ -30,6 +30,7 @@ import sendWindowlessLetter from "./actions/send-windowless-letter.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [
@@ -62,4 +63,5 @@ export default {
   // Personal access token (bearer) only. thanks.io also offers OAuth2; it is not wired here.
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newOrder],
 } satisfies AppDefinition;

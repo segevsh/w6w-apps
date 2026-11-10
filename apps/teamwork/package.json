@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teamwork",
-  "version": "0.1.0",
-  "description": "Manage Teamwork projects, tasks, task lists, milestones and time logs.",
+  "version": "0.2.0",
+  "description": "Manage Teamwork projects, tasks, task lists, milestones and time logs, with a new-project poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.teamwork",
     "displayName": "Teamwork",
     "apiDocs": [

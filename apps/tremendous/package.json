@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/tremendous",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Send gift cards, prepaid cards, cash and donations, and manage the orders, rewards, products and campaigns behind them, via the Tremendous API.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.tremendous",
     "displayName": "Tremendous",
     "apiDocs": [

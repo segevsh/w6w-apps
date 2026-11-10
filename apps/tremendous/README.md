@@ -143,3 +143,7 @@ Tremendous integrations" per the vendor's own authentication guide.
 - **Querying rewards by custom-field label/value** (`list-rewards`'s documented query-param
   extension) — requires knowing the caller's own custom field labels ahead of time; left out rather
   than guessing a shape.
+
+## Triggers
+
+- **New Order** wraps `order-list`, which returns newest orders first. Vendor API reference: https://developers.tremendous.com/reference/orders (verified 2026-11-09).

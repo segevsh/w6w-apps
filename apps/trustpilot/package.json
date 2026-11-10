@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/trustpilot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read a Trustpilot Business Unit's profile, reviews and product-review scores, and send review invitations.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.trustpilot",
     "displayName": "Trustpilot",
     "apiDocs": [

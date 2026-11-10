@@ -404,3 +404,7 @@ status-page candidate in the health table, with byte counts and md5s.
 shape. TickTick's OAuth filter runs before routing, so an unauthenticated probe returns byte-identical
 `401`s for real and invented paths alike — endpoint existence is not testable without a live
 credential, and this app does not pretend otherwise.
+
+## Triggers
+
+- **New Habit** snapshots the bounded `list-habits` collection and emits additions only. Vendor API reference: https://developer.ticktick.com/docs/openapi.md (verified 2026-11-09).

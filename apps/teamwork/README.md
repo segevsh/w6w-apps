@@ -167,3 +167,7 @@ Researched and endpoint-verified 2026-08-30 against apidocs.teamwork.com
 "Download Swagger" link) and live probes of `*.teamwork.com` and
 `status.teamwork.com`. Status surfaces move; re-check if a probe starts
 failing for everyone at once.
+
+## Triggers
+
+- **New Project** wraps `project-list` ordered by creation date descending. Vendor API reference: https://apidocs.teamwork.com/docs/projects/projects/list-projects (verified 2026-11-09).

@@ -240,3 +240,7 @@ deno task lint
 deno task fmt         # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+- **New Review** wraps `business-unit-reviews-list` with `createdat.desc`. Vendor API reference: https://developers.trustpilot.com/ (verified 2026-11-09).

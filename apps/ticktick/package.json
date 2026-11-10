@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/ticktick",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Manage TickTick projects, tasks, focus records and habits via the TickTick Open API.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.ticktick",
     "displayName": "TickTick",
     "apiDocs": [

@@ -107,3 +107,7 @@ than guessed at, per this app's own instructions.
   one file per action.
 - **No `oauth2.scopes`.** Teamleader's `/oauth2/authorize` takes no `scope` query parameter; see
   above.
+
+## Triggers
+
+- **New Contact** wraps `contacts-list`. Vendor API reference: https://developer.focus.teamleader.eu/docs/api/contacts-list (verified 2026-11-09).

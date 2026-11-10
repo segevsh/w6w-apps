@@ -95,3 +95,7 @@ still consumes a credit.
 - The whole WABA (WhatsApp Business Platform) surface — a separate set of endpoints with templates
   and a 24-hour window — and the separate Partner API.
 - Inbound events: create a subscription with `webhook-create`; the app declares no trigger.
+
+## Triggers
+
+- **New Message** wraps `messages-list` in a selected chat, newest first. Vendor API reference: https://timelines.ai/docs (verified 2026-11-09).

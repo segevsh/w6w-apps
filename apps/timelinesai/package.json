@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/timelinesai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Send WhatsApp messages and notes, manage chats, labels, files, reactions and webhooks, and read workspace quota through TimelinesAI.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.timelinesai",
     "displayName": "TimelinesAI",
     "apiDocs": [

@@ -373,3 +373,5 @@ There is no `deno` on the devcontainer host; run them in the `api` service:
 docker compose -f .devcontainer/docker-compose.yml exec -T api \
   sh -c 'cd /app/packages/apps/apps/twitch && deno task test'
 ```
+
+Triggers: not shipped — `search-categories` is query-driven search, not a record feed (https://dev.twitch.tv/docs/api/reference/#search-categories) (verified 2026-11-09).

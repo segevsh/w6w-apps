@@ -232,3 +232,7 @@ deno task fmt
 deno task test    # 134 tests, no network
 deno task validate  # the pack's conformance auditor
 ```
+
+## Triggers
+
+- **New Customer** wraps `customers-list`. Vendor API reference: https://docs.goteamup.com/api-reference (verified 2026-11-09).

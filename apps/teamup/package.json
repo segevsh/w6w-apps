@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teamup",
-  "version": "0.1.0",
-  "description": "Run a gym or studio on TeamUp: customers, the class schedule, attendance, memberships and invoices, instructors, venues and front-desk check-ins.",
+  "version": "0.2.0",
+  "description": "Run a gym or studio on TeamUp and poll for new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.teamup",
     "displayName": "TeamUp",
     "apiDocs": [

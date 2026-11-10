@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teamleader",
-  "version": "0.1.0",
-  "description": "Manage contacts, companies, deals and users in Teamleader Focus, the Belgian CRM / invoicing / project-management SaaS.",
+  "version": "0.2.0",
+  "description": "Manage contacts, companies, deals and users in Teamleader Focus, with poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.teamleader",
     "displayName": "Teamleader Focus",
     "apiDocs": [

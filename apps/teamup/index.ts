@@ -46,6 +46,7 @@ import token from "./auth/token.ts";
 
 import host from "./health/host.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 import customersList from "./actions/customers-list.ts";
 import customersGet from "./actions/customers-get.ts";
@@ -118,6 +119,7 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [host, quota],
+  triggers: [newCustomer],
 };
 
 export default app;

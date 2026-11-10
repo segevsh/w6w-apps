@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/textmagic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Send and schedule text messages, and manage contacts, lists, templates and two-way conversations, via the TextMagic REST API v2.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.textmagic",
     "displayName": "TextMagic",
     "apiDocs": [

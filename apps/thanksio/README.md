@@ -82,3 +82,7 @@ webhook CRUD (paid plans only), radius-search purchase (charged per record; the 
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+- **New Order** wraps `order-list`. Vendor API reference: https://docs.thanks.io/api-reference/openapi.json (verified 2026-11-09).

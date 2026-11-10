@@ -143,3 +143,7 @@ deno task lint       # deno lint
 deno task fmt         # format — use this, never bare `deno fmt`
 deno task validate   # manifest + coverage audit
 ```
+
+## Triggers
+
+- **New Issued Ticket** wraps `issued-ticket-list`. Vendor API reference: https://developers.tickettailor.com/ (verified 2026-11-09).

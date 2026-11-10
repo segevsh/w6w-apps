@@ -130,3 +130,7 @@ deno task lint         # deno lint
 deno task test          # unit tests
 deno task fmt            # format (use this, never bare `deno fmt` — see CLAUDE.md)
 ```
+
+## Triggers
+
+- **New Contact** wraps `contact-list` with descending id ordering. Vendor API reference: https://www.textmagic.com/docs/api/contacts/ (verified 2026-11-09).

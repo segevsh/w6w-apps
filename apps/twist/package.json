@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/twist",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Post and read Twist threads, comments and conversations; manage channels, groups, workspace users, reactions and the inbox.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.twist",
     "displayName": "Twist",
     "apiDocs": [

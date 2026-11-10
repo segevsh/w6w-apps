@@ -82,3 +82,7 @@ does it, and the two actions here are thin wrappers around that.
 | `away_mode`                                     | Account preference, not workflow material                   |
 | conversation `remove_user(s)`                   | Documented as GET for a state change                        |
 | deprecated v3 `workspace_users`                 | Replaced by the v4 actions                                  |
+
+## Triggers
+
+- **New Message** wraps `message-list` in a selected conversation, descending. Vendor API reference: https://developer.twist.com/v3/ (verified 2026-11-09).
