@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gravityforms",
-  "version": "0.1.1",
-  "description": "Read forms, search and manage entries, and run real form submissions on a self-hosted Gravity Forms site via the WordPress REST API.",
+  "version": "0.2.0",
+  "description": "Manage Gravity Forms entries and trigger workflows on new entries.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

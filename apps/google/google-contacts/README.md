@@ -250,3 +250,11 @@ Researched and endpoint-verified against the live documentation on 2026-08-02. E
 and scope in this README was read off `developers.google.com/people`, not recalled. Status surfaces
 move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at
 once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact-group` — New Contact Group | poll | `list-contact-groups` | Each newly discovered contact group |
+
+Source: <https://developers.google.com/people/api/rest/v1/contactGroups/list> (verified 2026-11-09).

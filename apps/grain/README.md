@@ -175,6 +175,14 @@ one PATCH use a different verb.
 identically:
 
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-recording` — New Recording | poll | `recording-list` | Each newly available recording |
+
+Source: <https://developers.grain.com/reference/list-recordings> (verified 2026-11-09).
 Authorization: Bearer {token}
 ```
 

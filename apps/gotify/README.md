@@ -176,3 +176,11 @@ every non-2xx response. `errorDescription` is what actually says what went
 wrong — `error` alone just repeats the HTTP reason phrase. Failures thrown by
 this app's client surface `errorDescription` (falling back to `error`, then
 the raw body) alongside the status.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | poll | `message-list` | Each newly received message |
+
+Source: <https://gotify.net/docs/swagger-docs> (verified 2026-11-09).

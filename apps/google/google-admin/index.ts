@@ -26,6 +26,7 @@ import orgunitDelete from "./actions/orgunit-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newUserList from "./triggers/new-user-list.ts";
 
 export default {
   actions: [
@@ -53,4 +54,5 @@ export default {
   ],
   auth: [oauth2, serviceAccount],
   healthChecks: [service, quota],
+  triggers: [newUserList],
 } satisfies AppDefinition;

@@ -159,3 +159,11 @@ Google's error envelope is `{"error": {"code", "message", "errors": [{"reason"}]
 The `reason` is the machine-readable part — `notFound`, `accessDenied`,
 `quotaExceeded`, `invalidQuery` — and the `message` carries the SQL error text,
 so failures surface the status and the whole envelope rather than a summary.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job-list` — New Job | poll | `job-list` | Each newly observed job |
+
+Source: <https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/list> (verified 2026-11-09).

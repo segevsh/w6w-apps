@@ -62,6 +62,7 @@ import meetingTypeList from "./actions/meeting-type-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRecording from "./triggers/new-recording.ts";
 
 export default {
   actions: [
@@ -90,4 +91,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newRecording],
 } satisfies AppDefinition;

@@ -141,3 +141,11 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 Researched and endpoint-verified 2026-09-05 against the live Discovery Document and Google's own
 Admin SDK / OAuth documentation. Status surfaces and quota error codes move; re-check if a probe
 starts failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user-list` — New User | poll | `user-list` | Each newly created Workspace user |
+
+Source: <https://developers.google.com/admin-sdk/directory/reference/rest/v1/users/list> (verified 2026-11-09).

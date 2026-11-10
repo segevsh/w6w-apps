@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gocardless",
-  "version": "0.1.0",
-  "description": "Collect bank debits with GoCardless: customers, mandates, payments, subscriptions, payouts and refunds.",
+  "version": "0.2.0",
+  "description": "Collect bank debits with GoCardless and trigger workflows on new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api-sandbox.gocardless.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

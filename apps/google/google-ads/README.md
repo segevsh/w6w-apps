@@ -315,3 +315,11 @@ for every path, request field, resource field and enum asserted here. Two things
 when this ages: the **version** (Google ships several majors a year — bump `API_VERSION` in
 `lib/client.ts`), and the **status feed** (surfaces move; if the `service` check starts failing for
 everyone at once, that is the first suspect).
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer-clients` — New Customer Client | poll | `list-customer-clients` | Each newly visible customer client |
+
+Source: <https://developers.google.com/google-ads/api/fields/v22/customer_client> (verified 2026-11-09).

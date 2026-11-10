@@ -88,6 +88,14 @@ Every failure answers the same envelope:
 }
 ```
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `list-customers` | Each newly created customer |
+
+Source: <https://developer.gocardless.com/api-reference#core-endpoints-customers> (verified 2026-11-09).
+
 `type` is one of `invalid_api_usage`, `invalid_state`, `validation_failed` or `gocardless`; each
 item of `errors` carries a `reason`, except under `validation_failed`, where it carries a `field`.
 

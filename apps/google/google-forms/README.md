@@ -198,3 +198,12 @@ Researched and endpoint-verified 2026-08-03 against the live discovery document
 (`https://forms.googleapis.com/$discovery/rest?version=v1`, revision `20260729`) and the
 reference pages under `developers.google.com/forms/api`. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-form` — New Form | poll | `list-forms` | Each newly created Google Form |
+| `new-or-updated-form` — New or Updated Form | poll | `list-forms` | Each newly created or updated Google Form |
+
+Source: <https://developers.google.com/drive/api/reference/rest/v3/files/list> (verified 2026-11-09).

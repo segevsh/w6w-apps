@@ -83,3 +83,11 @@ Format with `deno task fmt`, never bare `deno fmt`, which would rewrite it.
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-audit-event` — New Audit Event | poll | `audit-event-list` | Each newly recorded audit event |
+
+Source: <https://docs.granola.ai/api-reference/openapi.json> (verified 2026-11-09).

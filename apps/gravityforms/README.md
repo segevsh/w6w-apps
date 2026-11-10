@@ -249,3 +249,12 @@ Only URLs verified on 2026-08-03 are listed.
   - <https://docs.gravityforms.com/sending-notifications-with-the-rest-api-v2/>
 - **GitHub org:** <https://github.com/gravityforms> — the plugin core is not open source; the org
   publishes tooling such as the Gravity Forms CLI.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-entry` — New Entry | poll | `entry-get-many` | Each newly submitted form entry |
+| `new-or-updated-entry` — New or Updated Entry | poll | `entry-get-many` | Each newly created or updated form entry |
+
+Source: <https://docs.gravityforms.com/searching-and-getting-entries-with-the-rest-api-v2/> (verified 2026-11-09).

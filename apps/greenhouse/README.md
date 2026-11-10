@@ -456,3 +456,11 @@ deno task test       # 238 tests
 The icon is the Greenhouse mark from [Simple Icons](https://simpleicons.org/), taken verbatim
 (936 bytes, md5 `503eae18e5712bc3fcf4bbcc5eb90f9f`, `<title>Greenhouse</title>`). `greenhouse.io`
 serves a catch-all HTML page for every asset path, so the vendor-favicon route is closed.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-interview` — New Interview | poll | `list-interviews` | Each newly scheduled interview |
+
+Source: <https://developers.greenhouse.io/harvest.html#list-interviews> (verified 2026-11-09).
