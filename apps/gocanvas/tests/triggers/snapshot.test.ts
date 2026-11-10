@@ -242,3 +242,72 @@ test("the snapshot triggers are wired in index.ts", () => {
   const keys = app.triggers.map((t) => t.key);
   for (const c of cases) assert(keys.includes(c.t.key), c.name);
 });
+
+describe("snapshot triggers: bounds and identity", () => {
+  test("every snapshot trigger checks at most every 10 minutes", () => {
+    for (const c of cases) assertEquals(c.t.minIntervalMs, 600_000, c.name);
+  });
+
+  test("exactly 50 pages (5000 rows) are accepted; the cap is 50, not one page too small", async () => {
+    assertEquals(SNAPSHOT_MAX_PAGES, 50);
+    const pages = Array.from({ length: 50 }, (_, i) => page([rec(i + 1)], i + 1, 50));
+    const { ctx, calls } = mockCtx(pages);
+    const r = await newUser.poll!({ params: {}, state: {}, subscriptionId: "s" }, ctx);
+    assertEquals(calls.length, 50);
+    assertEquals(new URL(calls[49].url).search, "?page=50");
+    assertEquals(r.events, []);
+  });
+
+  test("a record without an id is skipped, never keyed as an empty id", async () => {
+    const seeded = await newUser.poll!(
+      { params: {}, state: {}, subscriptionId: "s" },
+      mockCtx([page([rec(1)])]).ctx,
+    );
+    const r = await newUser.poll!(
+      { params: {}, state: seeded.nextState, subscriptionId: "s" },
+      mockCtx([page([rec(1), { type: "x", name: "no id" }, { id: null }, rec(2)])]).ctx,
+    );
+    assertEquals(r.events, [rec(2)]);
+  });
+});
+
+describe("new-form keys on the form, not on its version", () => {
+  const form = (id: number, root: number | null | undefined, version = 1) => ({
+    id,
+    type: "form",
+    version,
+    ...(root === undefined ? {} : { root_version_id: root }),
+  });
+  const run = (state: unknown, items: unknown[]) =>
+    newForm.poll!({ params: {}, state, subscriptionId: "s" }, mockCtx([page(items)]).ctx);
+
+  test("a republished form (new version id, same root_version_id) does not fire again", async () => {
+    const seeded = await run({}, [form(346127, 346127)]);
+    const r = await run(seeded.nextState, [
+      form(5000001, 346127, 2),
+      form(346127, 346127),
+      form(5000009, 5000009),
+    ]);
+    assertEquals(r.events, [form(5000009, 5000009)]);
+  });
+
+  test("the same version showing up again is not new either, and a retry is identical", async () => {
+    const seeded = await run({}, [form(1, 1), form(2, 2)]);
+    const first = await run(seeded.nextState, [form(1, 1), form(2, 2), form(3, 3)]);
+    assertEquals(first.events, [form(3, 3)]);
+    assertEquals(await run(seeded.nextState, [form(1, 1), form(2, 2), form(3, 3)]), first);
+    assertEquals((await run(first.nextState, [form(1, 1), form(2, 2), form(3, 3)])).events, []);
+  });
+
+  test("a form without a root_version_id (or a null one) falls back to its id", async () => {
+    const seeded = await run({}, [form(10, undefined)]);
+    const r = await run(seeded.nextState, [
+      form(10, undefined),
+      form(11, null),
+      form(12, undefined),
+    ]);
+    assertEquals(r.events, [form(11, null), form(12, undefined)]);
+    const again = await run(r.nextState, [form(10, null), form(11, undefined)]);
+    assertEquals(again.events, []);
+  });
+});

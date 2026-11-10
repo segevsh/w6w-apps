@@ -144,6 +144,44 @@ describe("any-event trigger", () => {
     assertEquals(new URL(calls[2].url).pathname, "/api/v3/forms/9/webhooks/1");
   });
 
+  test("a skipped feature-gated event is logged, not silent", async () => {
+    const { ctx, logs } = mockCtx([
+      ok(1),
+      ok(2),
+      { status: 400, body: refused },
+      { status: 422, body: refused },
+      { status: 422, body: refused },
+    ]);
+    await anyEvent.onSubscribe!(sub({ formId: "9" }), ctx);
+    assertEquals(logs.map((l) => l.level), ["warn", "warn", "warn"]);
+    assertEquals(logs.map((l) => l.message), [
+      "GoCanvas refused dispatch_create on this form; skipped",
+      "GoCanvas refused workflow_handoff_create on this form; skipped",
+      "GoCanvas refused submission_custom_status_change on this form; skipped",
+    ]);
+  });
+
+  for (const status of [401, 403, 404, 409, 429]) {
+    test(`a ${status} on a feature-gated event is not "the form lacks the feature": it fails and rolls back`, async () => {
+      const { ctx, calls } = mockCtx([
+        ok(1),
+        ok(2),
+        { status, body: errorsBody("refused") },
+        { body: {} },
+        { body: {} },
+      ]);
+      await assertRejects(
+        () => anyEvent.onSubscribe!(sub({ formId: "9" }), ctx),
+        Error,
+        `GoCanvas ${status}`,
+      );
+      assertEquals(calls.slice(3).map((c) => [c.method, new URL(c.url).pathname]), [
+        ["DELETE", "/api/v3/forms/9/webhooks/1"],
+        ["DELETE", "/api/v3/forms/9/webhooks/2"],
+      ]);
+    });
+  }
+
   test("a server error on a feature-gated event is not swallowed", async () => {
     const { ctx } = mockCtx([
       ok(1),

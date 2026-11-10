@@ -79,6 +79,8 @@ import newGroup from "./triggers/new-group.ts";
 import newDepartment from "./triggers/new-department.ts";
 import newDepartmentUser from "./triggers/new-department-user.ts";
 import newFormAssignedUser from "./triggers/new-form-assigned-user.ts";
+import newSubmission from "./triggers/new-submission.ts";
+import newDispatch from "./triggers/new-dispatch.ts";
 
 export default {
   actions: [
@@ -150,6 +152,8 @@ export default {
     newDepartment,
     newDepartmentUser,
     newFormAssignedUser,
+    newSubmission,
+    newDispatch,
   ],
   auth: [basic],
   healthChecks: [service, quota],
