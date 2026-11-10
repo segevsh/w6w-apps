@@ -5227,13 +5227,13 @@
   },
   {
     "path": "apps/posthog",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "event"
+      "event-captured"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: event delivery; existing offset lists lack documented order",
-    "verified": "apps/posthog/README.md Triggers section (verified 2026-11-09)",
+    "reason": "HTTP Webhook destination added by hand in PostHog; PostHog's POST /api/projects/:project_id/hog_functions/ (https://posthog.com/docs/api/hog-functions) could register it, queued as a webhook-api follow-up, not built; deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook)",
+    "verified": "apps/posthog/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5402,13 +5402,13 @@
   },
   {
     "path": "apps/qualtrics",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
       "event subscription"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: Qualtrics event subscriptions; existing lists have no safe creation order",
-    "verified": "apps/qualtrics/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Qualtrics event subscriptions exist and are API-registered, but the signature scheme cannot be established: https://api.qualtrics.com/ redirects to https://developer-docs.qualtrics.com/public-api/, whose static pages (e.g. .../docs/public-api/eventSubscriptions/create-subscription/) say to compare an HMAC of the message body with the HMAC in the event message but never name the header/field, algorithm or encoding (re-checked 2026-11-10)",
+    "verified": "apps/qualtrics/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5648,13 +5648,11 @@
     "path": "apps/rendex",
     "mechanism": "webhook-api",
     "candidates": [
-      "watch.changed",
-      "watch.recovered",
-      "watch.error"
+      "watch-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: Rendex Watch changed, recovered and error events",
-    "verified": "apps/rendex/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks)",
+    "verified": "apps/rendex/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5761,13 +5759,13 @@
   },
   {
     "path": "apps/rocketreach",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "lookup.completed"
+      "person lookup completed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: asynchronous person-lookup completion; search endpoints return RocketReach's enrichment corpus, lookup-status is a per-id check, not a list",
-    "verified": "apps/rocketreach/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the only webhook delivers the result of a People Lookup/Bulk People Lookup the caller itself starts (webhook_id on the lookup request): a job-completion callback, not an account event stream (https://docs.rocketreach.co/reference/webhooks)",
+    "verified": "apps/rocketreach/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5862,24 +5860,26 @@
     "path": "apps/sanity",
     "mechanism": "webhook-api",
     "candidates": [
-      "document mutation"
+      "document-created",
+      "document-updated",
+      "document-deleted"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: document create/update/delete; document-query is caller-supplied GROQ, dataset-list/project-list are small config lists with no row cap stated in the cited reference",
-    "verified": "apps/sanity/README.md Triggers section (verified 2026-11-09)",
+    "reason": "GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks)",
+    "verified": "apps/sanity/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
     "path": "apps/savvycal",
     "mechanism": "webhook-api",
     "candidates": [
-      "event.created",
-      "event.rescheduled",
-      "event.canceled"
+      "event-created",
+      "event-canceled",
+      "event-rescheduled"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap",
-    "verified": "apps/savvycal/README.md Triggers section (verified 2026-11-09)",
+    "reason": "webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks)",
+    "verified": "apps/savvycal/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6139,13 +6139,13 @@
     "path": "apps/signnow",
     "mechanism": "webhook-api",
     "candidates": [
-      "document.create",
-      "document.update",
-      "document.complete"
+      "document-created",
+      "document-completed",
+      "invite-signed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot",
-    "verified": "apps/signnow/README.md Triggers section (verified 2026-11-09)",
+    "reason": "user-level event subscription via POST /v2/event-subscriptions with a host-chosen secret_key, signed X-SignNow-Signature base64 HMAC-SHA256 of the body (https://docs.signnow.com/docs/signnow/webhooks)",
+    "verified": "apps/signnow/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {

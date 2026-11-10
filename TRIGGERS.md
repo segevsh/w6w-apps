@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 67, manual-webhook: 30, poll: 486, none: 100
+**Totals:** 683 apps — webhook-api: 64, manual-webhook: 31, poll: 486, none: 102
 
-## webhook-api (67)
+## webhook-api (64)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -61,14 +61,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/paypal | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | new-deal | apps/pipedrive/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipefy | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
-| apps/posthog | event | apps/posthog/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event delivery; existing offset lists lack documented order |
-| apps/qualtrics | event subscription | apps/qualtrics/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Qualtrics event subscriptions; existing lists have no safe creation order |
-| apps/rendex | watch.changed, watch.recovered, watch.error | apps/rendex/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Rendex Watch changed, recovered and error events |
-| apps/rocketreach | lookup.completed | apps/rocketreach/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: asynchronous person-lookup completion; search endpoints return RocketReach's enrichment corpus, lookup-status is a per-id check, not a list |
-| apps/sanity | document mutation | apps/sanity/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document create/update/delete; document-query is caller-supplied GROQ, dataset-list/project-list are small config lists with no row cap stated in the cited reference |
-| apps/savvycal | event.created, event.rescheduled, event.canceled | apps/savvycal/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap |
+| apps/rendex | watch-event | apps/rendex/README.md Triggers section (verified 2026-11-10) | hand | Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks) |
+| apps/sanity | document-created, document-updated, document-deleted | apps/sanity/README.md Triggers section (verified 2026-11-10) | hand | GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks) |
+| apps/savvycal | event-created, event-canceled, event-rescheduled | apps/savvycal/README.md Triggers section (verified 2026-11-10) | hand | webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks) |
 | apps/shopify | customer-created, event, order-cancelled, order-created, order-fulfilled, order-paid, order-updated, product-created, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/signnow | document.create, document.update, document.complete | apps/signnow/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot |
+| apps/signnow | document-created, document-completed, invite-signed | apps/signnow/README.md Triggers section (verified 2026-11-10) | hand | user-level event subscription via POST /v2/event-subscriptions with a host-chosen secret_key, signed X-SignNow-Signature base64 HMAC-SHA256 of the body (https://docs.signnow.com/docs/signnow/webhooks) |
 | apps/signwell | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
 | apps/stripe | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/surveymonkey | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -82,7 +79,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (30)
+## manual-webhook (31)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -109,6 +106,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/payhip | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
 | apps/peopledatalabs | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |
 | apps/phantombuster | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
+| apps/posthog | event-captured | apps/posthog/README.md Triggers section (verified 2026-11-10) | hand | HTTP Webhook destination added by hand in PostHog; PostHog's POST /api/projects/:project_id/hog_functions/ (https://posthog.com/docs/api/hog-functions) could register it, queued as a webhook-api follow-up, not built; deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook) |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/strava | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/tldv | meeting-ready, transcript-ready | apps/tldv/README.md Triggers section (verified 2026-11-10) | hand | webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret |
@@ -608,7 +606,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (100)
+## none (102)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -683,10 +681,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/procore | new-submittal | apps/procore/README.md Triggers section (verified 2026-11-09) | hand | submittal-list needs a per-project id and a descending sort whose syntax is only published in a JS-rendered reference that could not be verified (https://developers.procore.com/reference/rest/submittals) |
 | apps/prospeo |  | apps/prospeo/README.md Triggers section (verified 2026-11-09) | hand | enrichment and search endpoints compute or look up supplied prospects rather than list account records |
 | apps/pushover |  | apps/pushover/README.md Triggers section (verified 2026-11-09) | hand | none: only 4 calls (message-send, user-validate, sounds-list, limits-get); no record-list action (https://pushover.net/api) |
+| apps/qualtrics | event subscription | apps/qualtrics/README.md Triggers section (verified 2026-11-10) | hand | Qualtrics event subscriptions exist and are API-registered, but the signature scheme cannot be established: https://api.qualtrics.com/ redirects to https://developer-docs.qualtrics.com/public-api/, whose static pages (e.g. .../docs/public-api/eventSubscriptions/create-subscription/) say to compare an HMAC of the message body with the HMAC in the event message but never name the header/field, algorithm or encoding (re-checked 2026-11-10) |
 | apps/quickchart |  | apps/quickchart/README.md Triggers section (verified 2026-11-09) | hand | stateless chart, QR, barcode and image rendering API has no account record lists |
 | apps/recruit-crm |  | apps/recruit-crm/README.md Triggers section (verified 2026-11-09) | hand | none: GET /v1/jobs sort_by/sort_order undocumented values and no created/updated-since filter (https://api.recruitcrm.io/docs) |
 | apps/recruiterflow |  | apps/recruiterflow/README.md Triggers section (verified 2026-11-09) | hand | candidate, client, job and deal lists paginate by page number with no documented newest-first order or since filter |
 | apps/respondio |  | apps/respondio/README.md Triggers section (verified 2026-11-09) | hand | contact-list is a caller-filtered POST /contact/list with cursor paging and no documented created/updated sort; a built-in created-timestamp filter via isTimestampBetween is unverified (vendor reference is a JavaScript shell) |
+| apps/rocketreach | person lookup completed | apps/rocketreach/README.md Triggers section (verified 2026-11-10) | hand | the only webhook delivers the result of a People Lookup/Bulk People Lookup the caller itself starts (webhook_id on the lookup request): a job-completion callback, not an account event stream (https://docs.rocketreach.co/reference/webhooks) |
 | apps/runway |  | apps/runway/README.md Triggers section (verified 2026-11-09) | hand | list-avatars is cursor-paged (limit max 100) with no documented order, since filter or total cap; routers, voices and workflows list likewise without a documented cursor/filter (https://docs.dev.runwayml.com/api) |
 | apps/semrush |  | apps/semrush/README.md Triggers section (verified 2026-11-09) | hand | backlink, keyword, and domain endpoints are analytics/report queries, not account-owned changing records |
 | apps/sendy |  | apps/sendy/README.md Triggers section (verified 2026-11-09) | hand | brand-list and list-list are installation configuration reads (list-list needs a brand id per call) with no created/updated field or since filter documented |
