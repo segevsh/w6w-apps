@@ -10,6 +10,7 @@ interface Input {
   query?: string;
   platform?: string;
   limit?: number;
+  page?: number;
 }
 
 const projectList: ActionDefinition<Input> = {
@@ -38,6 +39,7 @@ const projectList: ActionDefinition<Input> = {
       hint: "Only projects from this integration (`ev` is Everhour itself).",
     },
     { key: "limit", label: "Limit", type: "number", default: 100, hint: "Max results." },
+    { key: "page", label: "Page", type: "number", hint: "Results page, starting at 1." },
   ],
   output: [
     { key: "items", type: "array", label: "Records" },
@@ -51,7 +53,12 @@ const projectList: ActionDefinition<Input> = {
 
   execute(input, ctx) {
     return new EverhourClient(ctx).many(`/projects`, {
-      query: { "platform": input.platform, "query": input.query, "limit": input.limit },
+      query: {
+        "platform": input.platform,
+        "query": input.query,
+        "limit": input.limit,
+        "page": input.page,
+      },
     });
   },
 };

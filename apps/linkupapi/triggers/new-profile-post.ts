@@ -32,20 +32,36 @@ const trigger = pollFromListAction<Params>({
   input: ({ accountId, profileUrl }) => ({
     accountId,
     profileUrl,
-    count: 100,
+    count: 10,
     includeReshares: false,
   }),
   items: (result) => {
-    const data = (result as { data?: unknown }).data;
-    return Array.isArray(data) ? data : [];
+    const data = (result as { data?: { posts?: unknown } }).data;
+    return Array.isArray(data?.posts) ? data.posts : [];
   },
-  idOf: (item) =>
-    String((item as { id?: unknown; urn?: unknown }).id ?? (item as { urn?: unknown }).urn),
+  idOf: (item) => {
+    const post = item as { activity_id?: unknown; backend_urn?: unknown };
+    return String(post.activity_id ?? post.backend_urn ?? "");
+  },
   output: [
-    { key: "id", type: "string", label: "Post ID" },
+    { key: "activity_id", type: "string", label: "Post activity ID" },
+    { key: "backend_urn", type: "string", label: "Post URN" },
+    { key: "shareUrl", type: "string", label: "Post URL" },
     { key: "text", type: "string", label: "Post text" },
+    { key: "published_at", type: "number", label: "Published at (epoch ms)" },
+    { key: "numLikes", type: "number", label: "Likes" },
+    { key: "numComments", type: "number", label: "Comments" },
   ],
-  sample: { id: "post-1", text: "A new update" },
+  sample: {
+    activity_id: "7300000000000000001",
+    backend_urn: "urn:li:activity:7300000000000000001",
+    shareUrl: "/posts/sample-update",
+    text: "A new update",
+    published_at: 1773000000000,
+    numLikes: 3,
+    numComments: 1,
+  },
+  minIntervalMs: 900_000,
   maxPages: 1,
 });
 

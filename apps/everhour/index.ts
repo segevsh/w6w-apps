@@ -123,6 +123,14 @@ import webhookUpdate from "./actions/webhook-update.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
 import newClient from "./triggers/new-client.ts";
 import newInvoice from "./triggers/new-invoice.ts";
+import newProject from "./triggers/new-project.ts";
+import newTask from "./triggers/new-task.ts";
+import newSection from "./triggers/new-section.ts";
+import newExpense from "./triggers/new-expense.ts";
+import newUser from "./triggers/new-user.ts";
+import newAssignment from "./triggers/new-assignment.ts";
+import newTimeRecord from "./triggers/new-time-record.ts";
+import newTimecard from "./triggers/new-timecard.ts";
 
 export default {
   actions: [
@@ -226,5 +234,16 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newClient, newInvoice],
+  triggers: [
+    newClient,
+    newInvoice,
+    newProject,
+    newTask,
+    newSection,
+    newExpense,
+    newUser,
+    newAssignment,
+    newTimeRecord,
+    newTimecard,
+  ],
 } satisfies AppDefinition;

@@ -21,21 +21,29 @@ const pollAction: ActionDefinition = {
 const trigger = pollFromListAction<Params>({
   key: "new-connection",
   title: "New Connection",
-  description: "The run gets each connection newly added to the selected account.",
+  description:
+    "The run gets each connection newly accepted on the selected account (needs the account subscribed to the accepted_invitation webhook event, which fills the stored copy this reads).",
   action: pollAction,
   params: [{ key: "accountId", label: "Account ID", type: "string", required: true }],
   input: ({ accountId }) => ({ accountId, count: 100, offset: 0, useCache: true }),
   items: (result) => {
-    const data = (result as { data?: unknown }).data;
-    return Array.isArray(data) ? data : [];
+    const data = (result as { data?: { connections?: unknown } }).data;
+    return Array.isArray(data?.connections) ? data.connections : [];
   },
-  idOf: (item) =>
-    String((item as { id?: unknown; urn?: unknown }).id ?? (item as { urn?: unknown }).urn),
+  idOf: (item) => String((item as { profile_url?: unknown }).profile_url ?? ""),
   output: [
-    { key: "id", type: "string", label: "Connection ID" },
     { key: "name", type: "string", label: "Connection name" },
+    { key: "job_title", type: "string", label: "Headline" },
+    { key: "profile_url", type: "string", label: "Profile URL" },
+    { key: "profile_picture", type: "string", label: "Profile picture URL" },
   ],
-  sample: { id: "connection-1", name: "Avery Example" },
+  sample: {
+    name: "Avery Example",
+    job_title: "Head of Growth",
+    profile_url: "/in/avery-example",
+    profile_picture: "/media/avery.jpg",
+  },
+  minIntervalMs: 900_000,
   maxPages: 1,
 });
 
