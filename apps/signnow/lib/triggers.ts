@@ -18,8 +18,8 @@ import { SignNowClient } from "./client.ts";
  *     `{ data: { id } }`). SignNow accepts a caller-chosen `secret_key` (up to 300 chars), so the
  *     host mints one with `randomSecret()` (D5 (1)) and keeps it in the subscription `state`.
  *   - `onUnsubscribe` deletes it with `DELETE /v2/event-subscriptions/{id}`; a subscription
- *     SignNow no longer has (404) counts as deleted.
- *   - `handleIngest` verifies `X-SignNow-Signature` (hex HMAC-SHA256 of the RAW callback body
+ *     SignNow no longer has (404 or 410) counts as deleted.
+ *   - `handleIngest` verifies `X-SignNow-Signature` (base64 HMAC-SHA256 of the RAW callback body
  *     under the secret key) BEFORE it parses the body, then keeps only the event this trigger is
  *     for.
  *
@@ -29,7 +29,9 @@ import { SignNowClient } from "./client.ts";
  * `meta.timestamp` plus event and entity id is SignNow's own suggested de-dupe key.
  *
  * Docs (verified 2026-11-10): https://docs.signnow.com/docs/signnow/webhooks (events list, HMAC
- * security) and https://docs.signnow.com/docs/manage-event-subscriptions/operations/create-event-subscription-2.md
+ * security), https://docs.signnow.com/docs/guides-handling-signnow-event-callbacks and
+ * https://docs.signnow.com/docs/guides-webhooks (the signature is base64 HMAC-SHA256), and
+ * https://docs.signnow.com/docs/manage-event-subscriptions/operations/create-event-subscription-2.md
  * and .../delete-v2-event-subscriptions-subscription-id.md
  */
 
@@ -87,9 +89,9 @@ function str(v: unknown): string | null {
   return typeof v === "string" && v !== "" ? v : typeof v === "number" ? String(v) : null;
 }
 
-/** True for the "no such subscription" answer `SignNowClient` throws. */
+/** True for the "no such subscription" answer `SignNowClient` throws (404 or 410). */
 function isGone(err: unknown): boolean {
-  return err instanceof Error && /^SignNow 404\b/.test(err.message);
+  return err instanceof Error && /^SignNow (404|410)\b/.test(err.message);
 }
 
 /**
@@ -107,8 +109,10 @@ export async function verifySignature(
   if (!received) {
     throw new Error("SignNow delivery refused: the X-SignNow-Signature header is missing.");
   }
-  const expected = await hmac("SHA-256", key, body, "hex");
-  if (!timingSafeEqual(expected, received.trim().toLowerCase())) {
+  // SignNow sends the digest base64-encoded (standard alphabet, padded): compare it exactly,
+  // never case-folded (base64 is case-sensitive; a hex digest must not verify).
+  const expected = await hmac("SHA-256", key, body, "base64");
+  if (!timingSafeEqual(expected, received)) {
     throw new Error("SignNow delivery refused: the signature does not match.");
   }
   return body;

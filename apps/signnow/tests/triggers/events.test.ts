@@ -27,7 +27,7 @@ const BODY = `{ "meta" : { "timestamp":1762770000,  "event":"user.document.compl
   "content": { "document_id":"D1", "document_name":"Sales Agreement",  "user_id":"U1" } }`;
 
 const sig = (body = BODY, secret = SECRET) =>
-  createHmac("sha256", secret).update(body).digest("hex");
+  createHmac("sha256", secret).update(body).digest("base64");
 
 const call = (over: Record<string, unknown> = {}, body: string | null = BODY) => ({
   raw: {
@@ -81,6 +81,23 @@ test("valid signature (node:crypto) → one normalized event, access token not c
 test("a signed delivery of another event is acknowledged with no event", async () => {
   assertEquals(evs(await ingest(call(), created)), []);
   assertEquals(evs(await ingest(call(), signed)), []);
+});
+
+test("hex-encoded signature (the wrong encoding) → refused", async () => {
+  const hex = createHmac("sha256", SECRET).update(BODY).digest("hex");
+  await assertRejects(
+    () => ingest(call({ headers: { "x-signnow-signature": hex } })),
+    Error,
+    "signature",
+  );
+});
+
+test("base64 signature case-folded → refused (base64 is case-sensitive)", async () => {
+  await assertRejects(
+    () => ingest(call({ headers: { "x-signnow-signature": sig().toLowerCase() } })),
+    Error,
+    "signature",
+  );
 });
 
 test("one flipped byte in the body → refused", async () => {
@@ -166,7 +183,7 @@ test("onSubscribe refuses a response without an id", async () => {
   );
 });
 
-test("onUnsubscribe DELETEs /v2/event-subscriptions/{id}; 404 = already gone; 500 rethrows", async () => {
+test("onUnsubscribe DELETEs /v2/event-subscriptions/{id}; 404 and 410 = already gone; 500 rethrows", async () => {
   const input = {
     params: {},
     state: { subscriptionId: "SUB1", secret: "s" },
@@ -178,6 +195,8 @@ test("onUnsubscribe DELETEs /v2/event-subscriptions/{id}; 404 = already gone; 50
   assertEquals(ok.calls[0].url, "https://api.signnow.com/v2/event-subscriptions/SUB1");
   const gone = mockCtx([{ status: 404, body: { errors: [{ code: 1, message: "gone" }] } }]);
   await completed.onUnsubscribe!(input, gone.ctx);
+  const goneToo = mockCtx([{ status: 410, body: { errors: [{ code: 1, message: "gone" }] } }]);
+  await completed.onUnsubscribe!(input, goneToo.ctx);
   const bad = mockCtx([{ status: 500, body: "boom" }]);
   await assertRejects(() => completed.onUnsubscribe!(input, bad.ctx), Error, "500");
 });
