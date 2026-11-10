@@ -16,6 +16,7 @@ import search from "./actions/search.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newFile from "./triggers/new-file.ts";
+import filesChanged from "./triggers/files-changed.ts";
 
 export default {
   actions: [
@@ -32,7 +33,7 @@ export default {
     copyFolder,
     search,
   ],
-  triggers: [newFile],
+  triggers: [newFile, filesChanged],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
