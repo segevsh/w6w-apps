@@ -4,7 +4,7 @@ B2B contact and company data: search the Seamless.AI database, research (enrich)
 and manage the lists, campaigns, tasks and saved searches around them. 45 actions over the public API
 **v2** (`https://api.seamless.ai/api/client/v2`).
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 
 Every path, verb, parameter, body field and enum was read on 2026-10-06 from the vendor's own OpenAPI
 documents — `docs.seamless.ai/openapi.json` (v1) and the v2 document its reference pages are rendered
@@ -85,21 +85,41 @@ equivalents.
 
 ## Triggers
 
+Eleven polling triggers, all over the same authenticated client as the matching list action. Vendor
+docs: <https://docs.seamless.ai/api-reference/v2/tasks/list-tasks> and the sibling v2 reference pages
+named below (verified 2026-11-10).
+
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
-| `new-task` — New Task | poll (every 5 minutes at most) | `task-list`, ordered `createdAt` descending (unverified column name; see note) | each newly created task |
+| `new-task` — New Task | newest-first (`sortColumn=createdAt`, `sortOrder=desc`, documented) | `task-list` | each newly created task |
+| `new-saved-search` — New Saved Search | newest-first (documented "newest first") | `saved-search-list` | each new saved search |
+| `new-campaign` — New Campaign | newest-first (documented "newest first"), first 50 | `campaign-list` | each new campaign |
+| `new-activity` — New Activity | newest-first (documented "newest first"), first 50 | `activity-list` | each email or call thread that first appears in the feed |
+| `new-or-updated-activity` — New or Updated Activity | same feed; id is thread + latest event time | `activity-list` | each new thread and each thread with a newer event |
+| `new-contact` — New Contact | since-filter (`startDate`..`endDate`, 100 per page) | `contacts-list` | each contact your organization researches |
+| `new-company` — New Company | since-filter (`startDate`..`endDate`, 100 per page) | `companies-list` | each company your organization researches |
+| `new-list` — New List | snapshot of the whole unpaged `/lists` response | `list-list` | each new list |
+| `new-or-updated-list` — New or Updated List | same snapshot, changed rows included | `list-list` | each new or changed list |
+| `new-template` — New Template | snapshot of all template pages (50 each, at most 20) | `template-list` | each new template |
+| `new-campaign-contact` — New Campaign Contact | snapshot of one campaign's contacts (`campaignId` param, 50 per page, at most 20) | `campaign-contacts-list` | each contact added to that campaign |
 
-The first check only records what already exists (no flood); later checks emit items not seen
-before, oldest first, up to 100 per check. Polling re-uses `task-list` through the connection's own
-client and credential, so it reads exactly what that action reads.
+The first check only records what already exists (no flood). Later checks emit what was not seen
+before, oldest first. The two since-filter triggers read the window `cursor - 2 minutes`..now up to
+3 pages per check and resume the next page on the next check when a window is longer; they ignore
+records stamped before the first check. The vendor does not say which timestamp `startDate` /
+`endDate` filter, so the trigger compares each record's `researchedAt` (else `createdAt`) with that
+first-check time. A snapshot trigger fails with a clear error rather than truncating when its
+collection passes 1000 rows.
 
 No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
-verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
-the connection.
+verify: the triggers only pull. Setup is just the connection. The API is rate limited to 60
+requests per minute per endpoint; the 5-minute minimum interval keeps even the 20-page snapshots
+well under it.
 
-Vendor docs: <https://docs.seamless.ai> (verified 2026-11-10).
+Not covered by a trigger (list actions skipped on purpose): `contacts-search` and `companies-search`
+spend credits per returned record; `call-dispositions-list`, `call-sentiments-list`,
+`contact-statuses-list`, `engagement-statuses-list` and `email-accounts-list` are reference values
+(the vendor's Account API groups "contact statuses, email accounts, and footers" as reference
+values, <https://docs.seamless.ai/api-catalog/account>).
 
-Not covered by polling: the remaining list actions provide pagination only, without a documented
-newest-first order or cursor/since filter, so polling their first page could silently miss records.
-
-Note: the sort column name above could not be confirmed from the vendor's published docs on 2026-11-09; if the vendor ignores or rejects it the check fails or returns the vendor's default order, which can miss new items.
+Vendor docs: <https://docs.seamless.ai/llms.txt> (verified 2026-11-10).
