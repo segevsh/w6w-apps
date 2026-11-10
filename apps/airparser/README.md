@@ -1,6 +1,6 @@
 # Airparser
 
-Triggers: not shipped — document-list accepts date filters but the vendor does not document its result order and the action preserves the ambiguous response envelope (https://help.airparser.com/portal/en/kb/airparser-api).
+Triggers: not shipped — document-list has from/to date filters, but Airparser's API reference documents no response body or result order, so documents cannot be identified or ordered reliably; the action's own header records that the envelope is undocumented (https://help.airparser.com/portal/en/kb/airparser-api).
 
 Parse emails and documents — PDF, DOCX, XLSX, CSV, HTML, images and more — into structured JSON
 using an AI extraction schema, on Airparser's **Public API**.

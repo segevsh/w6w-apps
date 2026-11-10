@@ -1,15 +1,24 @@
 # Amazon S3
 
-Triggers: not shipped — object-list is lexicographically keyed rather than created-ordered and is not a bounded collection (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html).
-
 Store and retrieve objects in Amazon S3, signed with AWS Signature Version 4 (SigV4).
 
 - **Categories** — storage
 - **Auth methods** — aws-iam
 - **Actions** — 9
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — 36 path-style regional S3 endpoints (`s3.<region>.amazonaws.com`), one per AWS commercial region + AWS GovCloud (US)
 - **Website** — https://aws.amazon.com/s3/
 - **API docs** — https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-bucket` | poll | `bucket-list` | Each newly created bucket in the account. |
+
+`ListBuckets` returns every bucket the account owns in one call; each check diffs the bucket names against the last check (up to 5000 buckets; a larger account is a failed check). Source: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html (verified 2026-11-10).
+
+`object-list` is not polled: ListObjectsV2 returns keys in lexicographical order by key name, not by creation (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html).
 
 ## Auth — AWS IAM Access Key
 

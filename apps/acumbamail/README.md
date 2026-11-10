@@ -1,7 +1,5 @@
 # Acumbamail
 
-Triggers: not shipped — campaigns-list has date range filters but its response order is not documented as newest-first (https://apidocs.acumbamail.com/).
-
 Drive **Acumbamail** (email and SMS marketing) from a workflow: lists, subscribers, campaigns,
 templates, transactional email, SMS and list webhooks, over the REST API at
 `https://acumbamail.com/api/1/{function}/`.
@@ -9,6 +7,7 @@ templates, transactional email, SMS and list webhooks, over the REST API at
 - **Categories** — marketing, email
 - **Auth methods** — auth-token (custom; the `auth_token` form parameter)
 - **Actions** — 32
+- **Triggers** — 1 (poll)
 - **Health checks** — ~~`service`~~, ~~`quota`~~ (both declared unavailable, informational) + the derived `auth:auth-token`
 - **Egress allowlist** — `acumbamail.com`
 - **API docs** — https://acumbamail.com/en/apidoc/ (one page per function: `/en/apidoc/function/{name}/`)
@@ -18,6 +17,16 @@ templates, transactional email, SMS and list webhooks, over the REST API at
 > pages. The reference has **no public function index** and the landing page lists functions only to
 > logged-in users, so candidates were collected from other integrations and each name was kept only
 > after its own page answered with the documented signature.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-list` | poll | `list-get-all` | Each newly created subscriber list. |
+
+`getLists` returns every list as a dictionary indexed by list ID in one request; each check diffs the ids against the last check. Source: https://acumbamail.com/en/apidoc/function/getLists/ (verified 2026-11-10).
+
+`campaigns-list` is not polled: `getCampaigns` is documented only as returning a `dict` "List of campaigns" with no id keying or order (https://acumbamail.com/en/apidoc/function/getCampaigns/). Acumbamail list webhooks (subscribes, unsubscribes, hard_bounce, soft_bounce, complain, opens, click) are configured with `list-webhook-configure`; no webhook trigger ships here.
 
 ## Connecting
 

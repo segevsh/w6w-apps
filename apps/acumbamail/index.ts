@@ -44,6 +44,7 @@ import smsSend from "./actions/sms-send.ts";
 import listWebhookConfigure from "./actions/list-webhook-configure.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newList from "./triggers/new-list.ts";
 
 export default {
   actions: [
@@ -82,4 +83,5 @@ export default {
   ],
   auth: [authToken],
   healthChecks: [service, quota],
+  triggers: [newList],
 } satisfies AppDefinition;

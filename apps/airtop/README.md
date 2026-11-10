@@ -1,6 +1,6 @@
 # Airtop
 
-Triggers: not shipped — session-list is offset-paginated and has no documented creation order, update cursor, or bounded collection (https://docs.airtop.ai/api-reference).
+Triggers: not shipped — session-list takes only sessionIds, status, offset and limit, with no documented order or created-since filter, and sessions are short-lived browser sessions the workflow itself opens and terminates (https://docs.airtop.ai/api-reference/airtop-api/sessions/list).
 
 Drive real, cloud-hosted Chromium sessions with Airtop's AI browser automation: create sessions and
 windows, load and interact with pages using natural-language element descriptions, and extract or

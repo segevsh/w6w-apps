@@ -20,3 +20,11 @@ test("new-object seeds, emits, retries, and requests the newest objects page", a
   assertEquals(first.events, [item("b")]);
   assertEquals(retry, first);
 });
+
+test("new-object reads one page even when every item on it is new", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([item("a")]).ctx);
+  const m = ctx([item("c"), item("b")]);
+  const got = await trigger.poll!({ ...input, state: seeded.nextState }, m.ctx);
+  assertEquals(got.events, [item("b"), item("c")]);
+  assertEquals(m.calls.length, 1);
+});

@@ -28,6 +28,7 @@ import annotationList from "./actions/annotation-list.ts";
 import annotationCreate from "./actions/annotation-create.ts";
 import chartQuery from "./actions/chart-query.ts";
 import userDelete from "./actions/user-delete.ts";
+import newCohort from "./triggers/new-cohort.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -49,6 +50,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKeys],
   healthChecks: [service, quota],
+  triggers: [newCohort],
 };
 
 export default app;

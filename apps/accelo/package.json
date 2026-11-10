@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/accelo",
-  "version": "0.1.0",
-  "description": "Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, issues, requests, prospects, invoices and staff.",
+  "version": "0.2.0",
+  "description": "Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, issues, requests, prospects, invoices and staff. Triggers on new activities, companies and jobs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://api.accelo.com/docs/"
     ],
-    "longDescription": "Accelo is a professional services automation (PSA) platform that runs client work from first request to final invoice: prospects and quotes, projects (jobs) and their tasks, ongoing retainers, support issues, time tracking and billing, all tied to the companies and contacts they belong to.\n\nThis app lets a workflow read and write the core of that record: create and update companies and contacts, log notes, calls and meetings (and billable time) against any object, open and update tasks, jobs and issues, capture inbound requests, move prospects through the pipeline, and read invoices and staff.\n\nEvery Accelo customer has its own API host, so a connection records the deployment it belongs to and the app only ever calls that account's own subdomain. It authenticates as a Service Application using OAuth 2 client credentials, so it runs in scheduled and background workflows with no browser sign-in. Health checks track Accelo's status page, this account's host, and the hourly request allowance.",
+    "longDescription": "Accelo is a professional services automation (PSA) platform that runs client work from first request to final invoice: prospects and quotes, projects (jobs) and their tasks, ongoing retainers, support issues, time tracking and billing, all tied to the companies and contacts they belong to.\n\nThis app lets a workflow read and write the core of that record: create and update companies and contacts, log notes, calls and meetings (and billable time) against any object, open and update tasks, jobs and issues, capture inbound requests, move prospects through the pipeline, and read invoices and staff.\n\nEvery Accelo customer has its own API host, so a connection records the deployment it belongs to and the app only ever calls that account's own subdomain. It authenticates as a Service Application using OAuth 2 client credentials, so it runs in scheduled and background workflows with no browser sign-in. Health checks track Accelo's status page, this account's host, and the hourly request allowance. Poll triggers fire on new activities, companies and jobs.",
     "categories": [
       "project-management",
       "crm",
@@ -34,7 +34,8 @@
         "*.api.accelo.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

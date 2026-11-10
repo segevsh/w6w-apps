@@ -55,6 +55,7 @@ import campfireLineCreate from "./actions/campfire-line-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newProject from "./triggers/new-project.ts";
 
 export default {
   actions: [
@@ -78,4 +79,5 @@ export default {
   // see auth/oauth.ts for why that is not the pattern rejected elsewhere here.
   auth: [oauth],
   healthChecks: [service, quota],
+  triggers: [newProject],
 } satisfies AppDefinition;

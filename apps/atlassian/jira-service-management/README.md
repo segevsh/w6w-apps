@@ -1,6 +1,6 @@
 # Jira Service Management
 
-Triggers: not shipped — request-search is a JQL-style search without a fixed created-descending query in the existing action (https://developer.atlassian.com/cloud/jira/service-desk/rest/).
+Triggers: not shipped — request-search (GET /rest/servicedeskapi/request) returns requests "ordered chronologically by the latest activity", not by creation, so a comment on an old request would read as a new one; it has no created-since filter (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-request/).
 
 Manage Jira Service Management service desks, request types, customer requests, queues,
 SLAs and organizations.

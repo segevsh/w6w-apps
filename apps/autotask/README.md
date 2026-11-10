@@ -1,18 +1,25 @@
 # Autotask PSA
 
-Triggers: not shipped — ticket-note-list is scoped to a ticket and has no documented created-since or newest-first list contract (https://ww1.autotask.net/help/DeveloperHelp/Content/REST_API_HOW_TOS/REST_API_How_To.htm).
-
 Query, read and write the records of a Datto/Kaseya **Autotask PSA** tenant (tickets, companies,
 contacts, time entries, projects, tasks, opportunities) on the **Autotask REST API v1.0**.
 
 - **Categories** — support, crm, project-management
 - **Auth methods** — `api-user` (custom: username + secret + integration code + zone)
 - **Actions** — 21 (6 reads, 14 writes, 1 delete)
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, `quota`) + the derived `auth:api-user`
 - **Egress allowlist** — `webservices.autotask.net` (zone discovery) and the 20 published zone hosts
   `webservices{1-6,11,12,14-19,22,24,25,26,28,29}.autotask.net`
 - **API docs** — https://autotask.net/help/DeveloperHelp/Content/APIs/REST/REST_API_Home.htm
 - **Status page** — https://status.kaseya.com/
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-ticket` | poll | `entity-query` | Each newly created ticket. |
+
+Each check runs the existing `entity-query` (`POST /Tickets/query`) with the filter `createDate > last check - 2 minutes` (up to 500 rows per page, 3 pages) and de-duplicates by ticket id. `createDate` is a Tickets field: https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm (verified 2026-11-10).
 
 ## Setup
 
