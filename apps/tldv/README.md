@@ -13,6 +13,7 @@ external recordings — over the **tl;dv Public API** (`v1alpha1`).
 - **Website** — https://tldv.io/
 - **API docs** — https://doc.tldv.io/
 - **Status page** — https://tldv.instatus.com/
+- **Triggers** — 2 (webhook)
 
 > **Everything below was verified against tl;dv's own sources on 2026-08-16** — the OpenAPI 3.0
 > document embedded as `__redoc_state.spec.data` in the rendered page at
@@ -259,4 +260,21 @@ deno task test
 `deno task validate` passes `--config ./deno.json` explicitly — see the sibling `apify`/`paddle`
 apps for why that flag matters.
 
-Triggers: not shipped — webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list has no documented newest-first ordering (https://doc.tldv.io/)
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `meeting-ready` — Meeting Ready | webhook (manual, unsigned) | `MeetingReady` (a meeting has finished processing) | delivery id, meeting id, name, date, URL, duration, organizer, invitees, notes, import metadata, the transcript when the webhook includes it, the full payload |
+| `transcript-ready` — Transcript Ready | webhook (manual, unsigned) | `TranscriptReady` (a transcript has been generated) | delivery id, meeting id, transcript text, timed segments, the full payload |
+
+**Setup (manual).** tl;dv webhooks are set up inside tl;dv, not through its public API, so subscribing makes no tl;dv call: it gives you this trigger's callback URL.
+
+1. Subscribe the trigger and copy its callback URL.
+2. In tl;dv, create a webhook subscription for the level you want (your own user, a team, or the whole organization; organization-wide automation needs an Enterprise plan) and enable the matching trigger, `MeetingReady` or `TranscriptReady`. tl;dv's documentation does not name the settings screen where webhooks are created, so look under your workspace's settings or integrations.
+3. Paste the callback URL as the webhook URL. For `MeetingReady`, tl;dv can embed the transcript in the payload through its `include` option (in the app: the "Include meeting transcript" checkbox); that makes the payload much larger.
+
+Each subscription has its own callback URL, so use a separate subscription (and URL) per trigger; if one URL does receive both events, each trigger acknowledges the other's event without starting a run. tl;dv waits at most ten seconds for a 2xx answer and then retries.
+
+**Trust model.** tl;dv does not sign its webhooks: its Webhook Feature documentation describes no signature, secret or signing header, so there is nothing to verify and none is invented. **The callback URL is the secret.** The host issues it per subscription as a long unguessable id; anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON body that names an event and carries its data.
+
+Docs (verified 2026-11-10): https://doc.tldv.io/index.html (Webhook Feature and Webhooks sections)
