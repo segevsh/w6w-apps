@@ -8,7 +8,7 @@ Subscriptions billed against a saved Mandate.
 - **Auth methods** — bearer (API Key — also accepts an Advanced Access Token or a hand-obtained
   OAuth access token, all three presented the same way)
 - **Actions** — 41
-- **Triggers** — 5 (poll)
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 live probes (`service`, `quota`) + the derived `auth:bearer`
 - **Egress allowlist** — `api.mollie.com` (the `service` check adds `status.mollie.com` to its own
   hook allowlist, never to the app's)
@@ -313,11 +313,22 @@ deno task test
 | `new-customer` | New Customer | poll | `customer-list` | each newly created customer |
 | `new-chargeback` | New Chargeback | poll | `chargeback-list` | each newly created chargeback |
 | `new-customer-payment` | New Customer Payment | poll | `customer-payment-list` | each newly created payment for the selected customer |
+| `new-mandate` | New Mandate | poll | `mandate-list` | each newly created mandate for the selected customer |
+| `new-payment` | New Payment | poll | `payment-list` | each newly created payment |
+| `new-payment-link` | New Payment Link | poll | `payment-link-list` | each newly created payment link |
 | `new-refund` | New Refund | poll | `refund-list` | each newly created refund |
 | `new-subscription` | New Subscription | poll | `subscription-list` | each newly created subscription for the selected customer |
+| `new-subscription-all` | New Subscription (Any Customer) | poll | `subscription-list-all` | each newly created subscription across the account |
 
 The poll actions request Mollie's documented descending `sort` order, so each check begins with
 the newest records. [Mollie list customers](https://docs.mollie.com/reference/list-customers),
 [chargebacks](https://docs.mollie.com/reference/list-chargebacks),
 [refunds](https://docs.mollie.com/reference/list-refunds), and
-[subscriptions](https://docs.mollie.com/reference/list-subscriptions), verified 2026-11-10.
+[subscriptions](https://docs.mollie.com/reference/list-subscriptions),
+[payments](https://docs.mollie.com/reference/list-payments), and
+[mandates](https://docs.mollie.com/reference/list-mandates), verified 2026-11-10.
+Payment links and all-account subscriptions document no `sort`; their triggers rely on the v2
+default of newest first from the [pagination guide](https://docs.mollie.com/reference/pagination).
+
+Not covered: `method-list` and `method-list-all` (reference catalog of payment methods) and
+`profile-list` (website profile configuration).

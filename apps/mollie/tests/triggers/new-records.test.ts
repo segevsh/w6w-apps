@@ -56,3 +56,38 @@ test("new-subscription uses the selected customer and descending order", () =>
     "https://api.mollie.com/v2/customers/cst_test/subscriptions?limit=100&sort=desc",
     { customerId: "cst_test" },
   ));
+
+import mandate from "../../triggers/new-mandate.ts";
+import payment from "../../triggers/new-payment.ts";
+import paymentLink from "../../triggers/new-payment-link.ts";
+import subscriptionAll from "../../triggers/new-subscription-all.ts";
+
+test("new-payment seeds, emits, retries, and requests descending order", () =>
+  pollCase(payment, "payments", "https://api.mollie.com/v2/payments?limit=100&sort=desc"));
+
+test("new-mandate uses the selected customer and descending order", async () => {
+  assertEquals(mandate.params!.map((p) => [p.key, p.required]), [["customerId", true]]);
+  await pollCase(
+    mandate,
+    "mandates",
+    "https://api.mollie.com/v2/customers/cst_test/mandates?limit=100&sort=desc",
+    { customerId: "cst_test" },
+  );
+});
+
+test("new-payment-link seeds, emits, and retries on the default newest-first list", () =>
+  pollCase(paymentLink, "payment_links", "https://api.mollie.com/v2/payment-links?limit=100"));
+
+test("new-subscription-all needs no customer and lists account-wide", async () => {
+  assertEquals(subscriptionAll.params ?? [], []);
+  await pollCase(
+    subscriptionAll,
+    "subscriptions",
+    "https://api.mollie.com/v2/subscriptions?limit=100",
+  );
+});
+
+test("new-customer-payment and new-subscription expose only the customerId param", () => {
+  assertEquals(customerPayment.params!.map((p) => p.key), ["customerId"]);
+  assertEquals(subscription.params!.map((p) => p.key), ["customerId"]);
+});
