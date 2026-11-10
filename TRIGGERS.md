@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2352 triggers, 1866 unaccounted list actions in 457 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -36,10 +36,6 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/respondio | 0 | 8 | 8 |
 | apps/thanksio | 0 | 8 | 8 |
 | apps/tidycal | 0 | 8 | 8 |
-| apps/zoho/zoho-cliq | 1 | 9 | 8 |
-| apps/addevent | 1 | 8 | 7 |
-| apps/apify | 1 | 8 | 7 |
-| apps/auth0 | 1 | 8 | 7 |
 | apps/chatwork | 1 | 8 | 7 |
 | apps/dialpad | 1 | 8 | 7 |
 | apps/eztexting | 1 | 8 | 7 |
@@ -75,7 +71,6 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/streak | 2 | 8 | 7 |
 | apps/synthflow | 1 | 8 | 7 |
 | apps/teachable | 1 | 8 | 7 |
-| apps/vbout | 1 | 8 | 7 |
 | apps/videoask | 1 | 8 | 7 |
 | apps/wix | 1 | 8 | 7 |
 | apps/workos | 1 | 8 | 7 |
@@ -350,7 +345,6 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/beeminder | 1 | 3 | 2 |
 | apps/bitrix24 | 1 | 3 | 2 |
 | apps/bloomerang | 1 | 3 | 2 |
-| apps/campaignmonitor | 1 | 2 | 2 |
 | apps/canva | 1 | 3 | 2 |
 | apps/circleci | 1 | 3 | 2 |
 | apps/clearout | 3 | 2 | 2 |
@@ -484,6 +478,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/acumbamail | 1 | 7 | 0 |
+| apps/addevent | 7 | 8 | 0 |
 | apps/affinity | 24 | 11 | 0 |
 | apps/agencyzoom | 6 | 10 | 0 |
 | apps/ahrefs | 2 | 12 | 0 |
@@ -491,6 +486,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/aircall | 7 | 11 | 0 |
 | apps/airtable | 3 | 2 | 0 |
 | apps/anchor | 8 | 11 | 0 |
+| apps/apify | 8 | 8 | 0 |
 | apps/apollo | 6 | 13 | 0 |
 | apps/asana | 9 | 5 | 0 |
 | apps/ashby | 8 | 16 | 0 |
@@ -498,6 +494,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/attio | 4 | 13 | 0 |
+| apps/auth0 | 8 | 8 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/avoma | 3 | 10 | 0 |
 | apps/aweber | 5 | 8 | 0 |
@@ -514,6 +511,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/breezyhr | 6 | 11 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
+| apps/campaignmonitor | 3 | 2 | 0 |
 | apps/canny | 9 | 10 | 0 |
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
@@ -671,6 +669,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/uptimerobot | 2 | 2 | 0 |
 | apps/uscreen | 10 | 11 | 0 |
 | apps/vanta | 15 | 17 | 0 |
+| apps/vbout | 7 | 8 | 0 |
 | apps/vercel | 8 | 10 | 0 |
 | apps/vero | 1 | 0 | 0 |
 | apps/vimeo | 11 | 10 | 0 |
@@ -680,6 +679,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zendesk/zendesk | 12 | 5 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
+| apps/zoho/zoho-cliq | 9 | 9 | 0 |
 | apps/zoho/zohodesk | 8 | 10 | 0 |
 | apps/zoom | 22 | 4 | 0 |
 | apps/zulip | 1 | 0 | 0 |
@@ -805,7 +805,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/acculynx | 8 | job-list | new-job, new-or-updated-job, new-contact, new-invoice, new-job-estimate, new-job-representative, new-user, new-appointment | apps/acculynx/README.md Triggers section (verified 2026-11-10) | hand | poll triggers cover newest-first jobs, contacts and invoices, and bounded snapshots of per-job estimates and representatives, users and per-calendar appointments |
 | apps/actionnetwork | 1 | person-list | new-person, new-or-updated-person | apps/actionnetwork/README.md Triggers section (verified 2026-11-09) | hand | People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/). |
 | apps/acumbamail | 1 | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. The other list actions have no documented id keying/order or are unbounded (see skipped) |
-| apps/addevent | 1 | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
+| apps/addevent | 7 | event-template-list | new-calendar, new-calendar-subscriber, new-calendar-template, new-event, new-event-template, new-rsvp-attendee, new-rsvp-form | apps/addevent/README.md Triggers section (verified 2026-11-10) | hand | search endpoints sort created desc by default (page_size cap 20); template/form lists are newest-first (https://docs.addevent.com/reference/search-events) |
 | apps/agencyzoom | 6 | lead-list | new-lead, new-customer, new-task, new-customer-policy, new-employee, new-csr | apps/agencyzoom/README.md Triggers section (verified 2026-11-10) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor; customer and task searches take sort=id order=desc (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
 | apps/ahrefs | 2 | project-list | new-project, new-site-audit-crawl | apps/ahrefs/README.md Triggers section (verified 2026-11-10) | hand | snapshot of the management project collection plus finished Site Audit crawls from the free /site-audit/projects health-score list (https://docs.ahrefs.com/openapi.json) |
 | apps/aidbase | 12 | ticket-list | new-chat, new-chatbot, new-chatbot-knowledge, new-email, new-email-inbox, new-email-inbox-knowledge, new-faq-item, new-knowledge-item, new-knowledge-sub-page, new-ticket, new-ticket-form, new-ticket-form-knowledge | apps/aidbase/README.md Triggers section (verified 2026-11-10) | hand | created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference) |
@@ -816,7 +816,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/amplitude | 1 | cohort-list | new-cohort | apps/amplitude/README.md Triggers section (verified 2026-11-10) | hand | GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound |
 | apps/anchor | 8 | invoice-list | new-invoice, new-payout, new-contact, new-proposal, new-proposal-draft, new-agreement, new-proposal-template, new-service-template | apps/anchor/README.md Triggers section (verified 2026-11-10) | hand | Invoices and payouts newest-first (sortField/sortDirection=desc); contacts, proposals, drafts, agreements and templates have no sort or created-since filter, so they are bounded snapshots (https://docs.sayanchor.com/reference/pagination-filtering). |
 | apps/anthropic | 1 | batch-list | new-batch | apps/anthropic/README.md Triggers section (verified 2026-11-10) | hand | batch-list returns 'Most recently created batches first' (https://platform.claude.com/docs/en/api/python/messages/batches/list); the API offers no batch webhook |
-| apps/apify | 1 | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
+| apps/apify | 8 | actor-list | new-actor, new-dataset, new-key-value-store, new-run, new-store-actor, new-store-key, new-task, new-webhook | apps/apify/README.md Triggers section (verified 2026-11-10) | hand | list endpoints take desc=1 (createdAt/startedAt descending); Store uses sortBy=newest; store keys page by key so they are snapshot-diffed (https://docs.apify.com/api/openapi.json) |
 | apps/apitemplateio | 1 | list-objects | new-object | apps/apitemplateio/README.md Triggers section (verified 2026-11-09) | hand | list-objects is documented by the existing action as a most-recent-first generated-object feed |
 | apps/apollo | 6 | contact-search | new-contact, new-or-updated-contact, new-account, new-list, new-sequence, new-sequence-activity | apps/apollo/README.md Triggers section (verified 2026-11-10) | hand | contact-search and account-search document newest-created order (new-or-updated for contacts only: accounts carry no update stamp); lists and sequences are small bounded collections (snapshot); a contact's activity feed is documented newest-first (https://docs.apollo.io/reference/search-for-accounts) |
 | apps/ashby | 8 | candidate-list | new-candidate, new-application, new-application-feedback, new-interview-schedule, new-job, new-job-posting, new-offer, new-user | apps/ashby/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over createdAfter-filtered list actions (https://developers.ashbyhq.com/reference/candidatelist) plus whole-collection snapshots for users and job postings |
@@ -825,7 +825,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/atlassian/jira-data-center | 1 | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
 | apps/atlassian/jira-service-management | 2 | servicedesk-get-many | new-service-desk, new-organization | apps/atlassian/jira-service-management/README.md Triggers section (verified 2026-11-10) | hand | servicedesk-get-many (GET /servicedesk, all service desks the user can access) and organization-get-many (GET /organization) are bounded id-keyed paged collections, polled as snapshots (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/, .../api-group-organization/); request-search stays unpolled: ordered by latest activity, no created-since filter |
 | apps/attio | 4 | list-tasks | new-task, new-record, new-list, new-workspace-member | apps/attio/README.md Triggers section (verified 2026-11-10) | hand | list-tasks sorts created_at:desc; list-records is queried with an explicit sorts created_at desc; lists and workspace members are small bounded collections (snapshot) (https://docs.attio.com/rest-api/endpoint-reference/records/list-records) |
-| apps/auth0 | 1 | log-list | new-log | apps/auth0/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-list |
+| apps/auth0 | 8 | log-list | new-client, new-connection, new-log, new-organization, new-organization-member, new-role, new-user, new-user-role | apps/auth0/README.md Triggers section (verified 2026-11-10) | hand | logs and users sort newest-first; the other Management API lists document no order so they are snapshot-diffed (https://auth0.com/docs/api/management/v2/users/get-users) |
 | apps/authorize-net | 1 | list-customer-transactions | new-customer-transaction | apps/authorize-net/README.md Triggers section (verified 2026-11-09) | hand | Customer transaction list explicitly sorts by submit time descending. |
 | apps/autotask | 2 | entity-query | new-ticket, new-or-updated-ticket | apps/autotask/README.md Triggers section (verified 2026-11-10) | hand | entity-query (POST /Tickets/query) takes a JSON filter, so createDate > cursor (new-ticket) and lastActivityDate > cursor (new-or-updated-ticket, keyed id:lastActivityDate) are documented since-filters over Tickets datetime fields (https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm) |
 | apps/avoma | 3 | meeting-list | new-meeting, new-call, new-user | apps/avoma/README.md Triggers section (verified 2026-11-10) | hand | meeting-list newest-first in a rolling window; calls via a since-filter window with seed floor; user directory as a snapshot (https://dev.avoma.com/openapi.yml) |
@@ -861,7 +861,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/bubble | 2 | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
 | apps/buffer | 1 | post-list | new-post | apps/buffer/README.md Triggers section (verified 2026-11-09) | hand | post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed |
 | apps/callrail | 1 | call-list | new-call | apps/callrail/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
-| apps/campaignmonitor | 1 | list-subscribers-get | new-subscriber | apps/campaignmonitor/README.md Triggers section (verified 2026-11-09) | hand | active subscribers ordered by date desc; list-stats-get is analytics and unused |
+| apps/campaignmonitor | 3 | list-subscribers-get | new-client, new-smart-email, new-subscriber | apps/campaignmonitor/README.md Triggers section (verified 2026-11-10) | hand | subscribers sort by date desc; clients and smart emails return the whole collection in one response so they are snapshot-diffed (https://www.campaignmonitor.com/api/v3-3/) |
 | apps/canny | 9 | post-list | new-post, new-comment, new-vote, new-status-change, new-tag, new-category, new-board, new-changelog-entry, new-or-updated-changelog-entry | apps/canny/README.md Triggers section (verified 2026-11-10) | hand | posts via sort=newest; comments, votes, status changes, tags and categories are documented 'Sorted by newest'; entries have created/lastSaved sorts; boards are a bounded snapshot (https://developers.canny.io/api-reference) |
 | apps/canva | 1 | list-designs | new-design | apps/canva/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-designs |
 | apps/capsulecrm | 2 | opportunity-list | new-opportunity, new-or-updated-opportunity | apps/capsulecrm/README.md Triggers section (verified 2026-11-09) | hand | since (changed-since) filter, no documented order: cursor window + id dedupe |
@@ -1232,7 +1232,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/uscreen | 10 | customer-list | new-content, new-customer, new-customer-access, new-group, new-group-member, new-invoice, new-offer, new-or-updated-group, new-or-updated-invoice, new-playlist-item | apps/uscreen/README.md Triggers section (verified 2026-11-10) | hand | /customers, /invoices and /groups document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; /contents and /accesses send from only; offers and playlist items are bounded snapshots (https://uscreen.io/api/publisher.yml) |
 | apps/vanta | 15 | issue-list | new-issue, new-control, new-document, new-framework, new-integration, new-monitored-computer, new-person, new-policy, new-risk-scenario, new-test, new-test-entity, new-user, new-vendor, new-vulnerability, new-vulnerability-remediation | apps/vanta/README.md Triggers section (verified 2026-11-10) | hand | 15 poll triggers: issue-list newest-first; vulnerability-list and vulnerability-remediation-list via their since-filters (slaDeadlineAfterDate, remediatedAfterDate); every other list has no sort order or created-since filter in the vendor spec and is snapshot-diffed; Vanta webhooks (questionnaire, vendor decision, trust-center events; dashboard-registered, Svix-signed) are queued for a webhook node and cover none of these record feeds |
 | apps/vapi | 1 | phone-number-list | new-phone-number | apps/vapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action phone-number-list |
-| apps/vbout | 1 | list-list | new-list | apps/vbout/README.md Triggers section (verified 2026-11-09) | hand | getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json) |
+| apps/vbout | 7 | list-list | new-audience, new-campaign, new-contact, new-email-template, new-goal, new-list, new-social-channel | apps/vbout/README.md Triggers section (verified 2026-11-10) | hand | Vbout list endpoints document no order/since filter: whole-collection snapshot diffs for lists, contacts, audiences, campaigns, templates, goals, social channels (https://developers.vbout.com/scripts/openapi.json) |
 | apps/vercel | 8 | deployment-list | new-deployment, new-alias, new-project, new-or-updated-project, new-domain, new-project-domain, new-env-var, new-or-updated-env-var | apps/vercel/README.md Triggers section (verified 2026-11-10) | hand | since-filter deployment and alias polls plus bounded snapshots of projects, domains and env vars; no webhook polling needed for these records (https://vercel.com/docs/rest-api). |
 | apps/videoask | 1 | conversation-list | new-conversation | apps/videoask/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action conversation-list |
 | apps/vimeo | 11 | video-list | new-video, new-folder, new-or-updated-folder, new-showcase, new-or-updated-showcase, new-folder-video, new-folder-item, new-showcase-video, new-comment, new-search-video, new-comment-reply | apps/vimeo/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=date/modified, direction=desc) on videos, folders, showcases, their contents, comments and search (https://developer.vimeo.com/api/reference). new-comment-reply is a bounded pollSnapshot (replies endpoint documents only page/per_page, no sort or direction) with required videoId and commentId. |
@@ -1266,7 +1266,7 @@ depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-p
 | apps/zoho/zoho-bookings | 1 | workspace-list | new-workspace | apps/zoho/zoho-bookings/README.md Triggers section (verified 2026-11-09) | hand | workspace-list returns the bounded account workspace collection; additions are snapshotted (https://www.zoho.com/bookings/help/api/v1/fetch-workspaces.html) |
 | apps/zoho/zoho-calendar | 1 | calendar-list | new-calendar | apps/zoho/zoho-calendar/README.md Triggers section (verified 2026-11-09) | hand | calendar-list is an unpaginated account collection (category defaults to all); additions are snapshotted (https://www.zoho.com/calendar/help/api/get-calendar-list.html) |
 | apps/zoho/zoho-campaigns | 1 | campaign-list-recent | new-campaign | apps/zoho/zoho-campaigns/README.md Triggers section (verified 2026-11-09) | hand | recentcampaigns lists the most recently created campaigns (bounded page of 20, id-deduped by campaign_key) |
-| apps/zoho/zoho-cliq | 1 | chat-list | new-chat | apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-09) | hand | chat-list has modified_after/modified_before filters: since-filter poll with seed floor and resumable drain |
+| apps/zoho/zoho-cliq | 9 | chat-list | new-channel, new-channel-member, new-chat, new-chat-member, new-message, new-reminder, new-team, new-user, new-user-team | apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-10) | hand | chat-list and message-list are since-filter polls with resume + floor; channels, users, reminders drain next_token pages; teams and member lists are single-response snapshots (https://www.zoho.com/cliq/help/restapi/v2/) |
 | apps/zoho/zoho-creator | 1 | application-list | new-application | apps/zoho/zoho-creator/README.md Triggers section (verified 2026-11-09) | hand | applications metadata is an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/creator/help/api/v2/get-applications.html) |
 | apps/zoho/zoho-inventory | 2 | item-list | new-item, new-or-updated-item | apps/zoho/zoho-inventory/README.md Triggers section (verified 2026-11-09) | hand | item-list gained optional sort_column/sort_order; items doc documents sort_column created_time/last_modified_time and sort_order D (https://www.zoho.com/inventory/api/v1/items/); contact-list documents no sort direction and salesorder-list only page/per_page, so they stay without triggers |
 | apps/zoho/zoho-invoice | 2 | contact-list | new-contact, new-or-updated-contact | apps/zoho/zoho-invoice/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/invoice/api/v3/contacts/) |

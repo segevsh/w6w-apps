@@ -134,12 +134,21 @@
     "path": "apps/addevent",
     "mechanism": "poll",
     "candidates": [
-      "new-event-template"
+      "new-calendar",
+      "new-calendar-subscriber",
+      "new-calendar-template",
+      "new-event",
+      "new-event-template",
+      "new-rsvp-attendee",
+      "new-rsvp-form"
     ],
     "pollAction": "event-template-list",
-    "reason": "Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates).",
-    "verified": "apps/addevent/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "search endpoints sort created desc by default (page_size cap 20); template/form lists are newest-first (https://docs.addevent.com/reference/search-events)",
+    "verified": "apps/addevent/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "timezone-list": "static reference data: the timezones AddEvent supports"
+    }
   },
   {
     "path": "apps/adyen",
@@ -471,11 +480,18 @@
     "path": "apps/apify",
     "mechanism": "poll",
     "candidates": [
-      "new-actor"
+      "new-actor",
+      "new-dataset",
+      "new-key-value-store",
+      "new-run",
+      "new-store-actor",
+      "new-store-key",
+      "new-task",
+      "new-webhook"
     ],
     "pollAction": "actor-list",
-    "reason": "shipped poll trigger(s) over list action actor-list",
-    "verified": "apps/apify/README.md Triggers section (verified 2026-11-09)",
+    "reason": "list endpoints take desc=1 (createdAt/startedAt descending); Store uses sortBy=newest; store keys page by key so they are snapshot-diffed (https://docs.apify.com/api/openapi.json)",
+    "verified": "apps/apify/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -978,11 +994,18 @@
     "path": "apps/auth0",
     "mechanism": "poll",
     "candidates": [
-      "new-log"
+      "new-client",
+      "new-connection",
+      "new-log",
+      "new-organization",
+      "new-organization-member",
+      "new-role",
+      "new-user",
+      "new-user-role"
     ],
     "pollAction": "log-list",
-    "reason": "shipped poll trigger(s) over list action log-list",
-    "verified": "apps/auth0/README.md Triggers section (verified 2026-11-09)",
+    "reason": "logs and users sort newest-first; the other Management API lists document no order so they are snapshot-diffed (https://auth0.com/docs/api/management/v2/users/get-users)",
+    "verified": "apps/auth0/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1744,11 +1767,13 @@
     "path": "apps/campaignmonitor",
     "mechanism": "poll",
     "candidates": [
+      "new-client",
+      "new-smart-email",
       "new-subscriber"
     ],
     "pollAction": "list-subscribers-get",
-    "reason": "active subscribers ordered by date desc; list-stats-get is analytics and unused",
-    "verified": "apps/campaignmonitor/README.md Triggers section (verified 2026-11-09)",
+    "reason": "subscribers sort by date desc; clients and smart emails return the whole collection in one response so they are snapshot-diffed (https://www.campaignmonitor.com/api/v3-3/)",
+    "verified": "apps/campaignmonitor/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -11619,12 +11644,21 @@
     "path": "apps/vbout",
     "mechanism": "poll",
     "candidates": [
-      "new-list"
+      "new-audience",
+      "new-campaign",
+      "new-contact",
+      "new-email-template",
+      "new-goal",
+      "new-list",
+      "new-social-channel"
     ],
     "pollAction": "list-list",
-    "reason": "getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json)",
-    "verified": "apps/vbout/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Vbout list endpoints document no order/since filter: whole-collection snapshot diffs for lists, contacts, audiences, campaigns, templates, goals, social channels (https://developers.vbout.com/scripts/openapi.json)",
+    "verified": "apps/vbout/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "social-stats-list": "click/track statistics of posted social links is analytics output (sort asc|desc has no named field)"
+    }
   },
   {
     "path": "apps/vercel",
@@ -12341,11 +12375,19 @@
     "path": "apps/zoho/zoho-cliq",
     "mechanism": "poll",
     "candidates": [
-      "new-chat"
+      "new-channel",
+      "new-channel-member",
+      "new-chat",
+      "new-chat-member",
+      "new-message",
+      "new-reminder",
+      "new-team",
+      "new-user",
+      "new-user-team"
     ],
     "pollAction": "chat-list",
-    "reason": "chat-list has modified_after/modified_before filters: since-filter poll with seed floor and resumable drain",
-    "verified": "apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-09)",
+    "reason": "chat-list and message-list are since-filter polls with resume + floor; channels, users, reminders drain next_token pages; teams and member lists are single-response snapshots (https://www.zoho.com/cliq/help/restapi/v2/)",
+    "verified": "apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
