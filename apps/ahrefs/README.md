@@ -11,7 +11,7 @@ Tracker and Site Audit — over the **Ahrefs API v3**, and read the API-unit all
   `GET /subscription-info/limits-and-usage`; a schema-correct auth error passes), `quota` (signed
   `limits-and-usage`, informational) + the derived `auth:api-key`
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 ## Setup
 
@@ -84,5 +84,10 @@ confirmed, low-risk reads.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-project` — New Project | Poll | `project-list` | Each project newly added to the account collection |
+| `new-site-audit-crawl` — New Site Audit Crawl | Poll (snapshot) | `site-audit-project-list` | A project's health score row each time a new crawl finishes, or when a newly audited project appears |
 
 `project-list` is the bounded management-project collection, keyed by its stable `project_id`; the snapshot trigger emits added projects only. Source: [Ahrefs Management API](https://docs.ahrefs.com/en/api/reference/management/get-projects) (verified 2026-11-09).
+
+`new-site-audit-crawl` reads `GET /site-audit/projects` — documented as free (no API units) and one row per project — and reports a row as updated when its crawl `date` or `health_score` changes. Source: [Ahrefs OpenAPI](https://docs.ahrefs.com/openapi.json) (verified 2026-11-10).
+
+Not covered, by reason (same OpenAPI document, verified 2026-11-10): `backlink-list`, `backlink-broken-list`, `anchor-list`, `referring-domain-list`, `top-page-list`, `organic-keyword-list`, `organic-competitor-list`, `keyword-matching-term-list` and `keyword-related-term-list` are Site Explorer / Keywords Explorer analytics reports that bill API units per returned row and need a target or keyword; `site-audit-issue-list` is a crawl report that costs a fixed 50 API units per request.
