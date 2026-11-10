@@ -1040,12 +1040,25 @@
     "path": "apps/betterstack",
     "mechanism": "poll",
     "candidates": [
-      "new-incident"
+      "new-incident",
+      "new-monitor",
+      "new-heartbeat",
+      "new-monitor-group",
+      "new-escalation-policy",
+      "new-severity",
+      "new-status-page",
+      "new-on-call-calendar",
+      "new-status-report",
+      "new-status-page-resource",
+      "new-incident-comment"
     ],
     "pollAction": "incident-list",
-    "reason": "Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe",
-    "verified": "apps/betterstack/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Since-filter poll on incident-list (from date) plus snapshot polls (whole collection, 250/page, <=5000 rows) over each other list action; per-parent lists take the parent id as a param",
+    "verified": "apps/betterstack/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "on-call-events-list": "computed shifts of one on-call calendar inside a starts_at/ends_at window (a schedule projection), not a feed of created records"
+    }
   },
   {
     "path": "apps/bexio",
@@ -2122,23 +2135,58 @@
     "path": "apps/dbtcloud",
     "mechanism": "poll",
     "candidates": [
-      "new-run"
+      "new-run",
+      "new-project",
+      "new-or-updated-project",
+      "new-job",
+      "new-or-updated-job",
+      "new-environment",
+      "new-environment-variable",
+      "new-connection",
+      "new-group",
+      "new-service-token",
+      "new-user"
     ],
     "pollAction": "run-list",
-    "reason": "shipped poll trigger(s) over list action run-list",
-    "verified": "apps/dbtcloud/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "run-list newest-first (order_by=-id) plus snapshot polls over each other list action (returnAll, <=5000 rows); new-or-updated variants on updated_at",
+    "verified": "apps/dbtcloud/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "account-list": "the accounts a token can reach, normally exactly one (the connection is bound to one account id at connect time)",
+      "audit-log-list": "audit log output (admin/audit)",
+      "run-artifact-list": "artifact paths of one already-finished run, fixed once the run ends; a new run is delivered by new-run"
+    }
   },
   {
     "path": "apps/deel",
     "mechanism": "poll",
     "candidates": [
-      "new-contract"
+      "new-contract",
+      "new-person",
+      "new-legal-entity",
+      "new-webhook",
+      "new-contract-milestone",
+      "new-time-off-request",
+      "new-timesheet",
+      "new-invoice-adjustment"
     ],
     "pollAction": "contract-list",
-    "reason": "order_direction=desc (sort key not stated by the vendor reference; creation order assumed)",
-    "verified": "apps/deel/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "contract-list order_direction=desc plus snapshot polls over each other record list (100/page, <=5000 rows); timesheets and invoice adjustments watch a status set (default pending)",
+    "verified": "apps/deel/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "timesheet-list": "new-timesheet",
+      "invoice-adjustment-list": "new-invoice-adjustment",
+      "webhook-list": "new-webhook",
+      "legal-entity-list": "new-legal-entity",
+      "time-off-list": "new-time-off-request"
+    },
+    "skipped": {
+      "adjustment-category-list": "reference data: the organization's adjustment categories",
+      "lookup-list": "reference/static data: countries, currencies, job titles, seniorities, time-off types",
+      "webhook-event-list": "reference data: the catalogue of webhook event types Deel can send",
+      "time-off-entitlement-list": "one worker's accrued/used leave balances (a balance report), not a feed of created records"
+    }
   },
   {
     "path": "apps/deepgram",
@@ -2857,12 +2905,25 @@
     "path": "apps/findymail",
     "mechanism": "poll",
     "candidates": [
-      "new-list"
+      "new-list",
+      "new-signal",
+      "new-monitor",
+      "new-exclusion-list",
+      "new-list-contact"
     ],
     "pollAction": "list-lists",
-    "reason": "list-lists is one unpaginated bounded response (contact lists): snapshot, additions only",
-    "verified": "apps/findymail/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Snapshot polls over the unpaginated lists (contact lists, exclusion lists, a list's contacts), list-monitors newest-first, and a since-filter poll on list-signals (date_from, detected_at floor)",
+    "verified": "apps/findymail/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "find-email-by-linkedin": "credit-consuming lookup (one finder credit per verified hit), not a record feed",
+      "find-email-by-name": "credit-consuming lookup (one finder credit per verified hit), not a record feed",
+      "find-employees": "credit-consuming search (1 credit per contact found)",
+      "find-phone": "credit-consuming lookup (10 finder credits per phone found)",
+      "lookalike-search": "credit-consuming search (1 credit per 10 results)",
+      "search-technologies": "reference data: Findymail's technology catalogue searched by name",
+      "list-excluded-domains": "configuration the account's own users write via add-excluded-domains; OpenAPI getExcludedDomains documents no sort order and no per_page maximum (https://app.findymail.com/docs/openapi.yaml)"
+    }
   },
   {
     "path": "apps/fireberry",

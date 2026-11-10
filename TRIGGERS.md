@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -27,10 +27,6 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
 | apps/affinity | 1 | 11 | 11 |
-| apps/betterstack | 1 | 12 | 11 |
-| apps/dbtcloud | 1 | 12 | 11 |
-| apps/deel | 1 | 12 | 11 |
-| apps/findymail | 1 | 12 | 11 |
 | apps/gumroad | 2 | 12 | 11 |
 | apps/lokalise | 5 | 11 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
@@ -583,6 +579,7 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/attio | 4 | 13 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bannerbear | 11 | 12 | 0 |
+| apps/betterstack | 11 | 12 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
 | apps/box | 20 | 2 | 0 |
 | apps/breezyhr | 6 | 11 | 0 |
@@ -592,6 +589,8 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
+| apps/dbtcloud | 11 | 12 | 0 |
+| apps/deel | 8 | 12 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/discord | 5 | 5 | 0 |
 | apps/document360 | 10 | 15 | 0 |
@@ -601,6 +600,7 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
+| apps/findymail | 5 | 12 | 0 |
 | apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
@@ -842,7 +842,7 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/baserow | 1 | row-list | new-row | apps/baserow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
 | apps/beehiiv | 1 | post-list | new-post | apps/beehiiv/README.md Triggers section (verified 2026-11-09) | hand | Post list supports created descending order. |
 | apps/beeminder | 1 | list-datapoints | new-datapoint | apps/beeminder/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-datapoints |
-| apps/betterstack | 1 | incident-list | new-incident | apps/betterstack/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe |
+| apps/betterstack | 11 | incident-list | new-incident, new-monitor, new-heartbeat, new-monitor-group, new-escalation-policy, new-severity, new-status-page, new-on-call-calendar, new-status-report, new-status-page-resource, new-incident-comment | apps/betterstack/README.md Triggers section (verified 2026-11-10) | hand | Since-filter poll on incident-list (from date) plus snapshot polls (whole collection, 250/page, <=5000 rows) over each other list action; per-parent lists take the parent id as a param |
 | apps/bexio | 1 | contact-list | new-contact | apps/bexio/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/bigcommerce | 11 | product-list | new-order, new-product, new-or-updated-product, new-customer, new-or-updated-customer, new-price-list, new-or-updated-price-list, new-brand, new-inventory-location, new-category-tree, new-or-updated-price-list-record | apps/bigcommerce/README.md Triggers section (verified 2026-11-10) | hand | Orders, products and customers poll with vendor-documented sort tokens (products by id for creation order); price lists, brands, inventory locations and category trees are small bounded collections diffed as snapshots; price list records use the documented date_modified:min filter for one chosen price list. |
 | apps/bitly | 1 | list-bitlinks | new-bitlink | apps/bitly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-bitlinks gained an additive createdAfter input for the documented created_after filter (https://dev.bitly.com/api-reference/) |
@@ -891,8 +891,8 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/cursor | 1 | members-list | new-member | apps/cursor/README.md Triggers section (verified 2026-11-09) | hand | members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api) |
 | apps/databricks | 0 | catalog-list | job-run-finished | no | survey | AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker. |
 | apps/datadog | 1 | log-search | new-log | apps/datadog/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-search |
-| apps/dbtcloud | 1 | run-list | new-run | apps/dbtcloud/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action run-list |
-| apps/deel | 1 | contract-list | new-contract | apps/deel/README.md Triggers section (verified 2026-11-09) | hand | order_direction=desc (sort key not stated by the vendor reference; creation order assumed) |
+| apps/dbtcloud | 11 | run-list | new-run, new-project, new-or-updated-project, new-job, new-or-updated-job, new-environment, new-environment-variable, new-connection, new-group, new-service-token, new-user | apps/dbtcloud/README.md Triggers section (verified 2026-11-10) | hand | run-list newest-first (order_by=-id) plus snapshot polls over each other list action (returnAll, <=5000 rows); new-or-updated variants on updated_at |
+| apps/deel | 8 | contract-list | new-contract, new-person, new-legal-entity, new-webhook, new-contract-milestone, new-time-off-request, new-timesheet, new-invoice-adjustment | apps/deel/README.md Triggers section (verified 2026-11-10) | hand | contract-list order_direction=desc plus snapshot polls over each other record list (100/page, <=5000 rows); timesheets and invoice adjustments watch a status set (default pending) |
 | apps/deepgram | 1 | request-list | new-request | apps/deepgram/README.md Triggers section (verified 2026-11-09) | hand | request-list filters by date only (start/end truncate to YYYY-MM-DD) and the OpenAPI documents no order: the trigger reads yesterday and today (UTC) at limit 1000 over up to 5 pages, snapshots ids, and errors loudly at 5000 or more requests across those two days (https://developers.deepgram.com/openapi.json) |
 | apps/deepl | 1 | glossary-list | new-glossary | apps/deepl/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/glossaries returns every glossary in one unpaginated response: bounded snapshot, emit added ids (https://developers.deepl.com/api-reference/glossaries) |
 | apps/deputy | 2 | employee-search | new-employee, new-or-updated-employee | apps/deputy/README.md Triggers section (verified 2026-11-09) | hand | QUERY sort Id desc / Modified desc |
@@ -936,7 +936,7 @@ depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-p
 | apps/feedly | 1 | articles-collect | new-article | apps/feedly/README.md Triggers section (verified 2026-11-09) | hand | New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade. |
 | apps/fellow | 1 | action-item-list | new-action-item | apps/fellow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action action-item-list |
 | apps/fillout | 1 | submission-list | new-submission | apps/fillout/README.md Triggers section (verified 2026-11-09) | hand | submission-list sort=desc (default is asc) over a user-chosen form |
-| apps/findymail | 1 | list-lists | new-list | apps/findymail/README.md Triggers section (verified 2026-11-09) | hand | list-lists is one unpaginated bounded response (contact lists): snapshot, additions only |
+| apps/findymail | 5 | list-lists | new-list, new-signal, new-monitor, new-exclusion-list, new-list-contact | apps/findymail/README.md Triggers section (verified 2026-11-10) | hand | Snapshot polls over the unpaginated lists (contact lists, exclusion lists, a list's contacts), list-monitors newest-first, and a since-filter poll on list-signals (date_from, detected_at floor) |
 | apps/fireberry | 1 | query-records | new-record | apps/fireberry/README.md Triggers section (verified 2026-11-09) | hand | New Record runs the v3 query for a chosen object ordered by createdon desc (documented orderBy) and dedupes by _id; the developer docs describe no webhooks. |
 | apps/fireflies | 1 | transcript-search | new-transcript | apps/fireflies/README.md Triggers section (verified 2026-11-09) | hand | New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade. |
 | apps/firestore | 1 | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
