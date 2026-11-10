@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mural",
-  "version": "0.2.0",
-  "description": "Manage Mural workspaces, rooms, murals, sticky notes, text boxes, comments and tags. Includes poll triggers for new and updated records.",
+  "version": "0.3.0",
+  "description": "Manage Mural workspaces, rooms, murals, sticky notes, text boxes, comments and tags, with poll triggers for new and updated murals and new rooms, members, tags and widgets.",
   "license": "MIT",
   "author": {
     "name": "w6w"
