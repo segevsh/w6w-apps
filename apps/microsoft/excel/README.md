@@ -415,4 +415,4 @@ becomes possible, the Graph `serviceHealth` API is the one to revisit.
 
 ## Triggers
 
-- **New Workbook** wraps `list-workbooks` with `createdDateTime desc`. [Microsoft Graph driveItem search](https://learn.microsoft.com/en-us/graph/api/driveitem-search), verified 2026-11-09.
+- **New Workbook** (poll) wraps `list-workbooks` with `createdDateTime desc`; **New or Updated Workbook** (poll) wraps it with `lastModifiedDateTime desc` and dedupes on `id:lastModifiedDateTime`, so an edit is a new event. [Microsoft Graph driveItem search](https://learn.microsoft.com/en-us/graph/api/driveitem-search), verified 2026-11-09.

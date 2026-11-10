@@ -43,6 +43,7 @@ import projectGet from "./actions/project-get.ts";
 import followUpList from "./actions/follow-up-list.ts";
 import followUpGet from "./actions/follow-up-get.ts";
 import newTask from "./triggers/new-task.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
 
 export default {
   actions: [
@@ -74,6 +75,6 @@ export default {
     followUpGet,
   ],
   auth: [apiKey],
-  triggers: [newTask],
+  triggers: [newTask, newOrUpdatedTask],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

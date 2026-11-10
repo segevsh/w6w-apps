@@ -63,4 +63,4 @@ event types; the agent message endpoint; the MCP/ChatGPT helper routes; Set Note
 
 ## Triggers
 
-- **New Task** wraps `task-list` with `order_by=created_at` to poll the newest derived tasks. [Mem task list API](https://docs.mem.ai/api-reference/tasks/list-tasks), verified 2026-11-09.
+- **New Task** (poll) wraps `task-list` with `order_by=created_at`; **New or Updated Task** (poll) wraps it with `order_by=updated_at` and dedupes on `id:updated_at`, so an edit is a new event. Mem's OpenAPI documents `created_at` as newest-created-first and `updated_at` as newest-updated-first, limit max 100. [Mem OpenAPI](https://docs.mem.ai/api-reference/openapi.json), verified 2026-11-09.

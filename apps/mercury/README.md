@@ -291,4 +291,4 @@ this app's own, which is a property of how the tool is invoked rather than of th
 
 ## Triggers
 
-- **New Customer** wraps `customer-list` with descending order. [Mercury List Customers](https://docs.mercury.com/reference/list-customers), verified 2026-11-09.
+- **New Customer** wraps `customer-list` with `order=desc` (the vendor documents only "Sort order asc/desc"; the field sorted is not stated, so newest-created-first is the expected, not a documented, order). [Mercury List Customers](https://docs.mercury.com/reference/listcustomers), verified 2026-11-09.
