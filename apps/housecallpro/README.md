@@ -1,14 +1,24 @@
 # Housecall Pro
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 15 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | `new-customer` — New Customer | poll | `customer-list` | Each new customer |
+| `new-employee` — New Employee | poll | `employee-list` | Each new employee |
+| `new-estimate` / `new-or-updated-estimate` | poll | `estimate-list` | Each new estimate, or each created or edited estimate |
+| `new-estimate-option-line-item` | poll | `estimate-option-line-item-list` | Each line item added to a selected estimate option |
+| `new-event` — New Event | poll | `event-list` | Each new calendar event |
+| `new-invoice` / `new-or-updated-invoice` | poll | `invoice-list` | Each new invoice, or each created or edited invoice |
+| `new-job` / `new-or-updated-job` | poll | `job-list` | Each new job, or each created or edited job |
+| `new-job-appointment` | poll | `job-appointment-list` | Each appointment added to a selected job |
+| `new-job-invoice` | poll | `job-invoice-list` | Each invoice added to a selected job |
+| `new-job-line-item` | poll | `job-line-item-list` | Each line item added to a selected job |
+| `new-lead` / `new-or-updated-lead` | poll | `lead-list` | Each new lead, or each created or edited lead |
 
-Housecall Pro documents customers at https://docs.housecallpro.com/ (verified 2026-11-09).
+Housecall Pro documents its public API at https://stoplight.io/api/v1/projects/housecallpro/housecall-public-api/nodes/reference/housecall.v1.yaml (verified 2026-11-10).
 
 Field-service management for home-service businesses — customers, jobs, estimates, leads, invoices,
 scheduling and dispatch — over the **Housecall v1 public API** (`api.housecallpro.com`).
