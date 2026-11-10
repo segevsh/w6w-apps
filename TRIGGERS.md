@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 75, manual-webhook: 24, poll: 479, none: 105
+**Totals:** 683 apps — webhook-api: 70, manual-webhook: 29, poll: 479, none: 105
 
-## webhook-api (75)
+## webhook-api (70)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -49,17 +49,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/judgeme | review-created, review-updated | apps/judgeme/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/DELETE /webhooks, keys review/created and review/updated); JUDGEME-HMAC-SHA256 hex HMAC of the raw body under the Private API token; no poll: list-reviews has no sort or created-after filter |
 | apps/lemlist | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | comment, cycle, issue, project | apps/linear/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/lokalise | project, key, translation, task | no | hand | webhook candidate queued for a webhook node: project, key, translation and task events |
-| apps/lusha | prospect, company-signal | no | hand | webhook candidate queued for a webhook node: prospect and company signal subscriptions |
-| apps/mailchimp/mandrill | send, bounce, open, click, reject | no | hand | webhook candidate queued for a webhook node: send, bounce, open, click and reject events (https://mailchimp.com/developer/transactional/docs/webhooks/) |
+| apps/lokalise | key-added, key-modified, translation-updated, task-created, task-closed | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound) |
+| apps/lusha | signal-received | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned |
+| apps/mailchimp/mandrill | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
 | apps/mailerlite | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/mailgun | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
-| apps/marketo | Smart Campaign lead events | no | hand | webhook candidate queued for a webhook node: Smart Campaign-triggered lead events |
 | apps/mautic | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/messagebird | inbound, message-status | no | hand | webhook candidate queued for a webhook node: inbound and message-status events |
-| apps/meta/facebook-messenger | messaging, postback, delivery | no | hand | webhook candidate queued for a webhook node: messaging, postback and delivery events |
-| apps/microsoft/azure-blob | BlobCreated, BlobDeleted | no | hand | webhook candidate queued for a webhook node: BlobCreated and BlobDeleted Event Grid events |
-| apps/mighty-networks | member, post, event | no | hand | webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/api/webhooks.md) |
 | apps/mindee | inference.processed | apps/mindee/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll |
 | apps/monday | create_pulse, change_column_value | apps/monday/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: board and item events; existing board/item lists have no documented newest-first order or creation-since filter |
 | apps/murf | dubbing_job.completed | apps/murf/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter |
@@ -90,7 +85,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (24)
+## manual-webhook (29)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -104,9 +99,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/homeassistant | automation-event | apps/homeassistant/README.md Triggers section (verified 2026-11-10) | hand | manual webhook receiving rest_command calls from the user's automations (Home Assistant has no outbound event feed); unsigned, callback URL is the secret; no poll: state list is an uncapped snapshot with no change filter |
 | apps/intercom | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
 | apps/line | event-received | apps/line/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in the LINE Developers Console; x-line-signature base64 HMAC-SHA256 of the raw body under the channel secret; one trigger carries message, follow, unfollow and postback (one URL per channel) |
+| apps/marketo | lead-webhook | apps/marketo/README.md Triggers section (verified 2026-11-10) | hand | unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret |
+| apps/messagebird | inbound-sms | apps/messagebird/README.md Triggers section (verified 2026-11-10) | hand | manual inbound-SMS callback (Flow Builder Forward to URL); MessageBird-Signature-JWT HS256 with url_hash and payload_hash verified; POST only (GET callbacks and status reports cannot be verified) |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-lead-ads | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/meta/facebook-messenger | messenger-event | apps/meta/facebook-messenger/README.md Triggers section (verified 2026-11-10) | hand | manual Page webhook in the Meta App Dashboard; GET verify-token challenge plus X-Hub-Signature-256 HMAC-SHA256 with the App Secret over the raw body |
 | apps/meta/whatsapp | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/microsoft/azure-blob | blob-created, blob-deleted | apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10) | hand | manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret |
+| apps/mighty-networks | member-joined, post-created, network-event | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings; no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time |
 | apps/netlify | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/payhip | paid, refunded, subscription.created, subscription.deleted | apps/payhip/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: paid, refunded, subscription.created and subscription.deleted (help.payhip.com/article/115-webhooks); the Public API only verifies and manages a supplied license key, so no list action exists. |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |

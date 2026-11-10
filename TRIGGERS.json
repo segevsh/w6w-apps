@@ -3749,14 +3749,15 @@
     "path": "apps/lokalise",
     "mechanism": "webhook-api",
     "candidates": [
-      "project",
-      "key",
-      "translation",
-      "task"
+      "key-added",
+      "key-modified",
+      "translation-updated",
+      "task-created",
+      "task-closed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: project, key, translation and task events",
-    "verified": false,
+    "reason": "API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound)",
+    "verified": "apps/lokalise/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -3808,12 +3809,11 @@
     "path": "apps/lusha",
     "mechanism": "webhook-api",
     "candidates": [
-      "prospect",
-      "company-signal"
+      "signal-received"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: prospect and company signal subscriptions",
-    "verified": false,
+    "reason": "API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned",
+    "verified": "apps/lusha/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -3840,15 +3840,11 @@
     "path": "apps/mailchimp/mandrill",
     "mechanism": "webhook-api",
     "candidates": [
-      "send",
-      "bounce",
-      "open",
-      "click",
-      "reject"
+      "email-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: send, bounce, open, click and reject events (https://mailchimp.com/developer/transactional/docs/webhooks/)",
-    "verified": false,
+    "reason": "API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected",
+    "verified": "apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -3945,13 +3941,13 @@
   },
   {
     "path": "apps/marketo",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "Smart Campaign lead events"
+      "lead-webhook"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: Smart Campaign-triggered lead events",
-    "verified": false,
+    "reason": "unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret",
+    "verified": "apps/marketo/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4059,14 +4055,13 @@
   },
   {
     "path": "apps/messagebird",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "inbound",
-      "message-status"
+      "inbound-sms"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: inbound and message-status events",
-    "verified": false,
+    "reason": "manual inbound-SMS callback (Flow Builder Forward to URL); MessageBird-Signature-JWT HS256 with url_hash and payload_hash verified; POST only (GET callbacks and status reports cannot be verified)",
+    "verified": "apps/messagebird/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4112,15 +4107,13 @@
   },
   {
     "path": "apps/meta/facebook-messenger",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "messaging",
-      "postback",
-      "delivery"
+      "messenger-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: messaging, postback and delivery events",
-    "verified": false,
+    "reason": "manual Page webhook in the Meta App Dashboard; GET verify-token challenge plus X-Hub-Signature-256 HMAC-SHA256 with the App Secret over the raw body",
+    "verified": "apps/meta/facebook-messenger/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4168,14 +4161,14 @@
   },
   {
     "path": "apps/microsoft/azure-blob",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "BlobCreated",
-      "BlobDeleted"
+      "blob-created",
+      "blob-deleted"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: BlobCreated and BlobDeleted Event Grid events",
-    "verified": false,
+    "reason": "manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret",
+    "verified": "apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4294,15 +4287,15 @@
   },
   {
     "path": "apps/mighty-networks",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "member",
-      "post",
-      "event"
+      "member-joined",
+      "post-created",
+      "network-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/api/webhooks.md)",
-    "verified": false,
+    "reason": "manual webhook set in Network settings; no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time",
+    "verified": "apps/mighty-networks/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
