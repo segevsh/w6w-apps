@@ -6,7 +6,7 @@ schema.
 - **Categories** — spreadsheets, databases, productivity
 - **Auth methods** — personal-access-token, oauth2, api-key
 - **Actions** — 10
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `api.airtable.com`
 - **Website** — https://www.airtable.com
 - **API docs** — https://airtable.com/developers/web/api/introduction
@@ -84,12 +84,24 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 
 ## Triggers
 
-| Trigger      | Event                                    | Poll source                                                    |
-| ------------ | ---------------------------------------- | -------------------------------------------------------------- |
+| Trigger | Event | Poll source |
+| ------- | ----- | ----------- |
 | `new-record` | A record newly added to a selected table | List records, sorted by a chosen Created time field descending |
+| `new-or-updated-record` | A record added or edited in a selected table | List records, sorted by a chosen Last modified time field descending; an edit is a new event (`id:<last modified time>`) |
+| `new-base` | A base that newly becomes accessible to the token | List bases (all pages), diffed against the previous check |
 
-Choose an Airtable **Created time** field for the trigger. The first poll records the current page
-without emitting it; later polls deduplicate by record id. Airtable documents the list-records
+Choose an Airtable **Created time** field for `new-record` and a **Last modified time** field for
+`new-or-updated-record`. The first poll records the current page without emitting it; later polls
+deduplicate by record id (and, for `new-or-updated-record`, by id plus modified time), so only the
+100 most recently touched records are inspected each check. Airtable documents the list-records
 `sort` parameter and descending direction in its
 [Web API sort guide](https://support.airtable.com/docs/airtable-web-api-using-filterbyformula-or-sort-parameters),
-checked 2026-11-09.
+checked 2026-11-10. `GET /meta/bases` has no sort order or timestamps, so `new-base` reads every page and
+diffs the ids ([list bases](https://airtable.com/developers/web/api/list-bases), verified 2026-11-10).
+
+**No webhook trigger.** Airtable's webhooks are ping-only: a delivery carries only the base id, the
+webhook id and a timestamp, and the changes must then be fetched with *list webhook payloads* using a
+cursor that "should be saved between" calls; the webhook also expires after 7 days unless refreshed
+([webhooks overview](https://airtable.com/developers/web/api/webhooks-overview), verified 2026-11-10).
+A w6w webhook trigger cannot persist a cursor between deliveries, so replaying from the start would
+emit duplicates; record changes arrive through the poll triggers instead.
