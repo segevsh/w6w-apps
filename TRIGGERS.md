@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 70, manual-webhook: 19, poll: 463, none: 131
+**Totals:** 683 apps — webhook-api: 70, manual-webhook: 19, poll: 460, none: 134
 
 ## webhook-api (70)
 
@@ -109,7 +109,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (463)
+## poll (460)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -522,23 +522,20 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tally | submission-get-many | new-submission-get-many | no | scan | list action submission-get-many has pagination and order/since params |
 | apps/taskade | my-project-list | new-my-project-list | no | scan | list action my-project-list has pagination and order/since params |
 | apps/teachable | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/teamleader | contacts-list | new-contacts-list | no | scan | list action contacts-list has pagination and order/since params |
-| apps/teamup | customer-memberships-list | new-customer-memberships-list | no | scan | list action customer-memberships-list has pagination and order/since params |
-| apps/teamwork | project-list | new-project-list | no | scan | list action project-list has pagination and order/since params |
-| apps/textmagic | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/thanksio | order-items-list | new-order-items-list | no | scan | list action order-items-list has pagination and order/since params |
-| apps/tickettailor | issued-ticket-list | new-issued-ticket-list | no | scan | list action issued-ticket-list has pagination and order/since params |
-| apps/ticktick | list-habits | new-habits | no | scan | list action list-habits has pagination and order/since params |
-| apps/tidio | lyro-data-source-list | new-lyro-data-source-list | no | scan | list action lyro-data-source-list has pagination and order/since params |
-| apps/timelinesai | messages-list | new-messages-list | no | scan | list action messages-list has pagination and order/since params |
-| apps/tremendous | order-list | new-order-list | no | scan | list action order-list has pagination and order/since params |
-| apps/trustpilot | business-unit-reviews-list | new-business-unit-reviews-list | no | scan | list action business-unit-reviews-list has pagination and order/since params |
+| apps/teamleader | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
+| apps/teamup | invoices-list | new-invoice | apps/teamup/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): invoices-list sort=-id (documented enum id\|-id\|due_date\|-due_date, https://docs.goteamup.com/llms.txt) |
+| apps/teamwork | project-list | new-project | apps/teamwork/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): project-list orderBy=datecreated&orderMode=desc |
+| apps/textmagic | contact-list | new-contact | apps/textmagic/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): contact-list orderBy=id&direction=desc |
+| apps/ticktick | list-habits | new-habit | apps/ticktick/README.md Triggers section (verified 2026-11-09) | hand | snapshot (c): list-habits returns the whole small unpaged habit collection; added only; emits the flat habit |
+| apps/timelinesai | messages-list | new-message | apps/timelinesai/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): messages-list sorting_order=desc, per chat |
+| apps/tremendous | order-list | new-order | apps/tremendous/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): order-list createdAtGte (created_at[gte]); floor/resume per brief 9.8/9.9 |
+| apps/trustpilot | business-unit-reviews-list | new-review | apps/trustpilot/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): orderBy=createdat.desc, per business unit |
 | apps/tumblr | blog-posts-list | new-post | apps/tumblr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action blog-posts-list |
-| apps/twist | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
-| apps/twitch | search-categories | new-categories | no | scan | list action search-categories has pagination and order/since params |
+| apps/twist | message-list | new-message | apps/twist/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): message-list orderBy=desc, per conversation; replaces round-1 not-shipped line |
+| apps/twitch | get-channel-followers | new-follower | apps/twitch/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): get-channel-followers lists most recent follower first (https://dev.twitch.tv/docs/api/reference/#get-channel-followers); needs moderator:read:followers |
 | apps/twitter | tweet-search-recent | new-tweet | apps/twitter/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action tweet-search-recent |
 | apps/typefully | draft-list | new-draft | apps/typefully/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action draft-list |
-| apps/typesense | document-search | new-document-search | no | scan | list action document-search has pagination and order/since params |
+| apps/typesense | document-search | new-document | apps/typesense/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a) by user-supplied sortBy (sort_by documented, https://typesense.org/docs/28.0/api/search.html); q=*, strict |
 | apps/unbounce | page-lead-list | new-lead | apps/unbounce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action page-lead-list |
 | apps/upsales | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/vanta | issue-list | new-issue | apps/vanta/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-list |
@@ -577,7 +574,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (131)
+## none (134)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -678,8 +675,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tavily |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/telnyx |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/terraform |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/thanksio | order-list | apps/thanksio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | order-list documents only 'recent orders', no sort or since filter (https://docs.thanks.io/api-reference/openapi.json) |
 | apps/thinkific |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/thrivecart |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/tickettailor | issued-ticket-list | apps/tickettailor/README.md Triggers: not shipped line (verified 2026-11-09) | hand | issued-ticket-list has cursor paging only, no documented sort or created-after filter (https://developers.tickettailor.com/) |
+| apps/tidio | ticket-list | apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md) |
 | apps/tidycal |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/tiktok-lead-generation |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/tldv |  | no | scan | no newest-first list action found by scan; vendor events not researched |

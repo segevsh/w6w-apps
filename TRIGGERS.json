@@ -6539,34 +6539,35 @@
     "path": "apps/teamleader",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contacts-list",
-    "reason": "list action contacts-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9",
+    "verified": "apps/teamleader/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/teamup",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-memberships-list"
+      "new-invoice"
     ],
-    "pollAction": "customer-memberships-list",
-    "reason": "list action customer-memberships-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "invoices-list",
+    "reason": "newest-first (a): invoices-list sort=-id (documented enum id|-id|due_date|-due_date, https://docs.goteamup.com/llms.txt)",
+    "verified": "apps/teamup/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/teamwork",
     "mechanism": "poll",
     "candidates": [
-      "new-project-list"
+      "new-project"
     ],
     "pollAction": "project-list",
-    "reason": "list action project-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a): project-list orderBy=datecreated&orderMode=desc",
+    "verified": "apps/teamwork/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/telegram",
@@ -6602,23 +6603,23 @@
     "path": "apps/textmagic",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a): contact-list orderBy=id&direction=desc",
+    "verified": "apps/textmagic/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/thanksio",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-order-items-list"
+      "order-list"
     ],
-    "pollAction": "order-items-list",
-    "reason": "list action order-items-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "order-list documents only 'recent orders', no sort or since filter (https://docs.thanks.io/api-reference/openapi.json)",
+    "verified": "apps/thanksio/README.md Triggers: not shipped line (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/thinkific",
@@ -6640,36 +6641,36 @@
   },
   {
     "path": "apps/tickettailor",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-issued-ticket-list"
+      "issued-ticket-list"
     ],
-    "pollAction": "issued-ticket-list",
-    "reason": "list action issued-ticket-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "issued-ticket-list has cursor paging only, no documented sort or created-after filter (https://developers.tickettailor.com/)",
+    "verified": "apps/tickettailor/README.md Triggers: not shipped line (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ticktick",
     "mechanism": "poll",
     "candidates": [
-      "new-habits"
+      "new-habit"
     ],
     "pollAction": "list-habits",
-    "reason": "list action list-habits has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "snapshot (c): list-habits returns the whole small unpaged habit collection; added only; emits the flat habit",
+    "verified": "apps/ticktick/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tidio",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-lyro-data-source-list"
+      "ticket-list"
     ],
-    "pollAction": "lyro-data-source-list",
-    "reason": "list action lyro-data-source-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md)",
+    "verified": "apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tidycal",
@@ -6693,12 +6694,12 @@
     "path": "apps/timelinesai",
     "mechanism": "poll",
     "candidates": [
-      "new-messages-list"
+      "new-message"
     ],
     "pollAction": "messages-list",
-    "reason": "list action messages-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a): messages-list sorting_order=desc, per chat",
+    "verified": "apps/timelinesai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tldv",
@@ -6739,23 +6740,23 @@
     "path": "apps/tremendous",
     "mechanism": "poll",
     "candidates": [
-      "new-order-list"
+      "new-order"
     ],
     "pollAction": "order-list",
-    "reason": "list action order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter (b): order-list createdAtGte (created_at[gte]); floor/resume per brief 9.8/9.9",
+    "verified": "apps/tremendous/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/trustpilot",
     "mechanism": "poll",
     "candidates": [
-      "new-business-unit-reviews-list"
+      "new-review"
     ],
     "pollAction": "business-unit-reviews-list",
-    "reason": "list action business-unit-reviews-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a): orderBy=createdat.desc, per business unit",
+    "verified": "apps/trustpilot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tumblr",
@@ -6802,23 +6803,23 @@
     "path": "apps/twist",
     "mechanism": "poll",
     "candidates": [
-      "new-message-list"
+      "new-message"
     ],
     "pollAction": "message-list",
-    "reason": "list action message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a): message-list orderBy=desc, per conversation; replaces round-1 not-shipped line",
+    "verified": "apps/twist/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/twitch",
     "mechanism": "poll",
     "candidates": [
-      "new-categories"
+      "new-follower"
     ],
-    "pollAction": "search-categories",
-    "reason": "list action search-categories has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "get-channel-followers",
+    "reason": "newest-first (a): get-channel-followers lists most recent follower first (https://dev.twitch.tv/docs/api/reference/#get-channel-followers); needs moderator:read:followers",
+    "verified": "apps/twitch/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/twitter",
@@ -6857,12 +6858,12 @@
     "path": "apps/typesense",
     "mechanism": "poll",
     "candidates": [
-      "new-document-search"
+      "new-document"
     ],
     "pollAction": "document-search",
-    "reason": "list action document-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "newest-first (a) by user-supplied sortBy (sort_by documented, https://typesense.org/docs/28.0/api/search.html); q=*, strict",
+    "verified": "apps/typesense/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/unbounce",
