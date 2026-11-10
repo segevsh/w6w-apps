@@ -98,6 +98,8 @@ import websiteListCheckpoints from "./actions/website-list-checkpoints.ts";
 import websitePublish from "./actions/website-publish.ts";
 import websiteUpdate from "./actions/website-update.ts";
 
+import newTask from "./triggers/new-task.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -151,4 +153,5 @@ export default {
   // this app does not implement; see the module docblock above.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newTask],
 } satisfies AppDefinition;

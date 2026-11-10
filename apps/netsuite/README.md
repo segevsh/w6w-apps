@@ -1,5 +1,7 @@
 # NetSuite
 
+Triggers: not shipped — generic record listing accepts arbitrary record types and filtering but has no fixed record schema or documented newest-first ordering for a safe poll (https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/chapter_1540391670.html)
+
 Records, SuiteQL queries and record transformations on **Oracle NetSuite** through the SuiteTalk
 REST Web Services.
 

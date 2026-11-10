@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hospitable",
-  "version": "0.1.0",
-  "description": "Manage Hospitable short-term-rental properties, reservations, guest messages, reviews, calendars and operations tasks.",
+  "version": "0.2.0",
+  "description": "Manage Hospitable short-term-rental properties, reservations, guest messages, reviews, calendars and operations tasks, with new-reservation triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "public.api.hospitable.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

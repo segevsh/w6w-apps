@@ -59,3 +59,5 @@ Verified on 2026-10-06 against the docs pages under `prospeo.io/api-docs` and li
 - **api** — unsigned `GET /account-information`; the documented `INVALID_API_KEY` body is a pass.
 - **quota** — credit balance from a signed `GET /account-information`: 0 is down, under 10 is
   degraded (informational).
+
+Triggers: not shipped — enrichment and search endpoints compute or look up supplied prospects rather than list account records (https://prospeo.io/api-docs)

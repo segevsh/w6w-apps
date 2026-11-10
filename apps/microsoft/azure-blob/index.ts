@@ -30,6 +30,8 @@ import blobUndelete from "./actions/blob-undelete.ts";
 import blobSetTier from "./actions/blob-set-tier.ts";
 import blobMetadataSet from "./actions/blob-metadata-set.ts";
 import blobLease from "./actions/blob-lease.ts";
+import blobCreated from "./triggers/blob-created.ts";
+import blobDeleted from "./triggers/blob-deleted.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -48,6 +50,7 @@ const app: AppDefinition = {
     blobMetadataSet,
     blobLease,
   ],
+  triggers: [blobCreated, blobDeleted],
   auth: [sharedKey],
   healthChecks: [service, account],
 };

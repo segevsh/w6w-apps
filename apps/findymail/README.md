@@ -7,6 +7,7 @@ searches, manage contact and exclusion lists, monitor buying signals and read cr
 - **Categories** — email, marketing
 - **Auth methods** — api-key (`Authorization: Bearer <token>`)
 - **Actions** — 35
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable — Findymail publishes no status page), `api`
   (unsigned reachability), `quota` (finder and verifier credit balances) + the derived `auth:api-key`
 - **Egress allowlist** — `app.findymail.com`
@@ -83,3 +84,17 @@ Everything here was verified on 2026-10-06 against the OpenAPI document and live
 docker compose -f .devcontainer/docker-compose.yml exec -T api \
   sh -c 'cd /app/packages/apps/apps/findymail && deno task validate && deno task check && deno task lint && deno task fmt && deno task test'
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-list` — New Contact List | poll (snapshot) | Get the list of contact lists (`GET /api/lists`) | each newly created contact list |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `list-lists` action; the collection is one unpaginated response of the account's contact lists (a handful, far below the 5000-row snapshot cap), diffed on each check with additions only. Renames are not events. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Intellimatch search stays an action: it starts a credit-consuming task, so it is not a feed.
+
+Vendor docs: https://app.findymail.com/docs/openapi.yaml (`GET /api/lists`) (verified 2026-11-09).

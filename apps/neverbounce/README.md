@@ -1,5 +1,7 @@
 # NeverBounce
 
+Triggers: not shipped — the only callbacks are per-job events for a bulk job the caller creates (`callback_url` is set in the job-create request), not an account event stream, and they are unsigned; job search has no documented newest-first order (https://developers.neverbounce.com/reference/job-callbacks)
+
 Verify email addresses one at a time or in bulk jobs, and check credit balance, via the
 [NeverBounce](https://neverbounce.com) v4.2 API.
 

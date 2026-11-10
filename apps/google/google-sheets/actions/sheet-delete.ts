@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -17,7 +18,7 @@ const sheetDelete: ActionDefinition<Input> = {
   title: "Delete Sheet",
   description: "Permanently remove a sheet tab from a spreadsheet.",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     {
       key: "sheetId",
       label: "Sheet ID (numeric)",

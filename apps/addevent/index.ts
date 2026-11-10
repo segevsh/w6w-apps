@@ -70,6 +70,7 @@ import timezoneList from "./actions/timezone-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEventTemplate from "./triggers/new-event-template.ts";
 
 export default {
   actions: [
@@ -106,4 +107,5 @@ export default {
   // account settings page is the entire authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEventTemplate],
 } satisfies AppDefinition;

@@ -16,6 +16,7 @@ import locationGetMany from "./actions/location-get-many.ts";
 import scheduleAvailableSlotsGetMany from "./actions/schedule-available-slots-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBooking from "./triggers/new-booking.ts";
 
 export default {
   actions: [
@@ -42,4 +43,5 @@ export default {
   ],
   auth: [login],
   healthChecks: [service, quota],
+  triggers: [newBooking],
 } satisfies AppDefinition;

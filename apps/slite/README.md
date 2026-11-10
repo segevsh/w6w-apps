@@ -123,3 +123,19 @@ second create makes a second note). The other `perform` actions set a state and 
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-or-updated-note` — New or Updated Note | poll | `note-list` | Each note that is created or edited. |
+
+The poll calls `GET /v1/notes?orderBy=lastEditedAt_DESC` (the `note-list` request): List notes
+documents `orderBy` with the values `lastEditedAt_DESC`, `lastEditedAt_ASC`, `listPosition_DESC`,
+`listPosition_ASC`, and each note carries `lastEditedAt`, which the event id includes — so an edit is
+a new event. There is **no separate `new-note` trigger**: Slite documents no created-time order
+(`listPosition` is "seeded from the creation date" but "manual reordering overrides it"), and
+`km-note-list` takes only review-state/owner/channel/recency filters with no sort, so a pure
+"created" feed is not available from an existing list action.
+
+Vendor documentation: https://developers.slite.com/reference/listnotes (verified 2026-11-09).

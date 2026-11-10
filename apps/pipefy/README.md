@@ -4,6 +4,28 @@ Pipefy is a no-code work-management / process-automation platform (pipes, phases
 Database Tables). This app covers organizations, pipes, phases, cards and Database Tables over
 Pipefy's **GraphQL-only** API, plus a raw-query escape hatch.
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-pipe` | poll | `pipe-list` (GraphQL `organization(id) { pipes }`) | Each pipe newly created in the chosen organization (additions only). |
+| `new-card` | webhook (API-registered) | `card.create` | Each card (or database table record) created in the chosen pipe or table: card id and pipe id, phase, creator, full payload. |
+| `card-done` | webhook (API-registered) | `card.done` | Each card moved to a finished phase (or table record marked done): card id, phase, who finished it, full payload. |
+| `card-moved` | webhook (API-registered) | `card.move` | Each card moved between phases: card id and title, the phase it left and entered, who moved it, full payload. |
+
+`pipe-list` reads all pipes of one organization in a single GraphQL query with no ordering argument, so the trigger snapshots the list and emits ids not seen before (renames and removals are ignored). It takes the organization ID as a parameter. `organization-list` and `table-list` are not wrapped (an account has a handful of organizations; tables are created far less often than the records inside them).
+
+**Webhook triggers.** `new-card`, `card-done` and `card-moved` register themselves: subscribing runs the `createWebhook` GraphQL mutation (one action per trigger) for the pipe or database table you name (`pipeId` or `tableId` — exactly one), with the callback URL w6w minted for the subscription; unsubscribing runs `deleteWebhook` (a webhook Pipefy no longer has counts as deleted). Nothing to set up by hand. The service account that authenticated the connection needs permission to manage webhooks on that pipe or table. Each trigger registers one action; use one subscription per event.
+
+**Trust model.** Pipefy documents no signature and no timestamp on a delivery, so a delivery cannot be proven unmodified and a captured one can be replayed. It does let the registrant attach custom JSON headers (`headers` on `CreateWebhookInput`), so subscribing registers a fresh random secret as the custom header `X-W6W-Webhook-Secret`, kept in the subscription, and the trigger refuses (constant-time comparison, before it reads the body) any delivery whose header is missing or wrong. That makes the secret a second credential besides the callback URL (w6w stores a custom header in the event history unredacted, so only people who can read events see it). It is not secrecy from other pipe members, whom Pipefy's webhook queries can show the headers. Keep the callback URL out of logs and tickets; unsubscribe (which deletes the Pipefy webhook) and subscribe again to rotate both. A delivery whose action is not the one the trigger registered is dropped. `card-list` filters by title only, so it is not wrapped by a poll.
+
+Vendor documentation (verified 2026-11-09 unless dated):
+
+- https://developers.pipefy.com/reference/pipes
+- https://developers.pipefy.com/reference/pipe-table-webhooks (webhook registration mutations and payloads, verified 2026-11-10)
+- https://developers.pipefy.com/docs/webhooks (webhooks overview, verified 2026-11-10)
+- https://developers.pipefy.com/reference/authentication
+
 ## Auth model
 
 Pipefy offers two ways to authenticate, and its own docs are explicit about which one to use:

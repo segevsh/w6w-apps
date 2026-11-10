@@ -1,5 +1,7 @@
 # Plaud
 
+Triggers: not shipped — transcription-get and device-binding-get require a supplied resource id and the API provides no list endpoint for a changing record feed (https://docs.plaud.ai/).
+
 Register Plaud devices in the cloud registry, upload audio to Plaud storage, and transcribe it with
 Plaud's speech models, on the **Plaud Dev API** ("Plaud Embedded").
 

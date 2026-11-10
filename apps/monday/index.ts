@@ -16,7 +16,8 @@
  *     `column_id` are string keys (`topics`, `status`). The `*-get-many` lookups
  *     exist to discover them.
  *
- * Deliberately absent: the webhook trigger (a Trigger, not an Action).
+ * Triggers: `item-created` and `column-value-changed` are webhook triggers (lib/triggers.ts):
+ * subscribing registers a board webhook, answers monday's URL-verification challenge on delivery.
  */
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
@@ -36,6 +37,8 @@ import itemChangeColumnValues from "./actions/item-change-column-values.ts";
 import itemDelete from "./actions/item-delete.ts";
 import itemMove from "./actions/item-move.ts";
 import columnGetMany from "./actions/column-get-many.ts";
+import itemCreated from "./triggers/item-created.ts";
+import columnValueChanged from "./triggers/column-value-changed.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -60,6 +63,7 @@ export default {
     // column — the lookup that tells item writes which column ids exist
     columnGetMany,
   ],
+  triggers: [itemCreated, columnValueChanged],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -57,6 +57,7 @@ import pdfSplit from "./actions/pdf-split.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDocument from "./triggers/new-document.ts";
 
 export default {
   actions: [
@@ -89,4 +90,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newDocument],
 } satisfies AppDefinition;

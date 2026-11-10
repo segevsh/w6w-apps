@@ -10,6 +10,7 @@ import glossaryList from "./actions/glossary-list.ts";
 import glossaryGet from "./actions/glossary-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newGlossary from "./triggers/new-glossary.ts";
 
 export default {
   actions: [
@@ -22,6 +23,7 @@ export default {
     glossaryList,
     glossaryGet,
   ],
+  triggers: [newGlossary],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

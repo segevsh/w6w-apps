@@ -15,6 +15,8 @@ observations, punch items and project documents.
 Every path, query parameter and body field here was read on 2026-10-06 from Procore's published
 OpenAPI documents, all at **REST v1.0**.
 
+Triggers: not shipped — `submittal-list` needs a per-project id and a descending `sort`, and Procore's sort and filter syntax is only published in its JS-rendered reference, which could not be verified (https://developers.procore.com/reference/rest/submittals)
+
 ## Actions
 
 | Area         | Actions                                                           |

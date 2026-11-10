@@ -8,6 +8,8 @@ import stopBuild from "./actions/stop-build.ts";
 import getQueueItem from "./actions/get-queue-item.ts";
 import service from "./health/service.ts";
 import site from "./health/site.ts";
+import newBuild from "./triggers/new-build.ts";
+import newJob from "./triggers/new-job.ts";
 
 export default {
   actions: [
@@ -20,4 +22,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, site],
+  triggers: [newBuild, newJob],
 } satisfies AppDefinition;

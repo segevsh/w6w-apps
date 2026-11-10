@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/housecallpro",
-  "version": "0.1.2",
-  "description": "Housecall Pro field-service management: customers, jobs, estimates, leads, invoices, scheduling and dispatch over the Housecall v1 public API.",
+  "version": "0.2.0",
+  "description": "Housecall Pro field-service management: customers, jobs, estimates, leads, invoices, scheduling and dispatch over the Housecall v1 public API, with new-customer triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.housecallpro.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

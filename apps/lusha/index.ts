@@ -27,6 +27,7 @@ import apiKey from "./auth/api-key.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import signalReceived from "./triggers/signal-received.ts";
 
 export default {
   actions: [
@@ -55,6 +56,7 @@ export default {
     subscriptionGet,
     subscriptionList,
   ],
+  triggers: [signalReceived],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

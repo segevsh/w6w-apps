@@ -32,6 +32,7 @@ import listGuilds from "./actions/list-guilds.ts";
 import getGuild from "./actions/get-guild.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -57,4 +58,5 @@ export default {
   ],
   auth: [botToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

@@ -8,6 +8,18 @@ company's serving subdomains, verify an email address, and build technographic l
 - **Auth:** API key (`x-api-key` header). A **Business plan or higher** is required for API
   access, per every reference page's own gating banner.
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-lead-list` | poll (5 min) | `lists-list` | each lead list newly created in Wappalyzer |
+
+`GET /v2/lists/` (`listLeadLists`) returns the account's lead lists as one unpaginated array of
+`ListSummary` objects, so the trigger snapshot-diffs it (additions only; more than 5000 throws). The
+first check only records the lists. Wappalyzer documents no webhooks.
+
+Source: https://www.wappalyzer.com/openapi/v2-public.yaml (`/lists`; verified 2026-11-09).
+
 ## What was verified, and how
 
 Everything in this app was checked on **2026-09-29** against Wappalyzer's own **OpenAPI 3.1

@@ -64,6 +64,12 @@ import webhookTest from "./actions/webhook-test.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import submissionCreated from "./triggers/submission-created.ts";
+import submissionEdited from "./triggers/submission-edited.ts";
+import dispatchCreated from "./triggers/dispatch-created.ts";
+import workflowHandoffCreated from "./triggers/workflow-handoff-created.ts";
+import submissionStatusChanged from "./triggers/submission-status-changed.ts";
+
 export default {
   actions: [
     meGet,
@@ -118,6 +124,13 @@ export default {
     webhookTest,
   ],
   // HTTP Basic only: v3 OAuth needs a customer-created OAuth application.
+  triggers: [
+    submissionCreated,
+    submissionEdited,
+    dispatchCreated,
+    workflowHandoffCreated,
+    submissionStatusChanged,
+  ],
   auth: [basic],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

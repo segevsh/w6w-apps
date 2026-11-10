@@ -1,5 +1,15 @@
 # Hospitable
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-reservation` — New Reservation | poll | `reservation-list` | Each newly booked reservation |
+
+Hospitable documents reservations at https://developer.hospitable.com/ (verified 2026-11-09).
+
 Manage a short-term-rental business on [Hospitable](https://hospitable.com) from a w6w
 workflow: properties and their calendars, reservations, guest messages, reviews, tasks and
 payouts, through the Public API v2 (`https://public.api.hospitable.com/v2`).

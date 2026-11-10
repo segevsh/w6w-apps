@@ -83,6 +83,9 @@ import storyCommentCreate from "./actions/story-comment-create.ts";
 
 import search from "./actions/search.ts";
 
+import newStory from "./triggers/new-story.ts";
+import newOrUpdatedStory from "./triggers/new-or-updated-story.ts";
+
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
 
@@ -134,6 +137,7 @@ export default {
     search,
   ],
   // API token only. Shortcut publishes no OAuth surface for third-party apps.
+  triggers: [newStory, newOrUpdatedStory],
   auth: [apiToken],
   healthChecks: [service, requestRate],
 } satisfies AppDefinition;

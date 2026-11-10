@@ -1,5 +1,16 @@
 # Rocket.Chat
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | poll | `list-users` | Each newly created workspace user. |
+| `new-or-updated-user` — New or Updated User | poll | `list-users` | Each newly created or updated workspace user. |
+
+Rocket.Chat documents the `sort` JSON parameter for [`users.list`](https://developer.rocket.chat/apidocs/get-users-list). Verified 2026-11-09.
+
 Talk to a [Rocket.Chat](https://rocket.chat) Cloud workspace from a workflow: post and thread
 messages, read channel, group and direct-message history, search a room, manage channels and
 private groups, open DMs, and look up users.

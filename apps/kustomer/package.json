@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/kustomer",
-  "version": "0.1.0",
-  "description": "Manage Kustomer customers, conversations, messages, notes, custom objects and CSAT surveys.",
+  "version": "0.2.0",
+  "description": "Manage Kustomer customers, conversations, messages, notes, custom objects and CSAT surveys. Includes a new customer poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.kustomer.com/kustomer-api-docs/reference/introduction"
     ],
-    "longDescription": "Kustomer is a customer-service CRM built around the customer's own timeline rather than a queue of tickets. This app covers that timeline end to end: creating and looking up customers, opening and updating conversations, recording messages on a conversation, adding internal notes, and tagging conversations for routing or reporting.\n\nBeyond the conversation surface, it reaches Kustomer's custom-object layer (Klasses and their KObject instances) for organizations that model domain data — orders, subscriptions, shipments — directly inside Kustomer, plus the access-management objects a workflow needs to route or attribute work: teams and users. CSAT survey configuration and individual satisfaction responses round out visibility into support quality.\n\nComposing and sending outbound customer messages through a channel (email, chat, SMS, ...) is deliberately out of scope: Kustomer models that through a separate, per-channel Draft resource with a materially different request shape per channel, which this app's first version does not attempt.",
+    "longDescription": "Kustomer is a customer-service CRM built around the customer's own timeline rather than a queue of tickets. This app covers that timeline end to end: creating and looking up customers, opening and updating conversations, recording messages on a conversation, adding internal notes, and tagging conversations for routing or reporting.\n\nBeyond the conversation surface, it reaches Kustomer's custom-object layer (Klasses and their KObject instances) for organizations that model domain data — orders, subscriptions, shipments — directly inside Kustomer, plus the access-management objects a workflow needs to route or attribute work: teams and users. CSAT survey configuration and individual satisfaction responses round out visibility into support quality.\n\nComposing and sending outbound customer messages through a channel (email, chat, SMS, ...) is deliberately out of scope: Kustomer models that through a separate, per-channel Draft resource with a materially different request shape per channel, which this app's first version does not attempt.\n\nA new customer poll trigger starts workflows from the existing customer-list action.",
     "categories": [
       "support",
       "crm"
@@ -33,7 +33,12 @@
         "*.api.kustomerapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

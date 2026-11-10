@@ -10,6 +10,7 @@ reference carries no deprecation or sunset notice for the REST API.
   project-specific, so one connection is one Placid project.
 - **Rate limit**: 60 requests/minute; `X-RateLimit-Limit`, `-Remaining`, `-Reset` (epoch seconds).
 - **Icon**: Placid's own `apple-icon-180x180.png` from placid.app, unmodified.
+- **Triggers** — 2 (poll)
 
 ## Actions (26)
 
@@ -68,3 +69,13 @@ prevCursor, perPage}`; feed `nextCursor` back as `cursor`.
 ```
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-template` — New Template | Poll | `template-list` | Each newly created record |
+| `new-or-updated-template` — New or Updated Template | Poll | `template-list` | Each newly created or updated template |
+
+This poll wraps the existing `template-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://placid.app/docs) (verified 2026-11-09).

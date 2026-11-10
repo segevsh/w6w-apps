@@ -6,6 +6,7 @@ API v3.
 - **Categories** — video, social-media
 - **Auth methods** — oauth2, api-key
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `youtube.googleapis.com`
 - **Website** — https://www.youtube.com
 - **API docs** — https://developers.google.com/youtube/v3/docs
@@ -322,3 +323,13 @@ OAuth scope asserted above — cross-checked against the HTML reference for the 
 sets and the required-property lists on `videos.update` and `playlists.update`, and against the live
 quota page for every unit cost. Quota rules and status surfaces move; re-check them if budgeting or a
 probe starts behaving differently for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-comment-thread` — New Comment Thread | poll | `list-comment-threads` | Each newly posted channel comment thread |
+
+Source: <https://developers.google.com/youtube/v3/docs/commentThreads/list> (verified 2026-11-09).
+
+The trigger filters with `allThreadsRelatedToChannelId` (the channel and all its videos) and `order=time`, the documented newest-first ordering.

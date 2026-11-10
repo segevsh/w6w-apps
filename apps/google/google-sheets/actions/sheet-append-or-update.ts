@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -37,7 +38,7 @@ const sheetAppendOrUpdate: ActionDefinition<Input> = {
   description: "Upsert rows by matching on a column value (append if new, update if it exists).",
   idempotent: true,
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     { key: "sheetName", label: "Sheet Name", type: "string", required: true },
     { key: "columnToMatchOn", label: "Column to match on", type: "string", required: true },
     {

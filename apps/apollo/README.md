@@ -12,6 +12,7 @@ and outreach machinery (sequences, tasks, lists) built on top of them, on the **
 - **Website** — https://www.apollo.io/
 - **API docs** — https://docs.apollo.io/reference/apollo-api
 - **Status page** — https://status.apollo.io/
+- **Triggers** — 2 (poll)
 
 > **Everything below was verified against Apollo's own sources on 2026-08-29** — its OpenAPI 3.1
 > document (embedded inline in every `docs.apollo.io/reference/*` page as `document.api.schema`, 74
@@ -332,3 +333,12 @@ it is a property of how the shared tool is invoked in this environment, not of t
 audit the way that actually resolves both import maps —
 `cd ../../_tools && deno run --no-check -A audit.ts apollo` — passes with **0 errors, 0 warnings**
 (and the identical command reports the same 0/0 for `apify`).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-search` | Each newly created contact |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-search` | Each newly created or modified contact |
+
+`contact-search` uses `contact_created_at` and `contact_updated_at`; Apollo documents each as most-recent-first. Source: [Apollo Search Contacts](https://docs.apollo.io/reference/search-for-contacts) (verified 2026-11-09).

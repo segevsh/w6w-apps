@@ -46,6 +46,7 @@ import recordingGetMany from "./actions/recording-get-many.ts";
 import recordingDelete from "./actions/recording-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRecording from "./triggers/new-recording.ts";
 
 export default {
   actions: [
@@ -71,4 +72,5 @@ export default {
   ],
   auth: [serverToServer, oauth2],
   healthChecks: [service, quota],
+  triggers: [newRecording],
 } satisfies AppDefinition;

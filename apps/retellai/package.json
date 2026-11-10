@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/retellai",
-  "version": "0.1.0",
-  "description": "Place outbound phone and web calls, batch-dial numbers, and search call history with Retell AI's voice-agent platform.",
+  "version": "0.2.0",
+  "description": "Place outbound phone and web calls, batch-dial numbers, search call history with Retell AI's voice-agent platform, and trigger workflows on new or updated agents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "api.retellai.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

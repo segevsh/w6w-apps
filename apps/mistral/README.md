@@ -1,5 +1,7 @@
 # Mistral AI
 
+Triggers: not shipped — stateless AI inference API; its model list is a capability catalog, not a changing user-record feed (https://docs.mistral.ai/api/)
+
 Chat completions, embeddings, and OCR via the Mistral AI API.
 
 - **Categories** — ai

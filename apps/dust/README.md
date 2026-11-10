@@ -162,3 +162,17 @@ work.
 `assets/icon.svg` is Dust's own favicon mark, fetched from `docs.dust.tt`'s own asset host
 (`mintcdn.com/dust/.../branding/favicon.svg`) — a distinctive seven-piece colored square, not a
 generic placeholder.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-agent` — New Agent | Poll | `agent-list` | Each agent newly available in the workspace |
+| `new-space` — New Space | Poll | `space-list` | Each space newly created in the workspace |
+
+Both endpoints (`GET /assistant/agent_configurations`, `GET /spaces`) answer the whole collection in
+one unpaginated response; each check diffs it against the previous check and emits only additions (a
+workspace beyond 5000 rows makes the check fail with an error naming that cap). The first check only
+records what exists. Dust's webhooks are inbound triggers that run a Dust agent; it publishes no outbound event
+subscription. Source: [Dust triggers](https://docs.dust.tt/docs/user-documentation/agents/triggers/webhooks/index.md) and
+[API reference](https://docs.dust.tt/reference) (verified 2026-11-09).

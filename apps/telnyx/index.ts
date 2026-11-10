@@ -46,11 +46,14 @@ import hangupCall from "./actions/hangup-call.ts";
 import lookupNumber from "./actions/lookup-number.ts";
 import listPhoneNumbers from "./actions/list-phone-numbers.ts";
 
+import newPhoneNumber from "./triggers/new-phone-number.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
   actions: [sendMessage, getMessage, makeCall, hangupCall, lookupNumber, listPhoneNumbers],
   auth: [apiKey],
+  triggers: [newPhoneNumber],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

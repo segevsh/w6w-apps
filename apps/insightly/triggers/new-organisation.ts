@@ -1,0 +1,3 @@
+import { triggerFor } from "../lib/triggers.ts";
+
+export default triggerFor("new-organisation");

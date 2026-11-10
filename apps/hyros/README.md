@@ -65,3 +65,26 @@ about whether fields travel in the query or the body, so they were left out rath
 Hyros publishes no status page or feed (`status.hyros.com` does not resolve), so the service check
 is declared `unavailable` with `informational` severity. Credential liveness is covered by the
 auth test.
+
+## Triggers
+
+- **Triggers** — 2 (poll)
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-lead` | poll | `leads-list` — `GET /leads?fromDate=…&pageSize=250` | each lead created since the last check |
+| `new-sale` | poll | `sales-list` — `GET /sales?fromDate=…&pageSize=250` | each sale recorded since the last check |
+
+Every five minutes the trigger calls the same list action with `fromDate` set to the last check minus
+a 120 s overlap (the first check only records state and emits nothing), follows the opaque
+`nextPageId` for up to 5 pages, and dedupes by record `id`. Hyros documents `fromDate` as "only
+leads/sales whose join date is more recent than this" and states no result order, so order is never
+relied on. If a window needs more than 5 pages, or a check would emit more than 500, the cursor is held
+and the rest is picked up on the next check. No `new-or-updated-*` trigger: Hyros documents no
+update-since filter or update stamp. The Hyros API Blueprint documents no webhook endpoints.
+
+Source: https://jsapi.apiary.io/apis/hyros.apib — "Retrieve Leads" and "Retrieve sales" (verified 2026-11-09).
+
+## Trigger floor assumption
+
+The new-lead and new-sale triggers floor on each record's creation timestamp; a sale's `creationDate` is documented as `Thu Nov 17 10:51:54 ART 2022`, which is parsed (zone abbreviations UTC/GMT/ART/BRT/EST/EDT/CST/CDT/MST/MDT/PST/PDT/CET/CEST/BST). An item whose date has an unknown zone or does not parse is kept, so a first-check flood is possible only for those.

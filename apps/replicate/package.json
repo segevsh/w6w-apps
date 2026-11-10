@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/replicate",
-  "version": "0.1.0",
-  "description": "Run models on Replicate, poll or wait for their output, and manage deployments and trainings.",
+  "version": "0.2.0",
+  "description": "Run models on Replicate, poll or wait for their output, manage deployments and trainings, and trigger workflows on new predictions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,7 +38,8 @@
         "api.replicate.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

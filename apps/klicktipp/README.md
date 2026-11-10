@@ -6,6 +6,7 @@ through a Listbuilding API key.
 - **Categories** — email, marketing
 - **Auth methods** — `session` (username + password), `listbuilding-key` (Listbuilding API key)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.klicktipp.com`
 - **Website** — https://www.klicktipp.com
 - **API docs** — https://developers.klicktipp.com (OpenAPI: `_bundle/management-api.yaml`,
@@ -115,3 +116,13 @@ taken from the OpenAPI example.
 `c8eb70852bdc166247c272fdb0816a64`) from the developer portal:
 https://developers.klicktipp.com/assets/klicktipp.c3f8114c33a76db3eaaef29c5d3baea243313b864d8f3e856a0f7af2cb88866e.9c1bb791.svg
 A unit test pins its size and hash. Format with `deno task fmt`, never bare `deno fmt`.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `contact-changed` | poll | `subscriber-changed` | The id of each contact KlickTipp lists as changed since the last check |
+
+`GET /subscriber/changed?from=<unix seconds>` lists contact ids changed since a timestamp with cursor paging. The feed returns ids only and does not say whether a change was a creation, so the trigger is `contact-changed`, not "new contact": it asks from the previous check's second, skips every id that was in the previous check's listing (the feed carries no timestamps, so the boundary-second repeat cannot be told from a genuine re-change: a contact changed again in the next window is not reported again while it stays in the listing), and works off a very large burst over the following checks: more than 100 new ids in the pages read are emitted 100 at a time, and a window of more than 5 pages of 200 ids resumes from the vendor's saved `nextCursor` on the next check, with the cursor advancing only after the last page.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://developers.klicktipp.com/ (verified 2026-11-09).

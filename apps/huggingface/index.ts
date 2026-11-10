@@ -27,6 +27,7 @@ import repoCreate from "./actions/repo-create.ts";
 import repoDelete from "./actions/repo-delete.ts";
 import chatComplete from "./actions/chat-complete.ts";
 import inferenceModelList from "./actions/inference-model-list.ts";
+import newInferenceModel from "./triggers/new-inference-model.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -47,6 +48,7 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [service, quota],
+  triggers: [newInferenceModel],
 };
 
 export default app;

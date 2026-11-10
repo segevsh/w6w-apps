@@ -101,6 +101,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -160,6 +161,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [newOrUpdatedContact],
   // API token only. Missive publishes no OAuth surface for third-party apps.
   auth: [apiToken],
   healthChecks: [service, quota],

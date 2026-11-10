@@ -74,3 +74,5 @@ filter through the `filters` JSON object (a named field wins over the same key t
 
 - API v1 (superseded).
 - Webhook receiving/verification — FullEnrich pushes to a URL you host.
+
+Triggers: not shipped — FullEnrich's webhook is a `webhook_url` field on each enrichment or reverse-email request, with no way to register an account-level subscription, so it only reports the completion of a job this app starts itself and is not an account event stream (https://docs.fullenrich.com/api/v2/general/webhooks, verified 2026-11-10).

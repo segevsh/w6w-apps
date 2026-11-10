@@ -5,6 +5,23 @@ Read and update Zeplin design handoff data from a workflow: projects, screens an
 styleguides. API reference: <https://docs.zeplin.dev/llms.txt> (per-operation OpenAPI 3.0.2
 fragments; server `https://api.zeplin.dev`, paths under `/v1`).
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-screen` | poll (5 min) | `list-screens` | each screen newly added to a chosen project |
+
+`GET /v1/projects/{project_id}/screens` documents `limit` (1–100) and `offset`, and a `sort` of
+"`section` or `created` date" without a direction, so no order is assumed: the trigger reads every
+page and snapshot-diffs the project's screens (additions only; more than 5000 throws). The first
+check only records the screens.
+
+Zeplin also offers project webhooks (registered through its API with a caller-chosen secret); they
+are not wired here (webhook candidate recorded for a webhook node).
+
+Sources: https://docs.zeplin.dev/reference/getprojectscreens.md,
+https://docs.zeplin.dev/reference/createprojectwebhooks.md (verified 2026-11-09).
+
 ## Connecting
 
 Create a **personal access token** in the Zeplin web app (Profile > Developer > Personal access

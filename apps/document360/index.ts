@@ -32,6 +32,8 @@ import projectGet from "./actions/project-get.ts";
 import workspaceList from "./actions/workspace-list.ts";
 import workspaceGet from "./actions/workspace-get.ts";
 import workspaceCategoryList from "./actions/workspace-category-list.ts";
+import newArticle from "./triggers/new-article.ts";
+import newOrUpdatedArticle from "./triggers/new-or-updated-article.ts";
 import workspaceArticleList from "./actions/workspace-article-list.ts";
 import workspaceSearch from "./actions/workspace-search.ts";
 import documentGetByUrl from "./actions/document-get-by-url.ts";
@@ -113,4 +115,5 @@ export default {
   // acting on behalf of a person; an API key is the integration credential.
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newArticle, newOrUpdatedArticle],
 } satisfies AppDefinition;

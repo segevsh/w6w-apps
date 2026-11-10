@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/replyio",
-  "version": "0.1.0",
-  "description": "Manage contacts, sequences, email accounts and reporting in Reply.io — sales engagement and multichannel outreach.",
+  "version": "0.2.0",
+  "description": "Manage contacts, sequences, email accounts and reporting in Reply.io — sales engagement and multichannel outreach — and trigger on new contacts and sequence enrollments.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.reply.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

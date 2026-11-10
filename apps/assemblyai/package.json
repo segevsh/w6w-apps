@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/assemblyai",
-  "version": "0.1.0",
-  "description": "Transcribe audio and video and run Audio Intelligence (speaker labels, key phrases, content moderation, topic detection, entity detection, sentiment analysis, PII redaction) with AssemblyAI.",
+  "version": "0.2.0",
+  "description": "Transcribe audio and video, run Audio Intelligence, and trigger workflows on new AssemblyAI transcripts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.eu.assemblyai.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

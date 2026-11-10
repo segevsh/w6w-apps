@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hibob",
-  "version": "0.1.0",
-  "description": "Read and manage HiBob (Bob) employees, time off, tasks, reports and attendance over the Bob public API with a service user.",
+  "version": "0.2.0",
+  "description": "Read and manage HiBob (Bob) employees, time off, tasks, reports and attendance over the Bob public API with a service user, and poll for new tasks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.hibob.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gorgias",
-  "version": "0.1.0",
-  "description": "Manage Gorgias tickets, customers, messages, tags, views and satisfaction surveys.",
+  "version": "0.2.0",
+  "description": "Manage Gorgias support data and trigger workflows on new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "*.gorgias.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

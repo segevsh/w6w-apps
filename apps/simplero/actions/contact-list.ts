@@ -5,7 +5,23 @@ interface Input extends PageInput {
   email?: string;
   tagId?: number;
   status?: "customers" | "leads" | "clients";
+  createdFrom?: string;
+  createdTo?: string;
+  updatedFrom?: string;
+  updatedTo?: string;
 }
+
+const dateParam = (key: string, label: string, hint: string) => ({
+  key,
+  label,
+  type: "string" as const,
+  hint,
+  validation: { pattern: "^\\d{4}-\\d{2}-\\d{2}$" },
+});
+
+/** Simplero's DateFilter, `custom` preset: `created_at[preset]=custom&created_at[from]=…`. */
+const dateFilter = (from?: string, to?: string) =>
+  from || to ? { preset: "custom", from: from || undefined, to: to || undefined } : undefined;
 
 export default listAction<Input>({
   key: "contact-list",
@@ -42,8 +58,30 @@ export default listAction<Input>({
         { value: "clients", label: "Clients" },
       ],
     },
+    dateParam(
+      "createdFrom",
+      "Created from (date)",
+      "Only contacts created on or after this date (YYYY-MM-DD).",
+    ),
+    dateParam(
+      "createdTo",
+      "Created to (date)",
+      "Only contacts created on or before this date (YYYY-MM-DD).",
+    ),
+    dateParam(
+      "updatedFrom",
+      "Updated from (date)",
+      "Only contacts updated on or after this date (YYYY-MM-DD).",
+    ),
+    dateParam(
+      "updatedTo",
+      "Updated to (date)",
+      "Only contacts updated on or before this date (YYYY-MM-DD).",
+    ),
   ],
   query: (i) => ({
+    created_at: dateFilter(i.createdFrom, i.createdTo),
+    updated_at: dateFilter(i.updatedFrom, i.updatedTo),
     email: i.email ? { op: "equals", value: i.email } : undefined,
     tag_id: i.tagId ? { value: i.tagId, operator: "any" } : undefined,
     status: i.status,

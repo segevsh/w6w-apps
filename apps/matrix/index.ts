@@ -59,6 +59,7 @@ import setAvatarUrl from "./actions/set-avatar-url.ts";
 
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
+import newRoomMessage from "./triggers/new-room-message.ts";
 
 export default {
   actions: [
@@ -83,4 +84,5 @@ export default {
   ],
   auth: [accessToken, password],
   healthChecks: [service, instance],
+  triggers: [newRoomMessage],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bitly",
-  "version": "0.1.1",
-  "description": "Shorten, manage and track Bitly links via the Bitly REST API v4.",
+  "version": "0.2.0",
+  "description": "Shorten, manage and track Bitly links via the Bitly REST API v4, and trigger workflows on new Bitlinks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://dev.bitly.com/api-reference",
       "https://dev.bitly.com/"
     ],
-    "longDescription": "Bitly turns link management into a workflow step — shorten a URL, look one up, update its destination, and pull click analytics, all through Bitly's REST API. Actions cover creating and updating Bitlinks, expanding a short link back to its original destination, and listing an account's Bitlinks by group, alongside summary and detailed click reporting for tracking how a link performs over time.\n\nA list-groups action rounds out the set, since Bitly scopes link listing to one group at a time and every account needs at least its default group's ID to use the others.\n\nThis is a focused slice of Bitly's link and analytics surface: it does not manage custom domains, campaigns or bulk operations, keeping the footprint to the core loop of shortening, tracking and updating the links a workflow actually needs to touch.",
+    "longDescription": "Bitly turns link management into a workflow step — shorten a URL, look one up, update its destination, and pull click analytics, all through Bitly's REST API. Actions cover creating and updating Bitlinks, expanding a short link back to its original destination, and listing an account's Bitlinks by group, alongside summary and detailed click reporting for tracking how a link performs over time.\n\nA list-groups action rounds out the set, since Bitly scopes link listing to one group at a time and every account needs at least its default group's ID to use the others.\n\nThis is a focused slice of Bitly's link and analytics surface: it does not manage custom domains, campaigns or bulk operations, keeping the footprint to the core loop of shortening, tracking and updating the links a workflow actually needs to touch. Poll triggers start workflows on new Bitlinks.",
     "categories": [
       "marketing",
       "analytics"
@@ -34,7 +34,12 @@
         "api-ssl.bitly.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

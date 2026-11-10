@@ -45,6 +45,7 @@ import credentialGet from "./actions/credential-get.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newRun from "./triggers/new-run.ts";
 
 export default {
   actions: [
@@ -71,4 +72,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newRun],
 } satisfies AppDefinition;

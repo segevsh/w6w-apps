@@ -4,6 +4,7 @@ Search Spotify's catalog and manage playlists, profile and playback state via th
 [Web API](https://developer.spotify.com/documentation/web-api).
 
 - **Categories** — productivity
+- **Triggers** — 1 (poll)
 - **Auth methods** — oauth2 (Authorization Code + PKCE)
 - **Actions** — 9
 - **Egress allowlist** — `api.spotify.com`, `accounts.spotify.com`
@@ -138,3 +139,25 @@ host.
 Researched and endpoint-verified 2026-08-01 against
 developer.spotify.com. Status surfaces move; re-check if a probe starts
 failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-playlist` — New Playlist | poll | `playlist-get-user-playlists` | Each playlist newly created or followed by the connected user. |
+
+A **snapshot** poll: each check reads the user's whole playlist library through the
+`playlist-get-user-playlists` request — `GET /me/playlists?limit=50&offset=<n>`, following `offset`
+until the response has no `next` — and compares a per-playlist hash with the previous check (the state
+holds hashes, never playlist contents). Only added playlists are emitted; a playlist whose contents
+changed (a new `snapshot_id`) is not new. The first check only stores the snapshot. A library of more
+than 500 playlists (ten pages) is refused with an error instead of reading a partial page, because a
+partial page would report playlists that merely shifted into view as new. Playlists carry no
+created/updated stamp, so there is no `new-or-updated-playlist`.
+
+The other actions are not triggers: `search` is a query-dependent catalog search with no creation order
+or since filter, and the rest are single-object reads or writes.
+
+Vendor documentation:
+https://developer.spotify.com/documentation/web-api/reference/get-a-list-of-current-users-playlists
+(verified 2026-11-09).

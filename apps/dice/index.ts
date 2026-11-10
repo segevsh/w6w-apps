@@ -13,9 +13,13 @@ import token from "./auth/api-token.ts";
 import api from "./health/api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
+import newReturn from "./triggers/new-return.ts";
+import newTicketTransfer from "./triggers/new-ticket-transfer.ts";
 
 export default {
   actions: [viewer, event, events, tickets, orders, returns, extras, transfers, genres, graphql],
+  triggers: [newOrder, newReturn, newTicketTransfer],
   auth: [token],
   healthChecks: [api, service, quota],
 } satisfies AppDefinition;

@@ -15,6 +15,7 @@ import moveTask from "./actions/move-task.ts";
 import clearCompletedTasks from "./actions/clear-completed-tasks.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
 
 export default {
   actions: [
@@ -34,4 +35,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newOrUpdatedTask],
 } satisfies AppDefinition;

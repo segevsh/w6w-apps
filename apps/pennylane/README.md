@@ -7,6 +7,7 @@ API v2.
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 22
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.pennylane.com`, `status.pennylane.com`
 - **Website** — https://www.pennylane.tech
 - **API docs** — https://pennylane.readme.io
@@ -231,3 +232,17 @@ noted here rather than silently omitted.
 Researched and endpoint-verified 2026-09-22 against `pennylane.readme.io` and
 `status.pennylane.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions
 in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-customer-invoice` — New Customer Invoice | poll | `list-customer-invoices` | each newly created customer invoice (`sort=-id`) |
+
+Each check lists the 100 newest invoices. Pennylane documents `sort` on this endpoint (fields `id` and `date`, `-` prefix for descending, default `-id`).
+
+Trust model: Poll only: nothing is registered with Pennylane. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://pennylane.readme.io/reference/getcustomerinvoices (verified 2026-11-09)

@@ -14,6 +14,7 @@
  *     error objects.
  */
 import type { AppDefinition } from "@w6w/types";
+import newLink from "./triggers/new-link.ts";
 import apiKey from "./auth/api-key.ts";
 
 import linkCreate from "./actions/link-create.ts";
@@ -39,6 +40,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newLink],
   actions: [
     linkCreate,
     linkGet,

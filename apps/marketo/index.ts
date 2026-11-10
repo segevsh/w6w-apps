@@ -78,6 +78,7 @@ import campaignSchedule from "./actions/campaign-schedule.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import leadWebhook from "./triggers/lead-webhook.ts";
 
 export default {
   actions: [
@@ -101,6 +102,7 @@ export default {
     campaignTrigger,
     campaignSchedule,
   ],
+  triggers: [leadWebhook],
   auth: [clientCredentials],
   healthChecks: [instance, service, quota],
 } satisfies AppDefinition;

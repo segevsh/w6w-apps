@@ -32,6 +32,9 @@ export interface InventoryListInput {
   organizationId?: string;
   page?: number;
   per_page?: number;
+  /** Only where the resource documents it (items do); omitted from the request when unset. */
+  sort_column?: string;
+  sort_order?: string;
 }
 
 export async function inventoryList<T = Record<string, unknown>>(
@@ -45,6 +48,8 @@ export async function inventoryList<T = Record<string, unknown>>(
       organization_id: organizationIdFrom(input, ctx),
       page: input.page,
       per_page: input.per_page,
+      sort_column: input.sort_column,
+      sort_order: input.sort_order,
     },
   });
   return { data: unwrapResource<T[]>(body, resourceKey), pageContext: body.page_context };

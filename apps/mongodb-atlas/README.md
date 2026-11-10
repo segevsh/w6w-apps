@@ -245,3 +245,7 @@ a credential — plus three specific to this app: **every destructive or
 perimeter-widening path still has its gate**, **no action claims to read
 documents**, and **nothing logs a password, a connection string or a record
 set**, checked on the log call's values rather than its keys.
+
+## Triggers
+
+- **New Event** (poll) calls `event-list` with `minDate` set to the previous check minus a 2-minute overlap and dedupes by event `id`; the endpoint documents no sort order, so none is assumed. The first check only records the cursor. [MongoDB Atlas listGroupEvents](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-listgroupevents), verified 2026-11-09.

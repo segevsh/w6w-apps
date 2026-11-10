@@ -9,6 +9,7 @@ modify `apps/zoho/zoho/` from here.
 - **Categories** — communication, email
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `mail.zoho.com`, `mail.zoho.eu`, `mail.zoho.in`, `mail.zoho.com.au`,
   `mail.zoho.jp`, `mail.zoho.com.cn`, `mail.zohocloud.ca`, `mail.zoho.sa`
 - **Website** — https://www.zoho.com/mail
@@ -161,3 +162,19 @@ index, 95,001 bytes) and every per-endpoint page it links to for the surface thi
 plus live probes against all eight `mail.zoho.<tld>` and `accounts.zoho.<tld>` host pairs and
 `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a
 probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` | poll | `message-list` | an email when it arrives in the mailbox (or in the one folder you pick) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sortBy=date`, `sortorder=false` (newest first), 100 emails from index 1. The `accountId` and `folderId` trigger parameters are optional; without `folderId` every folder is watched.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- List emails — "sortBy … The values can be date, messageId, size. The default value is date" and "sortorder … false for descending order. The default value is false": https://www.zoho.com/mail/help/api/get-emails-list.html

@@ -85,6 +85,9 @@ import datasetList from "./actions/dataset-list.ts";
 
 import service from "./health/service.ts";
 import dataset from "./health/dataset.ts";
+import documentCreated from "./triggers/document-created.ts";
+import documentUpdated from "./triggers/document-updated.ts";
+import documentDeleted from "./triggers/document-deleted.ts";
 
 export default {
   actions: [
@@ -104,6 +107,7 @@ export default {
     projectList,
     datasetList,
   ],
+  triggers: [documentCreated, documentUpdated, documentDeleted],
   auth: [token],
   healthChecks: [service, dataset],
 } satisfies AppDefinition;

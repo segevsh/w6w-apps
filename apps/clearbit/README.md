@@ -169,3 +169,5 @@ and test fixtures (`github.com/clearbit/clearbit-node`), n8n's production Clearb
 calls. `dashboard.clearbit.com/docs` no longer serves public documentation as of this writing —
 re-verify against the SDK source or a live probe before trusting anything here that isn't backed by
 one of those two.
+
+Triggers: not shipped — enrichment, prospector and reveal lookups only, no account records that change; the 202 lookup callback is per-request, not an event subscription, and no fetchable vendor page documents it as one (https://dashboard.clearbit.com/docs).

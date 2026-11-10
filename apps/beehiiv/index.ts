@@ -54,6 +54,7 @@ import subscriptionUpdate from "./actions/subscription-update.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPost from "./triggers/new-post.ts";
 
 export default {
   actions: [
@@ -73,6 +74,7 @@ export default {
     subscriptionCreate,
     subscriptionUpdate,
   ],
+  triggers: [newPost],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

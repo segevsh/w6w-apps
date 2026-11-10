@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/klaviyo",
-  "version": "0.2.1",
-  "description": "Klaviyo profiles, lists, events, segments, campaigns, and templates.",
+  "version": "0.3.0",
+  "description": "Klaviyo profiles, lists, events, segments, campaigns, and templates, with profile triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "a.klaviyo.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hotmart",
-  "version": "0.1.0",
-  "description": "Sell and manage online courses and digital products through Hotmart: sales, subscriptions, products, coupons and profile.",
+  "version": "0.2.0",
+  "description": "Sell and manage online courses and digital products through Hotmart: sales, subscriptions, products, coupons and profile, with new-product triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "api-sec-vlc.hotmart.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

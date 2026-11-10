@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { columnLetterToIndex, GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -22,7 +23,7 @@ const sheetDeleteColumns: ActionDefinition<Input> = {
   title: "Delete Columns",
   description: "Delete a contiguous block of columns from a sheet.",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     { key: "sheetId", label: "Sheet ID (numeric)", type: "number", required: true },
     { key: "startColumn", label: "Start Column (letter)", type: "string", required: true },
     { key: "columnCount", label: "Number of Columns", type: "number", default: 1 },

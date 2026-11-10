@@ -1,4 +1,5 @@
 # Demio
+Triggers: not shipped — event-list returns only active events ordered by next session (per the action's contract) with no created-at order or since filter, and participants-list needs a session id; the vendor docs at https://developers.demio.com/ were unreachable on 2026-11-09
 
 List Demio webinar events and sessions, register attendees, and read participant reports.
 

@@ -6,6 +6,7 @@ Cloud **and** self-hosted servers alike.
 - **Categories** — communication, productivity
 - **Auth methods** — access-token
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `instance`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `*` (see below — the server is per-connection)
 - **Website** — https://mattermost.com/
@@ -219,4 +220,12 @@ deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 ```
 
-Triggers: not shipped — `post-search` is relevance-ordered search, not a newest-first feed (https://api.mattermost.com/#tag/posts/operation/SearchPosts).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `posts-for-channel` | Each new post in a channel |
+
+Calls `posts-for-channel` with `since=<stored cursor - 120 s>` (Unix ms): the vendor returns every post modified since then, ordered by create time, up to 1000, with no paging. The records are read through `order` (`order.map(id => posts[id])`), never `Object.values(posts)`, and a post only edited (its `create_at` is before the window) is not a new post. Ids are deduped, the first check records the cursor and emits nothing. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API spec: posts](https://raw.githubusercontent.com/mattermost/mattermost/master/api/v4/source/posts.yaml) (verified 2026-11-10).

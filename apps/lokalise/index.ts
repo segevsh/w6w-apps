@@ -83,6 +83,11 @@ import teamList from "./actions/team-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import keyAdded from "./triggers/key-added.ts";
+import keyModified from "./triggers/key-modified.ts";
+import translationUpdated from "./triggers/translation-updated.ts";
+import taskCreated from "./triggers/task-created.ts";
+import taskClosed from "./triggers/task-closed.ts";
 
 export default {
   actions: [
@@ -131,6 +136,7 @@ export default {
   // API token only. Lokalise's OAuth2 flow requires a manual, per-integration
   // registration via their support chat — there is no self-service app
   // registry — so it is not implemented here. See README.
+  triggers: [keyAdded, keyModified, translationUpdated, taskCreated, taskClosed],
   auth: [apiToken],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

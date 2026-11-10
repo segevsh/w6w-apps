@@ -10,6 +10,7 @@ import jobGet from "./actions/job-get.ts";
 import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
 
 export default {
   actions: [
@@ -24,4 +25,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newPipeline],
 } satisfies AppDefinition;

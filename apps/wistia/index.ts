@@ -44,6 +44,7 @@ import statsAccountByDate from "./actions/stats-account-by-date.ts";
 import backgroundJobGet from "./actions/background-job-get.ts";
 
 import service from "./health/service.ts";
+import newMedia from "./triggers/new-media.ts";
 
 export default {
   actions: [
@@ -76,4 +77,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service],
+  triggers: [newMedia],
 } satisfies AppDefinition;

@@ -30,6 +30,13 @@ import templateList from "./actions/template-list.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newList from "./triggers/new-list.ts";
+import emailSent from "./triggers/email-sent.ts";
+import emailOpened from "./triggers/email-opened.ts";
+import emailClicked from "./triggers/email-clicked.ts";
+import emailUnsubscribed from "./triggers/email-unsubscribed.ts";
+import emailError from "./triggers/email-error.ts";
+import abuseReport from "./triggers/abuse-report.ts";
 
 export default {
   actions: [
@@ -56,4 +63,13 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [
+    newList,
+    emailSent,
+    emailOpened,
+    emailClicked,
+    emailUnsubscribed,
+    emailError,
+    abuseReport,
+  ],
 } satisfies AppDefinition;

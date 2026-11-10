@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/linkedin-conversions",
-  "version": "0.1.0",
-  "description": "Stream server-side conversion events to LinkedIn and manage Conversions API conversion rules and their campaign associations.",
+  "version": "0.2.0",
+  "description": "Stream server-side conversion events to LinkedIn and manage Conversions API conversion rules and their campaign associations, and trigger workflows on new conversion rules.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.linkedin.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

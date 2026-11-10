@@ -19,6 +19,7 @@ import replyToComment from "./actions/reply-to-comment.ts";
 import listSubscriptions from "./actions/list-subscriptions.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCommentThread from "./triggers/new-comment-thread.ts";
 
 export default {
   actions: [
@@ -41,4 +42,5 @@ export default {
   ],
   auth: [oauth2, apiKey],
   healthChecks: [service, quota],
+  triggers: [newCommentThread],
 } satisfies AppDefinition;

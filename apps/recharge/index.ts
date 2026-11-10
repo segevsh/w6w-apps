@@ -63,6 +63,8 @@ import tokenInformationGet from "./actions/token-information-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
 
 export default {
   actions: [
@@ -111,4 +113,5 @@ export default {
   // authentication story.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newOrder, newOrUpdatedOrder],
 } satisfies AppDefinition;

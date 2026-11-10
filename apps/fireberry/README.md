@@ -78,3 +78,16 @@ was available, so no authenticated response has been observed.
   pass. A bodiless 401 is only `degraded`, since it could come from any intermediary.
 - **quota** — declared absence (`severity: informational`): the vendor documents ceilings but no
   headers or consumption endpoint.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-record` — New Record | Poll | `query-records` | Each record newly created in one object (object number + optional extra fields) |
+
+Each check runs the v3 query for the chosen object with `orderBy: [{"name":"createdon","order":"desc"}]`,
+`pageSize` 100, and dedupes by the record `_id`. The first check only records what exists. Pick the
+object number and any extra fields in the trigger parameters. Fireberry's developer docs describe no
+webhook or event-subscription API. Sources:
+[Queries (v3)](https://developers.fireberry.com/docs/queries-v3.md) and
+[API reference](https://developers.fireberry.com/reference) (verified 2026-11-09).

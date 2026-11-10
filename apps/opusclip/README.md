@@ -1,5 +1,7 @@
 # OpusClip
 
+Triggers: not shipped — the only webhook is a `conclusionActions` WEBHOOK on the create-project request, i.e. a completion callback for a project the caller starts, not an account event stream; clip-list requires a selected project or collection and has no documented creation-order or since filter (https://help.opus.pro/api-reference/webhook)
+
 Turn a long-form video into short, viral, vertical clips with AI curation, on the **OpusClip Clip
 API**.
 

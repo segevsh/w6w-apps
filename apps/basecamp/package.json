@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/basecamp",
-  "version": "0.1.2",
-  "description": "Read Basecamp projects and people, and create to-dos, messages, comments and Campfire lines — on the Basecamp 5 API.",
+  "version": "0.2.0",
+  "description": "Read Basecamp projects and people, and create to-dos, messages, comments and Campfire lines — on the Basecamp 5 API. Triggers on new projects.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://github.com/basecamp/bc3-api"
     ],
-    "longDescription": "Basecamp organizes work into projects that hold to-dos, message boards, documents and a live chat called Campfire — the \"recording\" model where every kind of content sits under one umbrella. This app reads projects and people, creates and completes to-dos, posts messages and comments, and drops lines into a Campfire room, on the Basecamp 5 API.\n\nDropping a line into Campfire doubles as the closest thing to a chat webhook: a build finished, a form came in, say so in the room — a common way workflows announce themselves without a full notification system. Comments post through one action since to-dos, messages, documents and uploads are all recordings underneath, so a single action handles them all.\n\nAuthentication runs over OAuth, since Basecamp has no API keys or personal access tokens, with account discovery handled automatically for identities that reach several Basecamp accounts. Good for teams already living in Basecamp who want workflow-triggered updates — a deploy notification in Campfire, a to-do created from an external event, or messages posted without opening the app.",
+    "longDescription": "Basecamp organizes work into projects that hold to-dos, message boards, documents and a live chat called Campfire — the \"recording\" model where every kind of content sits under one umbrella. This app reads projects and people, creates and completes to-dos, posts messages and comments, and drops lines into a Campfire room, on the Basecamp 5 API.\n\nDropping a line into Campfire doubles as the closest thing to a chat webhook: a build finished, a form came in, say so in the room — a common way workflows announce themselves without a full notification system. Comments post through one action since to-dos, messages, documents and uploads are all recordings underneath, so a single action handles them all.\n\nAuthentication runs over OAuth, since Basecamp has no API keys or personal access tokens, with account discovery handled automatically for identities that reach several Basecamp accounts. Good for teams already living in Basecamp who want workflow-triggered updates — a deploy notification in Campfire, a to-do created from an external event, or messages posted without opening the app. Poll triggers fire on new projects.",
     "categories": [
       "project-management",
       "productivity"
@@ -40,7 +40,8 @@
         "launchpad.37signals.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

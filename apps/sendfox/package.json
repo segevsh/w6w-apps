@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sendfox",
-  "version": "0.1.0",
-  "description": "Manage SendFox contacts, tags, campaigns, lists, forms and automations, and read account usage, over the SendFox REST API.",
+  "version": "0.2.0",
+  "description": "Manage SendFox contacts, tags, campaigns, lists, forms and automations, read account usage over the SendFox REST API, and trigger workflows on new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.sendfox.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

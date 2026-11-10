@@ -32,6 +32,7 @@ import changeFilesList from "./actions/change-files-list.ts";
 import projectList from "./actions/project-list.ts";
 import accountSearch from "./actions/account-search.ts";
 import serverInfoGet from "./actions/server-info-get.ts";
+import newOrUpdatedChange from "./triggers/new-or-updated-change.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -47,6 +48,7 @@ const app: AppDefinition = {
     accountSearch,
     serverInfoGet,
   ],
+  triggers: [newOrUpdatedChange],
   auth: [httpPassword],
   healthChecks: [service, instance],
 };

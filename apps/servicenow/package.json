@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/servicenow",
-  "version": "0.1.1",
-  "description": "Manage ServiceNow incidents and arbitrary table records via the Table API.",
+  "version": "0.2.0",
+  "description": "Manage ServiceNow incidents and Table API records, and poll selected tables for changes.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.servicenow",
+    "build": { "include": ["../_shared"] },
     "displayName": "ServiceNow",
     "apiDocs": [
       "https://developer.servicenow.com"

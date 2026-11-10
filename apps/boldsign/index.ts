@@ -51,6 +51,7 @@ import planApiCredits from "./actions/plan-api-credits.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDocument from "./triggers/new-document.ts";
 
 export default {
   actions: [
@@ -70,6 +71,7 @@ export default {
     // account
     planApiCredits,
   ],
+  triggers: [newDocument],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

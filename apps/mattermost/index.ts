@@ -48,6 +48,8 @@ import channelMemberAdd from "./actions/channel-member-add.ts";
 import channelMembersList from "./actions/channel-members-list.ts";
 import channelsForUser from "./actions/channels-for-user.ts";
 
+import newPost from "./triggers/new-post.ts";
+
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 import quota from "./health/quota.ts";
@@ -75,4 +77,5 @@ export default {
   // auth/access-token.ts for the full reasoning.
   auth: [accessToken],
   healthChecks: [service, instance, quota],
+  triggers: [newPost],
 } satisfies AppDefinition;

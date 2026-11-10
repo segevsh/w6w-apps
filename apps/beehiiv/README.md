@@ -1,5 +1,15 @@
 # beehiiv
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | poll | `post-list` ordered by created date descending | Each newly created publication post |
+
+Vendor reference: https://developers.beehiiv.com/docs/v2/posts (verified 2026-11-09).
+
 Manage beehiiv publications, posts and subscriptions — read publications, create/update/read/
 list/delete posts through the Send API, and create/read/list/update subscriptions.
 

@@ -7,6 +7,7 @@ deletions.
 - **Categories** — analytics
 - **Auth methods** — integration-key
 - **Actions** — 11
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.pendo.io`, `app.eu.pendo.io`, `us1.app.pendo.io`,
   `app.jpn.pendo.io`, `app.au.pendo.io`, `data.pendo.io`, `data.eu.pendo.io`,
   `us1.data.pendo.io`, `data.jpn.pendo.io`, `data.au.pendo.io`,
@@ -126,3 +127,16 @@ into smaller time ranges is Pendo's own recommendation.
   directly.
 - **`auth:integration-key`** (derived) — `GET /api/v1/token/verify`, a
   dedicated, no-scope ping that a read-only key can reach.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-guide` | poll | `list-guides` (`GET /api/v1/guide`, the whole guide list) | Each guide newly created in the subscription (additions only). |
+
+`GET /api/v1/guide` returns every guide in one response and has no ordering or date filter, so the trigger snapshots the list and emits ids not seen before (renames, state changes and removals are ignored). Guides are authored by hand in Designer, so the set stays small; `list-features` and `list-pages` are not wrapped because Pendo tags pages and features automatically and documents no cap, so the list can pass the 5000-row snapshot limit.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://engageapi.pendo.io/api/collections/16265887/Tzm6jvKG (Pendo Engage API, guide aggregation and list endpoints)
+- https://developers.pendo.io/

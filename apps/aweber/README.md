@@ -4,6 +4,7 @@ Manage AWeber email lists, subscribers and broadcast newsletters — add, find, 
 subscribers, create and schedule broadcasts, and manage tags, custom fields and segments, on the
 **AWeber API v1**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — email, marketing
 - **Auth methods** — oauth2
 - **Actions** — 33
@@ -11,6 +12,7 @@ subscribers, create and schedule broadcasts, and manage tags, custom fields and 
 - **Egress allowlist** — `api.aweber.com` (`auth.aweber.com` is allowed implicitly by the runtime for
   the declared OAuth `authorizationUrl`/`tokenUrl`; the `service` check adds `status.aweber.com` to
   its own hook allowlist, never to the app's)
+
 - **Website** — https://www.aweber.com/
 - **API docs** — https://api.aweber.com/ (yes, the API host itself; see below)
 - **Status page** — https://status.aweber.com/
@@ -24,6 +26,14 @@ action needs.
 > document, served fully resolved (every `$ref` already inlined) as the embedded Redoc state on
 > `https://api.aweber.com/` itself, plus live probes against `api.aweber.com` and
 > `status.aweber.com`. Nothing here came from a third-party integration directory.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | poll | `subscriber-find` with `sort_key=subscribed_at`, `sort_order=desc` pinned (params: `accountId`, `listId`) | Each new subscriber on the list |
+
+Vendor reference: https://api.aweber.com/ (verified 2026-11-09). The vendor documents `sort_key` and `sort_order` on the find-subscribers operation; the trigger sends both explicitly.
 
 ## The five things most likely to cost you a day
 

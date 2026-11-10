@@ -1,5 +1,15 @@
 # Whop
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-membership` — New Membership | Poll | `membership-list` | Each newly created membership |
+
+Polled newest-first by `created_at` through `membership-list`. Source: https://docs.whop.com/developer/api-reference/memberships/list (verified 2026-11-09).
+
 Manage Whop memberships, products, plans, payments, promo codes and webhooks, on the **Whop REST
 API v1**.
 

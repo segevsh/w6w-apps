@@ -13,6 +13,28 @@ Every path, verb, parameter and body field was checked on 2026-10-06 against the
 2.0 document (`https://uscreen.io/api/publisher.yml`, v1.0.2, 39 operations) plus live probes of
 `uscreen.io/publisher_api/v1` and `status.uscreen.tv`.
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-customer` | poll (5 min) | `customer-list` | each newly created customer |
+| `new-invoice` | poll (5 min) | `invoice-list` | each newly created invoice |
+| `new-or-updated-invoice` | poll (5 min) | `invoice-list` | each invoice that is created or edited (event identity `id:updated_at`) |
+
+Both read `GET /customers` / `GET /invoices` with the vendor's documented `from=<RFC 3339>` and
+`date_field=created_at` filter — the spec documents no sort order, so the trigger never relies on
+one: it re-reads `cursor − 2 min`, pages through the window with the `Link` header's next page
+(resuming on the next check if a window is larger than one page), and dedupes by `id`. The first
+check only records the start time; records created before it are never emitted.
+`new-or-updated-invoice` filters with `date_field=updated_at` (the spec lists `created_at, updated_at`
+as the available fields and `Invoice.updated_at` is documented), drops invoices whose `updated_at`
+predates the seed, and treats each new `id:updated_at` as a new event. The `Customer` schema carries
+no update stamp, so there is no `new-or-updated-customer`. No webhook offering is
+documented in the Publisher API, so there is nothing to subscribe to.
+
+Source: https://uscreen.io/api/publisher.yml (`/customers`, `/invoices` `from`, `date_field`
+parameters, `Invoice.updated_at`; verified 2026-11-09).
+
 ## Actions (33)
 
 | Resource | Actions |

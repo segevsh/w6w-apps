@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ashby",
-  "version": "0.1.0",
-  "description": "Work an Ashby hiring pipeline — find and create candidates, move applications between stages, read interviews, feedback and offers, and sync it all incrementally.",
+  "version": "0.2.0",
+  "description": "Work an Ashby hiring pipeline, from candidates to offers, and poll newly created candidates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.ashbyhq.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

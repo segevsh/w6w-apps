@@ -6,11 +6,21 @@ contacts, time entries, projects, tasks, opportunities) on the **Autotask REST A
 - **Categories** — support, crm, project-management
 - **Auth methods** — `api-user` (custom: username + secret + integration code + zone)
 - **Actions** — 21 (6 reads, 14 writes, 1 delete)
+- **Triggers** — 2 (poll)
 - **Health checks** — 3 (`service`, `api`, `quota`) + the derived `auth:api-user`
 - **Egress allowlist** — `webservices.autotask.net` (zone discovery) and the 20 published zone hosts
   `webservices{1-6,11,12,14-19,22,24,25,26,28,29}.autotask.net`
 - **API docs** — https://autotask.net/help/DeveloperHelp/Content/APIs/REST/REST_API_Home.htm
 - **Status page** — https://status.kaseya.com/
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-ticket` | poll | `entity-query` | Each newly created ticket. |
+| `new-or-updated-ticket` | poll | `entity-query` | Each ticket that is created or has new activity (a new note, status change or time entry moves `lastActivityDate`). |
+
+Each check runs the existing `entity-query` (`POST /Tickets/query`) with the filter `createDate > last check - 2 minutes` (up to 500 rows per page, 3 pages) and de-duplicates by ticket id; `new-or-updated-ticket` filters `lastActivityDate` instead and de-duplicates by ticket id plus that stamp, so each new activity on a ticket is one event. `createDate` and `lastActivityDate` are Tickets datetime fields: https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm (verified 2026-11-10).
 
 ## Setup
 

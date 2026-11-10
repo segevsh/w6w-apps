@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/formspark",
-  "version": "0.1.0",
-  "description": "Create and manage Formspark forms, edit their email templates, and read or delete their submissions.",
+  "version": "0.2.0",
+  "description": "Create and manage Formspark forms, edit their email templates, and read or delete their submissions, plus a signed webhook trigger that starts a workflow on each new submission.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://api.formspark.io/public/v1/openapi.json"
     ],
-    "longDescription": "Formspark is a form backend: you point your own HTML form at a URL and it stores the submissions, emails you about them and forwards them to your other tools. This app drives Formspark's management API, so a workflow can create and configure forms, read what has been submitted, and clean up afterwards.\n\nIt covers workspaces (list, create, rename), forms (list, read, create, update, delete, including notification emails, webhook URL, Slack channel, spam filter and challenge settings), the notification and autoresponder email templates (read, write, delete, preview), and submissions, read per form or across a whole workspace with search and cursor pagination, plus deletion of a single submission.\n\nThe management API is only available on upgraded workspaces. A free workspace can still list its workspaces and describe its token, which is how this app proves a connection is live, but every form and submission call is refused with an upgrade_required error until the workspace is upgraded.",
+    "longDescription": "Formspark is a form backend: you point your own HTML form at a URL and it stores the submissions, emails you about them and forwards them to your other tools. This app drives Formspark's management API, so a workflow can create and configure forms, read what has been submitted, and clean up afterwards.\n\nIt covers workspaces (list, create, rename), forms (list, read, create, update, delete, including notification emails, webhook URL, Slack channel, spam filter and challenge settings), the notification and autoresponder email templates (read, write, delete, preview), and submissions, read per form or across a whole workspace with search and cursor pagination, plus deletion of a single submission.\n\nThe management API is only available on upgraded workspaces. A free workspace can still list its workspaces and describe its token, which is how this app proves a connection is live, but every form and submission call is refused with an upgrade_required error until the workspace is upgraded.\n\nA signed webhook trigger starts workflows on each new submission: Formspark has no webhook API, so the form's Webhook row is pointed at the trigger's callback URL by hand and the delivery signature is verified with the secret Formspark shows.",
     "categories": [
       "forms",
       "developer-tools"
@@ -33,7 +33,12 @@
         "api.formspark.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

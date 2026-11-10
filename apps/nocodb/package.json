@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/nocodb",
-  "version": "0.1.0",
-  "description": "NocoDB: read and write records in bases and tables, follow links, and inspect schemas and views.",
+  "version": "0.2.0",
+  "description": "NocoDB: read and write records in bases and tables, follow links, and inspect schemas and views. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://nocodb.com/docs/product-docs/developer-resources/rest-apis"
     ],
-    "longDescription": "NocoDB turns an existing database into something that reads and writes like a spreadsheet, and this app is built around exactly that: reading and writing records in its bases and tables, following the links between them, and inspecting the schema and saved views that shape what a table actually looks like.\n\nBecause NocoDB enforces a modest request budget per account, this app is shaped around using it efficiently rather than working around it after the fact — writes accept many rows in a single request instead of one at a time, reads default to a larger page than the API itself defaults to, and a dedicated counting action answers \"how many rows match\" without paging through them all. Linked records — the equivalent of a lookup between two tables — get their own actions, since NocoDB returns them from a separate endpoint rather than alongside the row that references them.\n\nNocoDB is open source and just as often self-hosted as it is used through its cloud offering, and this app works the same way against either. A base built on top of an existing production database is flagged as such, since writing to one of those reaches further than an ordinary NocoDB-native table would.",
+    "longDescription": "NocoDB turns an existing database into something that reads and writes like a spreadsheet, and this app is built around exactly that: reading and writing records in its bases and tables, following the links between them, and inspecting the schema and saved views that shape what a table actually looks like.\n\nBecause NocoDB enforces a modest request budget per account, this app is shaped around using it efficiently rather than working around it after the fact — writes accept many rows in a single request instead of one at a time, reads default to a larger page than the API itself defaults to, and a dedicated counting action answers \"how many rows match\" without paging through them all. Linked records — the equivalent of a lookup between two tables — get their own actions, since NocoDB returns them from a separate endpoint rather than alongside the row that references them.\n\nNocoDB is open source and just as often self-hosted as it is used through its cloud offering, and this app works the same way against either. A base built on top of an existing production database is flagged as such, since writing to one of those reaches further than an ordinary NocoDB-native table would.\n\nA poll trigger starts workflows when a new row is added to a table.",
     "categories": [
       "spreadsheets",
       "databases"
@@ -33,7 +33,12 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

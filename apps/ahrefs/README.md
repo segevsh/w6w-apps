@@ -11,7 +11,7 @@ Tracker and Site Audit — over the **Ahrefs API v3**, and read the API-unit all
   `GET /subscription-info/limits-and-usage`; a schema-correct auth error passes), `quota` (signed
   `limits-and-usage`, informational) + the derived `auth:api-key`
 
-Triggers: not shipped — every list is an SEO analytics report (backlinks, keywords, pages) with no record-creation feed or stable id (https://docs.ahrefs.com/openapi.json)
+- **Triggers** — 1 (poll)
 
 ## Setup
 
@@ -78,3 +78,11 @@ public/free endpoints, the history/by-country Site Explorer reports (`*-history`
 Management **write** (projects, keywords, competitors, prompts, reports) and Social Media write. The
 read shapes of the covered endpoints are verified; the writes were left out to keep the app to
 confirmed, low-risk reads.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-project` — New Project | Poll | `project-list` | Each project newly added to the account collection |
+
+`project-list` is the bounded management-project collection, keyed by its stable `project_id`; the snapshot trigger emits added projects only. Source: [Ahrefs Management API](https://docs.ahrefs.com/en/api/reference/management/get-projects) (verified 2026-11-09).

@@ -9,6 +9,7 @@ import apiKey from "./auth/api-key.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 /**
  * MoonClerk — Stripe-backed payment forms: forms, customers ("Plans") and payments.
@@ -23,6 +24,7 @@ const app: AppDefinition = {
   actions: [customerGet, customerList, formGet, formList, paymentGet, paymentList],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newCustomer],
 };
 
 export default app;

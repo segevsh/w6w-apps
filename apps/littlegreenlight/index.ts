@@ -59,6 +59,9 @@ import campaignList from "./actions/campaign-list.ts";
 import fundList from "./actions/fund-list.ts";
 import groupList from "./actions/group-list.ts";
 
+import newConstituent from "./triggers/new-constituent.ts";
+import newOrUpdatedConstituent from "./triggers/new-or-updated-constituent.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -82,4 +85,5 @@ export default {
   // authentication story.
   auth: [bearerToken],
   healthChecks: [service, quota],
+  triggers: [newConstituent, newOrUpdatedConstituent],
 } satisfies AppDefinition;

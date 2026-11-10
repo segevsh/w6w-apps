@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sanity",
-  "version": "0.1.1",
-  "description": "Query and mutate a Sanity Content Lake — GROQ queries, transactional document mutations, publishing, revision history and dataset management.",
+  "version": "0.2.0",
+  "description": "Query and mutate a Sanity Content Lake — GROQ queries, transactional document mutations, publishing, revision history and dataset management, plus triggers for document create, update and delete.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://www.sanity.io/docs/http-reference"
     ],
-    "longDescription": "Sanity is a headless CMS built around a structured content store, and this app queries and mutates it from a workflow: running GROQ queries, fetching documents by id, and creating, patching, or deleting content, with unpublished drafts filtered out of query results by default. It is built for workflows that read or update structured content directly, rather than through Sanity's own Studio editor.\n\nPublishing and unpublishing go through Sanity's dedicated publish mechanism rather than a manual replace-and-delete, so a document's revision history and any scheduled release stay intact. A document's history can be read as of a specific moment or revision, a whole dataset can be exported for backup, and every project and dataset a token can see can be listed — useful before pointing a workflow at the right one, since a mistyped dataset name returns an empty result rather than an error. Query-based patches and deletes support a dry run first, since a broad query can otherwise change far more than intended.",
+    "longDescription": "Sanity is a headless CMS built around a structured content store, and this app queries and mutates it from a workflow: running GROQ queries, fetching documents by id, and creating, patching, or deleting content, with unpublished drafts filtered out of query results by default. It is built for workflows that read or update structured content directly, rather than through Sanity's own Studio editor.\n\nTriggers start a workflow when a document is created, updated or deleted, using a signed webhook the host registers on the project.\n\nPublishing and unpublishing go through Sanity's dedicated publish mechanism rather than a manual replace-and-delete, so a document's revision history and any scheduled release stay intact. A document's history can be read as of a specific moment or revision, a whole dataset can be exported for backup, and every project and dataset a token can see can be listed — useful before pointing a workflow at the right one, since a mistyped dataset name returns an empty result rather than an error. Query-based patches and deletes support a dry run first, since a broad query can otherwise change far more than intended.",
     "categories": [
       "cms",
       "databases",
@@ -42,7 +42,12 @@
         "*.apicdn.sanity.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

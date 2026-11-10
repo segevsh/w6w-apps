@@ -5,6 +5,7 @@ AI-native web search, content retrieval, and answers via Exa.
 - **Categories** — search, ai
 - **Auth methods** — api-key
 - **Actions** — 9
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.exa.ai`
 - **Website** — https://exa.ai
 - **API docs** — https://docs.exa.ai (canonical URL is now `https://exa.ai/docs`, which
@@ -145,3 +146,31 @@ Researched and endpoint-verified 2026-09-01 against `https://exa.ai/docs/exa-spe
 (Exa's own OpenAPI 3.1 document, 42 paths) and live probes of `api.exa.ai` and
 `status.exa.ai`. Status/quota surfaces move; re-verify before wiring either health
 check further if a richer machine-readable option shows up later.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `new-webset-item` — New Webset Item | webhook (API-registered) | `webset.item.created` | the event id, the Webset and item ids and the item with its properties and evaluations |
+| `webset-item-enriched` — Webset Item Enriched | webhook (API-registered) | `webset.item.enriched` | the same, with the enrichment results |
+
+### Setup
+
+Nothing to paste. Subscribing runs `POST /websets/v0/webhooks` with the one event the trigger is
+for and the host's callback URL; Exa answers with the webhook's signing `secret` once, and it is
+kept in the subscription's state. Unsubscribing runs `DELETE /websets/v0/webhooks/{id}` (a webhook
+already gone counts as deleted). The webhook belongs to the whole account, so the optional
+`Webset ID` parameter narrows a trigger to one Webset; leave it blank to hear about every Webset.
+
+### Trust model
+
+Every delivery's `Exa-Signature` header (`t=<unix seconds>,v1=<hex>`; `v1` is the HMAC-SHA256 of
+`<t>.<raw body>` keyed by the subscription's secret) is verified before the body is parsed, and a
+timestamp more than five minutes from the clock is refused. A missing or wrong signature, an absent
+raw body or an unset secret refuses the delivery (one failed row, no run). If Exa ever creates a
+webhook without returning a secret, the app deletes it and refuses to subscribe rather than accept
+unverifiable deliveries.
+
+Docs (verified 2026-11-10): https://exa.ai/docs/websets/api/webhooks/create-a-webhook ,
+https://exa.ai/docs/websets/api/webhooks/verifying-signatures ,
+https://exa.ai/docs/websets/api/events/types

@@ -424,3 +424,5 @@ There is no `deno` binary on the devcontainer host; run these inside the `api` c
 docker compose -f .devcontainer/docker-compose.yml exec -T api \
   sh -c 'cd /app/packages/apps/apps/tidycal && deno task test'
 ```
+
+Triggers: not shipped — `booking-list` filters on the booking's own start/end time, not its creation, and `contact-list` takes only a page number; no sort order or created-since filter is documented (https://tidycal.com/developer/docs/)

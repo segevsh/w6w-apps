@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { RedtailClient, unset } from "../lib/client.ts";
+import { pageParams, pageQuery } from "../lib/params.ts";
 import type { RedtailContact } from "../lib/types.ts";
 
 interface Input {
@@ -14,10 +15,13 @@ interface Input {
   phoneNumber?: string;
   email?: string;
   updatedSince?: string;
+  page?: number;
 }
 
 interface Output {
   contacts: RedtailContact[];
+  /** The response `meta`, when the vendor sends it (the docs' examples carry `total_pages`). */
+  meta?: { total_records?: number; total_pages?: number };
 }
 
 /**
@@ -61,8 +65,12 @@ const contactSearch: ActionDefinition<Input, Output> = {
       advanced: true,
       hint: "Only return contacts updated on or after this timestamp.",
     },
+    ...pageParams,
   ],
-  output: [{ key: "contacts", type: "array", label: "Contacts" }],
+  output: [
+    { key: "contacts", type: "array", label: "Contacts" },
+    { key: "meta.total_pages", type: "number", label: "Total pages" },
+  ],
 
   async execute(input, ctx) {
     const res = await new RedtailClient(ctx).request<Output>("/contacts/search", {
@@ -78,9 +86,13 @@ const contactSearch: ActionDefinition<Input, Output> = {
         phone_number: unset(input.phoneNumber),
         email: unset(input.email),
         updated_since: unset(input.updatedSince),
+        ...pageQuery(input),
       },
     });
-    return { contacts: res.data.contacts ?? [] };
+    return {
+      contacts: res.data.contacts ?? [],
+      ...(res.data.meta ? { meta: res.data.meta } : {}),
+    };
   },
 };
 

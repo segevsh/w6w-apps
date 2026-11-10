@@ -64,6 +64,7 @@ import subscriptionUpdateRebillingDate from "./actions/subscription-update-rebil
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [
@@ -108,4 +109,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newOrder],
 } satisfies AppDefinition;

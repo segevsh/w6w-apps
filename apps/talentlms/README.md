@@ -135,3 +135,5 @@ The reference lists each endpoint's URL pattern, and they split cleanly:
   without value formats.
 - **`output` schemas.** Responses are the vendor's loose, string-typed documents; the audit tool
   warns about this, and a schema would assert types the API does not keep.
+
+Triggers: not shipped — the user, course, group, branch and ILT lists document no sort order and no created/updated-since filter, and TalentLMS offers no webhook API for them (https://market.talentlms.com/pages/docs/TalentLMS-API-Documentation.pdf)

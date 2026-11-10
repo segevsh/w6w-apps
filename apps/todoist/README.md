@@ -1,13 +1,34 @@
 # Todoist
 
-Manage Todoist tasks, projects, sections, comments, and labels via the REST v2 API.
+Manage Todoist tasks, projects, sections, comments and labels via the REST v2 API, plus triggers for tasks added, completed and updated.
 
 - **Categories** — productivity
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `api.todoist.com`
 - **Website** — https://www.todoist.com
 - **API docs** — https://developer.todoist.com/rest/v2/
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `task-added` — Task Added | webhook (manual, signed) | `item:added` | event name, user id, time, delivery id, the task |
+| `task-completed` — Task Completed | webhook (manual, signed) | `item:completed` | event name, user id, time, delivery id, the task |
+| `task-updated` — Task Updated | webhook (manual, signed) | `item:updated` | event name, user id, time, delivery id, the task |
+
+**Setup (manual webhook).** Todoist sets webhooks per app in the App Console, not through the REST API, so:
+
+1. Create the trigger and copy its callback URL.
+2. In the Todoist App Console open your app, **Webhooks**, set the callback URL and tick the events (`item:added`, `item:completed`, `item:updated`), then activate the webhook for the user (OAuth consent with the `data:read` scope).
+3. Paste the app's **Client Secret** into the trigger's `signingSecret` param.
+
+**Trust model.** Todoist sends `X-Todoist-Hmac-SHA256`, the base64 HMAC-SHA256 of the exact request body under the client secret. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. The signature carries no timestamp, so a captured delivery can be replayed. Other events are acknowledged without a run.
+
+No poll trigger: `task-get-many` takes a free-form `filter` and Todoist's filter language has `created after:`, but that is day-granular, covers active tasks only and has not been verified against a live account, so no poll is shipped (assumed, not confirmed).
+
+Docs (verified 2026-11-09): https://developer.todoist.com/api/v1/#tag/Webhooks
 
 ## Actions
 

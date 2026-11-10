@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/odoo",
-  "version": "0.1.1",
-  "description": "Read and write Odoo ERP/CRM records — contacts, leads, sales orders, products and users — over the Odoo external JSON-RPC API.",
+  "version": "0.2.0",
+  "description": "Read and write Odoo ERP/CRM records — contacts, leads, sales orders, products and users — over the Odoo external JSON-RPC API. Includes poll triggers for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://www.odoo.com/documentation/19.0/developer/reference/external_api.html",
       "https://www.odoo.com/documentation/19.0/developer/reference/external_rpc_api.html"
     ],
-    "longDescription": "Odoo is an ERP whose modules span CRM, sales, invoicing, inventory and manufacturing, and this app reads and writes the models most workflows actually touch — contacts, CRM leads, sales orders and products — over Odoo's external RPC API, plus discovery actions that reach any other model an installed Odoo app exposes.\n\nIt covers the contact lifecycle (create, read, update, delete) and the CRM lead lifecycle (create, read, update), creating and confirming sales orders, and listing products and users. Because Odoo's own API surface is exactly its database schema, this app also ships List Models, Describe Model, Search Records, Count Records and a Call Method escape hatch, so a workflow can discover and act on any model the connected database has installed, not only the ones named above.\n\nGood for creating a lead or contact automatically from an external form, confirming a sales order once payment or approval lands elsewhere, keeping a product catalog synced with an outside pricing tool, or reaching a module-specific model such as accounting, projects, HR or inventory that has no dedicated action here.",
+    "longDescription": "Odoo is an ERP whose modules span CRM, sales, invoicing, inventory and manufacturing, and this app reads and writes the models most workflows actually touch — contacts, CRM leads, sales orders and products — over Odoo's external RPC API, plus discovery actions that reach any other model an installed Odoo app exposes.\n\nIt covers the contact lifecycle (create, read, update, delete) and the CRM lead lifecycle (create, read, update), creating and confirming sales orders, and listing products and users. Because Odoo's own API surface is exactly its database schema, this app also ships List Models, Describe Model, Search Records, Count Records and a Call Method escape hatch, so a workflow can discover and act on any model the connected database has installed, not only the ones named above.\n\nGood for creating a lead or contact automatically from an external form, confirming a sales order once payment or approval lands elsewhere, keeping a product catalog synced with an outside pricing tool, or reaching a module-specific model such as accounting, projects, HR or inventory that has no dedicated action here.\n\nPoll triggers start workflows when new records appear.",
     "categories": [
       "crm",
       "commerce"
@@ -34,7 +34,12 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -41,6 +41,8 @@ import groupRemoveUser from "./actions/group-remove-user.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
 
 export default {
   actions: [
@@ -60,4 +62,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newUser, newOrUpdatedUser],
 } satisfies AppDefinition;

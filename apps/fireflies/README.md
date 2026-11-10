@@ -266,3 +266,19 @@ Tests call every hook directly with a mocked `HookContext` (`tests/_helpers.ts`:
 `ctx.fetch`, a recording no-op `ctx.log`). An unqueued fetch throws, so a test that makes an
 unexpected request fails rather than hanging. `AUTH_FAILED_500` in that file is the live-measured
 bad-credential response, reused everywhere the "500 is not an outage" behaviour is asserted.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transcript` — New Transcript | Poll | `transcript-search` | Each transcript newly available for a meeting from the last two days |
+
+`transcripts(fromDate: …)` returns transcripts created after that date
+([transcripts query](https://docs.fireflies.ai/graphql-api/query/transcripts.md)), so each check asks
+for the last two days (limit 50, the Fireflies cap, order undocumented) and dedupes by transcript `id`.
+A check reads up to four pages of 50; a longer window keeps its `skip` offset and the next check
+continues from it, advancing the check time only once the window is drained. The first check only records what exists.
+Fireflies Webhooks V2 (`meeting.transcribed`, `meeting.summarized`, `meeting.bot_joined`, HMAC-SHA256
+`X-Hub-Signature`) is a separate, not yet shipped path that delivers sooner. Sources:
+[GraphQL API](https://docs.fireflies.ai/) and
+[Webhooks V2](https://docs.fireflies.ai/graphql-api/webhooks-v2.md) (verified 2026-11-09).

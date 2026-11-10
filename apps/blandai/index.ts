@@ -49,6 +49,7 @@ import accountGet from "./actions/account-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCall from "./triggers/new-call.ts";
 
 export default {
   actions: [
@@ -80,4 +81,5 @@ export default {
   // API key only. Bland publishes no OAuth surface for this REST API.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCall],
 } satisfies AppDefinition;

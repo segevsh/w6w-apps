@@ -199,3 +199,16 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **every listing action sets
 confidentiality explicitly**, **every write requires a `performAs`**, and no
 action hardcodes a host — the sandbox is a separate account with separate data.
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Posting (`new-posting`) | poll | `posting-list` — whole collection | each newly created posting, any state |
+| New or Updated Posting (`new-or-updated-posting`) | poll | `posting-list` — whole collection | each posting that is new or changed (state change or edit), with `change` = added or updated |
+
+Both triggers poll every 5 minutes. `posting-list` documents no sort order, so the triggers do not rely on one: they read every posting through the existing action (pages of 100 by cursor, at most 5000 postings) and compare it with the previous check as a snapshot — a company's postings are a small bounded collection. The first check seeds and emits nothing. Only a content hash per posting is kept in the trigger state.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://hire.lever.co/developer/documentation#list-all-postings (verified 2026-11-09): "List all postings" documents `GET /postings`, its `state` / `confidentiality` filters (the action sends `confidentiality=all`) and the `createdAt` / `updatedAt` fields on each posting.

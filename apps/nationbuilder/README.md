@@ -6,6 +6,7 @@ and advocacy groups.
 - **Categories** — crm, marketing, commerce
 - **Auth methods** — oauth2, api-token
 - **Actions** — 23
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.nationbuilder.com`
 - **Website** — https://nationbuilder.com
 - **API docs** — https://nationbuilder.com/api/v2/reference (OpenAPI spec), plus
@@ -141,3 +142,18 @@ Researched and endpoint-verified 2026-09-15 against the vendor's downloadable Op
 spec (`nationbuilder.com/api/v2/reference`) and the `support.nationbuilder.com` API
 collection. Status surfaces and OAuth registration requirements move; re-verify if a probe
 starts failing for everyone at once, or if a nation reports it cannot register an OAuth app.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-person` — New Person | poll | `person-list` | each newly created person (`sort=-created_at`) |
+| `new-or-updated-person` — New or Updated Person | poll | `person-list` | each person created or edited since the last check (`sort=-updated_at`; the dedupe id includes `updated_at`) |
+
+Each check lists the 100 most recently created (or updated) people. NationBuilder's v2 reference documents JSON:API `sort` (an unknown sort field is a `bad_request`) and the `created_at`/`updated_at` signup attributes; it does not spell out a default order, so the trigger always sorts explicitly.
+
+Trust model: Poll only: nothing is registered with NationBuilder. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://nationbuilder.com/api/v2/docs/v2/released.yaml (verified 2026-11-09)

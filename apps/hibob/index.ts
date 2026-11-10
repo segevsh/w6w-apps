@@ -31,6 +31,7 @@ import attendanceEntriesSearch from "./actions/attendance-entries-search.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -66,4 +67,5 @@ export default {
   // marketplace partners and needs a partner registration, so it is not offered.
   auth: [serviceUser],
   healthChecks: [service, quota],
+  triggers: [newTask],
 } satisfies AppDefinition;

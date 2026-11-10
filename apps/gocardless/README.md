@@ -6,6 +6,7 @@ refunds — over the **GoCardless REST API**.
 - **Categories** — commerce, finance
 - **Auth methods** — access-token (bearer + API-version header)
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `api.gocardless.com`, `api-sandbox.gocardless.com`
 - **Website** — https://gocardless.com
@@ -87,6 +88,14 @@ Every failure answers the same envelope:
   }
 }
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `list-customers` | Each newly created customer |
+
+Source: <https://developer.gocardless.com/api-reference#core-endpoints-customers> (verified 2026-11-09).
 
 `type` is one of `invalid_api_usage`, `invalid_state`, `validation_failed` or `gocardless`; each
 item of `errors` carries a `reason`, except under `validation_failed`, where it carries a `field`.

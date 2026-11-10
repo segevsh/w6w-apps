@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/moco",
-  "version": "0.1.0",
-  "description": "Manage MOCO contacts, companies, projects, time-tracking activities and invoices.",
+  "version": "0.2.0",
+  "description": "Manage MOCO contacts, companies, projects, activities and invoices, and trigger workflows on new or updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,12 @@
         "*.mocoapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

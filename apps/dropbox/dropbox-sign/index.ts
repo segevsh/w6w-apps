@@ -100,6 +100,7 @@ import reportCreate from "./actions/report-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSignatureRequest from "./triggers/new-signature-request.ts";
 
 export default {
   actions: [
@@ -138,4 +139,5 @@ export default {
   ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
+  triggers: [newSignatureRequest],
 } satisfies AppDefinition;

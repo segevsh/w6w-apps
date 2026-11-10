@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-campaigns",
-  "version": "0.1.0",
-  "description": "Manage mailing lists, contacts and campaigns in Zoho Campaigns, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Manage mailing lists, contacts and campaigns in Zoho Campaigns, across every Zoho data centre, and trigger workflows on new campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -42,7 +42,8 @@
         "campaigns.zoho.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

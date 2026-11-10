@@ -11,6 +11,7 @@ import alertRuleGet from "./actions/alert-rule-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newDashboard from "./triggers/new-dashboard.ts";
 
 export default {
   actions: [
@@ -25,4 +26,5 @@ export default {
   ],
   auth: [serviceAccountToken],
   healthChecks: [service, quota, site],
+  triggers: [newDashboard],
 } satisfies AppDefinition;

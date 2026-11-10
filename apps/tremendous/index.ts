@@ -62,6 +62,7 @@ import fundingSourceGet from "./actions/funding-source-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [
@@ -89,4 +90,5 @@ export default {
   // apps, but that requires a partner registration this app doesn't have; see the README.
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
+  triggers: [newOrder],
 } satisfies AppDefinition;

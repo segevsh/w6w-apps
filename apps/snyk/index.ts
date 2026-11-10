@@ -43,6 +43,8 @@
  *     large files; worth doing deliberately rather than sampling here.
  */
 import type { AppDefinition } from "@w6w/types";
+import newIssue from "./triggers/new-issue.ts";
+import newOrUpdatedIssue from "./triggers/new-or-updated-issue.ts";
 import apiToken from "./auth/api-token.ts";
 
 import issueList from "./actions/issue-list.ts";
@@ -71,6 +73,7 @@ import apiVersion from "./health/api-version.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newIssue, newOrUpdatedIssue],
   actions: [
     // issue
     issueList,

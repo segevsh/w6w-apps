@@ -1,5 +1,7 @@
 # RocketReach
 
+Triggers: not shipped — the only RocketReach webhook delivers the result of a People Lookup or Bulk People Lookup the caller itself starts (a webhook_id on the lookup request), i.e. a job-completion callback, not an account event stream (https://docs.rocketreach.co/reference/webhooks, checked 2026-11-10)
+
 Search and look up people and companies, reveal professional and personal emails and phone numbers,
 run bulk lookups, and verify email addresses, over the **RocketReach API v2**.
 

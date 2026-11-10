@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/landbot",
-  "version": "0.1.0",
-  "description": "Landbot chatbot platform: read channels and customers, send messages and WhatsApp templates, assign conversations to agents or bots, manage customer fields and message webhooks.",
+  "version": "0.2.0",
+  "description": "Landbot chatbot platform: read channels and customers, send messages and WhatsApp templates, assign conversations, manage fields and message hooks, and trigger workflows on new channels.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -37,7 +37,8 @@
         "api.landbot.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

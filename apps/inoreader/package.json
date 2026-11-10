@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/inoreader",
-  "version": "0.1.0",
-  "description": "Read and manage an Inoreader account: subscriptions, folders and tags, unread counts, stream contents and item ids, read/starred state.",
+  "version": "0.2.0",
+  "description": "Read and manage an Inoreader account: subscriptions, folders and tags, unread counts, stream contents and item ids, read/starred state, with new-article triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "www.inoreader.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

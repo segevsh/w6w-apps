@@ -56,6 +56,8 @@ import query from "./actions/query.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
 
 export default {
   actions: [
@@ -92,4 +94,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newCustomer, newOrUpdatedCustomer],
 } satisfies AppDefinition;

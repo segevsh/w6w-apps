@@ -101,6 +101,8 @@ import locationGet from "./actions/location-get.ts";
 
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newOrUpdatedEmployee from "./triggers/new-or-updated-employee.ts";
 
 export default {
   actions: [
@@ -131,4 +133,5 @@ export default {
   ],
   auth: [permanentToken],
   healthChecks: [instance, service],
+  triggers: [newEmployee, newOrUpdatedEmployee],
 } satisfies AppDefinition;

@@ -5,6 +5,7 @@ Manage TickTick projects, tasks, focus records and habits through the **TickTick
 - **Categories** — productivity, project-management
 - **Auth methods** — oauth2
 - **Actions** — 23
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.ticktick.com`
 - **API version** — Open API **v1** (`https://api.ticktick.com/open/v1`). The `/open/v1` path segment
   is the entire version contract; there is no version header and no OpenAPI document.
@@ -404,3 +405,11 @@ status-page candidate in the health table, with byte counts and md5s.
 shape. TickTick's OAuth filter runs before routing, so an unauthenticated probe returns byte-identical
 `401`s for real and invented paths alike — endpoint existence is not testable without a live
 credential, and this app does not pretend otherwise.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-habit` — New Habit | Poll | `list-habits` | Each habit added to the account (the habit itself: `id`, `name`, …) |
+
+`list-habits` returns the whole (small, unpaged) habit collection in one request, so the trigger compares it with the previous check and emits additions only; edits and removals are ignored. Nothing to set up on the vendor side. Source: [TickTick Open API](https://developer.ticktick.com/docs/openapi.md) (verified 2026-11-09).

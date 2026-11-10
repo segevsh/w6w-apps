@@ -4,6 +4,7 @@ Create shipments, get carrier rates, buy and void labels, and manage warehouses
 and carrier accounts — across every carrier connected to a ShipStation account.
 
 - **Categories** — commerce, developer-tools
+- **Triggers** — 2 (poll)
 - **Auth methods** — api-key
 - **Actions** — 18
 - **Egress allowlist** — `api.shipstation.com` (the `service` health check adds
@@ -212,3 +213,19 @@ an unauthenticated `GET /v2/labels`. `error_source` says who to blame
 (`shipengine` itself, vs. a third party like a `carrier`); `lib/client.ts`
 keeps it in every thrown error message because a carrier-sourced failure often
 means "call the carrier", not "fix the request".
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-shipment` — New Shipment | poll | `shipment-list` | Each newly created shipment. |
+| `new-or-updated-shipment` — New or Updated Shipment | poll | `shipment-list` | Each shipment that is created or modified. |
+
+Both polls call `GET /v2/shipments` (the `shipment-list` request) with `page=1&page_size=100` and an
+explicit sort, newest first: `sort_by=created_at&sort_dir=desc` for `new-shipment`,
+`sort_by=modified_at&sort_dir=desc` for `new-or-updated-shipment` (whose event id includes
+`modified_at`, so an edit is a new event). The vendor's List Shipments page documents
+`sort_dir` as "enumerated string asc or desc" and `sort_by` as "enumerated string modified_at,
+created_at"; the two params are added to `shipment-list` as optional, default-preserving inputs.
+
+Vendor documentation: https://docs.shipstation.com/list-shipments (verified 2026-11-09).

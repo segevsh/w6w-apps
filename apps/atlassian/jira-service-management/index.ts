@@ -61,6 +61,9 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
 
+import newOrganization from "./triggers/new-organization.ts";
+import newServiceDesk from "./triggers/new-service-desk.ts";
+
 export default {
   actions: [
     // service desk
@@ -91,4 +94,5 @@ export default {
   ],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota, site],
+  triggers: [newServiceDesk, newOrganization],
 } satisfies AppDefinition;

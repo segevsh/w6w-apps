@@ -10,6 +10,21 @@ clients).
 App id `io.w6w.paystack` · category `commerce` · egress `api.paystack.co` and `status.paystack.com`
 only (the second serves the status check, nothing else).
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transaction` | poll | `transaction-list` (`GET /transaction`, `from` = cursor minus 2 minutes, `perPage=50`) | Each new transaction, whatever its status. |
+| `new-customer` | poll | `customer-list` (`GET /customer`, `from`) | Each newly created customer. |
+| `new-refund` | poll | `refund-list` (`GET /refund`, `from`) | Each newly created refund. |
+
+These lists take a documented `from`/`to` date range (ISO 8601, records created at or after `from`) but no order argument, so the triggers use the since-filter shape: the first check records the newest `createdAt` and emits nothing; later checks request `from = cursor - 2 minutes`, page up to 3 pages of 50, and dedupe by `id`. A burst of more than 150 records between two checks emits only what those pages hold. Paystack also signs webhook events (`x-paystack-signature`, HMAC-SHA512 of the body with the secret key, e.g. `charge.success`); a webhook upgrade is queued, no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://raw.githubusercontent.com/PaystackOSS/openapi/master/dist/paystack.yaml (`/transaction`, `/customer`, `/refund` list parameters)
+- https://paystack.com/docs/payments/webhooks/
+
 ## Auth setup
 
 One method, **Secret key** (`secret-key`, bearer). In the Paystack Dashboard open **Settings > API

@@ -1,5 +1,7 @@
 # Razorpay
 
+- **Triggers** — 1 (poll)
+
 Accept payments, manage orders, refunds, customers, invoices and subscriptions on the
 **Razorpay API v1**, India's payment gateway.
 
@@ -288,3 +290,16 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+
+- Razorpay's Fetch all orders reference documents `from`/`to` (unix `created_at` timestamps), `count` and `skip` (CLI example: `razorpay orders list --count 10 --skip 0 --from … --to …`) but no sort argument, and the existing action notes oldest-first. So the trigger asks for `from = last check − 120 s`, pages with `skip` (100 per page, up to 3 pages) and dedupes by id, instead of assuming an order.
+- No `new-or-updated-order`: an order has only `created_at`, no update stamp.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://razorpay.com/docs/api/orders/fetch-all/.

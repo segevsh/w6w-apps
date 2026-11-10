@@ -45,6 +45,8 @@ import userGetMany from "./actions/user-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -79,4 +81,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, quota, domain],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;

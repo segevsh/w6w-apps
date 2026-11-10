@@ -56,6 +56,7 @@ import dailyReviewGet from "./actions/daily-review-get.ts";
 import dailyReviewComplete from "./actions/daily-review-complete.ts";
 
 import service from "./health/service.ts";
+import newOrUpdatedBook from "./triggers/new-or-updated-book.ts";
 
 export default {
   actions: [
@@ -89,4 +90,5 @@ export default {
   // apps — the token is the whole authentication story.
   auth: [accessToken],
   healthChecks: [service],
+  triggers: [newOrUpdatedBook],
 } satisfies AppDefinition;

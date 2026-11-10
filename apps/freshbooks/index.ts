@@ -48,6 +48,8 @@ import timeEntryUpdate from "./actions/time-entry-update.ts";
 import projectList from "./actions/project-list.ts";
 import projectGet from "./actions/project-get.ts";
 
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -79,5 +81,6 @@ export default {
     projectGet,
   ],
   auth: [oauth2],
+  triggers: [newOrUpdatedInvoice],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

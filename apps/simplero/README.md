@@ -150,3 +150,36 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 
 Run these from this directory (use `deno task fmt`, never bare `deno fmt`). Tests use a mocked
 `HookContext`: a fake `ctx.fetch` and a no-op `ctx.log`; nothing touches the network.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll (since window) | `contact-list` | Each contact newly added to the account. |
+| `new-or-updated-contact` — New or Updated Contact | poll (since window) | `contact-list` | Each contact that is added or updated (an edit is a new event). |
+
+`GET /api/v2/customers` documents `created_at` and `updated_at` as a `DateFilter`
+(`preset: custom` with a `from` and a `to` date, sent as `created_at[preset]=custom&created_at[from]=…`)
+and no sort. `contact-list` takes the four additive inputs `createdFrom`, `createdTo`, `updatedFrom`
+and `updatedTo` (dates, `YYYY-MM-DD`; omitted, the request is unchanged). Each check asks for the
+window starting a day before the previous check (the filter is date-granular and its time zone is not
+documented), pages it with the `after` cursor — the vendor documents it as "ordered by id" ascending,
+so the saved resume position is the last id read — and cuts the rows to the real window by their own
+`created_at` / `updated_at`. At most three pages of 100 are read per check; a longer window is
+resumed on the next check and the cursor advances only once it is drained. The first check reads
+nothing: it records the cursor and a floor, and a contact stamped before the first check is never
+emitted.
+
+The other list actions were considered and are not triggers (verified 2026-11-09):
+
+- `purchase-list`, `subscription-list`, `access-grant-list`, `broadcast-list`, `product-list`,
+  `course-list`, `site-list` — the same `created_at` filter exists on each, and `purchase-list` and
+  `subscription-list` would fit the same way; `contact-list` is the primary record feed, so this
+  batch ships it. Purchases are `GET /api/v2/purchases` (`created_at` in the schema); they can be
+  added with the same pattern.
+- `tag-list`, `list-list`, `automation-list` — account configuration, not records a workflow reacts
+  to.
+- `list-get` and the `contact-*` actions are single-record reads or writes.
+
+Vendor documentation: https://simplero.com/api/v2/docs/openapi.json (`GET /api/v2/customers`,
+`created_at` / `updated_at` DateFilter, `after`) (verified 2026-11-09).

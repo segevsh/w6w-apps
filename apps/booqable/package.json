@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/booqable",
-  "version": "0.1.0",
-  "description": "Manage Booqable rental orders, customers, products and stock.",
+  "version": "0.2.0",
+  "description": "Manage Booqable rental orders, customers, products and stock, including polling new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.booqable",
     "displayName": "Booqable",
     "apiDocs": [

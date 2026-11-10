@@ -74,6 +74,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSmsNotification from "./triggers/new-sms-notification.ts";
 
 export default {
   actions: [
@@ -118,4 +119,5 @@ export default {
   // API key only. OnceHub publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newSmsNotification],
 } satisfies AppDefinition;

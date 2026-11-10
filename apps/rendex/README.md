@@ -5,6 +5,18 @@ Screenshot, PDF and rendering API ([rendex.dev](https://rendex.dev)). Base URL
 [API reference](https://rendex.dev/docs/api-reference), [Watch API](https://rendex.dev/docs/watch)
 and [error codes](https://rendex.dev/docs/errors) (no OpenAPI document exists) plus live probes.
 
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `watch-event` — Watch Alert | webhook (API-registered, signed) | `watch.changed`, `watch.recovered`, `watch.error` | event, watch and run ids, URL, one-line summary, diff score and pixels, added/removed text lines, short-lived before/after/overlay/crop image links, the error for a failure, delivery id |
+
+**Setup.** Params: `watchId` (required), optional `events` (`changed`, `recovered`, `error`; default all) and `signingSecret`. Subscribing points that watch's alert channel at the host with `PATCH /v1/watches/{id}` `{ "webhookUrl": <callback> }`; unsubscribing clears it with `{ "webhookUrl": null }` (a watch Rendex no longer has counts as done). **A watch has exactly one `webhookUrl`: subscribing replaces any URL the watch already had, so use one subscription per watch.** Webhooks need a Starter plan or higher. `signingSecret` is Rendex's webhook signing secret: the docs call it the deployment's `WEBHOOK_SIGNING_SECRET` and say to contact Rendex support to obtain or rotate it (there is no per-watch secret and no API to read it). `job.completed`, `job.failed` and `batch.completed` use the same channel but only report an async render or batch the caller started themselves; they are not an event stream, are not wired, and one arriving is acknowledged and dropped.
+
+**Trust model.** Each delivery carries `x-rendex-signature` (hex HMAC-SHA256 of `"<x-rendex-timestamp>.<raw body>"`) and a Unix-seconds `x-rendex-timestamp`. The trigger recomputes the signature over the exact bytes received, compares in constant time and rejects a timestamp more than five minutes from now, all before parsing. An unset secret, a missing header or a body the host did not keep is refused; Rendex retries up to three times with the same `x-rendex-delivery-id`, exposed as `deliveryId` for de-duplication. The image links in the payload are short-lived signed URLs.
+
+Docs (verified 2026-11-10): https://rendex.dev/docs/webhooks, https://rendex.dev/docs/watch and https://rendex.dev/docs/api-reference
+
 ## Actions (18)
 
 | Action | Endpoint |
@@ -64,3 +76,4 @@ signature verification, and the MCP server.
 
 `assets/icon.svg` wraps the vendor's own PNG mark (`https://rendex.dev/apple-icon`, 180×180).
 The vendor's `icon.svg` draws its "R" with a font-dependent `<text>` element, so it is not used.
+

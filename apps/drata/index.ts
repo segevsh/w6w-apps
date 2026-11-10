@@ -59,6 +59,7 @@ import eventList from "./actions/event-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEvent from "./triggers/new-event.ts";
 
 export default {
   actions: [
@@ -98,6 +99,7 @@ export default {
     eventList,
   ],
   // API key only: Drata's one security scheme is `bearer` (bearerFormat API_KEY).
+  triggers: [newEvent],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

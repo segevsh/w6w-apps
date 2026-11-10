@@ -52,6 +52,7 @@ import leadsListDelete from "./actions/leads-list-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -83,4 +84,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newLead],
 } satisfies AppDefinition;

@@ -43,6 +43,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newPrintjob from "./triggers/new-printjob.ts";
 
 export default {
   actions: [
@@ -67,4 +68,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newPrintjob],
 } satisfies AppDefinition;

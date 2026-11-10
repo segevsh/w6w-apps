@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mollie",
-  "version": "0.1.0",
-  "description": "Accept payments, manage refunds, customers, mandates and subscriptions on Mollie, the European payment gateway.",
+  "version": "0.2.0",
+  "description": "Accept Mollie payments and manage customers, and trigger workflows on new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "api.mollie.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

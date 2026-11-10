@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/learnworlds",
-  "version": "0.1.0",
-  "description": "Manage LearnWorlds courses, users, enrollments, tags and payments for your online school.",
+  "version": "0.2.0",
+  "description": "Manage LearnWorlds courses, users, enrollments, tags and payments for your online school, and trigger workflows on new users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/googlechat",
-  "version": "0.1.1",
-  "description": "Post and manage Google Chat messages, spaces, memberships and reactions.",
+  "version": "0.2.0",
+  "description": "Manage Google Chat and trigger workflows on new messages.",
   "license": "MIT",
   "author": {
     "name": "w6w"

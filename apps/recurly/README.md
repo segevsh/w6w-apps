@@ -1,5 +1,7 @@
 # Recurly
 
+- **Triggers** — 2 (poll)
+
 Subscription billing — accounts, subscriptions, plans, invoices, transactions and coupons —
 through the **Recurly V3 API**.
 
@@ -277,3 +279,17 @@ Use `deno task fmt`, never a bare `deno fmt` — the bare form reformats asset f
 > OpenAPI document was fetched and parsed, the status API was probed against a deliberately bogus
 > sibling path to rule out a catch-all host, and `cdn.simpleicons.org/recurly`'s 404 was confirmed
 > live before falling back to the favicon.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | Poll | `list-invoices` | Each newly created invoice |
+| `new-or-updated-invoice` — New or Updated Invoice | Poll | `list-invoices` | Each invoice that is new or was updated (event id = `id:updated_at`) |
+
+- Recurly OpenAPI (v2021-02-25) `list_invoices`: `order` "Sort order" (default `desc`) and `sort` over `created_at` / `updated_at` ("Sort field. You *really* only want to sort by `updated_at` in ascending order. In descending order updated records will move behind the cursor and could prevent some records from being returned"). The triggers read page 1 only (never a cursor), so the descending sort is the intended newest-first read.
+- Calls: `limit=100&order=desc&sort=created_at` and `limit=100&order=desc&sort=updated_at`.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://recurly.com/developers/api/v2021-02-25/index.html; https://raw.githubusercontent.com/recurly/recurly-client-ruby/master/openapi/api.yaml.

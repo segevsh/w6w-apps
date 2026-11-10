@@ -167,3 +167,5 @@ OpenAPI document (`https://jina.ai/Jina%20-%20Light.svg`, confirmed live, `image
   (11 embedding-family model IDs alone at spec time); `model` is left as free text with a hint
   listing the current common ones, and `models-list`/`model-get` are the actions to discover the
   live, current catalog.
+
+Triggers: not shipped — `batches-list` takes only a `limit` (no documented sort or created-after filter) and is not the whole collection, and `classifiers-list` was measured returning `500` for every request, so no list action is a reliable record feed; the rest is stateless embeddings, rerank and classify compute (https://api.jina.ai/openapi.json)

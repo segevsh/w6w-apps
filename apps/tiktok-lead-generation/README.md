@@ -7,6 +7,7 @@ Generation surface of the Marketing API, distinct from campaign/ad-group/ad mana
 - **Categories** — marketing, social-media
 - **Auth methods** — access-token (apiKey, `Access-Token` header)
 - **Actions** — 4
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `business-api.tiktok.com`
 - **API docs portal** — https://business-api.tiktok.com/portal/docs
 
@@ -110,6 +111,47 @@ directly. If it's the wrong field for your account, pass the correct one through
 | `get-lead-fields` | `GET /lead/field/get/` | Ads-side: the field schema of a form. `advertiserId` required. |
 | `get-page-lead` | `GET /page/lead/get/` | Organic-Page-side lead. `businessId` required (see caveat above). |
 | `download-page-leads` | `GET /page/lead/task/download/` | Organic-Page-side bulk export. `businessId` required (see caveat above). Confirmed GET-only: `POST` on the same path 404s. |
+
+## Triggers
+
+| Key | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `new-lead` — New Lead | webhook (registered through the API) | `subscribe_entity: LEAD` | the lead's id and source, the ad account, campaign, ad group and ad, and the answers submitted |
+
+**Setup.** Add the trigger to a workflow and fill in:
+
+- **App ID** and **App Secret** — TikTok for Business developer portal > My Apps > your app > App
+  Detail > Basic Information. The same two values as in the connection.
+- **Access Token** — the long-lived token of the account that authorized the app (the connection's
+  token). Trigger hooks cannot read the connection's credential, so it is pasted here too. TikTok
+  stops sending leads if that token is revoked; regenerate it and re-save the trigger.
+- **Advertiser ID** or **Form Library ID** (one of them). The advertiser needs you to be Admin on
+  the ad account. **Instant Form (Page) ID** narrows it to one form; **Lead source** picks
+  Instant Form (default) or Direct message.
+
+On activation w6w calls `POST /open_api/v1.3/subscription/subscribe/` with the callback URL and
+stores the returned `subscription_id`; deleting the trigger calls `/subscription/unsubscribe/`.
+
+**Trust model.** TikTok's lead-subscription pages do not themselves describe the signature; the scheme
+below comes from its general webhook-verification page and no live lead delivery has been observed. If lead
+deliveries are unsigned or signed differently, every delivery is refused (the trigger never fires and each
+refusal is recorded as a failed event). The expected header is `TikTok-Signature: t=<unix seconds>,s=<hex>`, an
+HMAC-SHA256 of `<t>.<raw request body>` keyed with the App Secret. w6w recomputes it over the exact
+bytes received, compares in constant time, and accepts only a timestamp within 300 seconds of now
+(TikTok's own sample uses 5 s; 300 s tolerates clock skew and a delayed first attempt). A missing or
+malformed header, a wrong signature, a stale or future timestamp, or an unset App Secret refuses the
+delivery: no run starts, and nothing from the request is echoed back. TikTok delivers at least once, so
+the same lead can arrive twice; use `leadId` to dedupe. Lead and advertiser ids are 64-bit and
+arrive as strings.
+
+**Docs.** https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3,
+https://business-api.tiktok.com/portal/docs/cancel-a-subscription/v1.3 and
+https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3 (verified 2026-11-10). The
+docs need a JavaScript-rendering browser: plain `curl` returns an empty shell. They describe the
+signed text as "a stringified JSON copy of the webhook request body" and sample `JSON.stringify` of
+the parsed body; this trigger verifies over the raw bytes TikTok sent, which is the same string whenever TikTok
+sends compact JSON. If TikTok signs a re-serialised form of a body it sent differently, deliveries
+are refused rather than accepted unverified; no live delivery was available to confirm which.
 
 ## Auth
 

@@ -6,6 +6,7 @@ recordings, transcripts, participant events and calendar events, in **Recall.ai*
 - **Categories** — video, communication
 - **Auth methods** — api-key (`Authorization: Token <key>`, plus a region field)
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable, informational: no status page), `api`
   (unsigned reachability on the connection's region host), `quota` (declared unavailable,
   informational) + the derived `auth:api-key`
@@ -73,3 +74,11 @@ metadata, transcript update, recording update), realtime endpoints, output media
 video output, pin participant, Desktop SDK uploads, Calendar V1 (calendar users and meetings),
 Google Meet bot login groups and logins, Meeting Direct Connect, Zoom OAuth apps and credentials,
 and fetching the pre-signed download URLs themselves.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-calendar` | poll | `calendar-list` | Each newly connected calendar (`created_at__gte`) |
+
+`new-calendar` runs `calendar-list` with the documented `created_at__gte` filter set to the last check minus two minutes, following the `next` cursor for up to three pages and de-duplicating by calendar id. A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://docs.recall.ai/reference) (verified 2026-11-09).

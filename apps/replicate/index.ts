@@ -90,6 +90,7 @@ import accountGet from "./actions/account-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPrediction from "./triggers/new-prediction.ts";
 
 export default {
   actions: [
@@ -121,4 +122,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newPrediction],
 } satisfies AppDefinition;

@@ -6,6 +6,7 @@ invoicing / project-management SaaS, over its HTTP RPC API.
 - **Categories** — crm
 - **Auth methods** — oauth2
 - **Actions** — 15
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:oauth2`
 - **Egress allowlist** — `api.focus.teamleader.eu` (the OAuth authorize/token hosts are allowed
   implicitly by the runtime; the `service` check adds `status.teamleader.eu` to its own hook
@@ -107,3 +108,12 @@ than guessed at, per this app's own instructions.
   one file per action.
 - **No `oauth2.scopes`.** Teamleader's `/oauth2/authorize` takes no `scope` query parameter; see
   above.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contacts-list` | Each contact added after the trigger was turned on |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contacts-list` | Each contact added or edited after the trigger was turned on |
+
+Polled through the `contacts-list` action with its `updatedSince` filter (the same request the action makes). The first check records the time it ran and reads nothing; later checks read the window since the last fully read check (5 minutes of overlap), drop anything older than that first check, dedupe by id, and resume at the next page when a window is longer than two pages. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Teamleader contacts.list](https://developer.focus.teamleader.eu/docs/api/contacts-list) (verified 2026-11-09). Contacts are matched on their `added_at` / `updated_at` stamps; a contact without one is kept.

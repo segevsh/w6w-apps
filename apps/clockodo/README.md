@@ -3,6 +3,8 @@
 Track time with **Clockodo**: time entries, the running clock, customers, projects, services,
 users and absences, over the Clockodo REST API.
 
+Triggers: not shipped — `list-entries` requires a `time_since`/`time_until` window over the entry's own time (not when it was created or changed) and has no created/updated filter or sort, so a back-dated or late-entered entry would never look new (https://www.clockodo.com/en/api/, verified 2026-11-09)
+
 - **Categories** — productivity, hr
 - **Auth methods** — `api-key` (a user's email + personal API key, sent as `X-ClockodoApiUser` /
   `X-ClockodoApiKey`, plus the mandatory `X-Clockodo-External-Application: w6w;<email>`)

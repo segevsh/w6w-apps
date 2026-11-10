@@ -1,13 +1,33 @@
 # Intercom
 
-Manage Intercom contacts, companies, conversations, notes and tags through its REST API.
+Manage Intercom contacts, companies, conversations, notes and tags via its REST API, plus triggers for new conversations and contacts.
 
 - **Categories** — support, communication, crm
 - **Auth methods** — access-token, oauth2
 - **Actions** — 14
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.intercom.io`
 - **Website** — https://www.intercom.com
 - **API docs** — https://developers.intercom.com/docs/references/rest-api/
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `conversation-created` — New Conversation | webhook (manual, signed) | `conversation.user.created` | notification id, topic, app id, the conversation object |
+| `contact-created` — New Contact | webhook (manual, signed) | `contact.user.created` | notification id, topic, app id, the contact object |
+
+**Setup (manual webhook).** Intercom sets webhooks per app in the Developer Hub, not through the API, so:
+
+1. Create the trigger and copy its callback URL.
+2. In the Developer Hub open your app, **Webhooks**, paste the URL as the endpoint and tick the topic (`conversation.user.created` or `contact.user.created`).
+3. Paste the app's **Client secret** (Basic information) into the trigger's `signingSecret` param.
+
+**Trust model.** Intercom signs the exact request body with HMAC-SHA1 under the client secret and sends it as `X-Hub-Signature: sha1=<hex>`. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. Intercom's signature carries no timestamp, so a captured delivery can be replayed. Deliveries for other topics (and Intercom's `ping`) are acknowledged without a run.
+
+No poll trigger: `conversation-get-many` takes no sort or since filter and the Intercom docs checked do not state a newest-first order for `GET /conversations`.
+
+Docs (verified 2026-11-09): https://developers.intercom.com/docs/webhooks and https://developers.intercom.com/docs/references/webhooks/webhook-models
 
 Every request pins the API version with an `Intercom-Version` header (currently `2.11`)
 so response shapes stay predictable across workspaces. Note that **listing contacts is a

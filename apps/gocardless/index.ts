@@ -65,6 +65,7 @@ import createRefund from "./actions/create-refund.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -96,4 +97,5 @@ export default {
   // property of the account, not of the token.
   auth: [accessToken],
   healthChecks: [service, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;

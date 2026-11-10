@@ -97,3 +97,5 @@ not rendering, and have their own per-minute limits.
 
 `assets/icon.svg` is the vendor's own mark, byte-for-byte from
 `https://docs.htmlcsstoimage.com/assets/images/hcti-logo.svg` (SVG 225×225, 4,424 bytes).
+
+Triggers: not shipped — the image list (`GET /v1/images`) documents only `page_token` and `count`, with no stated order or since-filter (https://htmlcsstoimage.com/openapi/v1.json, verified 2026-11-09).

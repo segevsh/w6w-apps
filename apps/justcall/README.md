@@ -284,3 +284,16 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Contact (`new-contact`) | poll | `contact-list` — by contact id descending (`order=desc`) | each newly created contact |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `contact-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://developer.justcall.io/reference/contacts_list_v21 (verified 2026-11-09). The `order` parameter is documented as ordering contacts by contact id, "Recently added contacts are represented by larger ‘id’ values. Defaults to DESC"; there is no documented update-time sort or filter, so no new-or-updated trigger ships.

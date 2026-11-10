@@ -28,6 +28,7 @@ import runFormula from "./actions/run-formula.ts";
 // health
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTable from "./triggers/new-table.ts";
 
 export default {
   actions: [
@@ -63,4 +64,5 @@ export default {
   // See `auth/user-token.ts` for the full reasoning.
   auth: [userToken],
   healthChecks: [service, quota],
+  triggers: [newTable],
 } satisfies AppDefinition;

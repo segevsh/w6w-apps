@@ -13,6 +13,7 @@ platform for roofing and exterior contractors, over its v2 REST API.
 - **Website** — https://acculynx.com/
 - **API docs** — https://apidocs.acculynx.com/reference/
 - **Status page** — https://status.acculynx.com/
+- **Triggers** — 2 (poll)
 
 > Everything below was verified on 2026-10-06 against AccuLynx's own API reference (a ReadMe site
 > whose server-rendered pages embed the full OpenAPI document, v2.2614.0, 105 paths) plus live
@@ -163,3 +164,12 @@ acculynx/
 
 Run from this directory: `deno task validate && deno task check && deno task lint && deno task fmt &&
 deno task test`.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job` — New Job | Poll | `job-list` | Each newly created job |
+| `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each newly created or modified job |
+
+`job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest. Source: [AccuLynx Get Jobs](https://apidocs.acculynx.com/reference/getjobs) (verified 2026-11-09).

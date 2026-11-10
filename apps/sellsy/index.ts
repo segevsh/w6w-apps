@@ -61,6 +61,8 @@ import webhookEventsList from "./actions/webhook-events-list.ts";
 import webhookList from "./actions/webhook-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCompany from "./triggers/new-company.ts";
+import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
 
 export default {
   actions: [
@@ -106,4 +108,5 @@ export default {
   ],
   auth: [clientCredentials, oauth2],
   healthChecks: [service, quota],
+  triggers: [newCompany, newOrUpdatedCompany],
 } satisfies AppDefinition;

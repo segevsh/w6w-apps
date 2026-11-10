@@ -1,5 +1,7 @@
 # Google Ads
 
+Triggers: not shipped — customer_client rows carry no creation time and the list is ordered by hierarchy level, so a new sub-account in a manager with many clients cannot be told apart from a bounded page (<https://developers.google.com/google-ads/api/reference/rpc/latest/CustomerClient>).
+
 Read and manage Google Ads accounts: GAQL reporting, campaigns, budgets, ad groups, ads and keywords
 over the Google Ads API v25 REST interface.
 

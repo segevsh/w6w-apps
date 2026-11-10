@@ -8,9 +8,9 @@
   },
   "tasks": {
     "test": "deno test -A tests/",
-    "check": "deno check index.ts actions/ auth/ health/ lib/ tests/",
-    "fmt": "deno fmt index.ts actions/ auth/ health/ lib/ tests/",
-    "lint": "deno lint index.ts actions/ auth/ health/ lib/ tests/",
+    "check": "deno check index.ts actions/ auth/ health/ lib/ tests/ triggers/",
+    "fmt": "deno fmt index.ts actions/ auth/ health/ lib/ tests/ triggers/",
+    "lint": "deno lint index.ts actions/ auth/ health/ lib/ tests/ triggers/",
     "validate": "deno run --no-check -A --config ./deno.json ../../_tools/audit.ts hospitable"
   },
   "fmt": {

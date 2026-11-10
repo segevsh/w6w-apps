@@ -106,6 +106,7 @@ import clickGet from "./actions/click-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newConversion from "./triggers/new-conversion.ts";
 
 export default {
   actions: [
@@ -170,4 +171,5 @@ export default {
   // authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newConversion],
 } satisfies AppDefinition;

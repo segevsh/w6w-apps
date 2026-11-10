@@ -43,6 +43,7 @@ import legalHoldRelease from "./actions/legal-hold-release.ts";
 import custodianAdd from "./actions/custodian-add.ts";
 import custodianList from "./actions/custodian-list.ts";
 import custodianRemove from "./actions/custodian-remove.ts";
+import newAuditEvent from "./triggers/new-audit-event.ts";
 
 export default {
   actions: [
@@ -66,4 +67,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newAuditEvent],
 } satisfies AppDefinition;

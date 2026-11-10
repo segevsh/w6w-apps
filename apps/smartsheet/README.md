@@ -4,6 +4,7 @@ Read and write Smartsheet sheets, rows, cells and columns; list workspaces, fold
 reports, on the **Smartsheet API 2.0**.
 
 - **Categories** — spreadsheets, productivity
+- **Triggers** — 2 (poll)
 - **Auth methods** — access-token
 - **Actions** — 16
 - **Egress allowlist** — `api.smartsheet.com`
@@ -367,3 +368,27 @@ Researched and endpoint-verified against Smartsheet's live OpenAPI document and 
 2026-08-03. Every path, parameter, enum and response envelope in this app was read out of that
 document rather than recalled. Status surfaces move; re-check with `_tools/audit.ts` conventions in
 mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-sheet` — New Sheet | poll | `list-sheets` | Each sheet newly created where the connected user has access. |
+| `new-or-updated-sheet` — New or Updated Sheet | poll | `list-sheets` | Each sheet that is created or modified (an edit is a new event). |
+
+`GET /sheets` documents `modifiedSince` ("response only includes the objects that are modified on or
+after the date and time specified") and no sort, so both are **since-filter** polls: each check calls
+the `list-sheets` request `GET /sheets?modifiedSince=<previous check − 2 min>&page=<n>&pageSize=100`,
+reads up to three pages, and resumes a longer window from the saved page on the next check (the cursor
+advances only once the window is drained). `new-sheet` keeps abbreviated sheets whose `createdAt`
+falls inside the window; `new-or-updated-sheet` keys each event on `id:modifiedAt`. The first check
+reads nothing: it records the cursor and a floor (the time it ran), and a sheet stamped before the
+floor is never emitted.
+
+The other list actions were considered and are not triggers: `list-container-children` (a scoped,
+token-paged hierarchy with no creation order or filter), `list-reports` (has `modifiedSince`, but a
+report is a saved view, not a record worth a "new" event here), `list-workspaces` and `list-users`
+(small administrative collections; `list-users` also needs System Admin rights).
+
+Vendor documentation: https://developers.smartsheet.com/api/smartsheet/openapi (the OpenAPI document
+at https://developers.smartsheet.com/_spec/api/smartsheet/openapi.yaml, `list-sheets`) (verified 2026-11-09).

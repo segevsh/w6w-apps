@@ -1,5 +1,7 @@
 # Productive.io
 
+- **Triggers** — 1 (poll)
+
 Project, resource and financial management for agencies. 57 actions over the Productive REST API
 (`https://api.productive.io/api/v2`, JSON:API). Every path, filter, attribute and enum was read
 from the vendor's own OpenAPI document (`developer.productive.io`, `api-master.yaml`) on 2026-10-06.
@@ -125,3 +127,16 @@ Left out on purpose; none is a limitation of the app's design, only unbuilt:
 - Several filters are numeric enums the reference does not label (task-list, board and to-do
   `status`, invoice `payment_status` and `sent_status`, deal `status_id`); the parameter hints say so.
 - `Content-Type: application/vnd.api+json` is mandatory and is checked before authentication.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-deal` — New Deal | Poll | `deal-list` | Each newly created deal (and budget) |
+
+- `deal-list` (`GET /deals`) is called with `sort=-created_at` (newest first), page size 100, page 1; the first check records the page without firing, later checks emit unseen ids. The action's own sort parameter documents `-created_at` (descending prefix `-`) from Productive's OpenAPI document `api-master.yaml`.
+- No `new-or-updated-deal`: the only documented update-ordered sort is `-last_activity_at`, which moves on activity (comments, tasks), not on edits to the deal, so it is not an honest update stamp.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://developer.productive.io (JS-rendered; the sort values are quoted from the OpenAPI document cited in `actions/deal-list.ts`).

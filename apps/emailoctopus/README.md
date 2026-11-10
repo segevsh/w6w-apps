@@ -340,3 +340,20 @@ deno task test       # 122 unit tests, mocked HookContext, no network
 Researched and endpoint-verified against EmailOctopus's live v2 OpenAPI document and the live API on
 2026-08-11. Status surfaces move: if `service` starts failing for everyone at once, re-check whether
 incident.io still serves the Statuspage v2 shape before touching anything else.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact in one list |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `list-contacts` | Each contact created or edited in one list (one event per edit) |
+| `new-list` — New List | Poll | `list-lists` | Each newly created list of the account |
+
+The contact triggers use the documented `created_at.gte` / `last_updated_at.gte` filters with a
+two-minute overlap and ID dedupe (`new-or-updated-contact` dedupes on `id:last_updated_at`, so an edit
+is a new event). A check follows `paging.next.starting_after` for up to five pages of 100; a larger
+window keeps its `starting_after` token in the trigger state and the next check continues from it, and
+the cursor advances only once the window is drained, so every contact is delivered once. `new-list` diffs the whole cursor-paginated list collection (a handful
+of lists; a check fails with an error naming the cap past 1000). The first check only records what
+exists. EmailOctopus's v2 API publishes no webhooks. Source:
+[EmailOctopus v2 API documentation](https://emailoctopus.com/api-documentation/v2) (verified 2026-11-09).

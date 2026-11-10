@@ -93,6 +93,8 @@ import apiStatus from "./health/api-status.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 
+import newFollower from "./triggers/new-follower.ts";
+
 export default {
   actions: [
     // Users and channels
@@ -138,4 +140,5 @@ export default {
    */
   auth: [appAccessToken, userAccessToken],
   healthChecks: [service, apiStatus, api, quota],
+  triggers: [newFollower],
 } satisfies AppDefinition;

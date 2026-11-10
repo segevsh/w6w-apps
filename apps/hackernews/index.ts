@@ -10,6 +10,7 @@ import listAskStories from "./actions/list-ask-stories.ts";
 import listShowStories from "./actions/list-show-stories.ts";
 import listJobStories from "./actions/list-job-stories.ts";
 import getUpdates from "./actions/get-updates.ts";
+import newStory from "./triggers/new-story.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -34,4 +35,5 @@ export default {
     getUpdates,
   ],
   healthChecks: [service, quota],
+  triggers: [newStory],
 } satisfies AppDefinition;

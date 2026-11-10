@@ -34,6 +34,7 @@ import webhookList from "./actions/webhook-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import account from "./health/account.ts";
+import newInvoice from "./triggers/new-invoice.ts";
 
 export default {
   actions: [
@@ -64,4 +65,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota, account],
+  triggers: [newInvoice],
 } satisfies AppDefinition;

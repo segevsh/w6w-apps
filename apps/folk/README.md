@@ -6,6 +6,7 @@ Groups (contact lists), People and Companies, plus account/network metadata, on 
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (`service`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.folk.app`
 - **Website** — https://folk.app/
@@ -66,6 +67,14 @@ the two from being confused at the point someone is picking an action.
   person or company with an empty body is technically valid per the schema. `person-create` and
   `company-create` leave every field optional to match, rather than inventing a requirement folk
   itself doesn't enforce; see each field's hint text.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-group` — New Group | poll | `list-groups` | Each group added to the network |
+
+`GET /network/{networkId}/groups` returns the network's groups in one unpaginated response; this trigger snapshots up to 5,000 groups and emits additions only. Verified 2026-11-09 against folk's [List Groups API reference](https://folk-external-api.readme.io/reference/listgroups).
 
 ## Auth
 

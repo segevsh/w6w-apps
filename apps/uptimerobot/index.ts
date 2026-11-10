@@ -28,6 +28,8 @@ import alertContactList from "./actions/alert-contact-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAlertContact from "./triggers/new-alert-contact.ts";
+import newMonitor from "./triggers/new-monitor.ts";
 
 export default {
   actions: [
@@ -45,4 +47,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newMonitor, newAlertContact],
 } satisfies AppDefinition;

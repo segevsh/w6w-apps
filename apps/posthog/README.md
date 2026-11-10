@@ -6,9 +6,22 @@ PostHog.
 - **Categories** — analytics
 - **Auth methods** — personal-api-key
 - **Actions** — 8
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `us.posthog.com`, `eu.posthog.com`, `us.i.posthog.com`, `eu.i.posthog.com`
 - **Website** — https://posthog.com
 - **API docs** — https://posthog.com/docs/api
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `event-captured` — Event Captured | webhook (manual, signed) | each event a PostHog "HTTP Webhook" destination forwards | event name, UUID, distinct id, timestamp, properties, person, delivery id, full body |
+
+**Setup (manual — this trigger does not register the destination for you; PostHog's `POST /api/projects/:project_id/hog_functions/` can create destinations, see https://posthog.com/docs/api/hog-functions, but that upgrade is not built yet).** 1. Subscribe the trigger and copy its callback URL. 2. In PostHog open Data pipelines, **+ New**, **Destination**, search "Webhook" and create it (it is the `HTTP Webhook` destination). 3. Paste the callback URL as the Webhook URL, keep the method `POST`, and choose the events with the destination's Filters (match rules). 4. Set the destination's **Signing secret** to a base64 string of at least 24 bytes (optionally prefixed `whsec_`; e.g. `openssl rand -base64 32`) and paste the same value into the trigger's `signingSecret` param. 5. Use **Test function** to send an example event. To stop, disable or delete the destination in PostHog; unsubscribing the trigger does not touch PostHog. The default JSON body is `{ "event": {...}, "person": {...} }`; a customised body still works, with the fields it does not carry left empty and the whole body in `data`. PostHog's delivery IPs are listed on the destination page if the receiver is behind a firewall.
+
+**Trust model.** The trigger requires the signing secret: a delivery without a valid signature is never accepted, even though PostHog leaves signing optional. PostHog signs per the Standard Webhooks spec: `webhook-signature: v1,<base64 HMAC-SHA256 of "<webhook-id>.<webhook-timestamp>.<raw body>">` under the base64-decoded secret. The trigger recomputes it over the exact bytes received, accepts any one of the space-separated signatures, compares in constant time and rejects a `webhook-timestamp` more than five minutes from now, all before parsing. An unset secret, a missing header, an invalid secret or a body the host did not keep is refused. The signing option is documented in PostHog's open-source destination rather than on the destination's docs page; `webhook-id` (exposed as `webhookId`) stays the same across retries and is the de-duplication key.
+
+Docs (verified 2026-11-10): https://posthog.com/docs/data-pipelines/destinations/webhook, https://github.com/PostHog/posthog/blob/master/nodejs/src/cdp/templates/_destinations/webhook/webhook.template.ts, https://github.com/PostHog/posthog/blob/master/nodejs/src/cdp/utils/standard-webhooks.ts and https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
 
 ## PostHog has two structurally different APIs — and two structurally different keys
 
@@ -163,3 +176,4 @@ Researched and endpoint-verified 2026-08-01 against PostHog's official docs (`po
 `posthog/rate_limit.py`), and n8n's PostHog node/credentials for structural comparison. Status
 surfaces and undocumented internal routes move without notice; re-verify before trusting anything
 in this file that isn't in PostHog's own published docs or schema.
+

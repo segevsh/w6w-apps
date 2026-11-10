@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/homeassistant",
-  "version": "0.1.0",
-  "description": "Read and control a Home Assistant instance — entity states, service calls, history, templates, calendars and events.",
+  "version": "0.2.0",
+  "description": "Read and control a Home Assistant instance — entity states, service calls, history, templates, calendars and events, plus a webhook trigger for events your automations send.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.home-assistant.io/docs/api/rest/"
     ],
-    "longDescription": "Home Assistant is a home automation hub you run yourself, and this app reads and controls a running instance: entity states, the services that actually operate devices, historical state changes, calendars, and events. It is built to automate a smart home from a workflow — checking whether a door is locked, turning on a light, or reading what a sensor recorded overnight — while steering around the sharp edges of an API built for the home rather than for automation software talking to it over the internet.\n\nThe most important of those edges is that setting an entity's state directly does not control the underlying device; only a service call or the dedicated on/off/toggle action does that, and this app refuses the former on device-backed entities unless explicitly told otherwise. It also renders Home Assistant's own templating language against live state, fires custom events to trigger automations, and can validate a configuration file before a restart that would otherwise risk leaving the instance down.",
+    "longDescription": "Home Assistant is a home automation hub you run yourself, and this app reads and controls a running instance: entity states, the services that actually operate devices, historical state changes, calendars, and events. It is built to automate a smart home from a workflow — checking whether a door is locked, turning on a light, or reading what a sensor recorded overnight — while steering around the sharp edges of an API built for the home rather than for automation software talking to it over the internet.\n\nThe most important of those edges is that setting an entity's state directly does not control the underlying device; only a service call or the dedicated on/off/toggle action does that, and this app refuses the former on device-backed entities unless explicitly told otherwise. It also renders Home Assistant's own templating language against live state, fires custom events to trigger automations, and can validate a configuration file before a restart that would otherwise risk leaving the instance down.\n\nA trigger starts a workflow when a Home Assistant automation calls its URL through a rest_command action. Home Assistant does not sign these calls, so the trigger's private URL is the only secret.",
     "categories": [
       "iot",
       "productivity"
@@ -34,7 +34,12 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

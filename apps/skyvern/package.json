@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/skyvern",
-  "version": "0.1.0",
-  "description": "Automate any website with Skyvern's AI browser agents: run natural-language tasks, run saved agents (workflows), and manage runs, browser sessions, browser profiles and credentials.",
+  "version": "0.2.0",
+  "description": "Automate any website with Skyvern's AI browser agents, manage runs and browser resources, and trigger on new runs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.skyvern.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

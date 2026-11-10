@@ -53,6 +53,8 @@ import audienceSegmentDelete from "./actions/audience-segment-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newAdAccount from "./triggers/new-ad-account.ts";
+
 export default {
   actions: [
     // Ad Accounts
@@ -90,5 +92,6 @@ export default {
   // programs (Advertising API vs. Matched Audiences/Audiences) are approved
   // independently. See both files' doc comments.
   auth: [oauth2, oauth2Audiences],
+  triggers: [newAdAccount],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

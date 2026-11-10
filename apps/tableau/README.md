@@ -66,6 +66,7 @@ wrong.
   app makes sets `Accept: application/json`, confirmed against the "Query Data
   Sources" reference page, which publishes both shapes of the same response
   side by side.
+- **Triggers** — 2 (poll)
 - **A list of exactly one item is not a 1-element array.** Tableau's
   XML-to-JSON conversion mirrors the XML structure literally: `{ projects: {
   project: [...] } }` when there are several, but `{ projects: { project: {...}
@@ -117,3 +118,12 @@ wrong.
   in addition to the PAT flow. A PAT is scoped, named and revocable without
   handing a workflow an account password, and a JWT sign-in needs a Tableau
   Connected App configured server-side — out of scope for a first version.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-workbook` — New Workbook | Poll (newest first) | `workbook-list` | Each workbook newly published to the site |
+| `new-or-updated-workbook` — New or Updated Workbook | Poll (last updated first) | `workbook-list` | Each workbook that is new or was just updated |
+
+Polled through the `workbook-list` action with `sort=createdAt:desc` (new) and `sort=updatedAt:desc` (new or updated; the id includes `updatedAt`). The first check records what exists without firing. Source: "You can sort on the same fields that you use to filter. The direction value is asc (ascending) or desc (descending), and is required.", and the Workbooks filter fields include `createdAt` and `updatedAt` ([filtering and sorting](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm), verified 2026-11-09). The users list was not used: it exposes no creation stamp.

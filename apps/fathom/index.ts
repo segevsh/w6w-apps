@@ -37,6 +37,7 @@ import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
 
 import meetingGetMany from "./actions/meeting-get-many.ts";
+import newMeeting from "./triggers/new-meeting.ts";
 import meetingTypeGetMany from "./actions/meeting-type-get-many.ts";
 import recordingGetSummary from "./actions/recording-get-summary.ts";
 import recordingGetTranscript from "./actions/recording-get-transcript.ts";
@@ -52,6 +53,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newMeeting],
   actions: [
     // meeting
     meetingGetMany,

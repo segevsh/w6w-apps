@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/openai",
-  "version": "0.3.1",
-  "description": "Call OpenAI's REST API — chat completions, images, audio, files, embeddings, moderations.",
+  "version": "0.4.0",
+  "description": "Call OpenAI's REST API — chat completions, images, audio, files, embeddings, moderations, and poll triggers on new files and new models",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -26,7 +26,7 @@
     "apiDocs": [
       "https://platform.openai.com/docs/api-reference"
     ],
-    "longDescription": "OpenAI covers most of what a workflow would reach for across the API — chat completions, generating embeddings for search or similarity, and moderating content before it's shown to anyone else in a process.\n\nAudio and images are both first-class: audio can be transcribed or translated to English, and images can be generated from a prompt, edited, or used to produce variations — three distinct image actions rather than one that tries to cover every case. Files can be uploaded, listed, fetched and deleted for use as inputs elsewhere in the API, and models can be listed to keep a workflow's choice explicit.\n\nA fit for adding an AI step almost anywhere in a workflow — summarizing or classifying text, moderating user-submitted content, transcribing audio, or generating an image from data produced earlier in the process.",
+    "longDescription": "OpenAI covers most of what a workflow would reach for across the API — chat completions, generating embeddings for search or similarity, and moderating content before it's shown to anyone else in a process.\n\nAudio and images are both first-class: audio can be transcribed or translated to English, and images can be generated from a prompt, edited, or used to produce variations — three distinct image actions rather than one that tries to cover every case. Files can be uploaded, listed, fetched and deleted for use as inputs elsewhere in the API, and models can be listed to keep a workflow's choice explicit.\n\nA fit for adding an AI step almost anywhere in a workflow — summarizing or classifying text, moderating user-submitted content, transcribing audio, or generating an image from data produced earlier in the process.\n\nAnd poll triggers on new files and new models.",
     "categories": [
       "ai",
       "developer-tools"
@@ -48,7 +48,12 @@
         "api.openai.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

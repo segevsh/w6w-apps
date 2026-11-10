@@ -61,6 +61,7 @@ import userSync from "./actions/user-sync.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDatabase from "./triggers/new-database.ts";
 
 export default {
   actions: [
@@ -89,6 +90,7 @@ export default {
   ],
   // One Personal Access Token, shared by both hosts. Softr documents no OAuth
   // surface for third-party apps.
+  triggers: [newDatabase],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

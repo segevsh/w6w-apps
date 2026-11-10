@@ -8,6 +8,7 @@
  * Scheduled Workflows, and the `/work/*` "my work" surface. See README for detail.
  */
 import type { AppDefinition } from "@w6w/types";
+import newWorkflowRun from "./triggers/new-workflow-run.ts";
 import apiKey from "./auth/api-key.ts";
 
 import workflowList from "./actions/workflow-list.ts";
@@ -58,4 +59,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newWorkflowRun],
 } satisfies AppDefinition;

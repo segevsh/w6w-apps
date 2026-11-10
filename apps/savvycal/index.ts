@@ -34,6 +34,9 @@ import workflowRulesList from "./actions/workflow-rules-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import eventCreated from "./triggers/event-created.ts";
+import eventCanceled from "./triggers/event-canceled.ts";
+import eventRescheduled from "./triggers/event-rescheduled.ts";
 
 export default {
   actions: [
@@ -59,6 +62,7 @@ export default {
     workflowList,
     workflowRulesList,
   ],
+  triggers: [eventCreated, eventCanceled, eventRescheduled],
   auth: [personalAccessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

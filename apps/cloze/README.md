@@ -3,6 +3,7 @@
 Drive the [Cloze](https://www.cloze.com) relationship CRM from a workflow: people, companies and
 projects, timelines, to-dos and notes, account metadata and webhooks.
 
+- **Triggers** — 3 (poll)
 - **App id:** `io.w6w.cloze` · **Category:** `crm` · **Host:** `api.cloze.com`
 - **Auth:** `api-key` (a Cloze API key, sent as `Authorization: Bearer <key>`). Create one in Cloze
   under Settings > Integrations > Cloze API. OAuth2 is offered by Cloze but is not part of v1.
@@ -92,3 +93,19 @@ OAuth2.
 ```
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-or-updated-person` | New or Updated Person | poll (change feed) | `person-feed` | Each person created or changed since the last check |
+| `new-or-updated-company` | New or Updated Company | poll (change feed) | `company-feed` | Each company created or changed since the last check |
+| `new-or-updated-project` | New or Updated Project | poll (change feed) | `project-feed` | Each project created or changed since the last check |
+
+Each poll uses the same `GET /v1/{people,companies,projects}/feed` request as the feed action. The
+first check seeds with `modifiedafter=now` (and `pagesize=100`), stores the returned `cursor` and
+emits nothing; every later check passes that cursor back and emits the changed records. Cloze
+documents the feeds as cursored and returning records "in ascending order of last change time"
+(<https://developer.cloze.com/cloze-openapi.json>, verified 2026-11-09). The cursor is the only state
+kept. Cloze also offers webhook subscriptions (`webhook-subscribe`); a webhook trigger is queued
+separately and no webhook code is included here.

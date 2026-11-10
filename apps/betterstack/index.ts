@@ -57,6 +57,7 @@ import statusPageResourceList from "./actions/status-page-resource-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newIncident from "./triggers/new-incident.ts";
 
 export default {
   actions: [
@@ -96,4 +97,5 @@ export default {
   // API tokens are the only method declared.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newIncident],
 } satisfies AppDefinition;

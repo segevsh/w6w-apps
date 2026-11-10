@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-tasks",
-  "version": "0.1.3",
-  "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work.",
+  "version": "0.2.0",
+  "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work, and trigger workflows when a task is created or updated.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://developers.google.com/workspace/tasks",
       "https://developers.google.com/workspace/tasks/auth"
     ],
-    "longDescription": "Google Tasks puts a user's own task lists and tasks into a workflow — list, create, update and delete task lists; create, update, complete, reorder and delete tasks; and clear out everything already completed in a list. Every write goes through a partial update rather than a full replace, so setting one field never silently clears the others.\n\nThe app follows the API's own quirks rather than papering over them: completing a task is a status change, not a separate endpoint, and reopening one just sets the status back; clearing completed tasks hides them rather than deleting them, so they keep their ids and can still be found later with the right flag; and a due date only ever carries a date, never a time of day, because that is all Google's Tasks API stores.",
+    "longDescription": "Google Tasks puts a user's own task lists and tasks into a workflow — list, create, update and delete task lists; create, update, complete, reorder and delete tasks; and clear out everything already completed in a list. Every write goes through a partial update rather than a full replace, so setting one field never silently clears the others.\n\nThe app follows the API's own quirks rather than papering over them: completing a task is a status change, not a separate endpoint, and reopening one just sets the status back; clearing completed tasks hides them rather than deleting them, so they keep their ids and can still be found later with the right flag; and a due date only ever carries a date, never a time of day, because that is all Google's Tasks API stores.\n\nA New or Updated Task trigger watches a task list and hands the run each task created or edited since the previous check; an edit counts as a new event because the task's update stamp is part of its identity.",
     "categories": [
       "productivity",
       "project-management"

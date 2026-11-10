@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/confluence",
-  "version": "0.1.0",
-  "description": "Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks.",
+  "version": "0.2.0",
+  "description": "Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks; includes poll triggers for new and updated pages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "api.atlassian.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -51,6 +51,7 @@
  *   `actions/listing-create.ts`.
  */
 import type { AppDefinition } from "@w6w/types";
+import newEvent from "./triggers/new-event.ts";
 import integrationApp from "./auth/integration-app.ts";
 
 import marketplaceGet from "./actions/marketplace-get.ts";
@@ -82,6 +83,7 @@ import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
 
 export default {
+  triggers: [newEvent],
   actions: [
     marketplaceGet,
     // Users

@@ -14,6 +14,7 @@ Postgres or a self-hosted PostgREST install, this is not that app.
 - **Category** — databases
 - **Auth method** — api-key
 - **Actions** — 7
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.supabase.co`
 - **Website** — https://supabase.com
 - **API docs** — https://supabase.com/docs
@@ -139,3 +140,11 @@ Researched and endpoint-verified 2026-07-31 against Supabase's and PostgREST's o
 (`supabase.com/docs`, `postgrest.org/en/stable`). Icon sourced from n8n's own (MIT-licensed)
 `nodes-base` package (`packages/nodes-base/nodes/Supabase/supabase.svg`), matching Supabase's
 documented brand green `#3ECF8E` and bolt logomark.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-row` — New Row | Poll (newest first) | `rows-list` | Each newly inserted row of a table |
+
+Polled through the `rows-list` action with `order=<your creation column>.desc.nullslast,id.desc`. You name the table and a creation-timestamp column that is set once on insert; the table needs a unique `id` column. The first check records what exists without firing. Source: PostgREST — "The reserved word order reorders the response rows. It uses a comma-separated list of columns and directions: `order=age.desc,height.asc`" and "add nullsfirst or nullslast" ([tables and views](https://docs.postgrest.org/en/stable/references/api/tables_views.html), verified 2026-11-09).

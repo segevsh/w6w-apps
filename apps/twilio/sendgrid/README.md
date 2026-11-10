@@ -5,9 +5,30 @@ Consume SendGrid API
 - **Categories** — email, communication
 - **Auth methods** — sendgrid-api
 - **Actions** — 10
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.sendgrid.com`
 - **Website** — https://sendgrid.com
 - **API docs** — https://docs.sendgrid.com/api-reference
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-list` | poll (5 min) | `list-get-all` | each newly created Marketing Campaigns list |
+
+`new-list` snapshot-diffs the list index (`list-get-all`, additions only).
+
+There are deliberately no contact triggers: the only contact feed is `POST /v3/marketing/contacts/search`,
+which documents "Only the first 50 contacts that meet the search criteria will be returned" with no page
+token and no sort, and its timestamps have one-second resolution, so a window holding more than 50
+contacts (a bulk upsert or CSV import) cannot be read losslessly and would silently drop the rest.
+
+SendGrid also offers an Event Webhook (delivered, bounce, open, click, …) configured in the
+dashboard; it is not wired here (webhook candidate recorded for a webhook node).
+
+Sources: https://www.twilio.com/docs/sendgrid/for-developers/sending-email/segmentation-query-language
+(fields, `TIMESTAMP` literal), https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts (50-contact cap), https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists
+(verified 2026-11-09), https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook.
 
 ## Health check
 

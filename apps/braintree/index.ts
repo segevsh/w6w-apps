@@ -25,6 +25,7 @@ import idFromLegacy from "./actions/id-from-legacy.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newTransaction from "./triggers/new-transaction.ts";
 
 /**
  * Braintree — core payment operations over the GraphQL API (`schema.graphql` in
@@ -59,6 +60,7 @@ export default {
     clientTokenCreate,
     idFromLegacy,
   ],
+  triggers: [newTransaction],
   auth: [apiKeys],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

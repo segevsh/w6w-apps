@@ -8,6 +8,7 @@ Read Fillout forms and their submissions, import submissions, and subscribe webh
 - **Rate limit** — **5 requests per second**, per account/API key.
 - **Docs** — <https://www.fillout.com/help/fillout-rest-api>, plus one OpenAPI 3.0.1 fragment per
   endpoint under `fillout.com/help/api-reference/`.
+- **Triggers** — 1 (poll)
 
 Everything below was verified on **2026-08-11** against those fragments and against live probes of
 `api.fillout.com`, `eu-api.fillout.com` and `fillout.statuspage.io`. Nothing came from a third-party
@@ -259,3 +260,15 @@ Fillout's brand page offers the wordmark and the icon as separate downloads; thi
 
 `tests/index.test.ts` asserts what the file has to keep, so a redraw or a
 look-alike fails the suite.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-submission` — New Submission | poll | List Submissions (`GET /forms/{formId}/submissions`, `sort=desc`) | each newly submitted response of the form |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `submission-list` action is called with `sort=desc` (its default is oldest first). Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://www.fillout.com/help/fillout-rest-api (verified 2026-11-09).

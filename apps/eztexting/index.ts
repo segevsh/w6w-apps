@@ -3,6 +3,7 @@ import contactBatchUpsert from "./actions/contact-batch-upsert.ts";
 import contactDelete from "./actions/contact-delete.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactList from "./actions/contact-list.ts";
+import newContact from "./triggers/new-contact.ts";
 import contactUpsert from "./actions/contact-upsert.ts";
 import conversationList from "./actions/conversation-list.ts";
 import conversationMessageList from "./actions/conversation-message-list.ts";
@@ -42,6 +43,7 @@ import service from "./health/service.ts";
  * on 2026-10-06. See README.md for what is deliberately not covered.
  */
 export default {
+  triggers: [newContact],
   actions: [
     messageSend,
     messageList,

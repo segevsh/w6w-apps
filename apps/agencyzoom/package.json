@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/agencyzoom",
-  "version": "0.1.0",
-  "description": "Manage leads, customers, policies, tasks and pipelines in AgencyZoom, the insurance agency management CRM.",
+  "version": "0.2.0",
+  "description": "Manage leads, customers, policies, tasks and pipelines in AgencyZoom, the insurance agency management CRM; includes a new lead poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "api.agencyzoom.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

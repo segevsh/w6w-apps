@@ -2,6 +2,7 @@ import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
 import basic from "./auth/basic.ts";
 import search from "./actions/search.ts";
+import newRecord from "./triggers/new-record.ts";
 import documentIndex from "./actions/document-index.ts";
 import documentGet from "./actions/document-get.ts";
 import documentUpdate from "./actions/document-update.ts";
@@ -15,6 +16,7 @@ import quota from "./health/quota.ts";
 import site from "./health/site.ts";
 
 export default {
+  triggers: [newRecord],
   actions: [
     search,
     documentIndex,

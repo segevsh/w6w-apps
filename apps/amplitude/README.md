@@ -6,6 +6,7 @@ retention, cohorts, user activity and chart results.
 - **Categories** — analytics, marketing
 - **Auth methods** — api-keys
 - **Actions** — 15
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api2.amplitude.com`, `api.eu.amplitude.com`,
   `amplitude.com`, `analytics.eu.amplitude.com`, `status.amplitude.com`
 - **Website** — https://amplitude.com
@@ -13,6 +14,16 @@ retention, cohorts, user activity and chart results.
 
 Probed live against all four API hosts on 2026-08-18, with field semantics from
 Amplitude's own HTTP V2 documentation.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-cohort` | poll | `cohort-list` | Each newly created behavioural cohort. |
+
+`GET /api/3/cohorts` returns the project's whole set of cohort definitions; each check diffs the ids against the last check (up to 5000; a cohort's size changing is not an event). Source: https://amplitude.com/docs/apis/analytics/behavioral-cohorts (verified 2026-11-10).
+
+`annotation-list` is not polled: the annotations endpoint is a project-wide list with no documented bound.
 
 ## This is two products with two credentials and four hosts
 

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wrike",
-  "version": "0.1.0",
-  "description": "Manage Wrike tasks, folders/projects, comments, contacts and timelogs.",
+  "version": "0.2.0",
+  "description": "Manage Wrike tasks and trigger workflows on new tasks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "app-us2.wrike.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

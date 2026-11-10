@@ -38,6 +38,10 @@ import webhookList from "./actions/webhook-list.ts";
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
 
+import documentCompleted from "./triggers/document-completed.ts";
+import documentSigned from "./triggers/document-signed.ts";
+import documentEvent from "./triggers/document-event.ts";
+
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -67,6 +71,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [documentCompleted, documentSigned, documentEvent],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

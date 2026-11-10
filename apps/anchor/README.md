@@ -15,6 +15,7 @@ webhooks from a workflow, on the **Anchor API** (`https://api.sayanchor.com`).
 - **Icon** — `assets/icon.svg` embeds Anchor's own wordmark SVG
   (`white anchor logo.svg` from sayanchor.com) unmodified, on its brand purple `#643cff`. Anchor
   publishes the mark in white only, so the purple tile is the only addition.
+- **Triggers** — 1 (poll)
 
 Verified 2026-10-06 against the per-operation OpenAPI 3.0.3 documents embedded in each page of
 https://docs.sayanchor.com (index: `/llms.txt`) and live probes of `api.sayanchor.com`. There is no
@@ -77,3 +78,11 @@ starter (components named `API (example)` and `Management Portal (example)`, cre
 is linked from nowhere Anchor publishes, so it would report `ok` whatever happens. `quota` reads the
 IETF `RateLimit-*` headers from `GET /me`; the credential probe is the same endpoint, which returns
 only the business id and name.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | Poll | `invoice-list` | Each newly created invoice |
+
+Polled through `invoice-list` ordered by descending issue date. Source: [Anchor List invoices](https://docs.sayanchor.com/reference/listinvoices-1) (verified 2026-11-09).

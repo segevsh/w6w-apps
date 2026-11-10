@@ -5,6 +5,7 @@ import agentResponse from "./actions/agent-response.ts";
 import webSearch from "./actions/web-search.ts";
 import createEmbeddings from "./actions/create-embeddings.ts";
 import listModels from "./actions/list-models.ts";
+import newModel from "./triggers/new-model.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -17,5 +18,6 @@ export default {
     listModels,
   ],
   auth: [apiKey],
+  triggers: [newModel],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

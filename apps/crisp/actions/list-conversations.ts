@@ -12,6 +12,7 @@ interface Input {
   filterNotResolved?: boolean;
   filterAssigned?: string;
   filterUnassigned?: boolean;
+  filterDateStart?: string;
 }
 
 export interface CrispConversationSummary {
@@ -33,8 +34,9 @@ export interface CrispConversationSummary {
  * conversations for the workspace. `page_number` is 1-indexed. Query params
  * verified against the reference's URI template (which lists 16 in total);
  * this covers the ones a workflow filter is most likely to need. The rest —
- * `search_operator`, `include_empty`, `filter_mention`, `filter_date_start`/
- * `filter_date_end`, `order_date_*` — are left out; see README.
+ * `search_operator`, `include_empty`, `filter_mention`,
+ * `filter_date_end`, `order_date_*` — are left out; `filter_date_start` is exposed for the
+ * new-or-updated-conversation trigger.
  */
 const listConversations: ActionDefinition<Input, CrispConversationSummary[] | undefined> = {
   key: "list-conversations",
@@ -76,6 +78,13 @@ const listConversations: ActionDefinition<Input, CrispConversationSummary[] | un
       type: "string",
     },
     { key: "filterUnassigned", label: "Filter: unassigned only", type: "boolean" },
+    {
+      key: "filterDateStart",
+      label: "Filter: updated since",
+      type: "string",
+      advanced: true,
+      hint: "ISO 8601 date, e.g. 2018-03-01T17:00:00.000Z. Only conversations updated after it.",
+    },
   ],
   output: [
     { key: "session_id", type: "string", label: "Session ID" },
@@ -96,6 +105,7 @@ const listConversations: ActionDefinition<Input, CrispConversationSummary[] | un
         filter_not_resolved: bitFlag(input.filterNotResolved),
         filter_assigned: input.filterAssigned,
         filter_unassigned: bitFlag(input.filterUnassigned),
+        filter_date_start: input.filterDateStart,
       }),
     });
   },

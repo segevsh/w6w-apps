@@ -5,6 +5,7 @@ Projects, people, to-dos, messages, comments and Campfire lines on the **Basecam
 - **Categories** — project-management, productivity
 - **Auth methods** — oauth
 - **Actions** — 11
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:oauth`
 - **Egress allowlist** — `3.basecampapi.com`, `launchpad.37signals.com`
 - **Website** — https://basecamp.com/
@@ -14,6 +15,16 @@ Projects, people, to-dos, messages, comments and Campfire lines on the **Basecam
 > at `basecamp/bc3-api` (plain Markdown on GitHub) and the official OpenAPI document the vendor ships
 > with its SDK (`basecamp/basecamp-sdk`, `openapi.json`, OpenAPI 3.1.0, "Basecamp 2026-08-05", 167
 > paths). Nothing here came from a third-party integration directory.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-project` | poll | `project-list` | Each newly created project. |
+
+`GET /projects.json` returns active projects "sorted by most recently created project first"; each check reads page 1 and emits the projects it has not seen. Source: https://github.com/basecamp/bc3-api/blob/master/sections/projects.md (verified 2026-11-10).
+
+Basecamp message and to-do events are webhook-only and are queued for a webhook node; `message-list` needs a board and exposes no sort, so it is not polled.
 
 ## The five things most likely to go wrong
 
