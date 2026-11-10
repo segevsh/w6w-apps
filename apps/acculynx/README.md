@@ -13,7 +13,7 @@ platform for roofing and exterior contractors, over its v2 REST API.
 - **Website** — https://acculynx.com/
 - **API docs** — https://apidocs.acculynx.com/reference/
 - **Status page** — https://status.acculynx.com/
-- **Triggers** — 2 (poll)
+- **Triggers** — 8 (poll)
 
 > Everything below was verified on 2026-10-06 against AccuLynx's own API reference (a ReadMe site
 > whose server-rendered pages embed the full OpenAPI document, v2.2614.0, 105 paths) plus live
@@ -171,5 +171,19 @@ deno task test`.
 | --- | --- | --- | --- |
 | `new-job` — New Job | Poll | `job-list` | Each newly created job |
 | `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each newly created or modified job |
+| `new-contact` — New Contact | Poll | `contact-search` | Each newly created contact |
+| `new-invoice` — New Invoice | Poll | `job-invoices-list` | Each new invoice for the job you choose |
+| `new-job-estimate` — New Job Estimate | Poll (snapshot) | `job-estimates-list` | Each new estimate on the job you choose |
+| `new-job-representative` — New Job Representative | Poll (snapshot) | `job-representatives-list` | Each representative newly assigned to the job you choose |
+| `new-user` — New User | Poll (snapshot) | `user-list` | Each user newly added (or reactivated) among the active users |
+| `new-appointment` — New Appointment | Poll (snapshot) | `appointment-list` | Each appointment that appears on the calendar you choose, today through the next 89 days |
 
-`job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest. Source: [AccuLynx Get Jobs](https://apidocs.acculynx.com/reference/getjobs) (verified 2026-11-09).
+- `job-list` uses `sortBy=CreatedDate` or `ModifiedDate` with `sortOrder=Descending`; the API documents Descending as newest to oldest ([Get Jobs](https://apidocs.acculynx.com/reference/getjobs)).
+- `contact-search` requests `CreatedDate` descending with `pageSize=25`, the documented maximum ("defaults to 25 and must be > 0 and <= 25", [Search Contacts](https://apidocs.acculynx.com/reference/postcontactsearch)).
+- `new-invoice` requests `sortOrder=Descending`; the doc names only "sort direction" (default Ascending), so the trigger relies on a job's invoices fitting one page of 100 ([Get Job Invoices](https://apidocs.acculynx.com/reference/getinvoicesforjob)).
+- The snapshot triggers read the whole collection each check, 25 records per request, and emit only records whose id was not in the previous check; they refuse a collection past 500 records. A 416 on the first page (the documented answer when the list is empty) counts as an empty list. Sources: [Get Job Estimates](https://apidocs.acculynx.com/reference/getestimatesforjob), [Get Job Representatives](https://apidocs.acculynx.com/reference/getrepresentativesforjob), [Get Users](https://apidocs.acculynx.com/reference/getusers) (no `status` returns Active users), [Get Appointments](https://apidocs.acculynx.com/reference/getappointments) ("The request range should not exceed 90 days").
+- `new-appointment` asks for a window that starts today (UTC) and ends 89 days later, so an appointment booked further out is emitted once it comes within 89 days of today.
+
+Not covered (reference data, no trigger): `calendar-list`, `contact-type-list`, `country-list`, `lead-source-list`, `state-list`. Covered by another trigger: `contact-list` (`new-contact`), `contact-jobs-list` and `job-search` (`new-job`).
+
+(All verified 2026-11-10.)

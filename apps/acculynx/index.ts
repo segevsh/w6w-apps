@@ -23,6 +23,12 @@ import type { AppDefinition } from "@w6w/types";
 import bearerToken from "./auth/bearer-token.ts";
 import newJob from "./triggers/new-job.ts";
 import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newContact from "./triggers/new-contact.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newJobEstimate from "./triggers/new-job-estimate.ts";
+import newJobRepresentative from "./triggers/new-job-representative.ts";
+import newUser from "./triggers/new-user.ts";
+import newAppointment from "./triggers/new-appointment.ts";
 
 import jobList from "./actions/job-list.ts";
 import jobGet from "./actions/job-get.ts";
@@ -93,5 +99,14 @@ export default {
   // A single static API key sent as a bearer token is AccuLynx's whole authentication story.
   auth: [bearerToken],
   healthChecks: [service, ping, quota],
-  triggers: [newJob, newOrUpdatedJob],
+  triggers: [
+    newJob,
+    newOrUpdatedJob,
+    newContact,
+    newInvoice,
+    newJobEstimate,
+    newJobRepresentative,
+    newUser,
+    newAppointment,
+  ],
 } satisfies AppDefinition;
