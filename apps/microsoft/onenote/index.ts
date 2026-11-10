@@ -26,6 +26,7 @@ import deletePage from "./actions/delete-page.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedPage from "./triggers/new-or-updated-page.ts";
 
 export default {
   actions: [
@@ -45,6 +46,7 @@ export default {
     updatePageContent,
     deletePage,
   ],
+  triggers: [newOrUpdatedPage],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
