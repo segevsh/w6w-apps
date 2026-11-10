@@ -4,6 +4,7 @@ Time tracking. This app drives Everhour's REST API: projects, sections, tasks an
 custom fields, time records, timers, timecards, timesheets and approvals, clients and budgets,
 expenses, invoices, the resource-planner schedule, time off, reports, users and webhooks.
 
+- **Triggers** — 10 (poll)
 - App id: `io.w6w.everhour` · categories: `productivity`, `project-management`, `finance`
 - Host: `api.everhour.com` (the only entry in `network.allow`) · no path prefix
 - Source of truth: Everhour's API Blueprint, `https://developers.everhour.com/` (the original API Blueprint at jsapi.apiary.io no longer resolves)
@@ -206,13 +207,32 @@ error path; plus `tests/index.test.ts`, `tests/lib/`, `tests/auth/` and `tests/h
 | --- | --- | --- | --- |
 | `new-client` — New Client | Poll | `client-list` | Each client newly added to the account |
 | `new-invoice` — New Invoice | Poll | `invoice-list` | Each invoice newly created in the account |
+| `new-project` — New Project | Poll | `project-list` | Each project newly visible to the key's owner |
+| `new-task` — New Task | Poll | `task-list` | Each task newly added to a selected project |
+| `new-section` — New Section | Poll | `section-list` | Each section newly added to a selected project |
+| `new-expense` — New Expense | Poll | `expense-list` | Each expense newly logged by the key's owner |
+| `new-user` — New Team Member | Poll | `user-list` | Each user newly added to the team |
+| `new-assignment` — New Schedule Assignment | Poll | `assignment-list` | Each resource-planner assignment or time-off entry newly scheduled |
+| `new-time-record` — New Time Record | Poll | `time-list` | Each team time record newly dated within the look-back window |
+| `new-timecard` — New Timecard | Poll | `timecard-list` | Each timecard newly started (a user's first clock-in of a day) |
 
-Everhour documents that `GET /clients` and `GET /invoices` return the full collection in a single
-response with no pagination support ([pagination](https://developers.everhour.com/pagination.md)).
-Each check diffs that set against the previous check and emits only additions, never edits or
-removals (an account beyond 5000 rows makes the check fail with an error naming that cap). The first
-check only records what exists. Projects, tasks and time records are paged or date-ranged without a
-documented newest-first order, so they have no poll trigger. Everhour also delivers outbound webhooks
-(`POST /hooks`; the `X-Hook-Secret` header is sent once at the registration handshake and is not
-repeated on event deliveries, so deliveries carry no signature) — queued separately
-([webhooks](https://developers.everhour.com/webhooks.md)). Verified 2026-11-10.
+Everhour's lists are bare arrays with no documented order and no created/updated-since filter
+([pagination](https://developers.everhour.com/pagination.md)), so each trigger reads its whole
+collection and diffs it against the previous check, emitting only additions, never edits or
+removals. The first check only records what exists. Collections are read in full, paged where
+the endpoint pages (projects 100 per page, tasks 250 per page), and a collection that outgrows
+the per-check limit (10 pages of projects, 8 of tasks, 5000 rows overall) makes the check fail
+with an error naming the limit instead of reading part of it. Time records and timecards are
+filtered by their work date, not by when they were created, so those two read a window of the
+last N days (setting "Look back (days)", default 3, 1-31): a record backdated beyond the window
+is not seen. Search and per-user, per-task and per-project time lists return the same records as
+the triggers above; reference data (expense categories, time-off types, custom-field definitions,
+time-off allocations), reports (timesheets) and the live team-timer view are not event feeds and
+have no trigger. Everhour also delivers outbound webhooks (`POST /hooks`; the `X-Hook-Secret`
+header is sent once at the registration handshake and is not repeated on event deliveries, so
+deliveries carry no signature) — queued separately
+([webhooks](https://developers.everhour.com/webhooks.md)). Verified 2026-11-10
+([projects](https://developers.everhour.com/api-reference/projects/get-all-projects.md),
+[tasks](https://developers.everhour.com/api-reference/tasks/get-project-tasks.md),
+[time records](https://developers.everhour.com/api-reference/time-records/get-all-time-records.md),
+[timecards](https://developers.everhour.com/api-reference/timecards/get-all-timecards.md)).

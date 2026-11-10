@@ -1,6 +1,6 @@
 # LinkupAPI
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 Run LinkedIn, WhatsApp and email outreach, lead sourcing, messaging, posting, recruiter and
 email-enrichment calls through [LinkupAPI](https://linkupapi.com)'s V2 API
@@ -28,7 +28,32 @@ only a count.
 
 ## Triggers
 
-- **New Candidate** (`new-candidate`) polls `job-candidates-list` by descending application date.
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | Poll | `job-candidates-list` | Each candidate newly applied to a job (descending application date) |
+| `new-connection` — New Connection | Poll | `connection-list` | Each connection newly accepted on an account (newest first, stored copy) |
+| `new-profile-post` — New Profile Post | Poll | `profile-posts-list` | Each post newly published by a profile (newest first) |
+| `new-account` — New Connected Account | Poll | `account-list` | Each channel account newly connected to the key (newest first) |
+| `new-invitation` — New Received Invitation | Poll | `invitation-list` | Each pending connection invitation newly received |
+| `new-job` — New Job Posting | Poll | `job-list` | Each job posting newly created on a recruiter account |
+| `new-webhook-event` — New Webhook Event | Poll | `webhook-events-list` | Each event LinkupAPI newly stores for a webhook (messages, accepted invitations, ...) |
+
+The first check seeds what exists and emits nothing; later checks emit only unseen records.
+`new-connection` reads LinkupAPI's stored copy (`use_cache`, free, newest first), which exists only
+for accounts subscribed to the `accepted_invitation` webhook event; without it the list is empty
+and nothing fires. `new-invitation` and `new-job` read the whole (small) list and diff it; more than
+100 entries makes the check fail with an error rather than read part of an unordered list.
+`new-webhook-event` reads the stored events of a webhook oldest first after a stable `event_id`
+cursor, so a backlog drains over successive checks; it fires only for a webhook you already
+created, so inbox conversations (`inbox-list`) have no poll. Calls are billed per result returned, so the credit
+metered triggers run every 15 to 60 minutes. Not covered: the inbox list (credit-billed per result), searches (credit-billed), comment and
+reaction lists, profile viewers, sent invitations (no documented order, unbounded), API logs,
+recommendations and webhook registrations. Ordering, credits and cursors are from the
+[LinkupAPI V2 reference](https://docs.linkupapi.com/api-reference/v2) (verified 2026-11-10:
+[accounts](https://docs.linkupapi.com/api-reference/v2/accounts/list-accounts.md),
+[connections](https://docs.linkupapi.com/api-reference/v2/network/list-connections.md),
+[profile posts](https://docs.linkupapi.com/api-reference/v2/profiles/get-posts.md),
+[webhook events](https://docs.linkupapi.com/api-reference/v2/webhooks/events.md)).
 
 **account**
 
