@@ -12,11 +12,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 955 triggers, 3506 unaccounted list actions in 628 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
-| apps/stackexchange | 2 | 32 | 31 |
 | apps/notion | 1 | 30 | 29 |
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
@@ -671,6 +670,7 @@ depth: 682 apps, 955 triggers, 3506 unaccounted list actions in 628 apps, n8n-pa
 | apps/paystack | 3 | 0 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/simplero | 2 | 0 | 0 |
+| apps/stackexchange | 11 | 32 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/telegram | 2 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
@@ -1194,7 +1194,7 @@ depth: 682 apps, 955 triggers, 3506 unaccounted list actions in 628 apps, n8n-pa
 | apps/spotify | 1 | playlist-get-user-playlists | new-playlist | apps/spotify/README.md Triggers section (verified 2026-11-09) | hand | snapshot (c) of the user's playlist library (limit=50 pages, refused above 500); search is a query-dependent catalog endpoint |
 | apps/square | 1 | customer-get-many | new-customer | apps/square/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-get-many |
 | apps/squarespace-commerce | 2 | list-orders | new-order, new-or-updated-order | apps/squarespace-commerce/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /1.0/commerce/orders (documented modifiedAfter+modifiedBefore, ordered by modifiedOn, direction not stated); new-order keeps createdOn in window; resumes by nextPageCursor |
-| apps/stackexchange | 2 | user-answer-list | new-answer, new-or-updated-answer | apps/stackexchange/README.md Triggers section (verified 2026-11-09) | hand | sort=creation / sort=activity with order=desc, documented sorts on creation_date / last_activity_date (https://api.stackexchange.com/docs/answers-on-users); idOf of the update trigger includes last_activity_date |
+| apps/stackexchange | 11 | question-list | new-answer, new-or-updated-answer, new-comment, new-or-updated-associated-account, new-question, new-or-updated-question, new-user, new-or-updated-user, new-tag-synonym, new-or-updated-user-badge, new-user-reputation-change | apps/stackexchange/README.md Triggers section (verified 2026-11-10) | hand | Newest-first question, comment, user and tag-synonym feeds; fromdate-filtered reputation changes; bounded snapshots for associated accounts and a user's badges; documented creation/activity/modified sorts (https://api.stackexchange.com/docs). |
 | apps/statuspage | 1 | subscriber-list | new-subscriber | apps/statuspage/README.md Triggers section (verified 2026-11-10) | hand | subscriber-list with the new newestFirst option sends the documented sort_field=created_at, sort_direction=desc, zero-based page + limit (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers); incident-list and component-list document no sort order or created-since filter |
 | apps/storyblok | 1 | story-list | new-story | apps/storyblok/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action story-list |
 | apps/strapi | 1 | entry-list | new-entry | apps/strapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
