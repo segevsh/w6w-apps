@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/pennylane",
-  "version": "0.2.0",
-  "description": "Manage Pennylane customers, suppliers, products, customer and supplier invoices, journals, ledger accounts, categories and bank transactions. Includes poll triggers for new records.",
+  "version": "0.3.0",
+  "description": "Manage Pennylane customers, suppliers, products, customer and supplier invoices, journals, ledger accounts, categories and bank transactions. Includes poll triggers for new customer and supplier invoices, customers, suppliers, products and bank transactions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
