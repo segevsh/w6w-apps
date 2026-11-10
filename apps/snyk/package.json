@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/snyk",
-  "version": "0.2.0",
-  "description": "Read Snyk issues, projects, targets and SBOMs, and audit an organization's security posture with poll triggers.",
+  "version": "0.3.0",
+  "description": "Read Snyk issues, projects, targets and SBOMs, and audit an organization's security posture with poll triggers for issues (organization and group), targets, organizations, groups, collections and collection projects.",
   "license": "MIT",
   "author": {
     "name": "w6w"

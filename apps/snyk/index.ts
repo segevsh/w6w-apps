@@ -45,6 +45,13 @@
 import type { AppDefinition } from "@w6w/types";
 import newIssue from "./triggers/new-issue.ts";
 import newOrUpdatedIssue from "./triggers/new-or-updated-issue.ts";
+import newGroupIssue from "./triggers/new-group-issue.ts";
+import newOrUpdatedGroupIssue from "./triggers/new-or-updated-group-issue.ts";
+import newTarget from "./triggers/new-target.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newGroup from "./triggers/new-group.ts";
+import newCollection from "./triggers/new-collection.ts";
+import newCollectionProject from "./triggers/new-collection-project.ts";
 import apiToken from "./auth/api-token.ts";
 
 import issueList from "./actions/issue-list.ts";
@@ -73,7 +80,17 @@ import apiVersion from "./health/api-version.ts";
 import quota from "./health/quota.ts";
 
 export default {
-  triggers: [newIssue, newOrUpdatedIssue],
+  triggers: [
+    newIssue,
+    newOrUpdatedIssue,
+    newGroupIssue,
+    newOrUpdatedGroupIssue,
+    newTarget,
+    newOrganization,
+    newGroup,
+    newCollection,
+    newCollectionProject,
+  ],
   actions: [
     // issue
     issueList,
