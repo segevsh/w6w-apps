@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | `new-task` — New Task | Poll | `task-list` | Each newly created task |
 
-Polled newest-first by creation date through `task-list`. Source: https://developers.wrike.com/api/v4/tasks/ (verified 2026-11-09).
+Polled newest-first by creation date through `task-list` (`sortField=CreatedDate`, `sortOrder=Desc`; Wrike documents `sortOrder` as the case-sensitive enum `Asc | Desc`). Source: https://developers.wrike.com/api/v4/tasks/ (verified 2026-11-09).
 
 Manage Wrike tasks, folders/projects, comments, contacts and timelogs on the **Wrike API v4**.
 

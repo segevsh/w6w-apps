@@ -9,7 +9,7 @@
 | `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer |
 | `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list` | Each created or edited customer |
 
-Polled with Wave's created/modified ordering through `customer-list`. Source: https://developer.waveapps.com/hc/en-us/articles/360019968212-GraphQL-API (verified 2026-11-09).
+Polled newest-first through `customer-list` with Wave's `CustomerSort` enum (`CREATED_AT_DESC` for `new-customer`, `MODIFIED_AT_DESC` for `new-or-updated-customer`). Source: https://developer.waveapps.com/hc/en-us/articles/360019968212-GraphQL-API (verified 2026-11-09).
 
 Wave Financial's free small-business accounting and invoicing platform — customers, products,
 invoices, estimates and money transactions — over Wave's **GraphQL API**.

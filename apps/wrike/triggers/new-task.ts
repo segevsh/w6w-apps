@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Task",
   description: "The run gets each newly created task.",
   action: taskList,
-  input: () => ({ sortField: "CreatedDate", sortOrder: "DESC", pageSize: 100 }),
+  input: () => ({ sortField: "CreatedDate", sortOrder: "Desc", pageSize: 100 }),
   items: (r) => (r as { items?: unknown[] }).items ?? [],
   idOf: (i) => String((i as { id?: unknown }).id ?? ""),
   output: [{ key: "id", type: "string", label: "Task ID" }],

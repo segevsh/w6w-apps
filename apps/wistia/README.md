@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | `new-media` — New Media | Poll | `media-list` | Each newly created media item |
 
-Polled newest-first by creation time through `media-list`. Source: https://docs.wistia.com/reference/list-media (verified 2026-11-09).
+Polled newest-first by creation time through `media-list`. Source: https://docs.wistia.com/reference/get_medias (verified 2026-11-09).
 
 Manage Wistia video from a workflow: list, rename, tag, move and delete media, import a video from a
 URL, manage folders, read captions, and pull per-video and account stats. Built on Wistia's current

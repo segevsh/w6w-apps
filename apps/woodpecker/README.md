@@ -1,6 +1,6 @@
 # Woodpecker
 
-Triggers: not shipped — existing lists do not document a creation-ordered feed or created-since filter (https://developers.woodpecker.co/) (verified 2026-11-09).
+Triggers: not shipped — `prospect-list`/`prospect-search` take `sort` (`+column`/`-column`) and `diff` (activity changed since), but the Woodpecker reference is a script-rendered page whose prospect fields could not be read, so no creation-time column or per-prospect update stamp is confirmed to build a new/updated id from (https://developers.woodpecker.co/).
 
 Cold email and multichannel outreach through [Woodpecker](https://woodpecker.co) (30 actions).
 API reference: <https://developers.woodpecker.co>. Base URL `https://api.woodpecker.co/rest`.

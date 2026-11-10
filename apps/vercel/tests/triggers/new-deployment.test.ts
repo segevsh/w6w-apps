@@ -2,22 +2,94 @@ import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-deployment.ts";
+import { clock, MAX_PAGES } from "../../lib/walk.ts";
+
+const NOW = 1_794_700_000_000;
+clock.now = () => NOW;
 const input = { params: {}, subscriptionId: "sub-1" };
-const item = (uid: string) => ({ uid });
-const ctx = (deployments: unknown[]) => mockCtx([{ body: { deployments, pagination: {} } }]);
-test("new-deployment seeds, emits, retries, and calls the deployments endpoint", async () => {
-  const seed = ctx([item("a")]);
-  const s = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+const AFTER = NOW + 60_000;
+const BEFORE = NOW - 3_600_000;
+const dep = (uid: string, created = AFTER) => ({ uid, created });
+const body = (deployments: unknown[], next: number | null = null) => ({
+  body: { deployments, pagination: { count: deployments.length, next } },
+});
+// Newest first, as Vercel returns them: created strictly decreasing across pages.
+const full = (prefix: string, startCreated: number) =>
+  Array.from({ length: 100 }, (_, i) => dep(`${prefix}${i}`, startCreated - i));
+const q = (url: string) => Object.fromEntries(new URL(url).searchParams);
+const seed = () => trigger.poll!({ ...input, state: {} }, mockCtx([]).ctx);
+
+test("new-deployment: the first check seeds a floor and reads nothing", async () => {
+  const c = mockCtx([]);
+  const s = await trigger.poll!({ ...input, state: {} }, c.ctx);
   assertEquals(s.events, []);
-  assertEquals((s.nextState as { seeded: boolean }).seeded, true);
-  assertEquals({ method: seed.calls[0].method, url: seed.calls[0].url }, {
-    method: "GET",
-    url: "https://api.vercel.com/v7/deployments?limit=100",
-  });
-  const n = await trigger.poll!({ ...input, state: s.nextState }, ctx([item("b"), item("a")]).ctx);
-  assertEquals(n.events, [item("b")]);
-  assertEquals(
-    await trigger.poll!({ ...input, state: s.nextState }, ctx([item("b"), item("a")]).ctx),
-    n,
+  assertEquals(c.calls.length, 0);
+  assertEquals((s.nextState as { floor: number }).floor, NOW);
+});
+
+test("new-deployment: lists with since = last check - overlap, emits new ones, retries idempotently", async () => {
+  const s = await seed();
+  const c1 = mockCtx([body([dep("b"), dep("a")])]);
+  const r1 = await trigger.poll!({ ...input, state: s.nextState }, c1.ctx);
+  assertEquals(r1.events, [dep("b"), dep("a")]);
+  assertEquals(c1.calls[0].method, "GET");
+  assertEquals(new URL(c1.calls[0].url).pathname, "/v7/deployments");
+  assertEquals(q(c1.calls[0].url), { since: String(NOW - 120_000), limit: "100" });
+  const again = await trigger.poll!(
+    { ...input, state: s.nextState },
+    mockCtx([body([dep("b"), dep("a")])]).ctx,
   );
+  assertEquals(again, r1);
+  const r2 = await trigger.poll!(
+    { ...input, state: r1.nextState },
+    mockCtx([body([dep("c"), dep("b")])]).ctx,
+  );
+  assertEquals(r2.events, [dep("c")]);
+});
+
+test("new-deployment: a window of MAX_PAGES + 1 full pages is drained across checks, none twice", async () => {
+  const s = await seed();
+  const pages = Array.from(
+    { length: MAX_PAGES + 1 },
+    (_, p) => full(`p${p}-`, AFTER + 1_000_000 - p * 100),
+  );
+  const next = (p: number) => pages[p][99].created;
+  const r1 = await trigger.poll!(
+    { ...input, state: s.nextState },
+    mockCtx(pages.slice(0, MAX_PAGES).map((pg, p) => body(pg, next(p)))).ctx,
+  );
+  assertEquals(r1.events.length, MAX_PAGES * 100);
+  assertEquals((r1.nextState as { cursor: number }).cursor, NOW);
+  const c2 = mockCtx([body(pages[MAX_PAGES], next(MAX_PAGES)), body([])]);
+  clock.now = () => NOW + 600_000;
+  try {
+    const r2 = await trigger.poll!({ ...input, state: r1.nextState }, c2.ctx);
+    assertEquals(r2.events.length, 100);
+    assertEquals(q(c2.calls[0].url).until, String(pages[MAX_PAGES - 1][99].created));
+    const ids = [...r1.events, ...r2.events].map((e) => (e as { uid: string }).uid);
+    assertEquals(new Set(ids).size, (MAX_PAGES + 1) * 100);
+    assertEquals((r2.nextState as { cursor: number }).cursor, NOW + 600_000);
+  } finally {
+    clock.now = () => NOW;
+  }
+});
+
+test("new-deployment: deployments from before the seed never flood a later check", async () => {
+  const s = await seed();
+  const old = Array.from({ length: MAX_PAGES + 1 }, (_, p) => full(`o${p}-`, BEFORE - p * 100));
+  const r1 = await trigger.poll!(
+    { ...input, state: s.nextState },
+    mockCtx(old.slice(0, MAX_PAGES).map((pg, p) => body(pg, old[p][99].created))).ctx,
+  );
+  assertEquals(r1.events, []);
+  const r2 = await trigger.poll!(
+    { ...input, state: r1.nextState },
+    mockCtx([body(old[MAX_PAGES], old[MAX_PAGES][99].created), body([])]).ctx,
+  );
+  assertEquals(r2.events, []);
+  const r3 = await trigger.poll!(
+    { ...input, state: r2.nextState },
+    mockCtx([body([dep("fresh")])]).ctx,
+  );
+  assertEquals(r3.events, [dep("fresh")]);
 });

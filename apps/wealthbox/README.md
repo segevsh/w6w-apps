@@ -9,7 +9,7 @@
 | `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact |
 | `new-or-updated-contact` — New or Updated Contact | Poll | `list-contacts` | Each created or edited contact |
 
-Polled through Wealthbox contact ordering. Source: https://dev.wealthbox.com/ (verified 2026-11-09).
+Polled through `list-contacts` with the documented `updated_since` filter ("Only returns contacts updated on or after this timestamp"), set to the last check minus 2 minutes in Wealthbox's own timestamp format, paged 100 at a time. Wealthbox documents no created-first order (its collections "are not ordered"), so none is relied on: a contact is new when its `created_at` is not before the first check, and `new-or-updated-contact` dedupes on `id:updated_at`. The first check stores a floor (now) and reads nothing; a window over 5 pages is drained across successive checks. Source: https://dev.wealthbox.com/ (verified 2026-11-09).
 
 Wealthbox CRM contacts, tasks, events, opportunities and notes, on the **Wealthbox API v1**.
 

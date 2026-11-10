@@ -8,9 +8,7 @@
 | --- | --- | --- | --- |
 | `new-file` — New File | Poll | `list-files` | Each newly created file |
 
-Polled newest-first by `created_at` through `list-files`. Source: https://docs.x.ai/docs/api-reference#files (verified 2026-11-09).
-
-Triggers: not shipped — the files endpoint does not document that descending order is creation-time order, so newest-first delivery cannot be guaranteed (https://docs.x.ai/docs/api-reference#files).
+Polled newest-first by `created_at` through `list-files`. Source: https://docs.x.ai/developers/rest-api-reference/files/manage (verified 2026-11-09).
 
 Grok chat, Responses and Messages calls, embeddings, image generation, tokenization, model
 listing and file management through the xAI API (`https://api.x.ai`).
