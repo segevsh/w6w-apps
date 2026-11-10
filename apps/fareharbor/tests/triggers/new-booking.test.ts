@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
-import trigger from "../../triggers/new-booking.ts";
+import trigger, { SEEN_WINDOW } from "../../triggers/new-booking.ts";
 
 const input = { params: { shortname: "bodyglove" }, subscriptionId: "sub_1" };
 const booking = (pk: number) => ({ pk, uuid: `u-${pk}`, status: "booked" });
@@ -67,5 +67,34 @@ test("new-booking: 250 bookings in one window are emitted exactly once across su
     assertEquals(new Set(seen).size, 250);
     const { ctx } = mockCtx([page(...pks.slice().reverse()), page()]);
     assertEquals((await trigger.poll!({ ...input, state }, ctx)).events, []);
+  });
+});
+
+test("new-booking: a window of 1200 bookings that existed before the seed never floods a later check", async () => {
+  await withClock("2026-11-10T00:30:00Z", async () => {
+    // More than the old 1000-id memory and more than a hundred times maxEvents.
+    assertEquals(SEEN_WINDOW >= 1200, true);
+    const old = Array.from({ length: 1200 }, (_, i) => 1000 + i).reverse();
+    const seeded = await trigger.poll!(
+      { ...input, state: {} },
+      mockCtx([page(...old), page()]).ctx,
+    );
+    assertEquals(seeded.events, []);
+    const quiet = await trigger.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([page(...old), page()]).ctx,
+    );
+    assertEquals(quiet.events, []);
+    const fresh = await trigger.poll!(
+      { ...input, state: quiet.nextState },
+      mockCtx([page(5000, ...old), page()]).ctx,
+    );
+    assertEquals(fresh.events, [booking(5000)]);
+    // ... and it is not emitted a second time while it stays listed.
+    const again = await trigger.poll!(
+      { ...input, state: fresh.nextState },
+      mockCtx([page(5000, ...old), page()]).ctx,
+    );
+    assertEquals(again.events, []);
   });
 });
