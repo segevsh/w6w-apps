@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/salesmsg",
-  "version": "0.2.0",
-  "description": "Send business SMS and MMS, and manage contacts, conversations, tags, inboxes and numbers in Salesmsg. Polling trigger: New Contact.",
+  "version": "0.3.0",
+  "description": "Send business SMS and MMS, and manage contacts, conversations, tags, inboxes and numbers in Salesmsg. Polling triggers: new contacts, active conversations and new team members.",
   "license": "MIT",
   "author": {
     "name": "w6w"
