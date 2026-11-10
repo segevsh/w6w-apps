@@ -170,10 +170,4 @@ are hard to add later; they just aren't here yet:
 - **Task batch-delete, reopen** (`/tasks/batch-delete`, `/tasks/{taskId}/reopened`) and
   **dashboard/analytics data** (`/dashboard-data/sales-data`).
 
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-lead` — New Lead | Poll | `lead-list` | Each newly created lead |
-
-Polled through `lead-list` ordered by descending creation date. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-09).
+Triggers: not shipped — the lead-list sort enum has no creation field (its default is `lastEnterStageDate`), so it cannot identify newly created leads (https://app.agencyzoom.com/openapi/agencyzoom.yaml)

@@ -87,4 +87,4 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | --- | --- | --- | --- |
 | `new-ticket` — New Ticket | Poll | `ticket-list` | Each newly created ticket |
 
-Polled through `ticket-list` with its bounded ticket-form request. Source: [Aidbase API docs](https://docs.aidbase.ai) (verified 2026-11-09).
+Polled through `ticket-list` with the documented `created_after` filter and a two-minute overlap. Source: [Aidbase Ticket Form API reference](https://docs.aidbase.ai/apis/ticket-form-api/reference/) (verified 2026-11-09).

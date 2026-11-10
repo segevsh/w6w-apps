@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/actionnetwork",
-  "version": "0.2.0",
-  "description": "Manage Action Network people and trigger workflows on newly listed people.",
+  "version": "0.1.0",
+  "description": "Manage Action Network people, tags, petitions, events, forms, fundraising pages, advocacy campaigns and mass email, and record signatures, RSVPs, submissions, donations and outreaches.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,8 +36,7 @@
         "actionnetwork.org"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

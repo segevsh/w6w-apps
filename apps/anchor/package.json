@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/anchor",
   "version": "0.2.0",
-  "description": "Manage Anchor billing data and trigger workflows on new invoices.",
+  "description": "Manage Anchor proposals, agreements, invoices, payouts, contacts and webhooks; includes a poll trigger for new invoices.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -126,11 +126,4 @@ for cancelling or stopping a message.
 - Referenced tag names that do not exist are silently ignored; `country` defaults to US as soon as any
   other address part is sent.
 
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-person` — New Person | Poll | `person-list` | Each newly created person |
-| `new-or-updated-person` — New or Updated Person | Poll | `person-list` | Each newly created or updated person |
-
-Polled through `person-list` with Action Network's `modified_date` filter. Source: [Action Network API docs](https://actionnetwork.org/docs/) (verified 2026-11-09).
+Triggers: not shipped — the People API says people are not ordered by newest `modified_date` first, and this action has no safe cursor-carrying poll path (https://actionnetwork.org/docs/v2/people)

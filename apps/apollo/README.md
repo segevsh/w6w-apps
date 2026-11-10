@@ -333,10 +333,4 @@ audit the way that actually resolves both import maps —
 `cd ../../_tools && deno run --no-check -A audit.ts apollo` — passes with **0 errors, 0 warnings**
 (and the identical command reports the same 0/0 for `apify`).
 
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-deal` — New Deal | Poll | `deal-list` | Each newly created deal |
-
-Polled through `deal-list` with its supported sort and bounded page. Source: [Apollo API docs](https://docs.apollo.io/reference/apollo-api) (verified 2026-11-09).
+Triggers: not shipped — deal-list offers no creation-order or created/updated-since field; its `closed_date` sort is not a new-deal feed (https://docs.apollo.io/reference/apollo-api)

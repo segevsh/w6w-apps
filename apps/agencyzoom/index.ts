@@ -75,7 +75,6 @@ import taskDelete from "./actions/task-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -110,5 +109,4 @@ export default {
   ],
   auth: [login],
   healthChecks: [service, quota],
-  triggers: [newLead],
 } satisfies AppDefinition;

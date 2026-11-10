@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/airbyte",
-  "version": "0.2.0",
-  "description": "Inspect Airbyte resources and trigger workflows on new destinations.",
+  "version": "0.1.0",
+  "description": "Airbyte: inspect connections, sources and destinations, trigger and watch syncs, and read job history.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,8 +34,7 @@
         "*"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

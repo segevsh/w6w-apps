@@ -266,5 +266,6 @@ a probe starts failing for everyone at once.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-page` — New Page | Poll | `page-list` | Each newly created page |
+| `new-or-updated-page` — New or Updated Page | Poll | `page-list` | Each newly created or modified page |
 
-Polled through `page-list` with `sort=-created-date`. Source: [Confluence REST API v2](https://developer.atlassian.com/cloud/confluence/rest/v2/) (verified 2026-11-09).
+Polled through `page-list` with `sort=-created-date` and `sort=-modified-date`. Source: [Confluence pages API](https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/) (verified 2026-11-09).

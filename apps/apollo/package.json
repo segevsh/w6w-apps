@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/apollo",
-  "version": "0.2.0",
-  "description": "Manage Apollo deals and trigger workflows on newly listed deals.",
+  "version": "0.1.0",
+  "description": "Search and enrich people and companies, and manage contacts, accounts, deals, sequences, tasks and lists in Apollo.io's sales intelligence and engagement platform.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,8 +34,7 @@
         "api.apollo.io"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",
