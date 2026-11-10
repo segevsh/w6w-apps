@@ -82,6 +82,11 @@ import newProduct from "./triggers/new-product.ts";
 import newSubscription from "./triggers/new-subscription.ts";
 import newTicket from "./triggers/new-ticket.ts";
 import newUser from "./triggers/new-user.ts";
+import newOrUpdatedActivity from "./triggers/new-or-updated-activity.ts";
+import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
+import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
 
 export default {
   actions: [
@@ -168,5 +173,10 @@ export default {
     newSubscription,
     newTicket,
     newUser,
+    newOrUpdatedActivity,
+    newOrUpdatedAppointment,
+    newOrUpdatedCompany,
+    newOrUpdatedOrder,
+    newOrUpdatedSubscription,
   ],
 } satisfies AppDefinition;
