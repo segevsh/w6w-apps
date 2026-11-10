@@ -20,3 +20,5 @@ so there is no `quota` check.
 ## Notes
 
 `assets/icon.svg` is a placeholder, not the TypeSafe brand mark.
+
+Triggers: not shipped — model evaluation and model catalog APIs expose no user-created records (https://docs.jev.ai/)

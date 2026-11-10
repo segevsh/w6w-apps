@@ -98,3 +98,5 @@ Left out because the app is deliberately a focused slice, not because the API la
   `list-archives`' text, date, id, customer, agent and tag filters instead.
 - Webhooks and the RTM (WebSocket) API: this app only makes outbound calls.
 - The Customer Chat API and the `accounts.livechat.com` OAuth host.
+
+Triggers: not shipped — chat archive search is paginated and the same chat can appear per thread, so it is not a stable new-record feed (https://platform.text.com/docs/messaging/agent-chat-api)

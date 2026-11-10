@@ -80,3 +80,5 @@ Format with `deno task fmt`, never bare `deno fmt`.
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+Triggers: not shipped — account-scoped lists are offset-paginated and no creation ordering is documented (https://docs.leadfeeder.com/api/)

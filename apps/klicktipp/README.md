@@ -115,3 +115,5 @@ taken from the OpenAPI example.
 `c8eb70852bdc166247c272fdb0816a64`) from the developer portal:
 https://developers.klicktipp.com/assets/klicktipp.c3f8114c33a76db3eaaef29c5d3baea243313b864d8f3e856a0f7af2cb88866e.9c1bb791.svg
 A unit test pins its size and hash. Format with `deno task fmt`, never bare `deno fmt`.
+
+Triggers: not shipped — changed-contact results contain only IDs and do not expose immutable creation records for a New trigger (https://developers.klicktipp.com/)

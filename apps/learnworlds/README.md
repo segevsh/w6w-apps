@@ -146,3 +146,11 @@ good is the derived `auth:client-credentials` check's job.
 spec states a fixed prose rate limit ("30 requests / 10 sec") and a `429`
 error shape, but documents no response header or endpoint exposing remaining
 headroom anywhere across all 94 v2 operations.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` | poll | `users-list` | Each newly registered user |
+
+The API's newest-first user list is polled every five minutes. Vendor API documentation: https://www.learnworlds.dev/ (verified 2026-11-09).

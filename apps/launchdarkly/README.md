@@ -202,3 +202,5 @@ LaunchDarkly's envelope is `{code, message}`. `code` is the machine-readable
 half — `unauthorized`, `not_found`, `invalid_request` — and the message names
 which instruction or field was rejected, which is what makes a failed semantic
 patch diagnosable.
+
+Triggers: not shipped — audit-log paging is an audit stream and has no stable newly-created resource collection (https://apidocs.launchdarkly.com/tag/Audit-log)

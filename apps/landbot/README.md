@@ -96,3 +96,5 @@ Behaviours worth knowing:
   OpenAPI document and no action calls it, so it is not in `network.allow`.
 - Trigger/webhook ingestion: message hooks are managed here, but receiving their calls is not an
   action.
+
+Triggers: not shipped — customer listing has offset paging but no documented creation order or since filter (https://developers.landbot.io/)

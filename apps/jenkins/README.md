@@ -123,3 +123,5 @@ access API, CSRF protection / API-token exemption) and the community-maintained
 `n8n-nodes-base` Jenkins node's job/build/trigger endpoints, which agree with the official
 docs. Jenkins' REST surface is stable across versions; re-check if a probe starts failing
 for everyone at once.
+
+Triggers: not shipped — job listings are configuration snapshots with no creation timestamp or bounded collection guarantee (https://www.jenkins.io/doc/book/using/remote-access-api/)

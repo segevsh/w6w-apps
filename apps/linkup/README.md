@@ -70,3 +70,5 @@ streaming and the MCP server (`mcp.linkup.so`) are not part of the REST API and 
 ## Icon
 
 `assets/icon.svg` is the vendor's mark, byte-for-byte from <https://docs.linkup.so/favicon.svg>.
+
+Triggers: not shipped — AI search, research, task, and extraction job APIs are request-scoped rather than a new-record feed (https://docs.linkup.so/)

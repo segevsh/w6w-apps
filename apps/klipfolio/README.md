@@ -41,3 +41,5 @@ Lists take `limit` (1–100, default 25; over 100 is a 400) and `offset`, and re
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+Triggers: not shipped — dashboard lists are offset-paginated account configuration, not a bounded snapshot (https://support.klipfolio.com/hc/en-us/articles/360012924073-Klipfolio-API)

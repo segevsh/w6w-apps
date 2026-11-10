@@ -271,3 +271,5 @@ deno task test
 up `_tools/deno.json` instead and cannot resolve the `@w6w/types` value imports this app's
 `health/service.ts` and `lib/client.ts` use; this reproduces identically for the sibling `apify`,
 `paddle` and `linkedin-ads` apps, so it is a property of how the tool is invoked, not of this app.
+
+Triggers: not shipped — conversion rules are account-scoped offset-paginated configuration without a created-order feed (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api)

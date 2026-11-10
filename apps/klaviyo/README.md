@@ -72,3 +72,12 @@ reach a status host.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-profile` | poll | `get-profiles` sorted `-created` | Each newly created profile |
+| `new-or-updated-profile` | poll | `get-profiles` sorted `-updated` | Each newly created or updated profile |
+
+Klaviyo profile sorting is polled every five minutes. Vendor API documentation: https://developers.klaviyo.com/en/reference/get_profiles (verified 2026-11-09).

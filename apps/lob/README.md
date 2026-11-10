@@ -157,3 +157,11 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 ```
 
 Use `deno task fmt`, never bare `deno fmt` (the bare form rewrites `assets/icon.svg`).
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-address` | poll | `address-list` | Each newly saved address |
+
+Lob's address list is newest first and is polled every five minutes. Vendor API documentation: https://docs.lob.com/#tag/Addresses (verified 2026-11-09).

@@ -203,6 +203,8 @@ that its `<title>` and opening `<svg>` tag are unchanged.
 ## Layout
 
 ```
+
+Triggers: not shipped — rich-menu configuration lists have no documented bounded collection or creation order; webhook candidate queued (https://developers.line.biz/en/reference/messaging-api/)
 line/
 ├── package.json                    # manifest — the `w6w` identity block
 ├── index.ts                        # entry: { actions, auth, healthChecks }
