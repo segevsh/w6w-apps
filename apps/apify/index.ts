@@ -82,6 +82,13 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
 import newActor from "./triggers/new-actor.ts";
+import newRun from "./triggers/new-run.ts";
+import newTask from "./triggers/new-task.ts";
+import newWebhook from "./triggers/new-webhook.ts";
+import newDataset from "./triggers/new-dataset.ts";
+import newKeyValueStore from "./triggers/new-key-value-store.ts";
+import newStoreActor from "./triggers/new-store-actor.ts";
+import newStoreKey from "./triggers/new-store-key.ts";
 
 export default {
   actions: [
@@ -129,5 +136,14 @@ export default {
   // third-party integration is to hand it a *scoped* token.
   auth: [apiToken],
   healthChecks: [service, quota, requestRate],
-  triggers: [newActor],
+  triggers: [
+    newActor,
+    newRun,
+    newTask,
+    newWebhook,
+    newDataset,
+    newKeyValueStore,
+    newStoreActor,
+    newStoreKey,
+  ],
 } satisfies AppDefinition;
