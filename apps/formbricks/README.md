@@ -6,7 +6,7 @@ Manage Formbricks surveys, responses, contacts, action classes and webhooks from
 - **Category** — forms (also marketing, analytics)
 - **Auth methods** — `api-key` (an API key sent as the `x-api-key` header)
 - **Actions** — 25
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /health`), `quota` (signed, `x-ratelimit-*` headers) + the derived `auth:api-key`
 - **Egress allowlist** — `app.formbricks.com`
@@ -71,8 +71,14 @@ name only `app.formbricks.com`.
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-survey` — New Survey | poll | `survey-list` | Each survey newly added to the workspace |
+| `new-response` — New Survey Response | poll | `response-list` (param `surveyId` optional) | Each new response, newest first, without its `singleUseId` |
+| `new-contact` — New Contact | poll | `contact-list` (snapshot; Enterprise Edition) | Each contact newly added |
 
 `GET /api/v1/management/surveys` returns the workspace survey collection in one response; this trigger snapshots up to 5,000 records and emits additions only. Verified 2026-11-09 against Formbricks's [Management API](https://formbricks.com/docs/api-reference/management-api/get-v1-management-surveys).
+
+`new-response` sends `limit=100` on every check (without `limit` the endpoint returns every response ever). The list is ordered by `createdAt` descending: the API reference does not say so, the handler's own query does ([source](https://github.com/formbricks/formbricks/blob/main/apps/web/app/api/v1/management/responses/lib/response.ts)). There is no `new-or-updated-response`, because that order is by creation, not by edit. `new-contact` diffs the one whole response (the contacts route does no paging; the kit refuses more than 5,000 contacts).
+
+Not covered by a trigger: `action-class-list` and `contact-attribute-key-list` (definitions of in-app actions and of attribute fields, configuration data); `contact-attribute-list` (per-contact attribute values, changed by editing a contact rather than created as records); `webhook-list` (webhook subscription configuration, which can carry a signing secret). Verified 2026-11-10 against the [response](https://formbricks.com/docs/api-reference/management-api--response/get-survey-responses.md) and [contacts](https://formbricks.com/docs/api-reference/management-api--contacts/get-all-contacts.md) references.
 
 ## Actions
 
