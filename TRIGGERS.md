@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -21,9 +21,7 @@ depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-p
 | apps/chatbase | 0 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
-| apps/lokalise | 5 | 11 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
-| apps/mighty-networks | 3 | 10 | 10 |
 | apps/tickettailor | 0 | 10 | 10 |
 | apps/tidio | 0 | 10 | 10 |
 | apps/motion | 0 | 9 | 9 |
@@ -601,6 +599,7 @@ depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-p
 | apps/linkupapi | 7 | 20 | 0 |
 | apps/livestorm | 9 | 13 | 0 |
 | apps/lofty | 5 | 10 | 0 |
+| apps/lokalise | 15 | 11 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/lusha | 7 | 9 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
@@ -615,6 +614,7 @@ depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-p
 | apps/microsoft/onedrive | 8 | 6 | 0 |
 | apps/microsoft/outlook | 4 | 5 | 0 |
 | apps/microsoft/teams | 8 | 8 | 0 |
+| apps/mighty-networks | 21 | 10 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/missive | 10 | 15 | 0 |
 | apps/mixmax | 8 | 10 | 0 |
@@ -723,7 +723,7 @@ depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-p
 | apps/judgeme | 2 | review-created, review-updated | apps/judgeme/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/DELETE /webhooks, keys review/created and review/updated); JUDGEME-HMAC-SHA256 hex HMAC of the raw body under the Private API token; no poll: list-reviews has no sort or created-after filter |
 | apps/lemlist | 2 | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | 7 | issue, comment, project, cycle, issue-label, user, any-event | apps/linear/README.md Triggers section (verified 2026-11-10) | hand | webhook-api: signed webhookCreate-registered triggers for Issue, Comment, Project, Cycle, IssueLabel and User plus any-event; list actions are covered by those webhook triggers or skipped as reference data |
-| apps/lokalise | 5 | key-added, key-modified, translation-updated, task-created, task-closed | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound) |
+| apps/lokalise | 15 | key-added, key-modified, key-deleted, translation-updated, translation-proofread, comment-added, contributor-added, contributor-deleted, language-added, file-imported, task-created, task-closed, task-deleted, any-event, new-project | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks, https://developers.lokalise.com/reference/create-a-webhook); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound); new projects by a bounded GET /projects snapshot poll since no project-created event exists |
 | apps/lusha | 7 | signal-received, contact-promotion, contact-company-change, company-hiring-surge, company-headcount-change, company-news, new-subscription | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned; signal-received is the any-signal trigger, five named triggers fix the entity type and signal types; new-subscription polls subscription-list (newest first, limit 100) |
 | apps/mailchimp/mailchimp | 10 | new-member, new-campaign, new-group-interest, member-subscribed, member-unsubscribed, member-updated, member-cleaned, email-changed, campaign-status, any-event | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook-api triggers (the app registers the audience webhook and keeps its signing secret) plus polls over list-members, list-campaigns and list-group-interests |
 | apps/mailchimp/mandrill | 1 | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
@@ -780,7 +780,7 @@ depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-p
 | apps/meta/facebook-messenger | 1 | messenger-event | apps/meta/facebook-messenger/README.md Triggers section (verified 2026-11-10) | hand | manual Page webhook in the Meta App Dashboard; GET verify-token challenge plus X-Hub-Signature-256 HMAC-SHA256 with the App Secret over the raw body |
 | apps/meta/whatsapp | 2 | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/microsoft/azure-blob | 2 | blob-created, blob-deleted | apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10) | hand | manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret |
-| apps/mighty-networks | 3 | member-joined, post-created, network-event | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings; no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time |
+| apps/mighty-networks | 21 | member-joined, post-created, network-event, member-left, member-updated, member-purchased, member-subscription-canceled, member-tag-added, member-tag-removed, member-lesson-completed, post-updated, comment-created, event-created, event-updated, event-canceled, rsvp-created, invite-requested, new-space, new-plan, new-tag, new-coursework | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings (https://docs.mightynetworks.com/api/webhooks.md); no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time; polls cover spaces, plans, tags and coursework, which have no webhook event (hourly: the Admin API is metered per request); member-list is covered by member-joined per space join, not as a network-level feed |
 | apps/netlify | 3 | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/notion | 42 | any-event, comment-created, comment-deleted, comment-updated, data-source-content-updated, data-source-created, data-source-deleted, data-source-schema-updated, database-created, database-deleted, file-upload-completed, file-upload-created, file-upload-expired, file-upload-upload-failed, new-agent, new-block, new-comment, new-data-source-template, new-database-page, new-file-upload, new-meeting-note, new-or-updated-data-source, new-or-updated-database, new-or-updated-database-page, new-or-updated-meeting-note, new-or-updated-page, new-or-updated-plugin, new-or-updated-session, new-session, new-session-event, new-view, new-workspace-user, page-content-updated, page-created, page-deleted, page-moved, page-properties-updated, page-transcript-deleted, page-undeleted, view-created, view-deleted, view-updated | apps/notion/README.md Triggers section (verified 2026-11-10) | hand | shipped 24 signed manual-webhook triggers (named created/updated/deleted-style events for page, database, data source, comment, view, file upload, page transcript + any-event, all 31 documented events mapped) and 18 poll triggers over the list actions |
 | apps/payhip | 4 | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
