@@ -84,6 +84,7 @@ import newTask from "./triggers/new-task.ts";
 import newSchedule from "./triggers/new-schedule.ts";
 import newTaskBoard from "./triggers/new-task-board.ts";
 import newTimeClock from "./triggers/new-time-clock.ts";
+import newTimeActivity from "./triggers/new-time-activity.ts";
 
 export default {
   actions: [
@@ -135,6 +136,7 @@ export default {
     newSchedule,
     newTaskBoard,
     newTimeClock,
+    newTimeActivity,
   ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

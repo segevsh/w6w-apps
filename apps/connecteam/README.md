@@ -6,7 +6,7 @@ boards — on the **Connecteam API v1**.
 - **Categories** — hr, productivity, calendar
 - **Auth methods** — api-key
 - **Actions** — 27
-- **Triggers** — 9 (poll)
+- **Triggers** — 10 (poll)
 - **Health checks** — 1 live (`service`) + 1 declared absence (~~`quota`~~) + the derived
   `auth:api-key`
 - **Egress allowlist** — `api.connecteam.com` (the `service` check adds `connecteam.statuspage.io`
@@ -246,6 +246,7 @@ connecteam/
 | `new-schedule` — New Schedule | poll (snapshot) | `scheduler-list` | Each newly created schedule |
 | `new-task-board` — New Task Board | poll (snapshot) | `taskboard-list` | Each newly created task board |
 | `new-time-clock` — New Time Clock | poll (snapshot) | `time-clock-list` | Each newly created time clock |
+| `new-time-activity` — New Time Activity | poll (since-filter) | `time-activity-list`, date window | Each new shift, manual break or time-off entry on one time clock (`timeClockId`) |
 
 The trigger uses the action's fixed `startTime`/`endTime` schedule window. Shifts created outside
 that window are not discovered until the window includes them.
@@ -260,8 +261,10 @@ check (the oldest first, holding its position until the window is drained) and i
 made before the trigger was first checked. `new-user` needs `sort=created_at`, which `user-list`
 now accepts (`sort`, `order`; unset by default).
 
-Not covered: `time-activity-list` (grouped per user over a mandatory date range, with no created or
-updated filter and no order to page by).
+`new-time-activity` asks for the mandatory date window (two days before the look-back to tomorrow,
+one unpaged response) and keeps the activities whose `createdAt` is after the trigger was first
+checked (their start time when `createdAt` is empty), so an entry backdated more than two days is
+not seen.
 
 Vendor reference: <https://developer.connecteam.com/reference> and
 <https://developer.connecteam.com/openapi/connecteam-api-documentation.json> (verified 2026-11-10).
