@@ -72,12 +72,12 @@ test("fixture: the body is not canonical JSON, so re-serialising would break the
   assertEquals(JSON.stringify(JSON.parse(BODY)) !== BODY, true);
 });
 
-test("the app declares 20 triggers: 16 webhook and 4 poll, each with output and a sample", () => {
+test("the app declares 22 triggers: 18 webhook and 4 poll, each with output and a sample", () => {
   const triggers = app.triggers ?? [];
-  assertEquals(triggers.length, 20);
-  assertEquals(triggers.filter((t) => typeof t.handleIngest === "function").length, 16);
+  assertEquals(triggers.length, 22);
+  assertEquals(triggers.filter((t) => typeof t.handleIngest === "function").length, 18);
   assertEquals(triggers.filter((t) => typeof t.poll === "function").length, 4);
-  assertEquals(new Set(triggers.map((t) => t.key)).size, 20);
+  assertEquals(new Set(triggers.map((t) => t.key)).size, 22);
   for (const t of triggers) {
     assertEquals((t.output?.length ?? 0) > 0, true, t.key);
     assertEquals(t.sample !== undefined, true, t.key);
@@ -123,104 +123,154 @@ test("handleIngest: meeting.updated carries old_object as oldObject", async () =
   }]);
 });
 
-test("handleIngest: a flipped byte in the SIGNATURE throws", async () => {
-  const ts = nowSec();
-  const call = delivery(BODY, {
-    "x-zm-signature": flip(sig(BODY, ts)),
-    "x-zm-request-timestamp": String(ts),
+const CHALLENGE =
+  `{ "payload": { "plainToken": "qgg8vlvZRS6UYooatFL8Aw" }, "event_ts": 1654503849680, "event": "endpoint.url_validation" }`;
+
+/** Every signed trigger, with the Zoom event it is wired to written out as a literal. */
+const SIGNED: Array<[key: string, event: string]> = [
+  ["meeting-created", "meeting.created"],
+  ["meeting-updated", "meeting.updated"],
+  ["meeting-deleted", "meeting.deleted"],
+  ["meeting-started", "meeting.started"],
+  ["meeting-ended", "meeting.ended"],
+  ["meeting-registration-created", "meeting.registration_created"],
+  ["webinar-created", "webinar.created"],
+  ["webinar-updated", "webinar.updated"],
+  ["webinar-deleted", "webinar.deleted"],
+  ["webinar-started", "webinar.started"],
+  ["webinar-ended", "webinar.ended"],
+  ["user-created", "user.created"],
+  ["user-updated", "user.updated"],
+  ["user-deleted", "user.deleted"],
+  ["recording-completed", "recording.completed"],
+  ["recording-deleted", "recording.deleted"],
+  ["recording-trashed", "recording.trashed"],
+  ["any-event", "meeting.started"],
+];
+const triggerByKey = (key: string): T => {
+  const t = (app.triggers ?? []).find((x) => x.key === key);
+  assertEquals(t !== undefined, true, key);
+  return t;
+};
+/** `s` with the character at `i` changed. */
+const flipAt = (s: string, i: number) =>
+  s.slice(0, i) + (s[i] === "0" ? "1" : "0") + s.slice(i + 1);
+
+test("the table names every signed trigger the app declares, once", () => {
+  const declared = (app.triggers ?? []).filter((t) => typeof t.handleIngest === "function")
+    .map((t) => t.key).sort();
+  assertEquals(SIGNED.map(([k]) => k).sort(), declared);
+  assertEquals(new Set(SIGNED.map(([, e]) => e)).size, SIGNED.length - 1);
+});
+
+for (const [key, event] of SIGNED) {
+  const trigger = triggerByKey(key);
+  const body = BODY.replace("meeting.started", event);
+  const otherEvent = event === "meeting.ended" ? "meeting.started" : "meeting.ended";
+  const other = BODY.replace("meeting.started", otherEvent);
+  // Any Event listens for what its `events` param lists; a named trigger needs no param.
+  const listen = key === "any-event" ? event : undefined;
+  const run = (call: TriggerCall, token: string | null = SECRET) =>
+    ingest(trigger, call, token, listen);
+
+  test(`${key}: a signed ${event} delivery yields one run of that event; another event yields none`, async () => {
+    const out = evs(await run(signed(body))) as Array<{ event: string }>;
+    assertEquals(out.map((e) => e.event), [event]);
+    assertEquals(evs(await run(signed(other))), []);
   });
-  await assertRejects(async () => await ingest(meetingStarted, call));
-});
 
-test("handleIngest: a flipped byte in the body throws", async () => {
-  const ts = nowSec();
-  const call = delivery(BODY.replace("Weekly", "Weakly"), {
-    "x-zm-signature": sig(BODY, ts),
-    "x-zm-request-timestamp": String(ts),
+  test(`${key}: a flipped byte of the SIGNATURE (first, middle and last position) throws`, async () => {
+    const ts = nowSec();
+    const good = sig(body, ts);
+    assertEquals(good.length, 67);
+    for (const at of [3, 35, 66]) {
+      const call = delivery(body, {
+        "x-zm-signature": flipAt(good, at),
+        "x-zm-request-timestamp": String(ts),
+      });
+      await assertRejects(async () => await run(call), Error, undefined, `pos ${at}`);
+    }
+    // control: the unflipped signature is accepted
+    const ok = delivery(body, { "x-zm-signature": good, "x-zm-request-timestamp": String(ts) });
+    assertEquals(evs(await run(ok)).length, 1);
   });
-  await assertRejects(async () => await ingest(meetingStarted, call));
-});
 
-test("handleIngest: a signature made over re-serialised JSON, or with another timestamp, is refused", async () => {
-  const ts = nowSec();
-  const compact = JSON.stringify(JSON.parse(BODY));
-  await assertRejects(async () =>
-    await ingest(
-      meetingStarted,
-      delivery(BODY, { "x-zm-signature": sig(compact, ts), "x-zm-request-timestamp": String(ts) }),
-    )
-  );
-  await assertRejects(async () =>
-    await ingest(
-      meetingStarted,
-      delivery(BODY, { "x-zm-signature": sig(BODY, ts), "x-zm-request-timestamp": String(ts + 1) }),
-    )
-  );
-});
-
-test("handleIngest: a missing signature or timestamp header throws", async () => {
-  const ts = nowSec();
-  await assertRejects(async () => await ingest(meetingStarted, delivery(BODY, {})));
-  await assertRejects(async () =>
-    await ingest(meetingStarted, delivery(BODY, { "x-zm-request-timestamp": String(ts) }))
-  );
-  await assertRejects(async () =>
-    await ingest(meetingStarted, delivery(BODY, { "x-zm-signature": sig(BODY, ts) }))
-  );
-});
-
-test("handleIngest: an absent rawBody throws (never falls back to the parsed body)", async () => {
-  const call = signed();
-  delete call.rawBody;
-  await assertRejects(async () => await ingest(meetingStarted, call), Error, "raw body");
-});
-
-test("handleIngest: a stale or future timestamp throws even with a correct signature", async () => {
-  const now = nowSec();
-  for (const ts of [now - 305, now + 305]) {
-    await assertRejects(
-      async () => await ingest(meetingStarted, signed(BODY, ts)),
-      Error,
-      "tolerance",
+  test(`${key}: a flipped byte in the body, a re-serialised body or another timestamp throws`, async () => {
+    const ts = nowSec();
+    const h = { "x-zm-signature": sig(body, ts), "x-zm-request-timestamp": String(ts) };
+    await assertRejects(async () => await run(delivery(body.replace("Weekly", "Weakly"), h)));
+    const compact = JSON.stringify(JSON.parse(body));
+    assertEquals(compact !== body, true);
+    await assertRejects(async () =>
+      await run(
+        delivery(body, {
+          "x-zm-signature": sig(compact, ts),
+          "x-zm-request-timestamp": String(ts),
+        }),
+      )
     );
-  }
-  assertEquals(evs(await ingest(meetingStarted, signed(BODY, now - 200))).length, 1);
-});
-
-test("handleIngest: an unset or empty Secret Token refuses before any compare", async () => {
-  for (const token of [null, ""]) {
-    await assertRejects(
-      async () => await ingest(meetingStarted, delivery(BODY, {}), token),
-      Error,
-      "secret",
+    await assertRejects(async () =>
+      await run(delivery(body, { ...h, "x-zm-request-timestamp": String(ts + 1) }))
     );
-    await assertRejects(
-      async () =>
-        await ingest(
-          meetingStarted,
-          delivery(BODY, { "x-zm-signature": "v0=", "x-zm-request-timestamp": "1" }),
-          token,
-        ),
-      Error,
-      "secret",
+  });
+
+  test(`${key}: a missing signature or timestamp header throws`, async () => {
+    const ts = nowSec();
+    await assertRejects(async () => await run(delivery(body, {})));
+    await assertRejects(async () =>
+      await run(delivery(body, { "x-zm-request-timestamp": String(ts) }))
     );
-  }
-});
+    await assertRejects(async () => await run(delivery(body, { "x-zm-signature": sig(body, ts) })));
+  });
 
-test("handleIngest: a non-POST delivery throws", async () => {
-  const ts = nowSec();
-  const call = delivery(
-    BODY,
-    { "x-zm-signature": sig(BODY, ts), "x-zm-request-timestamp": String(ts) },
-    "PUT",
-  );
-  await assertRejects(async () => await ingest(meetingStarted, call));
-});
+  test(`${key}: an absent rawBody throws (never falls back to the parsed body)`, async () => {
+    const call = signed(body);
+    delete call.rawBody;
+    await assertRejects(async () => await run(call), Error, "raw body");
+  });
 
-test("handleIngest: a named trigger ignores other events; it does not even need its own body shape", async () => {
-  const other = BODY.replace("meeting.started", "meeting.ended");
-  assertEquals(evs(await ingest(meetingStarted, signed(other))), []);
-});
+  test(`${key}: a stale or future timestamp throws even with a correct signature`, async () => {
+    const now = nowSec();
+    for (const ts of [now - 305, now + 305]) {
+      await assertRejects(async () => await run(signed(body, ts)), Error, "tolerance");
+    }
+    assertEquals(evs(await run(signed(body, now - 200))).length, 1);
+  });
+
+  test(`${key}: an unset or empty Secret Token refuses before any compare`, async () => {
+    for (const token of [null, ""]) {
+      await assertRejects(async () => await run(delivery(body, {}), token), Error, "secret");
+      await assertRejects(
+        async () =>
+          await run(
+            delivery(body, { "x-zm-signature": "v0=", "x-zm-request-timestamp": "1" }),
+            token,
+          ),
+        Error,
+        "secret",
+      );
+    }
+  });
+
+  test(`${key}: a non-POST delivery throws`, async () => {
+    const ts = nowSec();
+    for (const method of ["PUT", "GET"]) {
+      const call = delivery(
+        body,
+        { "x-zm-signature": sig(body, ts), "x-zm-request-timestamp": String(ts) },
+        method,
+      );
+      await assertRejects(async () => await run(call), Error, undefined, method);
+    }
+  });
+  test(`${key}: a signed endpoint.url_validation challenge is answered; an unsigned one is refused`, async () => {
+    const r = await run(signed(CHALLENGE)) as { events: unknown[]; response: { body?: string } };
+    assertEquals(r.events, []);
+    const expected = createHmac("sha256", SECRET).update("qgg8vlvZRS6UYooatFL8Aw").digest("hex");
+    assertEquals(JSON.parse(r.response.body!).encryptedToken, expected);
+    await assertRejects(async () => await run(delivery(CHALLENGE, {})));
+  });
+}
 
 test("recording-completed drops the 24-hour download token", async () => {
   const body =
@@ -246,9 +296,6 @@ test("any-event: the events filter keeps only the listed events; empty keeps all
 });
 
 // ------------------------------------------------------------------ URL validation
-
-const CHALLENGE =
-  `{ "payload": { "plainToken": "qgg8vlvZRS6UYooatFL8Aw" }, "event_ts": 1654503849680, "event": "endpoint.url_validation" }`;
 
 test("url validation: a signed challenge is answered with the plain and the HMAC'd token, no event", async () => {
   const r = await ingest(meetingStarted, signed(CHALLENGE)) as {

@@ -1,6 +1,6 @@
 # Zoom
 
-- **Triggers** — 20 (16 webhook, 4 poll)
+- **Triggers** — 22 (18 webhook, 4 poll)
 
 ## Triggers
 
@@ -21,6 +21,8 @@
 | `user-updated` | User Updated | webhook (manual) | `user.updated` | the event's object |
 | `user-deleted` | User Deleted | webhook (manual) | `user.deleted` | the event's object |
 | `recording-completed` | Recording Completed | webhook (manual) | `recording.completed` | the event's object |
+| `recording-deleted` | Recording Deleted | webhook (manual) | `recording.deleted` | the event's object |
+| `recording-trashed` | Recording Trashed | webhook (manual) | `recording.trashed` | the event's object |
 | `any-event` | Any Event | webhook (manual) | the event names in the `events` param (empty = every event the app is subscribed to) | the event and its object |
 | `new-recording` | New Cloud Recording | poll | `recording-get-many` over a `from`/`to` date window | each meeting with a cloud recording |
 | `new-meeting` | New Meeting | poll (snapshot) | `meeting-get-many`, `type=scheduled` | each meeting newly on the user's list |
@@ -38,7 +40,7 @@
 
 **Polls.** The snapshot polls read the whole list (300 a page, at most 16 pages) and compare it check to check. Zoom's meeting and webinar lists only return unexpired items, so they stay bounded; a list longer than the pages read is refused rather than compared partly. `new-recording` reads from `from`/`to` (`yyyy-mm-dd` UTC, "The maximum range can be a month") and pages with `next_page_token` (valid 15 minutes). Each check reads from the day of the last drain, minus a 2 minute overlap, to tomorrow's date (Zoom does not say whether `to` is inclusive; its own default window is today to tomorrow); a window of more than three pages is resumed with the page token (a token Zoom rejects restarts the window, and ids are de-duplicated). A meeting that started before the trigger was first checked is never emitted. Pick the user with the `userId` trigger param (default `me`).
 
-**Not covered.** Nothing: every list action is behind a trigger. Participant, chat, sharing, summary and phone-callout events (about 100 of Zoom's) are reachable through **Any Event**.
+**Not covered.** Every list action is behind a trigger except `meeting-get-registrants`, a per-meeting list with no poll: new registrations are delivered by the `meeting-registration-created` webhook instead. Participant, chat, sharing, summary and phone-callout events (about 100 of Zoom's) are reachable through **Any Event**.
 
 Vendor documentation (verified 2026-11-10): [Webhooks](https://developers.zoom.us/docs/api/webhooks/), [Meeting, webinar and recording events](https://developers.zoom.us/docs/api/meetings/events/), [User events](https://developers.zoom.us/docs/api/users/events/), [Meetings API](https://developers.zoom.us/docs/api/meetings/), [Users API](https://developers.zoom.us/docs/api/users/).
 

@@ -63,6 +63,8 @@ import userCreated from "./triggers/user-created.ts";
 import userUpdated from "./triggers/user-updated.ts";
 import userDeleted from "./triggers/user-deleted.ts";
 import recordingCompleted from "./triggers/recording-completed.ts";
+import recordingDeleted from "./triggers/recording-deleted.ts";
+import recordingTrashed from "./triggers/recording-trashed.ts";
 import anyEvent from "./triggers/any-event.ts";
 import newMeeting from "./triggers/new-meeting.ts";
 import newWebinar from "./triggers/new-webinar.ts";
@@ -109,6 +111,8 @@ export default {
     userUpdated,
     userDeleted,
     recordingCompleted,
+    recordingDeleted,
+    recordingTrashed,
     anyEvent,
     newMeeting,
     newWebinar,
