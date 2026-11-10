@@ -142,6 +142,13 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newComment from "./triggers/new-comment.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newGroup from "./triggers/new-group.ts";
+import newThread from "./triggers/new-thread.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
+import newWorkspaceUser from "./triggers/new-workspace-user.ts";
 
 export default {
   actions: [
@@ -277,5 +284,14 @@ export default {
   // single-user workflows.
   auth: [oauth2, apiToken],
   healthChecks: [service, api, quota],
-  triggers: [newMessage],
+  triggers: [
+    newMessage,
+    newChannel,
+    newComment,
+    newConversation,
+    newGroup,
+    newThread,
+    newWorkspace,
+    newWorkspaceUser,
+  ],
 } satisfies AppDefinition;

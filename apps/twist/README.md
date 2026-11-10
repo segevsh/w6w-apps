@@ -7,7 +7,7 @@ workspace users only).
 - **Categories** — communication, productivity
 - **Auth methods** — oauth2, api-token (bearer test token)
 - **Actions** — 111
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:oauth2` and `auth:api-token`
 - **Egress allowlist** — `api.twist.com` (the `service` check adds `status.twist.io` to its own hook
   allowlist, never to the app's)
@@ -87,5 +87,15 @@ does it, and the two actions here are thin wrappers around that.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `message-list` | Each new message in the conversation you choose |
+| `new-channel` — New Channel | Poll | `channel-list` | Each new channel in the workspace you choose |
+| `new-comment` — New Comment | Poll | `comment-list` | Each new comment in the thread you choose |
+| `new-conversation` — New Conversation | Poll | `conversation-list` | Each new conversation in the workspace you choose |
+| `new-group` — New Group | Poll | `group-list` | Each new group in the workspace you choose |
+| `new-thread` — New Thread | Poll | `thread-list` | Each new thread in the channel you choose |
+| `new-workspace` — New Workspace | Poll | `workspace-list` | Each workspace newly visible to the current user |
+| `new-workspace-user` — New Workspace User | Poll | `workspace-user-list` | Each user newly added to the workspace you choose |
 
-Polled newest-first through the `message-list` action (`order_by=desc`, for the conversation you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Twist API v3](https://developer.twist.com/v3/) (verified 2026-11-09).
+Polled through the listed action using the app's own connection; newest-first record feeds request
+`order_by=desc`, while bounded workspace collections retain their ids in the poll state. The first
+check records what exists without firing, and later checks emit only unseen items. Nothing to set up
+on the vendor side. Source: [Twist API v3](https://developer.twist.com/v3/) (verified 2026-11-10).
