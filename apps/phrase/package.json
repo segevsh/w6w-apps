@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/phrase",
-  "version": "0.2.0",
-  "description": "Manage Phrase Strings localization projects: locales, keys, translations, file uploads and downloads, and jobs. Includes poll triggers for new and updated jobs.",
+  "version": "0.3.0",
+  "description": "Manage Phrase Strings localization projects: locales, keys, translations, file uploads and downloads, and jobs. Includes poll triggers for new and updated jobs, keys, translations and projects, and for new accounts, locales and tags.",
   "license": "MIT",
   "author": {
     "name": "w6w"
