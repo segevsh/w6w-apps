@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -272,12 +272,10 @@ depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-p
 | apps/acuityscheduling | 3 | 5 | 5 |
 | apps/airbyte | 0 | 5 | 5 |
 | apps/algolia | 1 | 6 | 5 |
-| apps/asana | 2 | 5 | 5 |
 | apps/base44 | 1 | 6 | 5 |
 | apps/buffer | 1 | 6 | 5 |
 | apps/clickhouse | 1 | 6 | 5 |
 | apps/clicksend | 1 | 6 | 5 |
-| apps/clickup | 4 | 5 | 5 |
 | apps/clientify | 4 | 7 | 5 |
 | apps/cloudbeds | 2 | 6 | 5 |
 | apps/digitalocean | 1 | 6 | 5 |
@@ -494,7 +492,6 @@ depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-p
 | apps/zoom | 1 | 4 | 3 |
 | apps/adyen | 4 | 2 | 2 |
 | apps/anthropic | 1 | 3 | 2 |
-| apps/atlassian/trello | 4 | 2 | 2 |
 | apps/baserow | 1 | 3 | 2 |
 | apps/beehiiv | 1 | 3 | 2 |
 | apps/beeminder | 1 | 3 | 2 |
@@ -639,8 +636,11 @@ depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-p
 | apps/zoho/zoho-sign | 1 | 2 | 1 |
 | apps/accelo | 4 | 0 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
+| apps/asana | 9 | 5 | 0 |
+| apps/atlassian/trello | 21 | 2 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bubble | 2 | 1 | 0 |
+| apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
 | apps/dice | 3 | 0 | 0 |
@@ -691,15 +691,15 @@ depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-p
 | apps/activecampaign | 1 | new-contact | apps/activecampaign/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/acuityscheduling | 3 | appointment-canceled, appointment-rescheduled, appointment-scheduled | apps/acuityscheduling/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/affinity | 1 | new-list-entry | apps/affinity/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/asana | 2 | new-task, task-updated | apps/asana/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/asana | 9 | any-event, new-comment, new-project, new-task, new-user, project-deleted, project-updated, task-deleted, task-updated | apps/asana/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/bitbucket | 7 | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/atlassian/trello | 4 | card-created, card-moved, card-updated, comment-added | apps/atlassian/trello/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/atlassian/trello | 21 | any-event, board-member-added, board-updated, card-created, card-deleted, card-member-added, card-moved, card-updated, check-item-created, check-item-state-updated, checklist-added, comment-added, comment-updated, label-added-to-card, label-created, label-deleted, label-removed-from-card, label-updated, list-created, list-updated, new-card-in-list | apps/atlassian/trello/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/box | 2 | activity, file-uploaded | apps/box/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brevo | 1 | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brex | 1 | event | apps/brex/README.md Triggers section (verified 2026-11-10) | hand | POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param |
 | apps/cal | 3 | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/calendly | 2 | invitee-canceled, invitee-created | apps/calendly/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/clickup | 4 | task-comment-posted, task-created, task-deleted, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/clickup | 20 | any-event, folder-created, folder-deleted, folder-updated, list-created, list-deleted, list-updated, task-assignee-updated, task-comment-posted, task-comment-updated, task-created, task-deleted, task-due-date-updated, task-moved, task-priority-updated, task-status-updated, task-tag-updated, task-time-estimate-updated, task-time-tracked-updated, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | 6 | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
 | apps/copper | 7 | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
