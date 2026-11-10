@@ -5674,9 +5674,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list is a caller-filtered POST /contact/list with cursor paging and no documented created/updated sort; a built-in created-timestamp filter via isTimestampBetween is unverified (vendor reference is a JavaScript shell)",
+    "verified": "apps/respondio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/retellai",
@@ -5692,12 +5692,15 @@
   },
   {
     "path": "apps/ringcentral",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-call-log-record",
+      "new-message"
+    ],
+    "pollAction": "call-log-list",
+    "reason": "call-log-list and message-store-list document a dateFrom filter (RingCentral OpenAPI); polled as since-filter with page resume and id dedupe; a webhook (Validation-Token handshake) is also available and queued as an upgrade",
+    "verified": "apps/ringcentral/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ringover",
@@ -5736,12 +5739,14 @@
   },
   {
     "path": "apps/rocketreach",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "lookup.completed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: asynchronous person-lookup completion; search endpoints return RocketReach's enrichment corpus, lookup-status is a per-id check, not a list",
+    "verified": "apps/rocketreach/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/rootly",
@@ -5759,9 +5764,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-avatars is cursor-paged (limit max 100) with no documented order, since filter or total cap; routers, voices and workflows list likewise without a documented cursor/filter (https://docs.dev.runwayml.com/api)",
+    "verified": "apps/runway/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/salesforce",
@@ -5787,12 +5792,15 @@
   },
   {
     "path": "apps/salesmate",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact"
+    ],
+    "pollAction": "contact-search",
+    "reason": "contact search supports documented createdAt and lastModifiedAt descending sort (the contact.-prefixed field names are unverified without a live request)",
+    "verified": "apps/salesmate/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/salesmsg",
@@ -5830,21 +5838,27 @@
   },
   {
     "path": "apps/sanity",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "document mutation"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: document create/update/delete; document-query is caller-supplied GROQ, dataset-list/project-list are small config lists with no row cap stated in the cited reference",
+    "verified": "apps/sanity/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/savvycal",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "event.created",
+      "event.rescheduled",
+      "event.canceled"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap",
+    "verified": "apps/savvycal/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/scoreapp",
@@ -5881,21 +5895,24 @@
   },
   {
     "path": "apps/sellsy",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-company",
+      "new-or-updated-company"
+    ],
+    "pollAction": "company-search",
+    "reason": "company search supports created_at and updated_at descending sort",
+    "verified": "apps/sellsy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/semrush",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "backlink, keyword, and domain endpoints are analytics/report queries, not account-owned changing records",
+    "verified": "apps/semrush/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sendblue",
@@ -5948,9 +5965,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "brand-list and list-list are installation configuration reads (list-list needs a brand id per call) with no created/updated field or since filter documented",
+    "verified": "apps/sendy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sentry",
@@ -5976,21 +5993,27 @@
   },
   {
     "path": "apps/servicenow",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-table-record",
+      "new-or-updated-table-record"
+    ],
+    "pollAction": "table-record-get-many",
+    "reason": "Table API sys_created_on/sys_updated_on >= encoded query with ORDERBY and sysparm_offset paging, polled as a since-filter with offset resume and floor (vendor page is a JavaScript shell: ORDERBY syntax unverified)",
+    "verified": "apps/servicenow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/servicetitan",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer",
+      "new-or-updated-customer"
+    ],
+    "pollAction": "customer-list",
+    "reason": "customer-list createdOnOrAfter/modifiedOnOrAfter, polled as a since-filter with page resume and floor (vendor page is a JavaScript shell: filters unverified on 2026-11-09)",
+    "verified": "apps/servicetitan/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/seven",
@@ -6016,12 +6039,14 @@
   },
   {
     "path": "apps/shippo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-shipment"
+    ],
+    "pollAction": "shipment-list",
+    "reason": "shipment-list takes object_created_gte (documented, https://docs.goshippo.com/api-reference/shipments/list-all-shipments); no documented list order and no updated-since filter, so only new-shipment ships (since-filter with page resume and floor)",
+    "verified": "apps/shippo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/shipstation",
@@ -6067,39 +6092,48 @@
   },
   {
     "path": "apps/shortcut",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-story",
+      "new-or-updated-story"
+    ],
+    "pollAction": "story-search",
+    "reason": "POST /stories/search documents created_at_start and updated_at_start (https://developer.shortcut.com/api/rest/v3); polled as since-filter with oldest-first sort, floor and resume; a Payload-Signature webhook is also available and queued as an upgrade",
+    "verified": "apps/shortcut/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sierrainteractive",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "lead-find is an individual lookup and remaining lists are reference data, with no documented lead change feed",
+    "verified": "apps/sierrainteractive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/signnow",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "document.create",
+      "document.update",
+      "document.complete"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot",
+    "verified": "apps/signnow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/signrequest",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-document"
+    ],
+    "pollAction": "document-search",
+    "reason": "documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used",
+    "verified": "apps/signrequest/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/signwell",

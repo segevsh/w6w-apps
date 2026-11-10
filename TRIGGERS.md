@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 70, manual-webhook: 19, poll: 456, none: 138
+**Totals:** 683 apps — webhook-api: 74, manual-webhook: 19, poll: 464, none: 126
 
-## webhook-api (70)
+## webhook-api (74)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -74,7 +74,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/posthog | event | apps/posthog/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event delivery; existing offset lists lack documented order |
 | apps/qualtrics | event subscription | apps/qualtrics/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Qualtrics event subscriptions; existing lists have no safe creation order |
 | apps/rendex | watch.changed, watch.recovered, watch.error | apps/rendex/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Rendex Watch changed, recovered and error events |
+| apps/rocketreach | lookup.completed | apps/rocketreach/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: asynchronous person-lookup completion; search endpoints return RocketReach's enrichment corpus, lookup-status is a per-id check, not a list |
+| apps/sanity | document mutation | apps/sanity/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document create/update/delete; document-query is caller-supplied GROQ, dataset-list/project-list are small config lists with no row cap stated in the cited reference |
+| apps/savvycal | event.created, event.rescheduled, event.canceled | apps/savvycal/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap |
 | apps/shopify | customer-created, event, order-cancelled, order-created, order-fulfilled, order-paid, order-updated, product-created, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/signnow | document.create, document.update, document.complete | apps/signnow/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot |
 | apps/stripe | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/surveymonkey | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -109,7 +113,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (456)
+## poll (464)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -473,28 +477,36 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/replyio | sequence-contact-list | new-contact, new-sequence-contact | apps/replyio/README.md Triggers section (verified 2026-11-09) | hand | new-sequence-contact: sequence-contact-list sort_by=addingDate desc; new-contact: contact-filter sortBy=addedOn desc (https://docs.reply.io/api-reference/bundled.yaml); contact-list (GET /v3/contacts) has no sort or since filter and is not used |
 | apps/resend | email-list | new-email | apps/resend/README.md Triggers section (verified 2026-11-09) | hand | GET /emails is documented newest first |
 | apps/retellai | list-agents | new-agent, new-or-updated-agent | apps/retellai/README.md Triggers section (verified 2026-11-09) | hand | list-agents sort_order=descending (default); sort field unnamed by the vendor, creation order unproven (https://docs.retellai.com/api-references/list-agents) |
+| apps/ringcentral | call-log-list | new-call-log-record, new-message | apps/ringcentral/README.md Triggers section (verified 2026-11-09) | hand | call-log-list and message-store-list document a dateFrom filter (RingCentral OpenAPI); polled as since-filter with page resume and id dedupe; a webhook (Validation-Token handshake) is also available and queued as an upgrade |
 | apps/ringover | call-list | new-call | apps/ringover/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
 | apps/rippling | user-list | new-user, new-or-updated-user | apps/rippling/README.md Triggers section (verified 2026-11-09) | hand | user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users) |
 | apps/rocketchat | list-users | new-user, new-or-updated-user | apps/rocketchat/README.md Triggers section (verified 2026-11-09) | hand | list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list) |
 | apps/rootly | incident-list | new-incident | apps/rootly/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
 | apps/salesforce | query | new-record | apps/salesforce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action query |
 | apps/salesloft | person-list | new-person | apps/salesloft/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action person-list |
+| apps/salesmate | contact-search | new-contact, new-or-updated-contact | apps/salesmate/README.md Triggers section (verified 2026-11-09) | hand | contact search supports documented createdAt and lastModifiedAt descending sort (the contact.-prefixed field names are unverified without a live request) |
 | apps/salesmsg | contact-list | new-contact | apps/salesmsg/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/salla | order-list | new-order, new-or-updated-order | apps/salla/README.md Triggers section (verified 2026-11-09) | hand | order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md) |
 | apps/samcart | order-list | new-order | apps/samcart/README.md Triggers section (verified 2026-11-09) | hand | order-list created_at_min since-filter with overlap and offset resume (https://developer.samcart.com/specs/openapi.yaml) |
 | apps/scoreapp | result-list | new-result | apps/scoreapp/README.md Triggers section (verified 2026-11-09) | hand | result-list order_by=created_at order_dir=desc (https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started) |
 | apps/seamlessai | task-list | new-task | apps/seamlessai/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action task-list |
 | apps/seatable | row-list | new-row | apps/seatable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
+| apps/sellsy | company-search | new-company, new-or-updated-company | apps/sellsy/README.md Triggers section (verified 2026-11-09) | hand | company search supports created_at and updated_at descending sort |
 | apps/sendblue | message-list | new-message | apps/sendblue/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action message-list |
 | apps/sender | subscriber-list | new-subscriber, new-or-updated-subscriber | apps/sender/README.md Triggers section (verified 2026-11-09) | hand | subscriber-list order=created / modified direction=desc (https://api.sender.net/pagination/); key names unproven |
 | apps/sendfox | contact-list | new-contact | apps/sendfox/README.md Triggers section (verified 2026-11-09) | hand | contact-list filter[created_after] since-filter with overlap and page resume (https://sendfox.com/openapi.yaml) |
 | apps/sendpulse | pipelines-list | new-pipeline, new-mailing-list | apps/sendpulse/README.md Triggers section (verified 2026-11-09) | hand | snapshot triggers on pipelines-list (unpaged, tariff-bounded) and mailing-lists-list (https://api.sendpulse.com/.well-known/openapi/crm.yaml); deals-list and campaigns-list do not fit |
 | apps/sentry | issue-list | new-issue | apps/sentry/README.md Triggers section (verified 2026-11-09) | hand | issue-list sort=new (https://docs.sentry.io/api/events/list-an-organizations-issues/) |
 | apps/servicem8 | category-list | new-category-list | no | scan | list action category-list has pagination and order/since params |
+| apps/servicenow | table-record-get-many | new-table-record, new-or-updated-table-record | apps/servicenow/README.md Triggers section (verified 2026-11-09) | hand | Table API sys_created_on/sys_updated_on >= encoded query with ORDERBY and sysparm_offset paging, polled as a since-filter with offset resume and floor (vendor page is a JavaScript shell: ORDERBY syntax unverified) |
+| apps/servicetitan | customer-list | new-customer, new-or-updated-customer | apps/servicetitan/README.md Triggers section (verified 2026-11-09) | hand | customer-list createdOnOrAfter/modifiedOnOrAfter, polled as a since-filter with page resume and floor (vendor page is a JavaScript shell: filters unverified on 2026-11-09) |
 | apps/seven | contact-list | new-contact | apps/seven/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/sharetribe | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/shippo | shipment-list | new-shipment | apps/shippo/README.md Triggers section (verified 2026-11-09) | hand | shipment-list takes object_created_gte (documented, https://docs.goshippo.com/api-reference/shipments/list-all-shipments); no documented list order and no updated-since filter, so only new-shipment ships (since-filter with page resume and floor) |
 | apps/shipstation | shipment-list | new-shipment-list | no | scan | list action shipment-list has pagination and order/since params |
 | apps/short-io | link-list | new-link-list | no | scan | list action link-list has pagination and order/since params |
+| apps/shortcut | story-search | new-story, new-or-updated-story | apps/shortcut/README.md Triggers section (verified 2026-11-09) | hand | POST /stories/search documents created_at_start and updated_at_start (https://developer.shortcut.com/api/rest/v3); polled as since-filter with oldest-first sort, floor and resume; a Payload-Signature webhook is also available and queued as an upgrade |
+| apps/signrequest | document-search | new-document | apps/signrequest/README.md Triggers section (verified 2026-11-09) | hand | documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used |
 | apps/simplero | purchase-list | new-purchase-list | no | scan | list action purchase-list has pagination and order/since params |
 | apps/simpletexting | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/slite | km-note-list | new-km-note-list | no | scan | list action km-note-list has pagination and order/since params |
@@ -570,7 +582,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (138)
+## none (126)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -643,23 +655,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/quickchart |  | apps/quickchart/README.md Triggers section (verified 2026-11-09) | hand | stateless chart, QR, barcode and image rendering API has no account record lists |
 | apps/recruit-crm |  | apps/recruit-crm/README.md Triggers section (verified 2026-11-09) | hand | none: GET /v1/jobs sort_by/sort_order undocumented values and no created/updated-since filter (https://api.recruitcrm.io/docs) |
 | apps/recruiterflow |  | apps/recruiterflow/README.md Triggers section (verified 2026-11-09) | hand | candidate, client, job and deal lists paginate by page number with no documented newest-first order or since filter |
-| apps/respondio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/ringcentral |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/rocketreach |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/runway |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/salesmate |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/sanity |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/savvycal |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/sellsy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/semrush |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/sendy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/servicenow |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/servicetitan |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/shippo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/shortcut |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/sierrainteractive |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/signnow |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/signrequest |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/respondio |  | apps/respondio/README.md Triggers section (verified 2026-11-09) | hand | contact-list is a caller-filtered POST /contact/list with cursor paging and no documented created/updated sort; a built-in created-timestamp filter via isTimestampBetween is unverified (vendor reference is a JavaScript shell) |
+| apps/runway |  | apps/runway/README.md Triggers section (verified 2026-11-09) | hand | list-avatars is cursor-paged (limit max 100) with no documented order, since filter or total cap; routers, voices and workflows list likewise without a documented cursor/filter (https://docs.dev.runwayml.com/api) |
+| apps/semrush |  | apps/semrush/README.md Triggers section (verified 2026-11-09) | hand | backlink, keyword, and domain endpoints are analytics/report queries, not account-owned changing records |
+| apps/sendy |  | apps/sendy/README.md Triggers section (verified 2026-11-09) | hand | brand-list and list-list are installation configuration reads (list-list needs a brand id per call) with no created/updated field or since filter documented |
+| apps/sierrainteractive |  | apps/sierrainteractive/README.md Triggers section (verified 2026-11-09) | hand | lead-find is an individual lookup and remaining lists are reference data, with no documented lead change feed |
 | apps/signwell |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/simplybook |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/skyvern |  | no | scan | no newest-first list action found by scan; vendor events not researched |
