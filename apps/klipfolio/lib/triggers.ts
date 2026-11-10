@@ -6,7 +6,7 @@ const PAGE = 100;
 const MAX_PAGES = 50;
 
 interface ListResult {
-  items?: Array<{ id?: string | number }>;
+  items?: Array<{ id?: string | number } | string>;
   total?: number;
 }
 
@@ -49,7 +49,9 @@ export function newRecordTrigger(spec: {
           ctx,
         ) as ListResult;
         const items = res.items ?? [];
-        for (const item of items) {
+        for (const raw of items) {
+          // Some per-parent lists (a Klip's client instances) are bare id strings.
+          const item = typeof raw === "string" ? { id: raw } : raw;
           if (item.id !== undefined) rows.push({ key: String(item.id), values: item });
         }
         offset += items.length;

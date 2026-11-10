@@ -127,6 +127,33 @@ test("new-or-updated-workflow: an edit of an old workflow is a new event", async
   assertEquals(out.events, [edited]);
 });
 
+test("new-or-updated-workflow: a workflow emitted after the seed is emitted again when edited again", async () => {
+  clock.now = () => T0;
+  const seeded = await newOrUpdatedWorkflow.poll!(
+    { ...sub, state: {} },
+    mockCtx([{ body: page([]) }]).ctx,
+  );
+  clock.now = () => T0 + 300_000;
+  const first = { id: "w1", lastUpdated: AFTER };
+  const c1 = await newOrUpdatedWorkflow.poll!(
+    { ...sub, state: seeded.nextState },
+    mockCtx([{ body: page([first]) }]).ctx,
+  );
+  assertEquals(c1.events, [first]);
+  clock.now = () => T0 + 600_000;
+  const again = { id: "w1", lastUpdated: "2026-11-10T12:08:00Z" };
+  const c2 = await newOrUpdatedWorkflow.poll!(
+    { ...sub, state: c1.nextState },
+    mockCtx([{ body: page([again, first]) }]).ctx,
+  );
+  assertEquals(c2.events, [again]);
+  const c3 = await newOrUpdatedWorkflow.poll!(
+    { ...sub, state: c2.nextState },
+    mockCtx([{ body: page([again, first]) }]).ctx,
+  );
+  assertEquals(c3.events, []);
+});
+
 test("new-workflow: an edit of an old workflow is not a new event", async () => {
   clock.now = () => T0;
   const old = { id: "w1", created: BEFORE, lastUpdated: BEFORE };

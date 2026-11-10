@@ -31,17 +31,21 @@ const cases = [
   {
     trigger: newKlipClientInstance,
     params: { klip_id: "k1" },
-    envKey: "client_instances",
+    envKey: "klips",
     url: `${BASE}/klips/k1/client-instances`,
+    bare: true,
   },
 ];
 
-for (const { trigger, params, envKey, url } of cases) {
+for (const { trigger, params, envKey, url, bare } of cases) {
   const input = { params, subscriptionId: "sub-1" };
+  // The vendor returns a Klip's client instances as bare id strings, not objects.
   const rec = (id: string) => ({ id, name: `Record ${id}` });
+  const row = (id: string) => bare ? id : rec(id);
+  const values = (id: string) => bare ? { id } : rec(id);
   const page = (...ids: string[]) => ({
     body: {
-      data: { [envKey]: ids.map(rec) },
+      data: { [envKey]: ids.map(row) },
       meta: { success: true, count: ids.length, total: ids.length },
     },
   });
@@ -57,7 +61,7 @@ for (const { trigger, params, envKey, url } of cases) {
     const run = () =>
       trigger.poll!({ ...input, state: seeded.nextState }, mockCtx([page("a", "b")]).ctx);
     const first = await run();
-    assertEquals(first.events, [{ change: "added", key: "b", values: rec("b") }]);
+    assertEquals(first.events, [{ change: "added", key: "b", values: values("b") }]);
     assertEquals(await run(), first);
   });
 }
