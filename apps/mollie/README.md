@@ -8,6 +8,7 @@ Subscriptions billed against a saved Mandate.
 - **Auth methods** — bearer (API Key — also accepts an Advanced Access Token or a hand-obtained
   OAuth access token, all three presented the same way)
 - **Actions** — 41
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 live probes (`service`, `quota`) + the derived `auth:bearer`
 - **Egress allowlist** — `api.mollie.com` (the `service` check adds `status.mollie.com` to its own
   hook allowlist, never to the app's)
@@ -16,7 +17,7 @@ Subscriptions billed against a saved Mandate.
 - **Status page** — https://status.mollie.com
 
 > **Everything below was verified against Mollie's own sources on 2026-09-01** — the OpenAPI 3.1
-> documents `docs.mollie.com` (ReadMe.io) embeds per doc *category* (fetched and read in full: 44
+> documents `docs.mollie.com` (ReadMe.io) embeds per doc _category_ (fetched and read in full: 44
 > operations under "Accepting payments", 18 under "Recurring", plus "Mollie Connect"), the prose
 > guide pages fetched alongside them (authentication, pagination, error handling, rate limiting),
 > and live probes against `api.mollie.com` and `status.mollie.com`. Nothing here came from a
@@ -33,10 +34,10 @@ STRING value:
 { "currency": "EUR", "value": "10.00" }
 ```
 
-There is no smallest-currency-sub-unit integer anywhere in this API — `value` carries the
-currency's natural number of decimal places as a string. A naive `Math.round(amount * 100)`
-integer-cents conversion, the instinct anyone coming from Stripe/Razorpay will have, is the wrong
-*shape*, not just wrong by a factor of 100. See `lib/client.ts` and `lib/params.ts`'s
+There is no smallest-currency-sub-unit integer anywhere in this API — `value` carries the currency's
+natural number of decimal places as a string. A naive `Math.round(amount * 100)` integer-cents
+conversion, the instinct anyone coming from Stripe/Razorpay will have, is the wrong _shape_, not
+just wrong by a factor of 100. See `lib/client.ts` and `lib/params.ts`'s
 `amountParams`/`amountFrom`.
 
 ### 2. The docs promise `401` for a bad credential; live traffic answers `400`
@@ -50,14 +51,14 @@ HTTP/1.1 401 Unauthorized
 
 Measured live on 2026-09-01 against `api.mollie.com/v2/profiles/me`, **every** credential problem
 this app could provoke from the outside — no `Authorization` header at all, a header with no
-`Bearer ` prefix, a syntactically-plausible-but-wrong `live_`/`test_` key — answered instead:
+`Bearer` prefix, a syntactically-plausible-but-wrong `live_`/`test_` key — answered instead:
 
 ```
 HTTP/1.1 400 Bad Request
 {"status": 400, "title": "Bad Request", "detail": "Invalid Authorization header"}
 ```
 
-A gateway in front of the API appears to reject the header's *shape* before authentication logic
+A gateway in front of the API appears to reject the header's _shape_ before authentication logic
 ever runs, for every case this app could reach without a real credential. `auth/bearer.ts`'s `test`
 hook classifies by the response body's `title`/`detail` — a `400` with that exact `detail` is "no
 usable credential reached the request", a `401` is "the request was rejected" — never by assuming a
@@ -67,100 +68,101 @@ fixed status code means one specific thing. See its module doc for the full writ
 
 A **Payment**'s shareable customer-facing URL is `_links.checkout.href`. A **Payment Link**'s is
 `_links.paymentLink.href`. Neither is `_links.self.href` — that key is always the API resource URL
-itself (what you'd `GET` to refetch the object), never a page a customer can open. Verified
-directly against each resource's own OpenAPI schema (`oas_accepting-payments.json`'s
-`/payments` and `/payment-links` response bodies) rather than assumed from one resource's shape.
+itself (what you'd `GET` to refetch the object), never a page a customer can open. Verified directly
+against each resource's own OpenAPI schema (`oas_accepting-payments.json`'s `/payments` and
+`/payment-links` response bodies) rather than assumed from one resource's shape.
 
 ## Orders API: deprecated by Mollie itself — not implemented
 
 The task that started this app explicitly named **Orders** as a reference-nav section to check.
 Mollie's own sidebar data marks every `orders-api` operation (`create-order`, `list-orders`,
 `get-order`, `update-order-line`, …) `"deprecated": true`, under a doc category named "Receiving
-orders" alongside a separate, equally deprecated "Shipments API". Mollie's stated replacement is
-the Payments API's own `lines` field — order lines attached directly to a payment, which is why
-this app's `payment-create`/`customer-payment-create` actions accept `lines` is intentionally
-**not** wired up either (see "Deliberately out of scope" below) since a workflow accepting a
-payment does not need per-line-item detail unless it uses a line-item-requiring method
+orders" alongside a separate, equally deprecated "Shipments API". Mollie's stated replacement is the
+Payments API's own `lines` field — order lines attached directly to a payment, which is why this
+app's `payment-create`/`customer-payment-create` actions accept `lines` is intentionally **not**
+wired up either (see "Deliberately out of scope" below) since a workflow accepting a payment does
+not need per-line-item detail unless it uses a line-item-requiring method
 (`billie`/`in3`/`klarna`/`riverty`/`voucher`), which is itself an advanced case this first pass
 leaves for later. The Orders API itself is not built at all — building a deprecated API into a new
 app would ship dead weight from day one.
 
 ## Auth
 
-One method: `bearer`, type `bearer` — `Authorization: Bearer <token>`. Verified against the
-security scheme embedded in `docs.mollie.com`'s OpenAPI documents (`{"type": "http", "scheme":
-"bearer"}`) and the `overview/authentication` guide page.
+One method: `bearer`, type `bearer` — `Authorization: Bearer <token>`. Verified against the security
+scheme embedded in `docs.mollie.com`'s OpenAPI documents (`{"type": "http", "scheme":
+"bearer"}`)
+and the `overview/authentication` guide page.
 
-Mollie's own docs describe **four** authentication methods: API keys (default, per website
-profile), Advanced Access Tokens (organization-wide, optionally scoped to a mode/profile), App
-Access Tokens via OAuth (acting on behalf of a connected merchant), and HTTP Basic for the OAuth
-token endpoint itself. The first three are all presented the same wire way — `Authorization: Bearer
-<token>` — so this app's one `bearer` method covers a plain API key, an Advanced Access Token, or a
-hand-obtained OAuth access token; it does not implement the OAuth authorization-code exchange
-itself. Mollie's own guidance is to start with an API key, which is what this app's `fields`/`hint`
-steer toward.
+Mollie's own docs describe **four** authentication methods: API keys (default, per website profile),
+Advanced Access Tokens (organization-wide, optionally scoped to a mode/profile), App Access Tokens
+via OAuth (acting on behalf of a connected merchant), and HTTP Basic for the OAuth token endpoint
+itself. The first three are all presented the same wire way — `Authorization: Bearer
+<token>` — so
+this app's one `bearer` method covers a plain API key, an Advanced Access Token, or a hand-obtained
+OAuth access token; it does not implement the OAuth authorization-code exchange itself. Mollie's own
+guidance is to start with an API key, which is what this app's `fields`/`hint` steer toward.
 
 An API key is either `live_...` (real money) or `test_...` (Mollie's simulated test mode) — both
-against the *same* `api.mollie.com` host; there is no separate sandbox origin. `afterConnect` labels
+against the _same_ `api.mollie.com` host; there is no separate sandbox origin. `afterConnect` labels
 the connection from this prefix (no network call needed for that part) plus the profile name/status
 the credential-liveness probe already fetched.
 
 ### The credential probe: `GET /v2/profiles/me`
 
-Chosen by reading the response schema, not the name: it names the *profile itself* (id, name,
+Chosen by reading the response schema, not the name: it names the _profile itself_ (id, name,
 status, website, email) rather than any resource an Advanced Access Token might legitimately be
 scoped away from, and — unlike a `GET /v2/payments?limit=1` probe — returns **no payment data at
 all**, so the health surface never stores a customer's payment history just to answer "is this key
-live?". A standard API key is already scoped to exactly one profile, so this always resolves
-without a `profileId` query param.
+live?". A standard API key is already scoped to exactly one profile, so this always resolves without
+a `profileId` query param.
 
 ## Actions
 
 41 actions. `resource` groups them in the editor.
 
-| Key | Type | Endpoint |
-| --- | --- | --- |
-| `payment-create` | perform | `POST /v2/payments` |
-| `payment-get` | read | `GET /v2/payments/{id}` |
-| `payment-list` | search | `GET /v2/payments` |
-| `payment-update` | perform | `PATCH /v2/payments/{id}` |
-| `payment-cancel` | perform | `DELETE /v2/payments/{id}` |
-| `payment-refund-create` | perform | `POST /v2/payments/{id}/refunds` |
-| `payment-refund-list` | search | `GET /v2/payments/{id}/refunds` |
-| `payment-refund-get` | read | `GET /v2/payments/{id}/refunds/{refundId}` |
-| `payment-refund-cancel` | perform | `DELETE /v2/payments/{id}/refunds/{refundId}` |
-| `refund-list` | search | `GET /v2/refunds` (account/profile-wide) |
-| `payment-chargeback-list` | search | `GET /v2/payments/{id}/chargebacks` |
-| `payment-chargeback-get` | read | `GET /v2/payments/{id}/chargebacks/{chargebackId}` |
-| `chargeback-list` | search | `GET /v2/chargebacks` (account/profile-wide) |
-| `method-list` | search | `GET /v2/methods` (enabled only) |
-| `method-list-all` | search | `GET /v2/methods/all` (every method, enabled or not) |
-| `method-get` | read | `GET /v2/methods/{id}` |
-| `payment-link-create` | perform | `POST /v2/payment-links` |
-| `payment-link-get` | read | `GET /v2/payment-links/{id}` |
-| `payment-link-list` | search | `GET /v2/payment-links` |
-| `payment-link-update` | perform | `PATCH /v2/payment-links/{id}` |
-| `payment-link-delete` | perform | `DELETE /v2/payment-links/{id}` |
-| `customer-create` | perform | `POST /v2/customers` |
-| `customer-get` | read | `GET /v2/customers/{id}` |
-| `customer-list` | search | `GET /v2/customers` |
-| `customer-update` | perform | `PATCH /v2/customers/{id}` |
-| `customer-delete` | perform | `DELETE /v2/customers/{id}` |
-| `customer-payment-create` | perform | `POST /v2/customers/{id}/payments` |
-| `customer-payment-list` | search | `GET /v2/customers/{id}/payments` |
-| `mandate-create` | perform | `POST /v2/customers/{id}/mandates` |
-| `mandate-list` | search | `GET /v2/customers/{id}/mandates` |
-| `mandate-get` | read | `GET /v2/customers/{id}/mandates/{mandateId}` |
-| `mandate-revoke` | perform | `DELETE /v2/customers/{id}/mandates/{mandateId}` |
-| `subscription-create` | perform | `POST /v2/customers/{id}/subscriptions` |
-| `subscription-get` | read | `GET /v2/customers/{id}/subscriptions/{subscriptionId}` |
-| `subscription-list` | search | `GET /v2/customers/{id}/subscriptions` |
-| `subscription-update` | perform | `PATCH /v2/customers/{id}/subscriptions/{subscriptionId}` |
-| `subscription-cancel` | perform | `DELETE /v2/customers/{id}/subscriptions/{subscriptionId}` |
-| `subscription-list-all` | search | `GET /v2/subscriptions` (account/profile-wide) |
-| `subscription-payment-list` | search | `GET /v2/customers/{id}/subscriptions/{subscriptionId}/payments` |
-| `profile-get` | read | `GET /v2/profiles/me` |
-| `profile-list` | search | `GET /v2/profiles` |
+| Key                         | Type    | Endpoint                                                         |
+| --------------------------- | ------- | ---------------------------------------------------------------- |
+| `payment-create`            | perform | `POST /v2/payments`                                              |
+| `payment-get`               | read    | `GET /v2/payments/{id}`                                          |
+| `payment-list`              | search  | `GET /v2/payments`                                               |
+| `payment-update`            | perform | `PATCH /v2/payments/{id}`                                        |
+| `payment-cancel`            | perform | `DELETE /v2/payments/{id}`                                       |
+| `payment-refund-create`     | perform | `POST /v2/payments/{id}/refunds`                                 |
+| `payment-refund-list`       | search  | `GET /v2/payments/{id}/refunds`                                  |
+| `payment-refund-get`        | read    | `GET /v2/payments/{id}/refunds/{refundId}`                       |
+| `payment-refund-cancel`     | perform | `DELETE /v2/payments/{id}/refunds/{refundId}`                    |
+| `refund-list`               | search  | `GET /v2/refunds` (account/profile-wide)                         |
+| `payment-chargeback-list`   | search  | `GET /v2/payments/{id}/chargebacks`                              |
+| `payment-chargeback-get`    | read    | `GET /v2/payments/{id}/chargebacks/{chargebackId}`               |
+| `chargeback-list`           | search  | `GET /v2/chargebacks` (account/profile-wide)                     |
+| `method-list`               | search  | `GET /v2/methods` (enabled only)                                 |
+| `method-list-all`           | search  | `GET /v2/methods/all` (every method, enabled or not)             |
+| `method-get`                | read    | `GET /v2/methods/{id}`                                           |
+| `payment-link-create`       | perform | `POST /v2/payment-links`                                         |
+| `payment-link-get`          | read    | `GET /v2/payment-links/{id}`                                     |
+| `payment-link-list`         | search  | `GET /v2/payment-links`                                          |
+| `payment-link-update`       | perform | `PATCH /v2/payment-links/{id}`                                   |
+| `payment-link-delete`       | perform | `DELETE /v2/payment-links/{id}`                                  |
+| `customer-create`           | perform | `POST /v2/customers`                                             |
+| `customer-get`              | read    | `GET /v2/customers/{id}`                                         |
+| `customer-list`             | search  | `GET /v2/customers`                                              |
+| `customer-update`           | perform | `PATCH /v2/customers/{id}`                                       |
+| `customer-delete`           | perform | `DELETE /v2/customers/{id}`                                      |
+| `customer-payment-create`   | perform | `POST /v2/customers/{id}/payments`                               |
+| `customer-payment-list`     | search  | `GET /v2/customers/{id}/payments`                                |
+| `mandate-create`            | perform | `POST /v2/customers/{id}/mandates`                               |
+| `mandate-list`              | search  | `GET /v2/customers/{id}/mandates`                                |
+| `mandate-get`               | read    | `GET /v2/customers/{id}/mandates/{mandateId}`                    |
+| `mandate-revoke`            | perform | `DELETE /v2/customers/{id}/mandates/{mandateId}`                 |
+| `subscription-create`       | perform | `POST /v2/customers/{id}/subscriptions`                          |
+| `subscription-get`          | read    | `GET /v2/customers/{id}/subscriptions/{subscriptionId}`          |
+| `subscription-list`         | search  | `GET /v2/customers/{id}/subscriptions`                           |
+| `subscription-update`       | perform | `PATCH /v2/customers/{id}/subscriptions/{subscriptionId}`        |
+| `subscription-cancel`       | perform | `DELETE /v2/customers/{id}/subscriptions/{subscriptionId}`       |
+| `subscription-list-all`     | search  | `GET /v2/subscriptions` (account/profile-wide)                   |
+| `subscription-payment-list` | search  | `GET /v2/customers/{id}/subscriptions/{subscriptionId}/payments` |
+| `profile-get`               | read    | `GET /v2/profiles/me`                                            |
+| `profile-list`              | search  | `GET /v2/profiles`                                               |
 
 ### Idempotency
 
@@ -189,8 +191,8 @@ rather than a different outcome).
   encoding** (`amount[value]=10.00&amount[currency]=EUR`), confirmed from the OpenAPI parameter
   definition — not a JSON-encoded query string, which is what several other resources' body fields
   might tempt you to assume.
-- **`payment-link-list` unwraps `_embedded.payment_links`** — with an underscore, unlike every
-  other list envelope in this app (`payments`, `customers`, `refunds`, `chargebacks`, `methods`,
+- **`payment-link-list` unwraps `_embedded.payment_links`** — with an underscore, unlike every other
+  list envelope in this app (`payments`, `customers`, `refunds`, `chargebacks`, `methods`,
   `mandates`, `subscriptions`, `profiles`), which are all bare camelCase/lowercase plural nouns.
   Verified directly against the OpenAPI response schema; `lib/client.ts`'s `unwrapList` takes the
   key as an explicit argument for exactly this reason rather than deriving it from the path.
@@ -200,9 +202,9 @@ rather than a different outcome).
   credit-card mandate is normally established via a `first` payment instead, which this app's
   `method` select surfaces as a hint rather than blocking the option outright.
 - **List endpoints use cursor pagination (`from`/`limit`), not page numbers.** `from` is the ID of
-  the first object in the desired page, not an offset; `sort` (`asc`/`desc`) exists on some
-  list endpoints and not others — this mirrors the vendor's own OpenAPI parameter lists per
-  endpoint exactly, rather than inventing a uniform shape the API doesn't have.
+  the first object in the desired page, not an offset; `sort` (`asc`/`desc`) exists on some list
+  endpoints and not others — this mirrors the vendor's own OpenAPI parameter lists per endpoint
+  exactly, rather than inventing a uniform shape the API doesn't have.
 - **`testmode` and `profileId` matter only for an Advanced Access Token/OAuth token**, both declared
   as `advanced` params on nearly every action. A plain API key is already `live_`/`test_`-scoped and
   belongs to exactly one profile, so both are ignored for the common case.
@@ -217,24 +219,26 @@ Two live probes, plus the derived `auth:bearer`.
 common pattern across this pack. It is not: it's an **Instatus**-hosted page (confirmed by its
 Next.js asset paths under `/_next/static/`). Measured live on 2026-09-01:
 
-| Path | Status | Content-Type | Shape |
-| --- | --- | --- | --- |
-| `/api/v2/summary.json` | 200 | `application/json` | real, but only `{page, activeMaintenances}` — no components |
-| `/api/v2/incidents.json` | 404 | `text/html` | Instatus has no such path |
-| `/api/v2/components.json` | 200 | `application/json` | the real per-component tree — one leaf literally named "Mollie API", `description: "api.mollie.com"` |
+| Path                      | Status | Content-Type       | Shape                                                                                                |
+| ------------------------- | ------ | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `/api/v2/summary.json`    | 200    | `application/json` | real, but only `{page, activeMaintenances}` — no components                                          |
+| `/api/v2/incidents.json`  | 404    | `text/html`        | Instatus has no such path                                                                            |
+| `/api/v2/components.json` | 200    | `application/json` | the real per-component tree — one leaf literally named "Mollie API", `description: "api.mollie.com"` |
 
 `summary.json` is real but nearly useless here (Instatus's summary omits the components list unless
 something is actively degraded). `components.json` is what `health/service.ts` actually reads. The
-verdict is driven by a small covered set (`Mollie API`, `Mollie Connect`, `Webhook`, `Mollie payment
-links`, `Hosted checkout`) — the components this app's actions actually call through; every other
-component (any specific local/international payment method, Settlements, Business Accounts
-integrations, …) is still reported, for context, but never worsens the roll-up on its own.
+verdict is driven by a small covered set (`Mollie API`, `Mollie Connect`, `Webhook`,
+`Mollie payment
+links`, `Hosted checkout`) — the components this app's actions actually call
+through; every other component (any specific local/international payment method, Settlements,
+Business Accounts integrations, …) is still reported, for context, but never worsens the roll-up on
+its own.
 
 ### `quota` — a real, documented header this app has no credential to confirm live
 
 `docs.mollie.com/reference/rate-limiting` documents structured `RateLimit`/`RateLimit-Policy`
-headers on every response — but the page itself states *"This feature is being rolled out gradually
-and may not be available to everyone yet."* Live probes against `api.mollie.com/v2/methods` (both
+headers on every response — but the page itself states _"This feature is being rolled out gradually
+and may not be available to everyone yet."_ Live probes against `api.mollie.com/v2/methods` (both
 unauthenticated and with a syntactically-plausible key) on 2026-09-01 carried **no** such header at
 all, consistent with the documented gradual rollout rather than a vendor that never publishes one.
 Because this app has no real credential to probe a rolled-out account with, `health/quota.ts` is a
@@ -250,11 +254,11 @@ path a workflow needs to accept a payment and later reconcile, refund, or bill a
 and leaves out:
 
 - **Orders API** (and its companion Shipments API) — **deprecated by Mollie itself**; see above.
-- **Mollie Connect** (OAuth-based platform/marketplace access on behalf of *other* Mollie
-  merchants) — Organizations, Clients, Client Links, Balance Transfers, Onboarding, Capabilities,
-  Permissions, and Profile create/update/delete beyond the read-only `profile-get`/`profile-list`
-  this app ships. A different activation and a different account relationship: a platform managing
-  *other* merchants' funds, not a merchant's own gateway.
+- **Mollie Connect** (OAuth-based platform/marketplace access on behalf of _other_ Mollie merchants)
+  — Organizations, Clients, Client Links, Balance Transfers, Onboarding, Capabilities, Permissions,
+  and Profile create/update/delete beyond the read-only `profile-get`/`profile-list` this app ships.
+  A different activation and a different account relationship: a platform managing _other_
+  merchants' funds, not a merchant's own gateway.
 - **Business operations** — Balances, Settlements, Invoices, Payouts, Sales Invoices, Business
   Accounts (Transfers, Verify Payee, Draft Transfers) — treasury/accounting surfaces layered on top
   of the payment-gateway core, left out for scope.
@@ -262,8 +266,8 @@ and leaves out:
   (Checkout Sessions), Captures** — advanced/niche flows (in-person card readers, manual
   authorize-then-capture, Mollie-Connect fee routing) layered on the same core resources; worth
   adding later but not part of this first pass.
-- **`lines` (order line items) on `payment-create`/`customer-payment-create`** — required only for
-  a handful of methods (`billie`, `in3`, `klarna`, `riverty`, `voucher`); every other field this app
+- **`lines` (order line items) on `payment-create`/`customer-payment-create`** — required only for a
+  handful of methods (`billie`, `in3`, `klarna`, `riverty`, `voucher`); every other field this app
   exposes works without it. Left out of this pass's params rather than half-modeled; the vendor's
   full line-item schema (VAT, discounts, categories, SKUs) is substantial enough to warrant its own
   pass if/when those methods are prioritized.
@@ -272,8 +276,8 @@ and leaves out:
 
 `assets/icon.png` is Mollie's own mark — the white lowercase "m" glyph on a black rounded-square
 tile. Fetched **verbatim** from `https://framerusercontent.com/images/SeL6IJlQ4Ae7noV1fXjkTlqvo.png`
-(served from Framer's CDN, since Mollie's own marketing site is Framer-built and this is the
-favicon its `<link rel="icon">` tag names) — 96×96 PNG, 1,166 bytes, unmodified.
+(served from Framer's CDN, since Mollie's own marketing site is Framer-built and this is the favicon
+its `<link rel="icon">` tag names) — 96×96 PNG, 1,166 bytes, unmodified.
 
 ## Layout
 
@@ -307,4 +311,29 @@ deno task test
 
 ## Triggers
 
-- **New Customer** wraps `customer-list` with descending order. [Mollie list customers](https://docs.mollie.com/reference/list-customers), verified 2026-11-09.
+| Key                    | Title                           | Mechanism | Wrapped action          | What the run gets                                         |
+| ---------------------- | ------------------------------- | --------- | ----------------------- | --------------------------------------------------------- |
+| `new-customer`         | New Customer                    | poll      | `customer-list`         | each newly created customer                               |
+| `new-chargeback`       | New Chargeback                  | poll      | `chargeback-list`       | each newly created chargeback                             |
+| `new-customer-payment` | New Customer Payment            | poll      | `customer-payment-list` | each newly created payment for the selected customer      |
+| `new-mandate`          | New Mandate                     | poll      | `mandate-list`          | each newly created mandate for the selected customer      |
+| `new-payment`          | New Payment                     | poll      | `payment-list`          | each newly created payment                                |
+| `new-payment-link`     | New Payment Link                | poll      | `payment-link-list`     | each newly created payment link                           |
+| `new-refund`           | New Refund                      | poll      | `refund-list`           | each newly created refund                                 |
+| `new-subscription`     | New Subscription                | poll      | `subscription-list`     | each newly created subscription for the selected customer |
+| `new-subscription-all` | New Subscription (Any Customer) | poll      | `subscription-list-all` | each newly created subscription across the account        |
+
+The poll actions request Mollie's documented descending `sort` order, so each check begins with the
+newest records. [Mollie list customers](https://docs.mollie.com/reference/list-customers),
+[chargebacks](https://docs.mollie.com/reference/list-chargebacks),
+[refunds](https://docs.mollie.com/reference/list-refunds), and
+[subscriptions](https://docs.mollie.com/reference/list-subscriptions),
+[payments](https://docs.mollie.com/reference/list-payments), and
+[mandates](https://docs.mollie.com/reference/list-mandates), verified 2026-11-10. Payment links and
+all-account subscriptions document no `sort` parameter and no default order, so their triggers
+cannot ask for newest first. Instead they verify it: if a fetched page's `createdAt` values are not
+newest-first (or a record has none), the check throws and nothing is seeded or emitted. On a Mollie
+account whose default is ascending these two triggers fail loudly rather than go silent.
+
+Not covered: `method-list` and `method-list-all` (reference catalog of payment methods) and
+`profile-list` (website profile configuration).

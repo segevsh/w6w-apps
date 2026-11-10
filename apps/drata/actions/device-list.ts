@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, toList } from "../lib/client.ts";
-import { deviceSourceTypes, expandParam, opts, pageParams } from "../lib/params.ts";
+import { deviceSourceTypes, expandParam, opts, pageParams, sortParams } from "../lib/params.ts";
 
 /**
  * `GET /devices` — List devices (managed laptops and workstations) with their compliance posture.
@@ -16,6 +16,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -33,6 +35,7 @@ const action: ActionDefinition<Input> = {
     { key: "externalId", label: "External ID", type: "string" },
     expandParam(["asset", "complianceChecks", "documents", "identifiers"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Devices" },
@@ -58,6 +61,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

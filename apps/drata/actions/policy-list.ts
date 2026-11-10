@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, toList } from "../lib/client.ts";
-import { expandParam, opts, pageParams, policyStatuses } from "../lib/params.ts";
+import { expandParam, opts, pageParams, policyStatuses, sortParams } from "../lib/params.ts";
 
 /**
  * `GET /policies` — List policies, filtered by name or status.
@@ -13,6 +13,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -27,6 +29,7 @@ const action: ActionDefinition<Input> = {
     { key: "statuses", label: "Status", type: "multiselect", options: opts(policyStatuses) },
     expandParam(["groups", "weekTimeFrameSlas", "gracePeriodSlas", "p3MatrixSlas", "owner"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Policies" },
@@ -49,6 +52,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

@@ -1,6 +1,13 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, seg, toList } from "../lib/client.ts";
-import { artifactTypes, evidenceStatuses, expandParam, opts, pageParams } from "../lib/params.ts";
+import {
+  artifactTypes,
+  evidenceStatuses,
+  expandParam,
+  opts,
+  pageParams,
+  sortParams,
+} from "../lib/params.ts";
 
 /**
  * `GET /workspaces/{workspaceId}/evidence` — List evidence items in a workspace with their artifacts, owners and status.
@@ -15,6 +22,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -47,6 +56,7 @@ const action: ActionDefinition<Input> = {
     },
     expandParam(["owners", "artifacts", "controls"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Evidence items" },
@@ -70,6 +80,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, seg, toList } from "../lib/client.ts";
-import { expandParam, opts, pageParams } from "../lib/params.ts";
+import { expandParam, opts, pageParams, sortParams } from "../lib/params.ts";
 
 /**
  * `GET /workspaces/{workspaceId}/controls` — List the controls in a workspace, filtered by readiness, monitoring, evidence or policy coverage.
@@ -20,6 +20,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -62,6 +64,7 @@ const action: ActionDefinition<Input> = {
       "topics",
     ]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Controls" },
@@ -90,6 +93,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },
