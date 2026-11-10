@@ -1,5 +1,7 @@
 # Lusha
 
+Triggers: not shipped — webhook candidate queued for a webhook node: prospect and company signal subscriptions (https://docs.lusha.com).
+
 B2B contact and company data: find people and companies, reveal emails and phone numbers, prospect
 against an ideal customer profile, find lookalikes, read buying signals and subscribe webhooks.
 Built against the **v3** API (`https://api.lusha.com`), verified 2026-10-06 against the OpenAPI

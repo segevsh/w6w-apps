@@ -1,5 +1,7 @@
 # Facebook Messenger
 
+Triggers: not shipped — webhook candidate queued for a webhook node: messaging, postback and delivery events (https://developers.facebook.com/docs/messenger-platform/webhooks/).
+
 Send and receive-side management for a Facebook Page's Messenger inbox through the
 [Messenger Platform](https://developers.facebook.com/docs/messenger-platform/): the Send API,
 Conversations API, Messenger Profile API, Attachment Upload API, the Page Status API and

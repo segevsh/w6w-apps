@@ -8,6 +8,8 @@ import bulkUpload from "./actions/bulk-upload.ts";
 import getCredits from "./actions/get-credits.ts";
 import verifyEmail from "./actions/verify-email.ts";
 import apiKey from "./auth/api-key.ts";
+import newBulkFile from "./triggers/new-bulk-file.ts";
+import newOrUpdatedBulkFile from "./triggers/new-or-updated-bulk-file.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
@@ -33,6 +35,7 @@ const app: AppDefinition = {
     bulkDelete,
   ],
   auth: [apiKey],
+  triggers: [newBulkFile, newOrUpdatedBulkFile],
   healthChecks: [service, api, quota],
 };
 

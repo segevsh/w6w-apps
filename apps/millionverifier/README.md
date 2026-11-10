@@ -9,6 +9,20 @@ hosts. `deprecat`/`sunset`/`end of life`/`will be removed` appear nowhere in the
 only hits are inside the bundled Redoc/Prism JavaScript); v3 (single) and v2 (bulk) are the
 documented live versions.
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-bulk-file` — New Bulk File | poll | `bulk-list-files` (`createdFrom`) | Each bulk file created since the previous check |
+| `new-or-updated-bulk-file` — New or Updated Bulk File | poll | `bulk-list-files` (`updatedAtFrom`) | Each bulk file created or changed (status, progress) since the previous check |
+
+`GET /bulkapi/v2/filelist` documents `createdate_from` and `updated_at_from` ("files created/updated
+after the given date time", `yyyy-MM-dd HH:mm:ss`). The trigger writes that value itself from its
+cursor minus a 120 s overlap and de-duplicates on `file_id` (`file_id:updated_at` for the updated
+trigger). The vendor does not state a timezone for the filter; the trigger sends UTC, and the overlap
+plus id de-duplication absorb small skew. [MillionVerifier API reference](https://developer.millionverifier.com/)
+verified 2026-11-09.
+
 ## Auth
 
 **API key**, a **query parameter** added by the Auth `sign` hook (no action sees it). Copy it from
