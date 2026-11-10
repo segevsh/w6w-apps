@@ -69,6 +69,16 @@ import submissionEdited from "./triggers/submission-edited.ts";
 import dispatchCreated from "./triggers/dispatch-created.ts";
 import workflowHandoffCreated from "./triggers/workflow-handoff-created.ts";
 import submissionStatusChanged from "./triggers/submission-status-changed.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newForm from "./triggers/new-form.ts";
+import newUser from "./triggers/new-user.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newSite from "./triggers/new-site.ts";
+import newProject from "./triggers/new-project.ts";
+import newGroup from "./triggers/new-group.ts";
+import newDepartment from "./triggers/new-department.ts";
+import newDepartmentUser from "./triggers/new-department-user.ts";
+import newFormAssignedUser from "./triggers/new-form-assigned-user.ts";
 
 export default {
   actions: [
@@ -130,6 +140,16 @@ export default {
     dispatchCreated,
     workflowHandoffCreated,
     submissionStatusChanged,
+    anyEvent,
+    newForm,
+    newUser,
+    newCustomer,
+    newSite,
+    newProject,
+    newGroup,
+    newDepartment,
+    newDepartmentUser,
+    newFormAssignedUser,
   ],
   auth: [basic],
   healthChecks: [service, quota],

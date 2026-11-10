@@ -6,7 +6,7 @@ Mobile forms and field-data collection over the GoCanvas REST API v3
 Only the US host `www.gocanvas.com` is covered. The EU and AU regional hosts are not documented by
 the vendor, so they are not in `network.allow`.
 
-- **Triggers** — 5 (webhook)
+- **Triggers** — 15 (6 webhook, 9 poll)
 
 ## Triggers
 
@@ -17,12 +17,26 @@ the vendor, so they are not in `network.allow`.
 | `dispatch-created` — New Dispatch | webhook (API-registered, unsigned) | `dispatch_create` | event type, form id, delivery payload |
 | `workflow-handoff-created` — Workflow Handoff | webhook (API-registered, unsigned) | `workflow_handoff_create` | event type, form id, delivery payload |
 | `submission-status-changed` — Submission Status Changed | webhook (API-registered, unsigned) | `submission_custom_status_change` | event type, form id, delivery payload |
+| `any-event` — Any Event | webhook (API-registered, unsigned) | the events named in `events`, or all five | event type, form id, delivery payload |
+| `new-form` — New Form | poll (snapshot) | `GET /forms` | the new form |
+| `new-user` — New User | poll (snapshot) | `GET /users` | the new user |
+| `new-customer` — New Customer | poll (snapshot) | `GET /customers` | the new customer |
+| `new-site` — New Site | poll (snapshot) | `GET /sites` | the new site |
+| `new-project` — New Project | poll (snapshot) | `GET /projects` | the new project |
+| `new-group` — New Group | poll (snapshot) | `GET /groups` | the new group |
+| `new-department` — New Department | poll (snapshot) | `GET /departments` | the new department |
+| `new-department-user` — New Department Member | poll (snapshot) | `GET /departments/{id}/users` | the new member and role |
+| `new-form-assigned-user` — User Assigned to Form | poll (snapshot) | `GET /forms/{id}/assigned_users` | the newly assigned user |
 
 **Setup.** Set the trigger's `formId` (or leave it empty for a company-wide webhook, which needs an account administrator). Subscribing registers the trigger's URL with `POST /forms/{id}/webhooks` (or `POST /webhooks` company-wide) as `{ "event_type", "format": "json", "push_url", "push_tag": "w6w" }`; unsubscribing deletes the webhook (a webhook GoCanvas no longer has counts as deleted). A form holds only one webhook per event type, so a second subscription to the same form and event is refused by GoCanvas. `dispatch_create`, `workflow_handoff_create` and `submission_custom_status_change` only fire for forms with Dispatch, Workflow or Submission Statuses enabled. GoCanvas's API reference lists the event types but does not document the delivery body, so the run gets the payload exactly as GoCanvas sent it.
 
+**Any Event.** GoCanvas takes one `event_type` per webhook and has no "all events" value, so `any-event` registers one webhook per event in its `events` param (comma-separated; empty means all five) and removes them all on unsubscribe. Each webhook's URL carries `?event=<type>`, so a delivery names its event even though GoCanvas does not document the delivery body, and a delivery for an event the subscription did not ask for is dropped. With `events` empty, an event GoCanvas refuses because the form lacks Dispatch, Workflow or Submission Statuses is skipped; naming such an event explicitly fails the subscription (and removes the webhooks already made). A form holds one webhook per event, so `any-event` and a named trigger cannot both watch the same event on the same form (the second subscription is refused).
+
+**Polls.** The nine `new-*` triggers read a collection GoCanvas returns whole and unordered (no sort or created-since filter is documented for it) through the same list action the app ships, following the `total-pages` header page by page (pages of 100), and emit each id not seen at the previous check. The first check only records what exists. More than 50 pages (5000 rows) fails with an error naming the cap. `new-department-user` and `new-form-assigned-user` take the department or form id as a required `string` param; `new-group` takes an optional department id. A record that moves between pages while a check is reading can be missed by that check and then reported once it reappears; `submission-list` and `dispatch-list` are served by the webhook triggers instead (see Not covered).
+
 **Trust model.** GoCanvas does not sign its webhooks: its API reference documents no signature, secret or signing header, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
 
-Docs (verified 2026-11-10): https://api.gocanvas.com/api/v3/docs (Webhooks and Company-wide Webhooks)
+Docs (verified 2026-11-10): https://api.gocanvas.com/api/v3/docs (Webhooks and Company-wide Webhooks list five `event_type` values: `dispatch_create`, `submission_create`, `submission_edit`, `workflow_handoff_create`, `submission_custom_status_change`; Pagination; the list endpoints named above)
 
 ## Auth
 
@@ -111,6 +125,10 @@ Deletes are soft by default; pass `hardDelete` to remove permanently. Lists retu
 - Scheduled-dispatch times use `MM/DD/YYYY HH:mm:ss AM`; everything else is ISO-8601.
 
 ## Not covered
+
+List actions with no poll trigger: `submission-list` (served by `submission-created`; its items carry no created timestamp to filter or floor on) and `dispatch-list` (served by `dispatch-created`); `reference-data-list` (lookup tables behind dropdowns); `form-report-list` (report definitions); `webhook-list` (this integration's own webhook configuration); `submission-revision-list` (the revision history of one submission). GoCanvas has webhook events only for submissions, dispatches, workflow handoffs and submission statuses, so customers, sites, projects, users and forms have no webhook.
+
+Also not covered:
 
 Workflows, submission values and binary/multipart media upload, reference images, reference-data
 create/update, group writes, user password change, partnership, tracker locations, form
