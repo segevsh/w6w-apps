@@ -9,7 +9,7 @@ import type { Param } from "@w6w/types";
  * and `updated_after_utc` (all verified against `v3.1/help`'s "Searching and
  * Filtering" section). Rather than expose two actions per object, each
  * `*-get-many` action switches endpoints itself: plain listing when no
- * filter is set, `/Search` the moment one is.
+ * filter is set, `/Search` the moment one is (a filter field, or an updated-after time on its own).
  */
 export const listParams: Param[] = [
   {
@@ -31,7 +31,7 @@ export const listParams: Param[] = [
     label: "Updated after (UTC)",
     type: "datetime",
     advanced: true,
-    hint: "ISO 8601, e.g. 2026-01-01T00:00:00Z. Only applies when a filter field is set.",
+    hint: "ISO 8601, e.g. 2026-01-01T00:00:00Z. Switches to the /Search endpoint when set.",
   },
   {
     key: "top",
@@ -70,7 +70,9 @@ export function listRequest(
   objectPath: string,
   input: ListInput,
 ): { path: string; query: Record<string, string | number | boolean | undefined> } {
-  if (input.fieldName) {
+  // `field_name`/`field_value` are optional on /Search (Swagger v3.1), so an updated-since filter
+  // alone is enough to switch endpoints.
+  if (input.fieldName || input.updatedAfterUtc) {
     return {
       path: `/${objectPath}/Search`,
       query: {

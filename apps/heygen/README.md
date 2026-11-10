@@ -180,3 +180,5 @@ wordmark PNG). Checked in both themes with `_tools/icon-legibility.ts`.
 109 assertions across 23 files: one per action, one for the auth method, one each for the `service`
 and `quota` health checks (`quota.test.ts` also covers the `request-rate` declared absence), one for
 `lib/client.ts`, and one for `index.ts`.
+
+Triggers: not shipped — the video list (`GET /v3/videos`) documents no result order and no sort or since-filter, so new videos cannot be told from old ones (https://developers.heygen.com/reference/list-videos, verified 2026-11-09).

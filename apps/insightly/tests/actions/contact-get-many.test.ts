@@ -20,3 +20,13 @@ test("contact-get-many: switches to /Search when a filter field is set", async (
   assertEquals(url.searchParams.get("field_name"), "EMAIL_ADDRESS");
   assertEquals(url.searchParams.get("field_value"), "jo@acme.test");
 });
+
+test("contact-get-many: an updated-after time alone uses /Search without a field filter", async () => {
+  const { ctx, calls } = mockInsightlyCtx([{ body: [] }]);
+  await action.execute({ updatedAfterUtc: "2026-11-09T10:00:00Z", top: 500 }, ctx);
+  const url = new URL(calls[0].url);
+  assertEquals(url.pathname, "/v3.1/Contacts/Search");
+  assertEquals(url.searchParams.get("updated_after_utc"), "2026-11-09T10:00:00Z");
+  assertEquals(url.searchParams.get("field_name"), null);
+  assertEquals(url.searchParams.get("top"), "500");
+});

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hackernews",
-  "version": "0.1.0",
-  "description": "Read Hacker News stories, comments, users, and story-id lists from the official public v0 API.",
+  "version": "0.2.0",
+  "description": "Read Hacker News stories, comments, users, and story-id lists from the official public v0 API, and poll for new stories.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "hacker-news.firebaseio.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

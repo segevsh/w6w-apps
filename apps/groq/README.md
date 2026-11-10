@@ -152,3 +152,5 @@ time, so a credential can never reach a status host.
 Researched and endpoint-verified 2026-09-05 against Groq's own OpenAPI schema and live requests
 to `api.groq.com` / `groqstatus.com`. Status surfaces and the model list move; re-verify if a
 probe starts failing for everyone at once, or if a model id in a default disappears.
+
+Triggers: not shipped — the existing batch list action exposes no documented newest-first order or created/updated-since filter (https://console.groq.com/docs/batch).

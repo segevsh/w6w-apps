@@ -133,6 +133,8 @@ queue, not an outage.
 ## Layout
 
 ```
+
+Triggers: not shipped — session and highlight lists are cursor-paged without a documented newest-first order or created/updated-since filter (https://api.swaggerhub.com/apis/HedyAI/hedy-api/1.0.1).
 hedy/
 ├── package.json              # manifest — the `w6w` identity block
 ├── index.ts                  # entry: { actions, auth, healthChecks }
