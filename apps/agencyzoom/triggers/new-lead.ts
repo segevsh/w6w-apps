@@ -21,23 +21,21 @@ const trigger: TriggerDefinition = {
     const startDate = new Date(cursor - OVERLAP_MS).toISOString().slice(0, 10);
     const { events, nextState } = await pollNewItems<unknown>({
       state,
-      maxPages: 100,
       maxEvents: 100,
       seenWindow: 400,
       idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-      async fetchPage(pageToken) {
-        const page = pageToken === undefined ? 1 : Number(pageToken);
-        const result = await action.execute({ startDate, page, pageSize: 100 }, ctx) as {
-          leads?: unknown[];
-          totalCount?: number;
-        };
-        const items = result.leads ?? [];
-        return {
-          items,
-          nextPageToken: items.length === 100 && page * 100 < Number(result.totalCount ?? 0)
-            ? String(page + 1)
-            : undefined,
-        };
+      async fetchPage() {
+        const items: unknown[] = [];
+        for (let page = 1; page <= 100; page++) {
+          const result = await action.execute({ startDate, page, pageSize: 100 }, ctx) as {
+            leads?: unknown[];
+            totalCount?: number;
+          };
+          const leads = result.leads ?? [];
+          items.push(...leads);
+          if (leads.length < 100 || page * 100 >= Number(result.totalCount ?? 0)) break;
+        }
+        return { items };
       },
     });
     return { events, nextState: { ...nextState, cursor: checkedAt } };

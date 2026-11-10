@@ -13,6 +13,7 @@ platform for roofing and exterior contractors, over its v2 REST API.
 - **Website** — https://acculynx.com/
 - **API docs** — https://apidocs.acculynx.com/reference/
 - **Status page** — https://status.acculynx.com/
+- **Triggers** — 2 (poll)
 
 > Everything below was verified on 2026-10-06 against AccuLynx's own API reference (a ReadMe site
 > whose server-rendered pages embed the full OpenAPI document, v2.2614.0, 105 paths) plus live

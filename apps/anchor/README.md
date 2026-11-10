@@ -15,6 +15,7 @@ webhooks from a workflow, on the **Anchor API** (`https://api.sayanchor.com`).
 - **Icon** — `assets/icon.svg` embeds Anchor's own wordmark SVG
   (`white anchor logo.svg` from sayanchor.com) unmodified, on its brand purple `#643cff`. Anchor
   publishes the mark in white only, so the purple tile is the only addition.
+- **Triggers** — 1 (poll)
 
 Verified 2026-10-06 against the per-operation OpenAPI 3.0.3 documents embedded in each page of
 https://docs.sayanchor.com (index: `/llms.txt`) and live probes of `api.sayanchor.com`. There is no

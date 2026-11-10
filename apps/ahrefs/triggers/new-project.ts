@@ -7,8 +7,11 @@ const trigger: TriggerDefinition = {
   title: "New Project",
   description: "Emits projects newly added to the bounded account project collection.",
   params: action.params,
-  output: [{ key: "key", type: "string", label: "Project ID" }],
-  sample: { key: "101", values: { project_id: 101 } },
+  output: [
+    { key: "change", type: "string", label: "Change" },
+    { key: "key", type: "string", label: "Project ID" },
+  ],
+  sample: { change: "added", key: "101", values: { project_id: 101 } },
   minIntervalMs: 300_000,
   async poll({ params, state }, ctx) {
     const result = await action.execute(params, ctx) as { projects?: unknown[] };

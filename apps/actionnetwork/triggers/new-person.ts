@@ -24,22 +24,27 @@ function personTrigger(
         ? (state as { cursor: number }).cursor
         : checkedAt;
       const filter = `${field} gt '${new Date(cursor - OVERLAP_MS).toISOString()}'`;
+      const idOf = (item: unknown) => {
+        const person = item as { id?: unknown; modified_date?: unknown };
+        const id = String(person.id ?? "");
+        return field === "modified_date" ? `${id}:${String(person.modified_date ?? "")}` : id;
+      };
       const { events, nextState } = await pollNewItems<unknown>({
         state,
-        maxPages: 100,
         maxEvents: 2500,
         seenWindow: 5000,
-        idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-        async fetchPage(pageToken) {
-          const page = pageToken === undefined ? 1 : Number(pageToken);
-          const result = await action.execute({ filter, page, perPage: 25 }, ctx) as {
-            items?: unknown[];
-            hasMore?: boolean;
-          };
-          return {
-            items: result.items ?? [],
-            nextPageToken: result.hasMore ? String(page + 1) : undefined,
-          };
+        idOf,
+        async fetchPage() {
+          const items: unknown[] = [];
+          for (let page = 1; page <= 100; page++) {
+            const result = await action.execute({ filter, page, perPage: 25 }, ctx) as {
+              items?: unknown[];
+              hasMore?: boolean;
+            };
+            items.push(...(result.items ?? []));
+            if (!result.hasMore) break;
+          }
+          return { items };
         },
       });
       return { events, nextState: { ...nextState, cursor: checkedAt } };

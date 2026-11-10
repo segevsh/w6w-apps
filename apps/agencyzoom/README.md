@@ -10,6 +10,7 @@ management CRM, over its **API v1**.
 - **Egress allowlist** — `api.agencyzoom.com`
 - **Website** — https://agencyzoom.com/
 - **OpenAPI** — https://app.agencyzoom.com/openapi/agencyzoom.yaml
+- **Triggers** — 1 (poll)
 
 > **Everything below was verified against AgencyZoom's own sources on 2026-09-05** — its
 > machine-readable OpenAPI 3.0 document
@@ -176,4 +177,4 @@ are hard to add later; they just aren't here yet:
 | --- | --- | --- | --- |
 | `new-lead` — New Lead | Poll | `lead-list` | Each lead created since the prior check |
 
-`lead-list` filters on its documented `startDate` lead-creation-date range and walks all matching pages with id deduplication. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-09).
+`lead-list` filters on its documented `startDate` lead-creation-date range and fetches all matching pages before id deduplication. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-09).

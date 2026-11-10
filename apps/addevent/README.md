@@ -12,6 +12,7 @@ subscribers, and generate "add to calendar" links, on **AddEvent's Calendar & Ev
 - **Website** — https://www.addevent.com/
 - **API docs** — https://www.addevent.com/c/documentation/calendar-events-api
 - **Status page** — https://addevent.statuspage.io/
+- **Triggers** — 1 (poll)
 
 AddEvent turns a date and a title into a working "add to calendar" link — one that opens correctly in
 Google Calendar, Apple Calendar, Outlook, Office 365 and Yahoo without the caller having to know each

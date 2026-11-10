@@ -10,6 +10,7 @@ sync.
 - **Website** — https://www.algolia.com
 - **API docs** — https://www.algolia.com/doc/rest-api/search/ ·
   schema: https://github.com/algolia/api-clients-automation (`specs/bundled/search.yml`)
+- **Triggers** — 1 (poll)
 
 ## Setup
 
@@ -257,4 +258,4 @@ probe starts failing for everyone at once.
 | --- | --- | --- | --- |
 | `new-index` — New Index | Poll | `index-list` | Each index newly added to the application |
 
-`index-list` walks the bounded account index collection and snapshots its stable index names, emitting additions only. Source: [Algolia list indices API](https://www.algolia.com/doc/rest-api/search/#tag/Indices/operation/listIndices) (verified 2026-11-09).
+`index-list` walks the bounded account index collection and snapshots its stable index names, emitting additions only. Source: [Algolia list indices API](https://www.algolia.com/doc/rest-api/search/list-indices) (verified 2026-11-09).

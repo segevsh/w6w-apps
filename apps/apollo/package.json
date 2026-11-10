@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/apollo",
   "version": "0.2.0",
-  "description": "Search and enrich people and companies, and manage contacts, accounts, deals, sequences, tasks and lists in Apollo.io's sales intelligence and engagement platform; includes new and updated contact poll triggers.",
+  "description": "Search and enrich people and companies, manage CRM records and outreach in Apollo.io; poll new and updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"

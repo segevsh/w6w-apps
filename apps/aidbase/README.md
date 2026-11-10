@@ -11,6 +11,7 @@ update or block chats, emails and tickets.
   form) plus the introduction and get-started guides, fetched 2026-10-06. Aidbase publishes no
   OpenAPI document and no `llms.txt` (both 404). No deprecated endpoints are documented; the
   API is labelled beta.
+- **Triggers** — 1 (poll)
 
 ## Actions (43)
 

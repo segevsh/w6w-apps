@@ -9,6 +9,7 @@ Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks.
 - **Website** — https://www.atlassian.com/software/confluence
 - **API docs** — https://developer.atlassian.com/cloud/confluence/rest/v2/ ·
   schema: https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json
+- **Triggers** — 2 (poll)
 
 ## Setup
 

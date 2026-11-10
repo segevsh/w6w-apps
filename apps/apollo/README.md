@@ -12,6 +12,7 @@ and outreach machinery (sequences, tasks, lists) built on top of them, on the **
 - **Website** — https://www.apollo.io/
 - **API docs** — https://docs.apollo.io/reference/apollo-api
 - **Status page** — https://status.apollo.io/
+- **Triggers** — 2 (poll)
 
 > **Everything below was verified against Apollo's own sources on 2026-08-29** — its OpenAPI 3.1
 > document (embedded inline in every `docs.apollo.io/reference/*` page as `document.api.schema`, 74

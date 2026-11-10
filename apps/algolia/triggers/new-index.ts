@@ -7,8 +7,11 @@ const trigger: TriggerDefinition = {
   title: "New Index",
   description: "Emits indices newly added to this application's bounded index collection.",
   params: [],
-  output: [{ key: "key", type: "string", label: "Index name" }],
-  sample: { key: "products", values: { name: "products" } },
+  output: [
+    { key: "change", type: "string", label: "Change" },
+    { key: "key", type: "string", label: "Index name" },
+  ],
+  sample: { change: "added", key: "products", values: { name: "products" } },
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
     const first = await action.execute({ page: 0, hitsPerPage: 1000 }, ctx) as {

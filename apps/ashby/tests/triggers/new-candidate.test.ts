@@ -19,9 +19,22 @@ test("new-candidate seeds, emits, retries, and sends the rolling createdAfter fi
       JSON.parse(seed.calls[0].body!).createdAfter,
       Date.parse("2026-11-09T11:58:00.000Z"),
     );
+    clock.now = () => Date.parse("2026-11-09T12:05:00.000Z");
+    const second = await trigger.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([{ body: page("b") }]).ctx,
+    );
+    assertEquals(second.events, [{ id: "b" }]);
+    clock.now = () => Date.parse("2026-11-09T12:10:00.000Z");
+    const next = mockCtx([{ body: page("c") }]);
+    const emitted = await trigger.poll!({ ...input, state: second.nextState }, next.ctx);
+    assertEquals(emitted.events, [{ id: "c" }]);
+    assertEquals(
+      JSON.parse(next.calls[0].body!).createdAfter,
+      Date.parse("2026-11-09T12:03:00.000Z"),
+    );
     const run = () =>
       trigger.poll!({ ...input, state: seeded.nextState }, mockCtx([{ body: page("b") }]).ctx);
-    assertEquals((await run()).events, [{ id: "b" }]);
     assertEquals(await run(), await run());
   } finally {
     clock.now = originalNow;

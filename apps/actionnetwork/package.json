@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/actionnetwork",
   "version": "0.2.0",
-  "description": "Manage Action Network people, tags, petitions, events, forms, fundraising pages, advocacy campaigns and mass email, and record signatures, RSVPs, submissions, donations and outreaches; includes new and updated person poll triggers.",
+  "description": "Manage Action Network people, tags, petitions, events, forms, fundraising pages, advocacy campaigns and mass email; poll new and updated people.",
   "license": "MIT",
   "author": {
     "name": "w6w"

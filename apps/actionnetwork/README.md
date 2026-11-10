@@ -10,6 +10,7 @@ donations and outreaches recorded against them. v1 is deprecated and not used.
   to one list: a group you administer (needed for tags and most organizing data) or your personal list.
 - **Egress:** `actionnetwork.org` only.
 - **Docs:** https://actionnetwork.org/docs/
+- **Triggers** — 2 (poll)
 
 ## Actions (70)
 
@@ -133,4 +134,4 @@ for cancelling or stopping a message.
 | `new-person` — New Person | Poll | `person-list` | Each person created since the prior check |
 | `new-or-updated-person` — New or Updated Person | Poll | `person-list` | Each person modified since the prior check |
 
-The People endpoint supports OData `created_date` and `modified_date` filters; the triggers retain a rolling cursor and walk every matching page. Source: [Action Network People API](https://actionnetwork.org/docs/v2/people) (verified 2026-11-09).
+The People endpoint supports OData `created_date` and `modified_date` filters; the triggers retain a rolling cursor and fetch every matching page before deduplication. Source: [Action Network OData API](https://actionnetwork.org/docs/v2/) (verified 2026-11-09).

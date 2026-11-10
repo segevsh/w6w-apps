@@ -5,6 +5,8 @@ w6w workflow. API host `api.alegra.com`, prefix `/api/v1`. Every path, parameter
 read from Alegra's own OpenAPI reference (`developer.alegra.com`, each page's `.md` form) on
 2026-10-06.
 
+- **Triggers** — 1 (poll)
+
 ## Auth
 
 `basic`: the account **email** plus the **API token** from Alegra under
