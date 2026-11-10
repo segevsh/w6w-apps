@@ -258,3 +258,5 @@ deno task test
 
 `deno task validate` passes `--config ./deno.json` explicitly — see the sibling `apify`/`paddle`
 apps for why that flag matters.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list has no documented newest-first ordering (https://doc.tldv.io/)

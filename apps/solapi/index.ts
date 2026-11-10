@@ -44,6 +44,7 @@ import listKakaoChannels from "./actions/list-kakao-channels.ts";
 import getKakaoChannel from "./actions/get-kakao-channel.ts";
 import listKakaoTemplates from "./actions/list-kakao-templates.ts";
 import getKakaoTemplate from "./actions/get-kakao-template.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -72,4 +73,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

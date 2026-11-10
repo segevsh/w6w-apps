@@ -251,3 +251,7 @@ a credential — plus two specific to this app: **every infrastructure-changing
 path still has its gate parameter**, and **nothing logs a variable value or a
 state output value**, checked on the log call's values rather than its keys so
 `count: outputs.length` passes and `outputs: outputs` does not.
+
+## Triggers
+
+- **New Run** polls a workspace's newest-first run history. Source: https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run (verified 2026-11-09).

@@ -125,3 +125,7 @@ were not observed on an authenticated 200. A 429 body names the limit and reset 
 `https://developers.signwell.com/favicon.ico` — which is an SVG (695 bytes, `file(1)`: "SVG Scalable
 Vector Graphics image"), not an ICO. Format with `deno task fmt`, never bare `deno fmt`, which
 rewrites it.
+
+## Triggers
+
+- **New Bulk Send** polls the newest bulk-send page. Source: https://developers.signwell.com (verified 2026-11-09).

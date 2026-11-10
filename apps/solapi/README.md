@@ -95,3 +95,7 @@ and OAuth2 flow. The fast-intake variants (`/send-many/fast`, `/groups/fast`) ar
 The channel-list reference names its next-page cursor `startKey` on the response (every other
 list says `nextKey`), so `list-kakao-channels` reports `nextKey: null`; filter or raise the page
 size to reach further channels, and confirm paging on an account with many.
+
+## Triggers
+
+- **New Message** polls the message-history feed. Source: https://developers.solapi.com/references/messages/list-messages (verified 2026-11-09).

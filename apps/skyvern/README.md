@@ -101,3 +101,7 @@ not verifiable without a key, so treat that field as sensitive in downstream ste
 
 `deno task test` runs 54 tests: the entry module, one file per action under `tests/actions/`, the
 client, auth and the health checks, all against a mocked `HookContext`.
+
+## Triggers
+
+- **New Run** polls Skyvern's newest-first runs feed. Source: https://api.skyvern.com/openapi.json (verified 2026-11-09).

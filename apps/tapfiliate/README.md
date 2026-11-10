@@ -174,3 +174,5 @@ deno task lint        # deno lint
 deno task fmt         # format (run before check/lint, not after)
 deno task validate    # manifest + icon-legibility audit
 ```
+
+Triggers: not shipped — date-filtered collections do not document an ordering guarantee, so page one is not a safe new-record feed (https://tapfiliate.com/docs/rest/)

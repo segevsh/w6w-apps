@@ -159,3 +159,5 @@ Researched and endpoint-verified 2026-09-05 by fetching the live OpenAPI documen
 (`swagger-admin`, `swagger-public`) linked from `simplybook.me/api/doc`'s embedded Swagger UI, plus
 live probes of `POST /admin/auth` and the status-page candidates above. Re-verify if a probe starts
 failing for everyone at once.
+
+Triggers: not shipped — booking and client lists are paged but document no created-order or creation filter (https://simplybook.me/api/swagger-admin)

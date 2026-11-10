@@ -298,3 +298,7 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+## Triggers
+
+- **New Enrollment** polls the enrollment list. Source: https://developers.thinkific.com/api/api-documentation/ (verified 2026-11-09).

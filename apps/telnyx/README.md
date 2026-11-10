@@ -161,3 +161,5 @@ app at `unknown` forever.
 ---
 
 Researched and endpoint-verified 2026-09-05.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: messaging delivery and call-control events; phone-number inventory has no created feed (https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks)

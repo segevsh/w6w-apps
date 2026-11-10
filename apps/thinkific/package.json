@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/thinkific",
-  "version": "0.1.2",
-  "description": "Manage Thinkific courses, users, enrollments, orders, products and bundles through the Admin API.",
+  "version": "0.2.0",
+  "description": "Manage Thinkific courses, users, enrollments, orders, products and bundles, and trigger on new enrollments.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "api.thinkific.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

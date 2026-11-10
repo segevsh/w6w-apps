@@ -163,3 +163,5 @@ No `quota` check is declared — see above.
 Researched and endpoint-verified 2026-07-31 against Snowflake's own documentation
 (`docs.snowflake.com`). Re-verify against a live account if a probe starts failing for everyone
 at once; this app was built without one available.
+
+Triggers: not shipped — SQL SHOW database and warehouse output is account metadata, not a created-record feed (https://docs.snowflake.com/en/developer-guide/sql-api/index)
