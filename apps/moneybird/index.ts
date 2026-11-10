@@ -16,6 +16,8 @@ import oauth2 from "./auth/oauth2.ts";
 import personalToken from "./auth/personal-token.ts";
 
 import service from "./health/service.ts";
+import newSalesInvoice from "./triggers/new-sales-invoice.ts";
+import newOrUpdatedSalesInvoice from "./triggers/new-or-updated-sales-invoice.ts";
 
 export default {
   actions: [
@@ -33,4 +35,5 @@ export default {
   ],
   auth: [personalToken, oauth2],
   healthChecks: [service],
+  triggers: [newSalesInvoice, newOrUpdatedSalesInvoice],
 } satisfies AppDefinition;

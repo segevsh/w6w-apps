@@ -1,5 +1,7 @@
 # Mindee
 
+Triggers: not shipped — webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll (https://docs.mindee.com/integrations/webhooks)
+
 Extract structured data from documents with Mindee's OCR/AI models, on the **Mindee Platform V2
 API**.
 
