@@ -1,10 +1,11 @@
-import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
+import type { HookContext, OutputField, Param, TriggerCall, TriggerDefinition } from "@w6w/types";
 import {
   header,
   requireRawBody,
   requireSecret,
   timingSafeEqual,
 } from "../../_shared/webhook/mod.ts";
+import transferList from "../actions/transfer-list.ts";
 
 /**
  * Wise webhook triggers: a manual-webhook receiver
@@ -212,6 +213,87 @@ function assertOwnProfile(configured: unknown, delivered: unknown): void {
   }
 }
 
+/**
+ * The Wise signature check shared by every trigger: POST only, the raw body, the
+ * `X-Signature-SHA256` header verified (RSA-SHA256, PKCS#1 v1.5) against the pinned public key of
+ * the chosen environment, THEN the body parsed into an event notification. Throws on anything else.
+ */
+async function verifyDelivery(
+  raw: TriggerCall,
+  params: TriggerParams | undefined,
+  keys: PublicKeys,
+): Promise<{ event: Record<string, unknown>; eventType: string }> {
+  if (raw.method.toUpperCase() !== "POST") {
+    throw new Error(`Wise delivers webhooks with POST, not ${raw.method}.`);
+  }
+  const body = requireRawBody(raw);
+  const environment = params?.environment ?? "live";
+  if (environment !== "live" && environment !== "sandbox") {
+    throw new Error("Wise delivery refused: the Wise environment is not live or sandbox.");
+  }
+  const signature = header(raw, "x-signature-sha256");
+  if (signature === undefined || signature === "") {
+    throw new Error("Wise delivery refused: the X-Signature-SHA256 header is missing.");
+  }
+  let verified = false;
+  try {
+    verified = await verifyRsaSha256(keys[environment], body, signature.trim());
+  } catch {
+    verified = false;
+  }
+  if (!verified) throw new Error("Wise delivery refused: the signature does not match.");
+
+  // Verified.
+  let event: Record<string, unknown> | null;
+  try {
+    event = asObject(JSON.parse(body));
+  } catch {
+    event = null;
+  }
+  const eventType = str(event?.event_type);
+  if (!event || !eventType) {
+    throw new Error("Not a Wise event notification: expected an object with event_type.");
+  }
+  return { event, eventType };
+}
+
+/** The run's event from a verified, profile-bound notification. */
+function toWiseEvent(
+  raw: TriggerCall,
+  event: Record<string, unknown>,
+  eventType: string,
+): WiseEvent {
+  return {
+    eventType,
+    deliveryId: str(header(raw, "x-delivery-id")),
+    subscriptionId: str(event.subscription_id),
+    schemaVersion: str(event.schema_version),
+    sentAt: str(event.sent_at),
+    data: asObject(event.data) ?? {},
+  };
+}
+
+/** Where each profile-bound event names the profile its signed body is about. */
+export interface ProfileBinding {
+  path: readonly string[];
+  /** When set, `data.resource.type` must equal it (a profile event's `resource.id` is a profile). */
+  resourceType?: string;
+}
+
+/** Throws unless the bound profile is the user's own (see `assertOwnProfile`). */
+function bindProfile(
+  params: TriggerParams | undefined,
+  event: Record<string, unknown>,
+  binding: ProfileBinding,
+): void {
+  if (binding.resourceType !== undefined) {
+    if (at(event.data, ["resource", "type"]) !== binding.resourceType) {
+      throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
+    }
+  }
+  assertOwnProfile(params?.profileId, at(event.data, binding.path));
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
@@ -229,6 +311,11 @@ export interface WebhookTriggerSpec {
   schemaVersion?: string;
   /** A representative `data` for the sample. */
   sampleData: Record<string, unknown>;
+  /**
+   * Narrows the one event type to a subset (e.g. only credits of `balances#update`). Runs after the
+   * signature and the profile binding, on the signed `data`; false = acknowledged with no event.
+   */
+  accept?: (data: Record<string, unknown>) => boolean;
 }
 
 /**
@@ -262,57 +349,240 @@ export function webhookTrigger(
     onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
-      if (raw.method.toUpperCase() !== "POST") {
-        throw new Error(`Wise delivers webhooks with POST, not ${raw.method}.`);
-      }
-      const body = requireRawBody(raw);
-      const environment = params?.environment ?? "live";
-      if (environment !== "live" && environment !== "sandbox") {
-        throw new Error("Wise delivery refused: the Wise environment is not live or sandbox.");
-      }
-      const signature = header(raw, "x-signature-sha256");
-      if (signature === undefined || signature === "") {
-        throw new Error("Wise delivery refused: the X-Signature-SHA256 header is missing.");
-      }
-      let verified = false;
-      try {
-        verified = await verifyRsaSha256(keys[environment], body, signature.trim());
-      } catch {
-        verified = false;
-      }
-      if (!verified) throw new Error("Wise delivery refused: the signature does not match.");
-
-      // Verified.
-      let event: Record<string, unknown> | null;
-      try {
-        event = asObject(JSON.parse(body));
-      } catch {
-        event = null;
-      }
-      const eventType = str(event?.event_type);
-      if (!event || !eventType) {
-        throw new Error("Not a Wise event notification: expected an object with event_type.");
-      }
+      const { event, eventType } = await verifyDelivery(raw, params, keys);
       // Another event type starts nothing here (and has no field this trigger knows to bind on).
       if (eventType !== spec.eventType) return [];
       // Bind the delivery to the user's own profile (read from the SIGNED body, nowhere else).
-      if (spec.resourceType !== undefined) {
-        if (at(event.data, ["resource", "type"]) !== spec.resourceType) {
-          throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
-        }
-      }
-      assertOwnProfile(params?.profileId, at(event.data, spec.profilePath));
+      bindProfile(params, event, { path: spec.profilePath, resourceType: spec.resourceType });
+      if (spec.accept && !spec.accept(asObject(event.data) ?? {})) return [];
 
       // A test notification (sent when the subscription is created) starts no run.
       if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
-      return [{
-        eventType,
-        deliveryId: str(header(raw, "x-delivery-id")),
-        subscriptionId: str(event.subscription_id),
-        schemaVersion: str(event.schema_version),
-        sentAt: str(event.sent_at),
-        data: asObject(event.data) ?? {},
-      }];
+      return [toWiseEvent(raw, event, eventType)];
     },
   };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Any Event: one trigger for every signed event whose body names the user's profile.
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * The event types the Any Event trigger can deliver, and where each one's SIGNED body names the
+ * profile (docs.wise.com/api-reference/webhook-event/*, verified 2026-11-10). An event type that
+ * is not listed (`incoming-transfer#credited` carries only an incoming transfer id,
+ * `recipients#state-change` documents no profile field, the card and partner events are
+ * application-level) cannot be tied to the user's own account, so it is refused at subscribe time
+ * and never delivered: a valid Wise signature proves "Wise sent this", not "this is your account".
+ */
+export const EVENT_BINDINGS: Readonly<Record<string, ProfileBinding>> = {
+  "transfers#state-change": { path: ["resource", "profile_id"] },
+  "transfers#active-cases": { path: ["resource", "profile_id"] },
+  "transfers#payout-failure": { path: ["profile_id"] },
+  "transfers#refund": { path: ["resource", "profile_id"] },
+  "balances#update": { path: ["resource", "profile_id"] },
+  "profiles#state-change": { path: ["resource", "id"], resourceType: "profile" },
+  "profiles#verification-state-change": { path: ["resource", "id"], resourceType: "profile" },
+  "hold-limit-breach#update": { path: ["resource", "profile_id"] },
+  "account-details-payment#state-change": { path: ["resource", "profile_id"] },
+  "swift-in#credit": { path: ["action", "profile_id"] },
+  "swift#message-received": { path: ["action", "profile_id"] },
+};
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint: `Comma-separated Wise event types to receive (${
+    Object.keys(EVENT_BINDINGS).join(", ")
+  }). Leave empty for all of them. Subscribe the callback URL in Wise's Developer Hub to the same events.`,
+};
+
+/** The comma-separated `events` param → the event types to deliver (empty = all bindable). */
+export function chooseEvents(events: string | undefined): string[] {
+  const asked = (events ?? "").split(",").map((e) => e.trim()).filter((e) => e !== "");
+  if (asked.length === 0) return Object.keys(EVENT_BINDINGS);
+  const bad = asked.filter((e) => !Object.hasOwn(EVENT_BINDINGS, e));
+  if (bad.length > 0) {
+    throw new Error(
+      `Wise events this trigger cannot tie to your profile (or does not know): ${bad.join(", ")}.`,
+    );
+  }
+  return [...new Set(asked)];
+}
+
+export interface AnyEventParams extends TriggerParams {
+  /** Comma-separated Wise event types; empty = every event in `EVENT_BINDINGS`. */
+  events?: string;
+}
+
+/** Build the Any Event trigger. `keys` is the public key pair; only a test passes another. */
+export function anyEventTrigger(
+  spec: { key: string; title: string; description: string },
+  keys: PublicKeys = WISE_PUBLIC_KEYS,
+): TriggerDefinition<AnyEventParams, WiseEvent, TriggerState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [ENVIRONMENT_PARAM, PROFILE_ID_PARAM, EVENTS_PARAM],
+    output: EVENT_OUTPUT,
+    sample: {
+      eventType: "transfers#state-change",
+      deliveryId: "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
+      subscriptionId: "01234567-89ab-cdef-0123-456789abcdef",
+      schemaVersion: "4.0.0",
+      sentAt: "2026-11-09T10:12:50.123Z",
+      data: {
+        resource: { type: "transfer", id: 111, profile_id: 222, account_id: 333 },
+        current_state: "outgoing_payment_sent",
+        previous_state: "processing",
+        occurred_at: "2026-11-09T10:12:50Z",
+      },
+    } satisfies WiseEvent,
+
+    // Manual webhook: refuse an event list this trigger could not deliver, then hand back the URL.
+    onSubscribe({ params, callbackUrl }) {
+      chooseEvents(params?.events);
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      const { event, eventType } = await verifyDelivery(raw, params, keys);
+      const wanted = chooseEvents(params?.events);
+      // An event type outside the list (or one we cannot bind to a profile) starts nothing.
+      if (!wanted.includes(eventType) || !Object.hasOwn(EVENT_BINDINGS, eventType)) return [];
+      bindProfile(params, event, EVENT_BINDINGS[eventType]);
+      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
+      return [toWiseEvent(raw, event, eventType)];
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// New Transfer: a since-filter poll (GET /transfers takes createdDateStart/End, no documented order).
+// ---------------------------------------------------------------------------------------------
+
+/** The clock the poll reads; a test replaces `now`. */
+export const clock = { now: () => Date.now() };
+
+/** Transfers per page, pages per check, and how far a window reaches back behind its cursor. */
+export const TRANSFER_PAGE = 50;
+export const TRANSFER_MAX_PAGES = 3;
+export const TRANSFER_OVERLAP_MS = 120_000;
+export const TRANSFER_SEEN_WINDOW = 600;
+
+export interface NewTransferParams {
+  profileId?: number;
+}
+
+export interface WiseTransfer {
+  id: number;
+  created?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * The kit's ids envelope plus the window bookkeeping:
+ * - `cursor`: ms the last fully drained window ended at,
+ * - `floor`: ms of the seed; a transfer created before it is never emitted (section 9.9),
+ * - `resume`: set while a window is only partly read — its bounds and the next offset (section 9.8).
+ */
+export interface TransferState {
+  v: 1;
+  kind: "ids";
+  seeded: true;
+  ids: string[];
+  cursor: number;
+  floor: number;
+  resume?: { after: number; until: number; offset: number };
+}
+
+function readTransferState(state: unknown): TransferState | null {
+  const s = state as Partial<TransferState> | null;
+  if (
+    !s || s.v !== 1 || s.kind !== "ids" || s.seeded !== true || !Array.isArray(s.ids) ||
+    typeof s.cursor !== "number" || typeof s.floor !== "number"
+  ) return null;
+  return s as TransferState;
+}
+
+/** A transfer's own creation time in ms (`2017-11-24 10:47:49` is UTC), or null when unparseable. */
+export function createdMs(t: { created?: unknown }): number | null {
+  if (typeof t.created !== "string" || t.created === "") return null;
+  const iso = /^\d{4}-\d{2}-\d{2} \d/.test(t.created)
+    ? `${t.created.replace(" ", "T")}Z`
+    : t.created;
+  const ms = Date.parse(/(Z|[+-]\d{2}:?\d{2})$/.test(iso) ? iso : `${iso}Z`);
+  return Number.isFinite(ms) ? ms : null;
+}
+
+const isoSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
+
+/**
+ * One check. Seed: remember `floor = cursor = now`, read nothing. Later checks list transfers
+ * created in `[max(cursor - overlap, floor), until]` (until = now, fixed while a window is being
+ * read, so a new transfer cannot shift the offsets), drop any created before the floor, and dedupe
+ * by id. A window of more than TRANSFER_MAX_PAGES pages is read across checks (`resume.offset`);
+ * the cursor only moves once it is drained.
+ */
+export async function checkTransfers(
+  params: NewTransferParams,
+  state: unknown,
+  ctx: HookContext,
+): Promise<{ events: WiseTransfer[]; nextState: TransferState }> {
+  const now = clock.now();
+  const prior = readTransferState(state);
+  if (!prior) {
+    return {
+      events: [],
+      nextState: { v: 1, kind: "ids", seeded: true, ids: [], cursor: now, floor: now },
+    };
+  }
+  const window = prior.resume ?? {
+    after: Math.max(prior.cursor - TRANSFER_OVERLAP_MS, prior.floor),
+    until: now,
+    offset: 0,
+  };
+  const seen = new Set(prior.ids);
+  const queued = new Set<string>();
+  const fresh: WiseTransfer[] = [];
+  let offset = window.offset;
+  let drained = false;
+  for (let page = 0; page < TRANSFER_MAX_PAGES; page++) {
+    const res = await transferList.execute({
+      profile: params.profileId,
+      createdDateStart: isoSeconds(window.after),
+      createdDateEnd: isoSeconds(window.until),
+      limit: TRANSFER_PAGE,
+      offset,
+    }, ctx) as { items?: WiseTransfer[] };
+    const items = res.items ?? [];
+    for (const t of items) {
+      if (t?.id === undefined || t.id === null) continue;
+      const id = String(t.id);
+      const at = createdMs(t);
+      if (at !== null && at < prior.floor) continue;
+      if (seen.has(id) || queued.has(id)) continue;
+      queued.add(id);
+      fresh.push(t);
+    }
+    offset += items.length;
+    if (items.length < TRANSFER_PAGE) {
+      drained = true;
+      break;
+    }
+  }
+  // Oldest first (a transfer with no parseable time sorts by id).
+  const events = fresh.sort((a, b) =>
+    (createdMs(a) ?? 0) - (createdMs(b) ?? 0) || Number(a.id) - Number(b.id)
+  );
+  const ids = [...prior.ids, ...events.map((t) => String(t.id))].slice(-TRANSFER_SEEN_WINDOW);
+  const nextState: TransferState = drained
+    ? { v: 1, kind: "ids", seeded: true, ids, cursor: window.until, floor: prior.floor }
+    : { ...prior, ids, resume: { after: window.after, until: window.until, offset } };
+  return { events, nextState };
 }
