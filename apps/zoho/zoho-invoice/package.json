@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-invoice",
-  "version": "0.1.0",
-  "description": "Create, send and manage contacts, items, invoices and estimates in Zoho Invoice, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Create, send and manage contacts, items, invoices and estimates, and trigger on new contacts in Zoho Invoice, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "www.zohoapis.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

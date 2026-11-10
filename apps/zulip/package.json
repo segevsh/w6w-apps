@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zulip",
-  "version": "0.1.0",
-  "description": "Send, read, edit and react to Zulip messages, and manage channels, topics, subscriptions and users on a Zulip Cloud organization.",
+  "version": "0.2.0",
+  "description": "Send, read, edit and react to Zulip messages, trigger on new messages, and manage channels, topics, subscriptions and users on a Zulip Cloud organization.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "*.zulipchat.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

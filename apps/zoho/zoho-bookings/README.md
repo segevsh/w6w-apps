@@ -1,10 +1,21 @@
 # Zoho Bookings
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key             | Mechanism     | Source           | What the run gets          |
+| --------------- | ------------- | ---------------- | -------------------------- |
+| `new-workspace` | poll snapshot | `workspace-list` | Newly available workspaces |
+
+The workspace collection is read in one request and snapshotted for additions. Vendor API reference:
+https://www.zoho.com/bookings/help/api/v1/workspaces.html (verified 2026-11-09).
+
 List workspaces, services and staff, check availability, and book, get, update, reschedule and
 cancel appointments in Zoho Bookings — appointment scheduling software.
 
-Scoped to **Zoho Bookings specifically**. This pack already ships `zoho` (Zoho CRM), `zohobooks`
-and `zohodesk`, separate products with separate API surfaces — do not confuse the four, and do not
+Scoped to **Zoho Bookings specifically**. This pack already ships `zoho` (Zoho CRM), `zohobooks` and
+`zohodesk`, separate products with separate API surfaces — do not confuse the four, and do not
 modify `apps/zoho/zoho/`, `apps/zoho/zohobooks/` or `apps/zoho/zohodesk/` from here.
 
 - **Categories** — calendar
@@ -20,13 +31,13 @@ modify `apps/zoho/zoho/`, `apps/zoho/zohobooks/` or `apps/zoho/zohodesk/` from h
 
 ## Actions
 
-| Resource     | Actions                                                          |
-| ------------ | ----------------------------------------------------------------- |
-| Workspace    | list                                                              |
-| Service      | list                                                              |
-| Staff        | list, add                                                         |
-| Availability | list (available slots for a service on a date)                   |
-| Appointment  | book, get, update status (complete/cancel/no-show), reschedule    |
+| Resource     | Actions                                                        |
+| ------------ | -------------------------------------------------------------- |
+| Workspace    | list                                                           |
+| Service      | list                                                           |
+| Staff        | list, add                                                      |
+| Availability | list (available slots for a service on a date)                 |
+| Appointment  | book, get, update status (complete/cancel/no-show), reschedule |
 
 This is every endpoint Zoho documents for the Bookings v1 API — there is no customer/contact list,
 recurring-appointment, payment/checkout or resource (room/equipment) management endpoint published,
@@ -74,8 +85,8 @@ exact accounts hosts `zohobooks`/`zohodesk` already verified live rather than re
 central login system from scratch).
 
 Because the OAuth host is baked into the authorization flow itself (the browser is redirected to a
-specific accounts host before any in-flow field could be read), a single `oauth2` auth method with
-a "data centre" selector cannot express this — `auth/oauth2.ts` declares **one `AuthDefinition` per
+specific accounts host before any in-flow field could be read), a single `oauth2` auth method with a
+"data centre" selector cannot express this — `auth/oauth2.ts` declares **one `AuthDefinition` per
 data centre** instead (`oauth2-us`, `oauth2-eu`, `oauth2-in`, `oauth2-au`, `oauth2-jp`, `oauth2-ca`,
 `oauth2-cn`, `oauth2-sa`). The user picks the method matching their account's data centre when
 connecting, and `w6w.network.allow` lists every corresponding API host.
@@ -83,9 +94,9 @@ connecting, and `w6w.network.allow` lists every corresponding API host.
 **Canada is the one region where the accounts host does not follow the API host's naming pattern.**
 Bookings' own domain table gives the Canadian API base as `https://www.zohoapis.ca/bookings/` — the
 same `www.zohoapis.<tld>` shape as the other seven — but there is **no** `accounts.zoho.ca`. Probed
-live from this container on 2026-09-05: `https://accounts.zoho.ca/oauth/v2/auth` fails to connect
-at all, while `https://accounts.zohocloud.ca/oauth/v2/auth` answers `302` (a real redirect to the
-Zoho login page) — the identical finding `zohobooks`/`zohodesk` document for their own products.
+live from this container on 2026-09-05: `https://accounts.zoho.ca/oauth/v2/auth` fails to connect at
+all, while `https://accounts.zohocloud.ca/oauth/v2/auth` answers `302` (a real redirect to the Zoho
+login page) — the identical finding `zohobooks`/`zohodesk` document for their own products.
 `oauth2-ca` uses `accounts.zohocloud.ca` deliberately.
 
 Each `oauth2-<region>` method's `afterConnect` records that region's fixed `apiHost` on the
@@ -101,15 +112,15 @@ This is the one place this app deviates from "classify a credential failure from
 never the status code alone." Live-probed 2026-09-05 against
 `https://www.zohoapis.com/bookings/v1/json/workspaces`:
 
-| Request                                  | HTTP  | Body                                                      |
-| ----------------------------------------- | ----- | ---------------------------------------------------------- |
-| No `Authorization` header at all          | `400` | `text/html`, ~1.6 KB, "Zoho Creator - Error Page"           |
-| `Authorization: Zoho-oauthtoken garbage`  | `401` | Byte-identical HTML page, only the status code differs      |
+| Request                                  | HTTP  | Body                                                   |
+| ---------------------------------------- | ----- | ------------------------------------------------------ |
+| No `Authorization` header at all         | `400` | `text/html`, ~1.6 KB, "Zoho Creator - Error Page"      |
+| `Authorization: Zoho-oauthtoken garbage` | `401` | Byte-identical HTML page, only the status code differs |
 
 Both cases render a generic "Something went wrong... contact support@zohobookings.com" page — the
-`support@zohobookings.com` address confirms this really is the Bookings backend and not a decoy,
-but it gives no structured field to classify by, unlike `zohobooks` (`{"code":14}` / `{"code":57}`)
-or `zohodesk` (`{"errorCode":"UNAUTHORIZED"}` / `{"errorCode":"INVALID_OAUTH"}`). `auth/oauth2.ts`'s
+`support@zohobookings.com` address confirms this really is the Bookings backend and not a decoy, but
+it gives no structured field to classify by, unlike `zohobooks` (`{"code":14}` / `{"code":57}`) or
+`zohodesk` (`{"errorCode":"UNAUTHORIZED"}` / `{"errorCode":"INVALID_OAUTH"}`). `auth/oauth2.ts`'s
 `test` hook therefore falls back to the HTTP status itself — 400 = no usable token reached the
 request, 401 = a token reached it and was rejected — because there is nothing else to read. A
 successful response (`res.ok` **and** a JSON content-type) is still classified by the vendor's own
@@ -117,14 +128,15 @@ successful response (`res.ok` **and** a JSON content-type) is still classified b
 
 ## Add Staff's response has no `returnvalue`/`status` wrapper at all
 
-Every other endpoint answers `{"response": {"returnvalue": ..., "status": "success", "logMessage":
-[]}}`. Add Staff instead answers a bare `{"response": [...]}` array — one entry per staff member
-submitted — whose per-item `status` field is `"success"` **or** an error description such as
-`"Staff already exists"`, even on an otherwise-2xx response (the vendor's own documented "Possible
-Errors" section describes this exact shape). `lib/client.ts#unwrapStaffAddResult` turns a
-non-success per-item status into a thrown error, the same "a 2xx can still carry a per-item failure"
-discipline this pack's `zoho` (CRM) app applies to its own batch-style create/update/delete/convert
-responses.
+Every other endpoint answers
+`{"response": {"returnvalue": ..., "status": "success", "logMessage":
+[]}}`. Add Staff instead
+answers a bare `{"response": [...]}` array — one entry per staff member submitted — whose per-item
+`status` field is `"success"` **or** an error description such as `"Staff already exists"`, even on
+an otherwise-2xx response (the vendor's own documented "Possible Errors" section describes this
+exact shape). `lib/client.ts#unwrapStaffAddResult` turns a non-success per-item status into a thrown
+error, the same "a 2xx can still carry a per-item failure" discipline this pack's `zoho` (CRM) app
+applies to its own batch-style create/update/delete/convert responses.
 
 ## Health check
 
@@ -146,12 +158,12 @@ but are separate components. `health/service.ts` matches the component name **ex
 `"Zoho Books"` can never satisfy a check looking for `"Zoho Bookings"`.
 
 | StatusIQ status      | Mapped state |
-| --------------------- | ------------ |
-| Operational           | ok           |
-| Under Maintenance     | degraded     |
-| Degraded Performance  | degraded     |
-| Partial Outage        | degraded     |
-| Major Outage          | down         |
+| -------------------- | ------------ |
+| Operational          | ok           |
+| Under Maintenance    | degraded     |
+| Degraded Performance | degraded     |
+| Partial Outage       | degraded     |
+| Major Outage         | down         |
 
 ### Is this credential live?
 
@@ -180,11 +192,11 @@ outranks `ok`, so any other severity would pin the App's verdict at `unknown` fo
 
 Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
 
-| Key                    | Kind       | Scope      | Credential | Severity      | Min interval | Probe                                                      |
-| ----------------------- | ---------- | ---------- | ---------- | -------------- | ------------ | ------------------------------------------------------------ |
-| `service`               | service    | app        | none       | degraded       | 300s         | `health/service.ts` (feed)                                    |
-| `quota`                 | quota      | —          | —          | informational  | —            | ~~declared unavailable~~ (`health/quota.ts`)                   |
-| `auth:oauth2-<region>`  | credential | connection | signed     | fatal          | —            | derived from each region's `oauth2-<region>` `test` hook (8)  |
+| Key                    | Kind       | Scope      | Credential | Severity      | Min interval | Probe                                                        |
+| ---------------------- | ---------- | ---------- | ---------- | ------------- | ------------ | ------------------------------------------------------------ |
+| `service`              | service    | app        | none       | degraded      | 300s         | `health/service.ts` (feed)                                   |
+| `quota`                | quota      | —          | —          | informational | —            | ~~declared unavailable~~ (`health/quota.ts`)                 |
+| `auth:oauth2-<region>` | credential | connection | signed     | fatal         | —            | derived from each region's `oauth2-<region>` `test` hook (8) |
 
 The host `us.zohostatus.com` (for `service`) is reachable **only inside that hook's worker** — not
 from any action, and not from the other checks.
@@ -202,10 +214,10 @@ so the manifest-level accessibility text is correct even though the SVG's own in
 1. **The write endpoints expect `multipart/form-data`, not JSON**, despite the API otherwise being
    JSON in and out (`/v1/json/...` paths, `Response Type: JSON` on every page) — sending a JSON body
    to Book/Update/Reschedule Appointment or Add Staff does not match any documented sample request.
-2. **An auth failure gives no JSON body to read at all** — a generic "Zoho Creator" HTML gateway page
-   for both a missing and an invalid token, distinguished only by HTTP status (400 vs 401). Every
-   other Zoho product in this pack (CRM, Books, Desk) returns a structured error code even when
-   unauthenticated; Bookings does not. Building a `test` hook that expects one and silently
+2. **An auth failure gives no JSON body to read at all** — a generic "Zoho Creator" HTML gateway
+   page for both a missing and an invalid token, distinguished only by HTTP status (400 vs 401).
+   Every other Zoho product in this pack (CRM, Books, Desk) returns a structured error code even
+   when unauthenticated; Bookings does not. Building a `test` hook that expects one and silently
    swallows a JSON-parse failure would misreport every credential problem as "unknown."
 3. **Add Staff's success envelope has no `status`/`returnvalue` field** — a bare array whose
    per-item `status` can itself be the string `"success"` or a human error message, so a check for
