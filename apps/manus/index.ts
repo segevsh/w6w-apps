@@ -99,6 +99,12 @@ import websitePublish from "./actions/website-publish.ts";
 import websiteUpdate from "./actions/website-update.ts";
 
 import newTask from "./triggers/new-task.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newProject from "./triggers/new-project.ts";
+import newConnector from "./triggers/new-connector.ts";
+import newSkill from "./triggers/new-skill.ts";
+import newTaskEvent from "./triggers/new-task-event.ts";
+import newWebsiteCheckpoint from "./triggers/new-website-checkpoint.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -153,5 +159,13 @@ export default {
   // this app does not implement; see the module docblock above.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newTask],
+  triggers: [
+    newTask,
+    newAgent,
+    newProject,
+    newConnector,
+    newSkill,
+    newTaskEvent,
+    newWebsiteCheckpoint,
+  ],
 } satisfies AppDefinition;

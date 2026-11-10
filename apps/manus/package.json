@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/manus",
-  "version": "0.2.0",
-  "description": "Create and drive Manus AI agent tasks, poll their progress, manage projects, files, webhooks and published websites, over Manus's API v2. Trigger workflows on new records.",
+  "version": "0.3.0",
+  "description": "Create and drive Manus AI agent tasks, poll their progress, manage projects, files, webhooks and published websites, over Manus's API v2. Trigger workflows on new tasks, task events, agents, projects, connectors, skills and website checkpoints.",
   "license": "MIT",
   "author": {
     "name": "w6w"
