@@ -11,10 +11,13 @@ import {
 /**
  * PostHog webhook trigger (rfcs/trigger.md, webhook form, MANUAL registration).
  *
- * PostHog has no API that registers a receiver on the host's behalf: the user adds an "HTTP
- * Webhook" realtime destination in the PostHog UI (Data pipelines, + New, Destination) and
- * pastes the callback URL. `onSubscribe` therefore makes no vendor call and returns the
- * callback URL; `onUnsubscribe` is a no-op (the user disables the destination in PostHog).
+ * This trigger does not register a receiver on the host's behalf (PostHog's
+ * `POST /api/projects/:project_id/hog_functions/` can create destinations,
+ * https://posthog.com/docs/api/hog-functions, but registering through it is not built here): the
+ * user adds an "HTTP Webhook" realtime destination in the PostHog UI (Data pipelines, + New,
+ * Destination) and pastes the callback URL. `onSubscribe` therefore makes no vendor call and
+ * returns the callback URL; `onUnsubscribe` is a no-op (the user disables the destination in
+ * PostHog).
  *
  * Signing: that destination has an optional "Signing secret" input which, when set, signs every
  * request per the Standard Webhooks spec. This trigger REQUIRES it (a vendor that can sign is

@@ -95,11 +95,15 @@ test("replay with edited unsigned headers does not change the emitted identity",
 
 test("body without _id/_rev: headers are only a fallback", async () => {
   const b = `{ "_type": "post" }`;
-  const c = call({ rawBody: b, body: JSON.parse(b), headers: {
-    "sanity-webhook-signature": sig(nowMs(), b),
-    "sanity-document-id": "hdr-doc",
-    "idempotency-key": "hdr-key",
-  } }, b);
+  const c = call({
+    rawBody: b,
+    body: JSON.parse(b),
+    headers: {
+      "sanity-webhook-signature": sig(nowMs(), b),
+      "sanity-document-id": "hdr-doc",
+      "idempotency-key": "hdr-key",
+    },
+  }, b);
   const out = evs(await ingest(c)) as Array<Record<string, unknown>>;
   assertEquals(out[0].documentId, "hdr-doc");
   assertEquals(out[0].idempotencyKey, "hdr-key");
