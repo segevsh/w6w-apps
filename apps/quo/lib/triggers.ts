@@ -47,7 +47,8 @@ export function sinceTrigger(spec: {
   key: string;
   title: string;
   description: string;
-  action: ActionDefinition;
+  // deno-lint-ignore no-explicit-any
+  action: ActionDefinition<any>;
   pageSize: number;
   input(
     window: { since: string; until: string },

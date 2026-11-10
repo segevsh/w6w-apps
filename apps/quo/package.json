@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/quo",
   "version": "0.3.0",
-  "description": "Send and read texts, manage calls, contacts and tasks, and subscribe to webhooks on the Quo (formerly OpenPhone) business phone system, with polling triggers for new conversations, calls, messages, users and phone numbers.",
+  "description": "Send and read texts, manage calls, contacts and tasks, and subscribe to webhooks on the Quo (formerly OpenPhone) business phone system, with polling triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
