@@ -77,6 +77,7 @@ import newPageAttachment from "./triggers/new-page-attachment.ts";
 import newPageComment from "./triggers/new-page-comment.ts";
 import newPageLabel from "./triggers/new-page-label.ts";
 import newSpace from "./triggers/new-space.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -122,5 +123,6 @@ export default {
     newPageComment,
     newPageLabel,
     newSpace,
+    newTask,
   ],
 } satisfies AppDefinition;

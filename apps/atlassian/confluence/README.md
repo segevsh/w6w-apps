@@ -274,10 +274,13 @@ a probe starts failing for everyone at once.
 | `new-page-comment` — New Page Comment | Poll | `page-comment-list` (`sort=-created-date`; param: `pageId`) | Each new footer comment on the selected page |
 | `new-page-label` — New Page Label | Poll (snapshot) | `page-label-list` (param: `pageId`) | Each label newly added to the selected page |
 | `new-space` — New Space | Poll (snapshot) | `space-list` | Each newly created space |
+| `new-task` — New Task | Poll (since-filter) | `task-list` endpoint (`created-at-from`; param: `spaceId`) | Each inline task newly created |
 
 Confluence's v2 OpenAPI document gives `getPages`, `getBlogPosts`, `getPageAttachments` and `getPageFooterComments` a `sort` enum with `created-date` / `modified-date` and `-` descending forms, so those triggers read page 1 of 100, newest first. `blogpost-list`, `page-attachment-list` and `page-comment-list` gained an optional `sort` input for this (empty by default, so their existing requests are unchanged). `getPageLabels` and `getSpaces` offer no creation-time sort (spaces sort by `id`, `key` or `name`), so those small collections are polled as snapshots and only additions are emitted. `page-child-list` and `space-page-list` return the same page records `new-page` delivers, so they are covered by `new-page`.
 
-Not covered: `content-search` (a free-form CQL query supplied per call, relevance-ordered unless the query says otherwise — the pages and blog posts it can match are delivered by `new-page` and `new-blogpost`) and `task-list` (`getTasks` documents no sort parameter and no created or updated filter, so neither a newest-first nor a since read exists).
+`getTasks` documents no sort but a `created-at-from` filter (epoch ms, inclusive), so `new-task` reads from the last check minus an hour, follows the cursor for up to three pages per check and resumes a longer window on the next check; a task's `createdAt` is compared with the time of the first check so earlier tasks never fire. `task-list` gained an optional `createdAtFrom` input (empty by default, so its existing requests are unchanged).
+
+Not covered: `content-search` (a free-form CQL query supplied per call, relevance-ordered unless the query says otherwise — the pages and blog posts it can match are delivered by `new-page` and `new-blogpost`).
 
 Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
