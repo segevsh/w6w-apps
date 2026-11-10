@@ -28,3 +28,13 @@ test("new-policy: seeds, emits only added policies, retries idempotently, and po
   );
   assertEquals(sent(first.calls[0]).job, { type: "get", inputSettings: { type: "policyList" } });
 });
+
+test("new-policy: edits and removals do not emit", async () => {
+  const seed = mockCtx([{ body: { responseCode: 200, policyList: [policy("A"), policy("B")] } }]);
+  const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+  const next = mockCtx([{
+    body: { responseCode: 200, policyList: [{ ...policy("A"), name: "Renamed" }] },
+  }]);
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(result.events, []);
+});

@@ -24,3 +24,14 @@ test("new-connection: seeds, emits only added connections, retries idempotently,
   assertEquals(first.calls[0].method, "GET");
   assertEquals(first.calls[0].url, "https://api.fivetran.com/v1/connections?limit=1000");
 });
+
+test("new-connection: edits and removals do not emit", async () => {
+  const seed = mockCtx([page("a", "b")]);
+  const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+  const edited = { ...connection("a"), schema: "renamed" };
+  const next = mockCtx([{
+    body: { code: "Success", data: { items: [edited], next_cursor: null } },
+  }]);
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(result.events, []);
+});

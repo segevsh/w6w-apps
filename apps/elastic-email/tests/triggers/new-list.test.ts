@@ -22,3 +22,11 @@ test("new-list: seeds, emits only added lists, retries idempotently, and request
   assertEquals(pathOf(first.calls[0].url), "/v4/lists");
   assertEquals(queryOf(first.calls[0].url), { limit: "5000" });
 });
+
+test("new-list: edits and removals do not emit", async () => {
+  const seed = mockCtx([{ body: [list("a"), list("b")] }]);
+  const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+  const next = mockCtx([{ body: [{ ...list("a"), ListName: "Renamed" }] }]);
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(result.events, []);
+});

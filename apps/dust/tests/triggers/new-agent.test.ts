@@ -25,3 +25,13 @@ test("new-agent: seeds, emits only added agents, retries idempotently, and reque
     "https://dust.tt/api/v1/w/ws_test123/assistant/agent_configurations?view=list",
   );
 });
+
+test("new-agent: edits and removals do not emit", async () => {
+  const seed = mockCtxWithConnection([{ body: { agentConfigurations: [agent("a"), agent("b")] } }]);
+  const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+  const next = mockCtxWithConnection([{
+    body: { agentConfigurations: [{ ...agent("a"), name: "Renamed" }] },
+  }]);
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(result.events, []);
+});

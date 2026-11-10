@@ -22,3 +22,11 @@ test("new-space: seeds, emits only added spaces, retries idempotently, and reque
   assertEquals(first.calls[0].method, "GET");
   assertEquals(first.calls[0].url, "https://dust.tt/api/v1/w/ws_test123/spaces");
 });
+
+test("new-space: edits and removals do not emit", async () => {
+  const seed = mockCtxWithConnection([{ body: { spaces: [space("a"), space("b")] } }]);
+  const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
+  const next = mockCtxWithConnection([{ body: { spaces: [{ ...space("a"), name: "Renamed" }] } }]);
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(result.events, []);
+});
