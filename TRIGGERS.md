@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -318,7 +318,6 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/textmagic | 1 | 6 | 5 |
 | apps/todoist | 3 | 5 | 5 |
 | apps/trustpilot | 1 | 6 | 5 |
-| apps/typeform | 1 | 5 | 5 |
 | apps/vapi | 1 | 6 | 5 |
 | apps/wave | 2 | 6 | 5 |
 | apps/webflow | 4 | 5 | 5 |
@@ -336,7 +335,6 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/blandai | 1 | 5 | 4 |
 | apps/bluesky | 1 | 5 | 4 |
 | apps/browseai | 1 | 5 | 4 |
-| apps/calendly | 2 | 4 | 4 |
 | apps/certifier | 2 | 5 | 4 |
 | apps/cloudconvert | 3 | 4 | 4 |
 | apps/coda | 0 | 4 | 4 |
@@ -544,7 +542,6 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/xai | 1 | 3 | 2 |
 | apps/adalo | 0 | 1 | 1 |
 | apps/airparser | 1 | 2 | 1 |
-| apps/airtable | 1 | 2 | 1 |
 | apps/apitemplateio | 1 | 2 | 1 |
 | apps/assemblyai | 1 | 2 | 1 |
 | apps/autotask | 2 | 1 | 1 |
@@ -618,12 +615,14 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/zoho/zoho-sign | 1 | 2 | 1 |
 | apps/accelo | 4 | 0 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
+| apps/airtable | 3 | 2 | 0 |
 | apps/asana | 9 | 5 | 0 |
 | apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
 | apps/bubble | 2 | 1 | 0 |
+| apps/calendly | 9 | 4 | 0 |
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
@@ -676,6 +675,7 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/twilio/sendgrid | 1 | 0 | 0 |
 | apps/twilio/twilio | 2 | 0 | 0 |
 | apps/twitter | 1 | 1 | 0 |
+| apps/typeform | 8 | 5 | 0 |
 | apps/upsales | 17 | 18 | 0 |
 | apps/uptimerobot | 2 | 2 | 0 |
 | apps/vanta | 15 | 17 | 0 |
@@ -698,7 +698,7 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/brevo | 1 | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brex | 1 | event | apps/brex/README.md Triggers section (verified 2026-11-10) | hand | POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param |
 | apps/cal | 3 | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/calendly | 2 | invitee-canceled, invitee-created | apps/calendly/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/calendly | 9 | invitee-created, invitee-canceled, invitee-no-show-created, invitee-no-show-deleted, event-type-created, event-type-updated, event-type-deleted, routing-form-submission-created, any-event | apps/calendly/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Calendly-Webhook-Signature) |
 | apps/clickup | 20 | any-event, folder-created, folder-deleted, folder-updated, list-created, list-deleted, list-updated, task-assignee-updated, task-comment-posted, task-comment-updated, task-created, task-deleted, task-due-date-updated, task-moved, task-priority-updated, task-status-updated, task-tag-updated, task-time-estimate-updated, task-time-tracked-updated, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | 6 | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
@@ -748,7 +748,7 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/thrivecart | 4 | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret |
 | apps/tiktok-lead-generation | 1 | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
 | apps/toggl | 3 | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/typeform | 1 | new-response | apps/typeform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/typeform | 8 | new-response, new-partial-response, any-event, new-form, new-or-updated-form, new-workspace, new-theme, new-image | apps/typeform/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images |
 | apps/webex | 2 | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webflow | 4 | collection-item-changed, collection-item-created, form-submission, new-order | apps/webflow/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/woocommerce | 7 | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -807,7 +807,7 @@ depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-p
 | apps/ahrefs | 1 | project-list | new-project | apps/ahrefs/README.md Triggers section (verified 2026-11-09) | hand | Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects). |
 | apps/aidbase | 1 | ticket-list | new-ticket | apps/aidbase/README.md Triggers section (verified 2026-11-09) | hand | Ticket-form list has a documented created_after filter, used with a rolling cursor (https://docs.aidbase.ai/apis/ticket-form-api/reference/). |
 | apps/aircall | 1 | call-list | new-call | apps/aircall/README.md Triggers section (verified 2026-11-09) | hand | Call list supports documented descending order (https://developer.aircall.io/api-references/). |
-| apps/airtable | 1 | search-records | new-record | apps/airtable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-records |
+| apps/airtable | 3 | search-records | new-record, new-or-updated-record, new-base | apps/airtable/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over search-records and list-bases; Airtable webhooks are ping-only and need a saved payload cursor (https://airtable.com/developers/web/api/webhooks-overview) |
 | apps/alegra | 1 | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
 | apps/algolia | 1 | index-list | new-index | apps/algolia/README.md Triggers section (verified 2026-11-09) | hand | Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices). |
 | apps/amplitude | 1 | cohort-list | new-cohort | apps/amplitude/README.md Triggers section (verified 2026-11-10) | hand | GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound |

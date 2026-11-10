@@ -198,11 +198,13 @@
     "path": "apps/airtable",
     "mechanism": "poll",
     "candidates": [
-      "new-record"
+      "new-record",
+      "new-or-updated-record",
+      "new-base"
     ],
     "pollAction": "search-records",
-    "reason": "shipped poll trigger(s) over list action search-records",
-    "verified": "apps/airtable/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped poll triggers over search-records and list-bases; Airtable webhooks are ping-only and need a saved payload cursor (https://airtable.com/developers/web/api/webhooks-overview)",
+    "verified": "apps/airtable/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1183,13 +1185,48 @@
     "path": "apps/calendly",
     "mechanism": "webhook-api",
     "candidates": [
+      "invitee-created",
       "invitee-canceled",
-      "invitee-created"
+      "invitee-no-show-created",
+      "invitee-no-show-deleted",
+      "event-type-created",
+      "event-type-updated",
+      "event-type-deleted",
+      "routing-form-submission-created",
+      "any-event"
     ],
     "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/calendly/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped: webhooks registered through the vendor API, signed (Calendly-Webhook-Signature)",
+    "verified": "apps/calendly/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "event-type-get-many": "event-type-created",
+      "invitee-get-many": "invitee-created"
+    },
+    "skipped": {
+      "scheduled-event-get-many": "can only be sorted or filtered by start_time (no created/updated order or filter), so new bookings cannot be found by polling; bookings arrive via invitee-created (https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-scheduled-events)",
+      "webhook-subscription-get-many": "admin/config output: lists this app's own webhook registrations, not business records"
+    },
+    "events": {
+      "invitee.created": "invitee-created",
+      "invitee.canceled": "invitee-canceled",
+      "invitee_no_show.created": "invitee-no-show-created",
+      "invitee_no_show.deleted": "invitee-no-show-deleted",
+      "event_type.created": "event-type-created",
+      "event_type.updated": "event-type-updated",
+      "event_type.deleted": "event-type-deleted",
+      "routing_form_submission.created": "routing-form-submission-created",
+      "meeting_recap.created": "any",
+      "meeting_recap.updated": "any",
+      "meeting_recap.deleted": "any",
+      "contact.created": "any",
+      "contact.updated": "any",
+      "contact.deleted": "any"
+    },
+    "n8n": {
+      "invitee.created": "invitee-created",
+      "invitee.canceled": "invitee-canceled"
+    }
   },
   {
     "path": "apps/callrail",
@@ -8935,12 +8972,26 @@
     "path": "apps/typeform",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-response"
+      "new-response",
+      "new-partial-response",
+      "any-event",
+      "new-form",
+      "new-or-updated-form",
+      "new-workspace",
+      "new-theme",
+      "new-image"
     ],
     "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/typeform/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images",
+    "verified": "apps/typeform/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "response-get-many": "new-response"
+    },
+    "events": {
+      "form_response": "new-response",
+      "form_response_partial": "new-partial-response"
+    }
   },
   {
     "path": "apps/typefully",
