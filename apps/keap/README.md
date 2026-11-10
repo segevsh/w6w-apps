@@ -475,11 +475,26 @@ Use **`deno task fmt`**, never bare `deno fmt` — the task is scoped to
 
 ## Triggers
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 16 (poll)
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-contact` — New Contact | poll | `contact-list` (`GET /rest/v2/contacts`, `order_by=create_time desc`, `page_size=50`) | Each contact not seen on an earlier check |
+| `new-campaign` — New Campaign | poll | `campaign-list` | Newly listed campaigns |
+| `new-campaign-sequence` — New Campaign Sequence | poll | `campaign-sequence-list` | Newly listed sequences |
+| `new-company` — New Company | poll | `company-list` | Newly listed companies |
+| `new-contact-note` — New Contact Note | poll | `contact-notes-list` | Newly listed notes |
+| `new-contact-tag` — New Contact Tag | poll | `contact-tags-list` | Newly listed tags |
+| `new-email` — New Email | poll | `email-list` | Newly listed emails |
+| `new-opportunity` — New Opportunity | poll | `opportunity-list` | Newly listed opportunities |
+| `new-opportunity-stage` — New Opportunity Stage | poll | `opportunity-stage-list` | Newly listed stages |
+| `new-order` — New Order | poll | `order-list` | Newly listed orders |
+| `new-product` — New Product | poll | `product-list` | Newly listed products |
+| `new-subscription` — New Subscription | poll | `subscription-list` | Newly listed subscriptions |
+| `new-tag-contact` — New Tag Contact | poll | `tag-contacts-list` | Newly listed tagged contacts |
+| `new-tag` — New Tag | poll | `tag-list` | Newly listed tags |
+| `new-task` — New Task | poll | `task-list` | Newly listed tasks |
+| `new-user` — New User | poll | `user-list` | Newly listed users |
 
 The first check records the contacts that already exist and emits nothing; later checks emit the
 contacts that appeared since (oldest first). It runs the existing `contact-list` action — same

@@ -10,6 +10,23 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newCandidate from "./triggers/new-candidate.ts";
+import {
+  newApplication,
+  newApplicationFeedback,
+  newArchiveReason,
+  newCandidateNote,
+  newCandidateSearch,
+  newDepartment,
+  newInterviewEvent,
+  newInterviewSchedule,
+  newInterviewStage,
+  newJob,
+  newJobPosting,
+  newLocation,
+  newOffer,
+  newSource,
+  newUser,
+} from "./triggers/new-records.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -77,7 +94,24 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, permissions, quota],
-  triggers: [newCandidate],
+  triggers: [
+    newCandidate,
+    newApplicationFeedback,
+    newApplication,
+    newArchiveReason,
+    newCandidateNote,
+    newCandidateSearch,
+    newDepartment,
+    newInterviewEvent,
+    newInterviewSchedule,
+    newInterviewStage,
+    newJob,
+    newJobPosting,
+    newLocation,
+    newOffer,
+    newSource,
+    newUser,
+  ],
 };
 
 export default app;

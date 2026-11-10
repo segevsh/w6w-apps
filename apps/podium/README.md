@@ -10,15 +10,30 @@ local businesses) from a workflow, over the Podium API v4 at `api.podium.com/v4`
 - **Actions** — 49: contacts, contact tags and attributes, conversations, messages, locations,
   organizations, users, reviews, feedback, calls, appointments, campaigns, templates, data-feed
   events and webhooks. Each action's description names the OAuth scope it needs.
-- **Triggers** — 1 (poll)
+- **Triggers** — 16 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-conversation` — New Conversation | poll | `conversation-list` | Newly listed conversations |
+| `new-appointment` — New Appointment | poll | `appointment-list` | Newly listed appointments |
+| `new-call` — New Call | poll | `call-list` | Newly listed calls |
+| `new-campaign` — New Campaign | poll | `campaign-list` | Newly listed campaigns |
+| `new-contact-attribute` — New Contact Attribute | poll | `contact-attribute-list` | Newly listed contact attributes |
+| `new-contact` — New Contact | poll | `contact-list` | Newly listed contacts |
+| `new-contact-tag` — New Contact Tag | poll | `contact-tag-list` | Newly listed contact tags |
+| `new-feedback` — New Feedback | poll | `feedback-list` | Newly listed feedback |
+| `new-location` — New Location | poll | `location-list` | Newly listed locations |
+| `new-message` — New Message | poll | `message-list` | Newly listed messages |
+| `new-review-invite` — New Review Invite | poll | `review-invite-list` | Newly listed invitations |
+| `new-review` — New Review | poll | `review-list` | Newly listed reviews |
+| `new-review-summary` — New Review Summary | poll | `review-summary-list` | Newly listed summaries |
+| `new-template` — New Template | poll | `template-list` | Newly listed templates |
+| `new-user` — New User | poll | `user-list` | Newly listed users |
+| `new-webhook` — New Webhook | poll | `webhook-list` | Newly listed webhooks |
 
-Source: https://developer.podium.com (verified 2026-11-09).
+Source: https://developer.podium.com (verified 2026-11-10).
 
 ## Getting credentials
 

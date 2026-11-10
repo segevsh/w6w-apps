@@ -12,7 +12,7 @@ stages, read interviews, feedback and offers, and sync all of it incrementally.
 - **API docs** — https://developers.ashbyhq.com/reference/introduction ·
   per-endpoint OpenAPI at `developers.ashbyhq.com/reference/<endpoint>.md`,
   index at `developers.ashbyhq.com/llms.txt`
-- **Triggers** — 1 (poll)
+- **Triggers** — 16 (poll)
 
 Every endpoint this app calls was checked against those documents on
 2026-08-18.
@@ -288,5 +288,20 @@ is granted in the Ashby app rather than here.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-candidate` — New Candidate | Poll | `candidate-list` | Each candidate created since the prior check |
+| `new-application-feedback` — New Application Feedback | Poll | `application-feedback-list` | Newly listed feedback |
+| `new-application` — New Application | Poll | `application-list` | Newly listed applications |
+| `new-archive-reason` — New Archive Reason | Poll | `archive-reason-list` | Newly listed archive reasons |
+| `new-candidate-note` — New Candidate Note | Poll | `candidate-note-list` | Newly listed notes |
+| `new-candidate-search-result` — New Candidate Search Result | Poll | `candidate-search` | Newly listed candidates |
+| `new-department` — New Department | Poll | `department-list` | Newly listed departments |
+| `new-interview-event` — New Interview Event | Poll | `interview-event-list` | Newly listed interview events |
+| `new-interview-schedule` — New Interview Schedule | Poll | `interview-schedule-list` | Newly listed interview schedules |
+| `new-interview-stage` — New Interview Stage | Poll | `interview-stage-list` | Newly listed interview stages |
+| `new-job` — New Job | Poll | `job-list` | Newly listed jobs |
+| `new-job-posting` — New Job Posting | Poll | `job-posting-list` | Newly listed job postings |
+| `new-location` — New Location | Poll | `location-list` | Newly listed locations |
+| `new-offer` — New Offer | Poll | `offer-list` | Newly listed offers |
+| `new-source` — New Source | Poll | `source-list` | Newly listed sources |
+| `new-user` — New User | Poll | `user-list` | Newly listed users |
 
-`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check reads its whole window in one request of up to 50 pages (5000 candidates); the action has no page cursor, so a window longer than 5000 fires the first 5000 and the surplus past that is not guaranteed (the trigger logs a warning). Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-09).
+`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check reads its whole window in one request of up to 50 pages (5000 candidates); the action has no page cursor, so a window longer than 5000 fires the first 5000 and the surplus past that is not guaranteed (the trigger logs a warning). Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-10).

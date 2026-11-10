@@ -116,6 +116,23 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import spikeRate from "./health/spike-rate.ts";
 import newContact from "./triggers/new-contact.ts";
+import {
+  newCampaign,
+  newCampaignSequence,
+  newCompany,
+  newContactNote,
+  newContactTag,
+  newEmail,
+  newOpportunity,
+  newOpportunityStage,
+  newOrder,
+  newProduct,
+  newSubscription,
+  newTag,
+  newTagContact,
+  newTask,
+  newUser,
+} from "./triggers/new-records.ts";
 
 export default {
   actions: [
@@ -166,7 +183,24 @@ export default {
     appointmentList,
     appointmentCreate,
   ],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newCampaign,
+    newCampaignSequence,
+    newCompany,
+    newContactNote,
+    newContactTag,
+    newEmail,
+    newOpportunity,
+    newOpportunityStage,
+    newOrder,
+    newProduct,
+    newSubscription,
+    newTag,
+    newTagContact,
+    newTask,
+    newUser,
+  ],
   auth: [oauth2, accessKey],
   healthChecks: [service, quota, spikeRate],
 } satisfies AppDefinition;

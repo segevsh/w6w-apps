@@ -64,6 +64,23 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newConversation from "./triggers/new-conversation.ts";
+import {
+  newAppointment,
+  newCall,
+  newCampaign,
+  newContact,
+  newContactAttribute,
+  newContactTag,
+  newFeedback,
+  newLocation,
+  newMessage,
+  newReview,
+  newReviewInvite,
+  newReviewSummary,
+  newTemplate,
+  newUser,
+  newWebhook,
+} from "./triggers/new-records.ts";
 
 export default {
   actions: [
@@ -119,5 +136,22 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newConversation],
+  triggers: [
+    newConversation,
+    newAppointment,
+    newCall,
+    newCampaign,
+    newContactAttribute,
+    newContact,
+    newContactTag,
+    newFeedback,
+    newLocation,
+    newMessage,
+    newReviewInvite,
+    newReview,
+    newReviewSummary,
+    newTemplate,
+    newUser,
+    newWebhook,
+  ],
 } satisfies AppDefinition;

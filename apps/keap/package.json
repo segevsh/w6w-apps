@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/keap",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Keap (formerly Infusionsoft) CRM: contacts, tags, companies, opportunities, tasks, notes, campaigns, orders and email over the Keap REST v2 API. A New Contact trigger polls the contact list.",
   "license": "MIT",
   "author": {
