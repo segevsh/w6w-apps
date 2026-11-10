@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/eventbrite",
   "version": "0.5.0",
-  "description": "Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues and webhooks, plus triggers on orders, check-ins, event changes, new attendees, discounts, ticket groups and teams.",
+  "description": "Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues and webhooks, plus triggers on orders, check-ins, event changes and new attendees.",
   "license": "MIT",
   "author": {
     "name": "w6w"
