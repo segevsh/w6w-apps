@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -273,7 +273,6 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/granola | 1 | 6 | 5 |
 | apps/grist | 0 | 5 | 5 |
 | apps/hackernews | 1 | 6 | 5 |
-| apps/intercom | 2 | 5 | 5 |
 | apps/justcall | 1 | 6 | 5 |
 | apps/kit | 1 | 6 | 5 |
 | apps/klicktipp | 1 | 5 | 5 |
@@ -313,7 +312,6 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/wise | 4 | 5 | 5 |
 | apps/workiz | 0 | 5 | 5 |
 | apps/wrike | 1 | 6 | 5 |
-| apps/zendesk/zendesk | 3 | 5 | 5 |
 | apps/zendesk/zendesk-sell | 2 | 6 | 5 |
 | apps/zoho/bigin | 2 | 6 | 5 |
 | apps/zoho/zoho-campaigns | 1 | 6 | 5 |
@@ -439,7 +437,6 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/okta | 2 | 3 | 3 |
 | apps/pandadoc | 2 | 4 | 3 |
 | apps/peopledatalabs | 1 | 3 | 3 |
-| apps/pipedrive | 1 | 3 | 3 |
 | apps/planningcenter | 2 | 4 | 3 |
 | apps/postmark | 1 | 4 | 3 |
 | apps/prospeo | 0 | 3 | 3 |
@@ -631,6 +628,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
 | apps/insightly | 8 | 4 | 0 |
+| apps/intercom | 17 | 5 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
 | apps/kajabi | 18 | 19 | 0 |
 | apps/keap | 17 | 17 | 0 |
@@ -653,6 +651,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/pardot | 2 | 0 | 0 |
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
+| apps/pipedrive | 13 | 3 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
@@ -681,6 +680,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/vero | 1 | 0 | 0 |
 | apps/woocommerce | 10 | 3 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
+| apps/zendesk/zendesk | 12 | 5 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
 | apps/zulip | 1 | 0 | 0 |
 
@@ -733,7 +733,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/onfleet | 6 | task-assigned, task-completed, task-created, task-failed, task-started, task-updated | apps/onfleet/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/patreon | 2 | new-pledge, post-published | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks) |
 | apps/paypal | 6 | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/pipedrive | 1 | new-deal | apps/pipedrive/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/pipedrive | 13 | new-deal, new-person, person-updated, person-deleted, new-organization, organization-updated, organization-deleted, deal-updated, deal-deleted, new-activity, new-note, new-lead, any-event | apps/pipedrive/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks (v2) registered through the vendor API with a random HTTP Basic password per subscription (Pipedrive does not sign deliveries); list actions covered by the created-event webhooks (the v1 list endpoints the actions call are no longer documented) |
 | apps/pipefy | 4 | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
 | apps/rendex | 1 | watch-event | apps/rendex/README.md Triggers section (verified 2026-11-10) | hand | Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks) |
 | apps/sanity | 3 | document-created, document-updated, document-deleted | apps/sanity/README.md Triggers section (verified 2026-11-10) | hand | GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks) |
@@ -752,7 +752,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/webex | 2 | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webflow | 4 | collection-item-changed, collection-item-created, form-submission, new-order | apps/webflow/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
-| apps/zendesk/zendesk | 3 | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/zendesk/zendesk | 12 | new-ticket, ticket-status-changed, ticket-comment-added, ticket-deleted, ticket-priority-changed, ticket-assignee-changed, new-user, user-deleted, user-details-changed, new-organization, organization-deleted, any-event | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed event-subscription webhooks registered through the Webhooks API (X-Zendesk-Webhook-Signature, HMAC-SHA256 over timestamp+body, signing secret read from the API); list actions are covered by the created-event webhooks |
 
 ## manual-webhook (34)
 
@@ -769,7 +769,7 @@ depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-p
 | apps/highlevel | 4 | contact-created, opportunity-created, appointment-created, inbound-message | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); no poll: contact search has no order or since filter |
 | apps/homeassistant | 1 | automation-event | apps/homeassistant/README.md Triggers section (verified 2026-11-10) | hand | manual webhook receiving rest_command calls from the user's automations (Home Assistant has no outbound event feed); unsigned, callback URL is the secret; no poll: state list is an uncapped snapshot with no change filter |
 | apps/hubspot | 23 | any-event, company-created, company-deleted, company-updated, contact-created, contact-deleted, contact-updated, deal-created, deal-deleted, deal-updated, new-company, new-contact, new-deal, new-form, new-or-updated-company, new-or-updated-contact, new-or-updated-deal, new-or-updated-ticket, new-owner, new-ticket, ticket-created, ticket-deleted, ticket-updated | apps/hubspot/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user sets the Target URL in a HubSpot app) plus search and list polls |
-| apps/intercom | 2 | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
+| apps/intercom | 17 | conversation-created, contact-created, new-contact, contact-updated, contact-deleted, company-created, company-updated, company-deleted, new-conversation, conversation-user-replied, conversation-admin-replied, conversation-closed, conversation-assigned, conversation-deleted, any-event, new-note, new-tag | apps/intercom/README.md Triggers section (verified 2026-11-10) | hand | signed manual webhooks (X-Hub-Signature HMAC-SHA1, client secret) for contact, company and conversation topics plus Any Event; polls new-note (note-get-many read page by page, order-independent snapshot of note ids: the 2.11 reference the client pins documents no sort order) and new-tag (tag-get-many snapshot); company/contact/conversation lists covered by their created webhooks (no documented newest-first order on GET /conversations) |
 | apps/line | 1 | event-received | apps/line/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in the LINE Developers Console; x-line-signature base64 HMAC-SHA256 of the raw body under the channel secret; one trigger carries message, follow, unfollow and postback (one URL per channel) |
 | apps/marketo | 1 | lead-webhook | apps/marketo/README.md Triggers section (verified 2026-11-10) | hand | unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret |
 | apps/messagebird | 1 | inbound-sms | apps/messagebird/README.md Triggers section (verified 2026-11-10) | hand | manual inbound-SMS callback (Flow Builder Forward to URL); MessageBird-Signature-JWT HS256 with url_hash and payload_hash verified; POST only (GET callbacks and status reports cannot be verified) |
