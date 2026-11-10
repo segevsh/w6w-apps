@@ -1,6 +1,6 @@
 # Raindrop.io
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 6 (poll)
 
 Manage Raindrop.io bookmarks from a workflow: collections, raindrops (bookmarks), highlights, tags,
 and the counts and search behind them.
@@ -368,11 +368,17 @@ No runtime dependencies: `@w6w/types` is types-only.
 | --- | --- | --- | --- |
 | `new-bookmark` — New Bookmark | Poll | `raindrop-search` | Each newly saved bookmark across all collections except Trash |
 | `new-collection` — New Collection | Poll (snapshot) | `collection-list` | Each root collection created since the last check |
+| `new-sub-collection` — New Sub-Collection | Poll (snapshot) | `collection-children-list` | Each nested collection created since the last check |
+| `new-tag` — New Tag | Poll (snapshot) | `tag-list` | Each tag first used since the last check |
+| `new-backup` — New Backup | Poll | `backup-list` | Each backup newly created for the account |
+| `new-collaborator` — New Collaborator | Poll (snapshot) | `collection-sharing-list` | Each person newly added as a collaborator on the chosen collection (`collectionId` param) |
 
 - Raindrop docs, Get raindrops, `sort`: "-created by date descending (default)". `raindrop-search` is called for collection `0` with `sort=-created`, `perpage=50`, `page=0`.
-- `collection-list` returns all root collections in one response ordered by the account's manual sort (the docs describe `sort` as "the order of collection"), not by creation, so `new-collection` diffs the set (snapshot kit, added only). Sub-collections are not covered.
+- `collection-list` returns all root collections in one response ordered by the account's manual sort (the docs describe `sort` as "the order of collection"), not by creation, so `new-collection` diffs the set (snapshot kit, added only). Nested collections are covered by `new-sub-collection` (`/collections/childrens`, one unpaged response, no documented order, so also a snapshot).
+- `backup-list` is documented "Sorted by date (new first)" (https://developer.raindrop.io/v1/backups), so `new-backup` is newest-first. Tags have no timestamp (a tag's name is its identity) and collaborators carry none either, so those triggers diff the whole response; the collaborator record includes the collaborator's email when the token may see it.
+- Not covered: `highlight-list` (the reference documents only `page`/`perpage`, no sort or filter, and its sample lists oldest first, so a newest-first or since poll is not possible), `filter-list` (counts and histograms, not records), `cover-search` (the static icon library).
 - No `new-or-updated-*`: `sort` offers no update-time ordering.
 
 Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
 
-Sources (verified 2026-11-09): https://developer.raindrop.io/v1/raindrops/multiple; https://developer.raindrop.io/v1/collections/methods.
+Sources (verified 2026-11-10): https://developer.raindrop.io/v1/raindrops/multiple; https://developer.raindrop.io/v1/collections/methods; https://developer.raindrop.io/v1/backups; https://developer.raindrop.io/v1/tags; https://developer.raindrop.io/v1/collections/sharing; https://developer.raindrop.io/v1/highlights.
