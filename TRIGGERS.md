@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2267 triggers, 1965 unaccounted list actions in 471 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -31,11 +31,6 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/recruiterflow | 0 | 9 | 9 |
 | apps/tally | 1 | 10 | 9 |
 | apps/zoho/zoho-projects | 0 | 9 | 9 |
-| apps/bamboohr | 1 | 9 | 8 |
-| apps/baremetrics | 1 | 9 | 8 |
-| apps/booqable | 1 | 9 | 8 |
-| apps/braze | 1 | 9 | 8 |
-| apps/close | 1 | 9 | 8 |
 | apps/coingecko | 0 | 8 | 8 |
 | apps/google/google-analytics | 0 | 8 | 8 |
 | apps/quo | 2 | 9 | 8 |
@@ -515,11 +510,15 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/avoma | 3 | 10 | 0 |
 | apps/aweber | 5 | 8 | 0 |
 | apps/axonaut | 9 | 9 | 0 |
+| apps/bamboohr | 4 | 9 | 0 |
 | apps/bannerbear | 11 | 12 | 0 |
+| apps/baremetrics | 8 | 9 | 0 |
 | apps/betterstack | 11 | 12 | 0 |
 | apps/bexio | 11 | 10 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
+| apps/booqable | 11 | 9 | 0 |
 | apps/box | 20 | 2 | 0 |
+| apps/braze | 10 | 9 | 0 |
 | apps/breezyhr | 6 | 11 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
@@ -527,6 +526,7 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
+| apps/close | 7 | 9 | 0 |
 | apps/cloze | 4 | 12 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/connecteam | 10 | 10 | 0 |
@@ -834,9 +834,9 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/aws/ses | 3 | suppression-list | new-suppression, new-template, new-identity | apps/aws/ses/README.md Triggers section (verified 2026-11-10) | hand | ListSuppressedDestinations StartDate keeps addresses added after a date (https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListSuppressedDestinations.html); template-list and identity-list are per-region collections polled as snapshots |
 | apps/axonaut | 9 | invoice-list | new-invoice, new-or-updated-invoice, new-company, new-employee, new-product, new-opportunity, new-project, new-task, new-quotation | apps/axonaut/README.md Triggers section (verified 2026-11-10) | hand | Invoice since-filter polls plus whole-list snapshot polls (page header, ids diffed) of companies, contacts, products, opportunities, projects, tasks and a 31-day quotation window; the spec has no usable sort or date filter for them (https://axonaut.com/api/v2/doc). |
 | apps/balena | 1 | release-list | new-release | apps/balena/README.md Triggers section (verified 2026-11-09) | hand | release-list ($orderby=created_at desc, successful builds) wrapped; https://docs.balena.io/reference/api/resources/release/ |
-| apps/bamboohr | 1 | list-employees | new-employee | apps/bamboohr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-employees |
+| apps/bamboohr | 4 | list-employees | new-employee, new-time-off-request, new-or-updated-time-off-request, new-employee-file | apps/bamboohr/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over list-employees (newest-first), list-time-off-requests (date window with creation floor) and list-employee-files (snapshot) |
 | apps/bannerbear | 11 | image-list | new-animation, new-animation-template, new-asset, new-batch, new-image, new-image-template, new-instant-url, new-publication, new-tool-job, new-workflow, new-workflow-run | apps/bannerbear/README.md Triggers section (verified 2026-11-10) | hand | newest-first page 1 of each v5 list endpoint; the reference says tool jobs are newest first and all lists share that polling shape (https://developers.bannerbear.com/v5/) |
-| apps/baremetrics | 1 | customer-list | new-customer | apps/baremetrics/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
+| apps/baremetrics | 8 | customer-list | new-customer, new-subscription, new-charge, new-refund, new-plan, new-goal, new-source, new-customer-event | apps/baremetrics/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over customer-list, subscription-list (order=desc), charge-list and refund-list (start filter), plan-list/goals-list/sources-list (snapshots) |
 | apps/base44 | 1 | list-audit-logs | new-audit-log | apps/base44/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-audit-logs |
 | apps/basecamp | 1 | project-list | new-project | apps/basecamp/README.md Triggers section (verified 2026-11-10) | hand | GET /projects.json is 'sorted by most recently created project first' (https://github.com/basecamp/bc3-api/blob/master/sections/projects.md); message and to-do events are webhook-only and not shipped |
 | apps/baserow | 1 | row-list | new-row | apps/baserow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
@@ -852,9 +852,9 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/bloomerang | 1 | list-transactions | new-or-updated-transaction | apps/bloomerang/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-transactions takes lastModified (documented in Bloomerang's OpenAPI document); ids dedupe on Id + AuditTrail.LastModifiedDate |
 | apps/bluesky | 1 | post-search | new-post | apps/bluesky/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-search |
 | apps/boldsign | 1 | document-list | new-document | apps/boldsign/README.md Triggers section (verified 2026-11-09) | hand | Document list is newest activity first. |
-| apps/booqable | 1 | customer-list | new-customer | apps/booqable/README.md Triggers section (verified 2026-11-09) | hand | Customer list accepts -created_at descending sort. |
+| apps/booqable | 11 | customer-list | new-customer, new-or-updated-customer, new-order, new-or-updated-order, new-product, new-or-updated-product, new-product-group, new-or-updated-product-group, new-stock-item, new-or-updated-stock-item, new-planning | apps/booqable/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers sorted by -created_at / -updated_at (documented sort on every list endpoint) |
 | apps/braintree | 1 | transaction-search | new-transaction | apps/braintree/README.md Triggers section (verified 2026-11-09) | hand | Transaction search has a createdAt >= filter (createdFrom); the trigger filters cursor minus 120 s and dedupes by id, no default order assumed (https://developer.paypal.com/braintree/graphql/reference/). |
-| apps/braze | 1 | campaign-list | new-or-updated-campaign | apps/braze/README.md Triggers section (verified 2026-11-09) | hand | Campaign list supports latest-edit descending order and update identity. |
+| apps/braze | 10 | campaign-list | new-or-updated-campaign, new-canvas, new-or-updated-canvas, new-segment, new-catalog, new-content-block, new-or-updated-content-block, new-email-unsubscribe, new-email-hard-bounce, new-invalid-phone-number | apps/braze/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers: newest-first canvas/segment lists, edited-since canvas/content-block windows, date-range suppression feeds, catalog snapshot |
 | apps/breezyhr | 6 | candidate-search | new-candidate, new-position, new-or-updated-position, new-position-candidate, new-candidate-message, new-candidate-activity | apps/breezyhr/README.md Triggers section (verified 2026-11-10) | hand | Candidate search newest-first; a candidate's conversation and stream are documented newest-first; positions and a position's candidates are unpaged full lists diffed as snapshots (https://developer.breezy.hr/reference/listpositions). |
 | apps/browseai | 1 | task-list | new-task | apps/browseai/README.md Triggers section (verified 2026-11-09) | hand | Task list sorted explicitly with sort=-createdAt (vendor default is ascending), page size capped at 10 (https://docs.browse.ai/api/). |
 | apps/browserless | 1 | crawl-list | new-crawl | apps/browserless/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls |
@@ -877,7 +877,7 @@ depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-p
 | apps/clicksend | 1 | sms-history-list | new-sms | apps/clicksend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action sms-history-list |
 | apps/clientify | 4 | contact-list | new-contact, new-or-updated-contact, new-deal, new-or-updated-deal | apps/clientify/README.md Triggers section (verified 2026-11-09) | hand | Since-filter polls on the documented created[gte]/modified[gte] date filters of the contact and deal lists (https://developer.clientify.com) |
 | apps/clio | 2 | contact-list | new-contact, new-or-updated-contact | apps/clio/README.md Triggers section (verified 2026-11-09) | hand | created_since / updated_since filters, id(asc) order: cursor window + id dedupe |
-| apps/close | 1 | list-opportunities | new-opportunity | apps/close/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-opportunities |
+| apps/close | 7 | list-opportunities | new-opportunity, new-lead, new-or-updated-lead, new-contact, new-task, new-activity, new-user | apps/close/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over list-opportunities, search (leads, date_created desc), list-leads (updated-first), list-contacts (newest-first), list-tasks, list-activities, list-users |
 | apps/cloudbeds | 2 | reservation-list | new-reservation, new-or-updated-reservation | apps/cloudbeds/README.md Triggers section (verified 2026-11-09) | hand | since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated) |
 | apps/cloudflare | 1 | dns-record-list | new-dns-record | apps/cloudflare/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000) |
 | apps/cloudinary | 1 | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |

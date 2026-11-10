@@ -1114,12 +1114,25 @@
     "path": "apps/bamboohr",
     "mechanism": "poll",
     "candidates": [
-      "new-employee"
+      "new-employee",
+      "new-time-off-request",
+      "new-or-updated-time-off-request",
+      "new-employee-file"
     ],
     "pollAction": "list-employees",
-    "reason": "shipped poll trigger(s) over list action list-employees",
-    "verified": "apps/bamboohr/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over list-employees (newest-first), list-time-off-requests (date window with creation floor) and list-employee-files (snapshot)",
+    "verified": "apps/bamboohr/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-whos-out": "new-time-off-request"
+    },
+    "skipped": {
+      "list-fields": "reference data: employee field definitions (no records)",
+      "list-list-fields": "reference data: dropdown option sets (field definitions)",
+      "list-time-off-policies": "reference data: company time off policy definitions (https://documentation.bamboohr.com/reference/list-time-off-policies)",
+      "list-time-off-types": "reference data: company time off type definitions (https://documentation.bamboohr.com/reference/list-time-off-types)",
+      "list-reports": "admin/report output: saved report definitions, not business records"
+    }
   },
   {
     "path": "apps/bannerbear",
@@ -1149,12 +1162,22 @@
     "path": "apps/baremetrics",
     "mechanism": "poll",
     "candidates": [
-      "new-customer"
+      "new-customer",
+      "new-subscription",
+      "new-charge",
+      "new-refund",
+      "new-plan",
+      "new-goal",
+      "new-source",
+      "new-customer-event"
     ],
     "pollAction": "customer-list",
-    "reason": "shipped poll trigger(s) over list action customer-list",
-    "verified": "apps/baremetrics/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over customer-list, subscription-list (order=desc), charge-list and refund-list (start filter), plan-list/goals-list/sources-list (snapshots)",
+    "verified": "apps/baremetrics/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "annotations-list": "no order or date filter and unbounded: the list documents only per_page/page (https://developers.baremetrics.com/reference/list-annotations)"
+    }
   },
   {
     "path": "apps/base44",
@@ -1374,12 +1397,27 @@
     "path": "apps/booqable",
     "mechanism": "poll",
     "candidates": [
-      "new-customer"
+      "new-customer",
+      "new-or-updated-customer",
+      "new-order",
+      "new-or-updated-order",
+      "new-product",
+      "new-or-updated-product",
+      "new-product-group",
+      "new-or-updated-product-group",
+      "new-stock-item",
+      "new-or-updated-stock-item",
+      "new-planning"
     ],
     "pollAction": "customer-list",
-    "reason": "Customer list accepts -created_at descending sort.",
-    "verified": "apps/booqable/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers sorted by -created_at / -updated_at (documented sort on every list endpoint)",
+    "verified": "apps/booqable/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "customer-search": "new-customer",
+      "order-search": "new-order",
+      "product-search": "new-product"
+    }
   },
   {
     "path": "apps/box",
@@ -1521,12 +1559,24 @@
     "path": "apps/braze",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-campaign"
+      "new-or-updated-campaign",
+      "new-canvas",
+      "new-or-updated-canvas",
+      "new-segment",
+      "new-catalog",
+      "new-content-block",
+      "new-or-updated-content-block",
+      "new-email-unsubscribe",
+      "new-email-hard-bounce",
+      "new-invalid-phone-number"
     ],
     "pollAction": "campaign-list",
-    "reason": "Campaign list supports latest-edit descending order and update identity.",
-    "verified": "apps/braze/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers: newest-first canvas/segment lists, edited-since canvas/content-block windows, date-range suppression feeds, catalog snapshot",
+    "verified": "apps/braze/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "catalog-item-list": "paged 50 items per call through a Link-header cursor, no order and no since filter, a catalog can hold millions of items (https://www.braze.com/docs/api/endpoints/catalogs/catalog_items/synchronous/get_catalog_items_details_bulk/)"
+    }
   },
   {
     "path": "apps/breezyhr",
@@ -2070,12 +2120,22 @@
     "path": "apps/close",
     "mechanism": "poll",
     "candidates": [
-      "new-opportunity"
+      "new-opportunity",
+      "new-lead",
+      "new-or-updated-lead",
+      "new-contact",
+      "new-task",
+      "new-activity",
+      "new-user"
     ],
     "pollAction": "list-opportunities",
-    "reason": "shipped poll trigger(s) over list action list-opportunities",
-    "verified": "apps/close/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over list-opportunities, search (leads, date_created desc), list-leads (updated-first), list-contacts (newest-first), list-tasks, list-activities, list-users",
+    "verified": "apps/close/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-statuses": "reference data: lead/opportunity status definitions",
+      "list-custom-fields": "reference data: custom field definitions"
+    }
   },
   {
     "path": "apps/cloudbeds",
