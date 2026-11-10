@@ -2,7 +2,20 @@
 
 ## Triggers
 
-- **New Reservation** (`new-reservation`) polls the newest-first `list-reservations` action every five minutes.
+| Trigger | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-reservation` — New Reservation | poll (newest-first) | `list-reservations` | Each new or recently active reservation (`sortOrder=latestActivityDesc`) |
+| `new-listing` — New Listing | poll (snapshot) | `list-listings` | Each listing newly added to the account |
+| `new-review` — New Review | poll (newest-first) | `list-reviews` | Each newly created review (`sortBy=id&sortOrder=desc`) |
+| `new-conversation-message` — New Conversation Message | poll (snapshot) | `list-conversation-messages` | Each message newly added to the chosen conversation |
+
+All four poll every five minutes; the first check records what exists without firing. Listings and a conversation's messages have no sort argument and no created filter in `GET /v1/listings` and `GET /v1/conversations/{id}/messages`, so those triggers walk `limit=100&offset=…` to the last page (at most 25 pages) and diff the ids; a longer collection fails the check rather than reporting a partial snapshot. Reviews use `id`, one of the documented `sortBy` values, descending.
+
+Not covered, with the reason: `list-amenities` and `list-property-types` (static reference data); `list-conversations` (only `limit`, `offset` and `reservationId` — no sort or date filter — and one conversation per reservation, so unbounded); `list-tasks` (only `limit`, `offset` and start/end windows — no sort or created filter — and an unbounded history). Hostaway also offers webhooks for `reservation created`, `reservation updated` and `new message received`; those are queued for a webhook node.
+
+Trust model: polling only — each check makes the same authenticated request as the wrapped action; nothing is registered with Hostaway.
+
+Vendor docs (verified 2026-11-10): <https://api.hostaway.com/documentation> (Retrieve listings, Retrieve reviews, Retrieve conversation messages list, Retrieve tasks, Retrieve conversations, Webhook events).
 
 Manage Hostaway vacation-rental listings, calendars, reservations, guest conversations,
 reviews, tasks and financial reports.
@@ -10,6 +23,7 @@ reviews, tasks and financial reports.
 - **Categories** — crm, calendar
 - **Auth methods** — client-credentials
 - **Actions** — 21
+- **Triggers** — 4 (poll)
 - **Health checks** — `service` (declared absence) · `api` · `reachability` · `quota`
   (declared absence) · 1 derived (`auth:client-credentials`)
 - **Egress allowlist** — `api.hostaway.com`
