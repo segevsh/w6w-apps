@@ -126,7 +126,9 @@ test("signature object missing or incomplete → refused", async () => {
 });
 
 test("stale or future timestamp → refused even with a valid signature over it", async () => {
-  for (const delta of [-301, -86400, 301, 86400]) {
+  // Clear of the 300 s window by a wide margin: NOW is taken at module load, so a slow runner must
+  // not let NOW + delta drift back inside it before the check runs.
+  for (const delta of [-400, -86400, 400, 86400]) {
     const ts = String(NOW + delta);
     await assertRejects(() => ingest(call(jsonBody({ ts }))), Error, "window");
   }
