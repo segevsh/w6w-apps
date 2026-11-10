@@ -87,6 +87,31 @@ const TOPICS: Record<string, string[]> = {
   "conversation-deleted": ["conversation.deleted"],
 };
 
+// The `*.deleted` topics send only identifying fields (webhook-models page, verified 2026-11-10).
+for (const kind of ["contact", "company", "conversation"]) {
+  test(`${kind}-deleted: the sample and output describe the minimal identification payload`, () => {
+    const t = trigger(`${kind}-deleted`) as unknown as {
+      sample: { topic: string; item: Record<string, unknown>; itemId: string };
+      output: Array<{ key: string; label: string }>;
+      description: string;
+    };
+    assertEquals(t.sample.topic, `${kind}.deleted`);
+    assertEquals(Object.keys(t.sample.item).sort(), ["id", "type"]);
+    assertEquals(t.sample.item.type, kind);
+    assertEquals(t.sample.item.id, t.sample.itemId);
+    assertEquals(
+      t.output.find((f) => f.key === "item")!.label,
+      "Deleted item (identifying fields only: type and id)",
+    );
+    assert(!/as it was/.test(t.description) && /only identifying fields/.test(t.description));
+    // The other topics keep the general item label.
+    const other = trigger(`${kind}-created`) as unknown as {
+      output: Array<{ key: string; label: string }>;
+    };
+    assert(!other.output.find((f) => f.key === "item")!.label.startsWith("Deleted"));
+  });
+}
+
 for (const [key, topics] of Object.entries(TOPICS)) {
   const ok = body(topics[0], `{"type":"x","id":"item-1"}`);
 
