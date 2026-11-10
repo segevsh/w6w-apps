@@ -1,5 +1,7 @@
 # Raisely
 
+- **Triggers** — 1 (poll)
+
 Read and manage campaigns, fundraiser profiles, donations, users (supporters and donors), recurring
 subscriptions and tags on **Raisely**, the fundraising platform, over the **Raisely API v3**.
 
@@ -109,3 +111,11 @@ Present in the OpenAPI document but not implemented here:
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-campaign` — New Campaign | Poll | `campaign-list` | Each newly created campaign |
+
+Polled through the existing `campaign-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/raisely) (verified 2026-11-09).

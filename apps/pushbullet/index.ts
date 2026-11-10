@@ -41,6 +41,7 @@
  *    left out rather than shipped half-working.
  */
 import type { AppDefinition } from "@w6w/types";
+import newChat from "./triggers/new-chat.ts";
 import accessToken from "./auth/access-token.ts";
 
 import pushList from "./actions/push-list.ts";
@@ -119,4 +120,5 @@ export default {
   // credential, which is a Connection-setup concern rather than a wire-format one.
   auth: [accessToken],
   healthChecks: [service, rateLimit, pushLimit],
+  triggers: [newChat],
 } satisfies AppDefinition;

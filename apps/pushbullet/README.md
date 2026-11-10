@@ -1,5 +1,7 @@
 # Pushbullet
 
+- **Triggers** — 1 (poll)
+
 Send push notifications, links, files and SMS/MMS across devices, plus one-to-one chats and
 broadcast channels, on the **Pushbullet API v2**.
 
@@ -202,3 +204,11 @@ deno task lint         # deno lint
 deno task fmt           # format (lineWidth 100, semicolons, double quotes)
 deno task validate       # @w6w/validator CLI, via _tools/audit.ts
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-chat` — New Chat | Poll | `chat-list` | Each newly created chat |
+
+Polled through the existing `chat-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/pushbullet) (verified 2026-11-09).

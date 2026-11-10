@@ -1,5 +1,7 @@
 # Productive.io
 
+- **Triggers** — 1 (poll)
+
 Project, resource and financial management for agencies. 57 actions over the Productive REST API
 (`https://api.productive.io/api/v2`, JSON:API). Every path, filter, attribute and enum was read
 from the vendor's own OpenAPI document (`developer.productive.io`, `api-master.yaml`) on 2026-10-06.
@@ -125,3 +127,11 @@ Left out on purpose; none is a limitation of the app's design, only unbuilt:
 - Several filters are numeric enums the reference does not label (task-list, board and to-do
   `status`, invoice `payment_status` and `sent_status`, deal `status_id`); the parameter hints say so.
 - `Content-Type: application/vnd.api+json` is mandatory and is checked before authentication.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-deal` — New Deal | Poll | `deal-list` | Each newly created deal |
+
+Polled through the existing `deal-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/productive) (verified 2026-11-09).

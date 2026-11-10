@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newTable from "./triggers/new-table.ts";
 import userToken from "./auth/user-token.ts";
 // record
 import queryRecords from "./actions/query-records.ts";
@@ -63,4 +64,5 @@ export default {
   // See `auth/user-token.ts` for the full reasoning.
   auth: [userToken],
   healthChecks: [service, quota],
+  triggers: [newTable],
 } satisfies AppDefinition;

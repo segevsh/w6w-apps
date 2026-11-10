@@ -1,5 +1,7 @@
 # Raindrop.io
 
+- **Triggers** — 1 (poll)
+
 Manage Raindrop.io bookmarks from a workflow: collections, raindrops (bookmarks), highlights, tags,
 and the counts and search behind them.
 
@@ -359,3 +361,11 @@ deno task test       # unit tests, mocked HookContext, no network
 ```
 
 No runtime dependencies: `@w6w/types` is types-only.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-collection` — New Collection | Poll | `collection-list` | Each newly created collection |
+
+Polled through the existing `collection-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/raindrop) (verified 2026-11-09).

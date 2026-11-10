@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/pushbullet",
-  "version": "0.1.0",
-  "description": "Send push notifications, links, files and SMS across devices via Pushbullet.",
+  "version": "0.2.0",
+  "description": "Send push notifications, links, files and SMS across devices via Pushbullet Includes a poll trigger for new chat.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.pushbullet.com/"
     ],
-    "longDescription": "Pushbullet bridges phones, browsers and desktops: a note, link or file pushed from a workflow shows up as a native notification on every device signed into the account, or on one device, or to another person's email, or to every subscriber of a broadcast channel.\n\nThis app covers Pushbullet's full HTTP API: sending and managing pushes (notes, links and files), registering and managing devices, one-to-one chats, broadcast channels and subscriptions, and SMS/MMS sent through an Android device's own number. Health checks track the account's live API rate-limit headroom — genuinely readable from response headers, unlike most vendors in this pack — alongside honest declarations for the two things Pushbullet does not expose: a public status page, and remaining monthly push allowance.",
+    "longDescription": "Pushbullet bridges phones, browsers and desktops: a note, link or file pushed from a workflow shows up as a native notification on every device signed into the account, or on one device, or to another person's email, or to every subscriber of a broadcast channel.\n\nThis app covers Pushbullet's full HTTP API: sending and managing pushes (notes, links and files), registering and managing devices, one-to-one chats, broadcast channels and subscriptions, and SMS/MMS sent through an Android device's own number. Health checks track the account's live API rate-limit headroom — genuinely readable from response headers, unlike most vendors in this pack — alongside honest declarations for the two things Pushbullet does not expose: a public status page, and remaining monthly push allowance.\n\nA poll trigger starts workflows when a new chat is found.",
     "categories": [
       "communication",
       "productivity"
@@ -33,7 +33,12 @@
         "api.pushbullet.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

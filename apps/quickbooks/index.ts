@@ -22,6 +22,7 @@
  * subset plus the generic `query` action for anything else.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCustomer from "./triggers/new-customer.ts";
 import oauth2 from "./auth/oauth2.ts";
 
 import customerList from "./actions/customer-list.ts";
@@ -92,4 +93,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;

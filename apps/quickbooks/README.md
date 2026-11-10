@@ -1,5 +1,7 @@
 # QuickBooks
 
+- **Triggers** — 1 (poll)
+
 Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, the chart of
 accounts and estimates, run a Profit and Loss report, and fall back to a raw query for anything
 else.
@@ -176,3 +178,11 @@ credential type (a local checkout of `n8n-io/n8n`, used to verify exact endpoint
 secondhand summaries), and a direct fetch of `status.developer.intuit.com`'s Statuspage API shape.
 Status surfaces and undocumented limits move; re-check if a probe starts failing for everyone at
 once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer |
+
+Polled through the existing `customer-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/quickbooks) (verified 2026-11-09).

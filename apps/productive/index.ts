@@ -20,6 +20,7 @@
  *     (`health/quota.ts` declares that).
  */
 import type { AppDefinition } from "@w6w/types";
+import newDeal from "./triggers/new-deal.ts";
 import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
@@ -145,6 +146,7 @@ const app: AppDefinition = {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newDeal],
 };
 
 export default app;

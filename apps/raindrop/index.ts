@@ -59,6 +59,7 @@
  * README.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCollection from "./triggers/new-collection.ts";
 
 import testToken from "./auth/test-token.ts";
 import oauth2 from "./auth/oauth2.ts";
@@ -170,4 +171,5 @@ export default {
   // installation needs.
   auth: [testToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newCollection],
 } satisfies AppDefinition;

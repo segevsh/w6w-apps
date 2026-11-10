@@ -1,5 +1,7 @@
 # Quickbase
 
+- **Triggers** — 1 (poll)
+
 Records, tables, fields, relationships and reports on the **Quickbase JSON RESTful API v1** —
 the low-code application platform's modern API, not its legacy XML one.
 
@@ -365,3 +367,11 @@ Researched and endpoint-verified 2026-08-03 against Quickbase's published Swagge
 possible, so anything requiring a real user token — the populated `x-ratelimit-*` headers, EU realm
 routing — is flagged as such above rather than asserted. Status surfaces move; re-check if a probe
 starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-table` — New Table | Poll | `list-tables` | Each newly created table |
+
+Polled through the existing `list-tables` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://example.com/quickbase) (verified 2026-11-09).
