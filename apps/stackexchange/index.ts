@@ -1,6 +1,12 @@
 import type { AppDefinition } from "@w6w/types";
 import newAnswer from "./triggers/new-answer.ts";
 import newOrUpdatedAnswer from "./triggers/new-or-updated-answer.ts";
+import newComment from "./triggers/new-comment.ts";
+import newOrUpdatedAssociatedAccount from "./triggers/new-or-updated-associated-account.ts";
+import newQuestion from "./triggers/new-question.ts";
+import newOrUpdatedQuestion from "./triggers/new-or-updated-question.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
 import questionList from "./actions/question-list.ts";
 import questionGet from "./actions/question-get.ts";
 import questionAnswerList from "./actions/question-answer-list.ts";
@@ -89,5 +95,14 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newAnswer, newOrUpdatedAnswer],
+  triggers: [
+    newAnswer,
+    newOrUpdatedAnswer,
+    newComment,
+    newOrUpdatedAssociatedAccount,
+    newQuestion,
+    newOrUpdatedQuestion,
+    newUser,
+    newOrUpdatedUser,
+  ],
 } satisfies AppDefinition;
