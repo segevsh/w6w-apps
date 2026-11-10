@@ -161,22 +161,46 @@
     "path": "apps/ahrefs",
     "mechanism": "poll",
     "candidates": [
-      "new-project"
+      "new-project",
+      "new-site-audit-crawl"
     ],
     "pollAction": "project-list",
-    "reason": "Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects).",
-    "verified": "apps/ahrefs/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "snapshot of the management project collection plus finished Site Audit crawls from the free /site-audit/projects health-score list (https://docs.ahrefs.com/openapi.json)",
+    "verified": "apps/ahrefs/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "backlink-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "backlink-broken-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "anchor-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "referring-domain-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "top-page-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "organic-keyword-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "organic-competitor-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "keyword-matching-term-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "keyword-related-term-list": "Site Explorer / Keywords Explorer analytics report: bills API units per returned row and needs a target or keyword (https://docs.ahrefs.com/openapi.json)",
+      "site-audit-issue-list": "crawl report of issue-type counts that costs a fixed 50 API units per request (https://docs.ahrefs.com/openapi.json /site-audit/issues)"
+    }
   },
   {
     "path": "apps/aidbase",
     "mechanism": "poll",
     "candidates": [
-      "new-ticket"
+      "new-chat",
+      "new-chatbot",
+      "new-chatbot-knowledge",
+      "new-email",
+      "new-email-inbox",
+      "new-email-inbox-knowledge",
+      "new-faq-item",
+      "new-knowledge-item",
+      "new-knowledge-sub-page",
+      "new-ticket",
+      "new-ticket-form",
+      "new-ticket-form-knowledge"
     ],
     "pollAction": "ticket-list",
-    "reason": "Ticket-form list has a documented created_after filter, used with a rolling cursor (https://docs.aidbase.ai/apis/ticket-form-api/reference/).",
-    "verified": "apps/aidbase/README.md Triggers section (verified 2026-11-09)",
+    "reason": "created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference)",
+    "verified": "apps/aidbase/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -899,12 +923,25 @@
     "path": "apps/bannerbear",
     "mechanism": "poll",
     "candidates": [
-      "new-image"
+      "new-animation",
+      "new-animation-template",
+      "new-asset",
+      "new-batch",
+      "new-image",
+      "new-image-template",
+      "new-instant-url",
+      "new-publication",
+      "new-tool-job",
+      "new-workflow",
+      "new-workflow-run"
     ],
     "pollAction": "image-list",
-    "reason": "Bannerbear documents image-list as the recent image render feed",
-    "verified": "apps/bannerbear/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first page 1 of each v5 list endpoint; the reference says tool jobs are newest first and all lists share that polling shape (https://developers.bannerbear.com/v5/)",
+    "verified": "apps/bannerbear/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhook-list": "webhook registrations are the account's own delivery plumbing (admin configuration), not a record workflows build on"
+    }
   },
   {
     "path": "apps/baremetrics",
@@ -9213,12 +9250,26 @@
     "path": "apps/teamup",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice"
+      "new-course",
+      "new-instructor",
+      "new-invoice",
+      "new-membership-plan",
+      "new-offering-type",
+      "new-staff-member",
+      "new-venue"
     ],
     "pollAction": "invoices-list",
-    "reason": "newest-first (a): invoices-list sort=-id (documented enum id|-id|due_date|-due_date, https://docs.goteamup.com/llms.txt)",
-    "verified": "apps/teamup/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first invoices-list sort=-id plus bounded snapshots of venues, instructors, staff, courses, membership plans and offering types (https://docs.goteamup.com/llms.txt)",
+    "verified": "apps/teamup/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "customers-list": "no sort and no created/updated filter on GET /customers (parameters: status, query, ids, deleted, age, family…) and unbounded, so no order or window a poll can follow (https://docs.goteamup.com/llms.txt)",
+      "events-list": "sort enum is only start/end and no created filter, so a newly created event is not on page one (https://docs.goteamup.com/llms.txt)",
+      "attendances-list": "sort enum is only event_starts_at / customer.created_at and no attendance-created filter, so a new registration is not on page one (https://docs.goteamup.com/llms.txt)",
+      "course-sessions-list": "sort enum is only start and no created filter, so a newly created session is not on page one (https://docs.goteamup.com/llms.txt)",
+      "customer-memberships-list": "sort enum is start_date/expiration_date/status/membership.*, not creation, and future-dated memberships pin the top; no created filter (https://docs.goteamup.com/llms.txt)",
+      "providers-list": "reference list of the businesses the credential can reach (account scope, not a record feed)"
+    }
   },
   {
     "path": "apps/teamwork",

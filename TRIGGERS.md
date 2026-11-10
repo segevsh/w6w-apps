@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -26,11 +26,7 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
-| apps/teamup | 1 | 13 | 12 |
 | apps/affinity | 1 | 11 | 11 |
-| apps/ahrefs | 1 | 12 | 11 |
-| apps/aidbase | 1 | 12 | 11 |
-| apps/bannerbear | 1 | 12 | 11 |
 | apps/betterstack | 1 | 12 | 11 |
 | apps/dbtcloud | 1 | 12 | 11 |
 | apps/deel | 1 | 12 | 11 |
@@ -588,6 +584,8 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/accelo | 4 | 0 | 0 |
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
+| apps/ahrefs | 2 | 12 | 0 |
+| apps/aidbase | 12 | 12 | 0 |
 | apps/airtable | 3 | 2 | 0 |
 | apps/apollo | 6 | 13 | 0 |
 | apps/asana | 9 | 5 | 0 |
@@ -596,6 +594,7 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/attio | 4 | 13 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
+| apps/bannerbear | 11 | 12 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
@@ -665,6 +664,7 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/supabase | 1 | 1 | 0 |
 | apps/superchat | 11 | 17 | 0 |
 | apps/tapfiliate | 9 | 14 | 0 |
+| apps/teamup | 7 | 13 | 0 |
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
@@ -806,8 +806,8 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/acumbamail | 1 | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order |
 | apps/addevent | 1 | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
 | apps/agencyzoom | 1 | lead-list | new-lead | apps/agencyzoom/README.md Triggers section (verified 2026-11-09) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
-| apps/ahrefs | 1 | project-list | new-project | apps/ahrefs/README.md Triggers section (verified 2026-11-09) | hand | Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects). |
-| apps/aidbase | 1 | ticket-list | new-ticket | apps/aidbase/README.md Triggers section (verified 2026-11-09) | hand | Ticket-form list has a documented created_after filter, used with a rolling cursor (https://docs.aidbase.ai/apis/ticket-form-api/reference/). |
+| apps/ahrefs | 2 | project-list | new-project, new-site-audit-crawl | apps/ahrefs/README.md Triggers section (verified 2026-11-10) | hand | snapshot of the management project collection plus finished Site Audit crawls from the free /site-audit/projects health-score list (https://docs.ahrefs.com/openapi.json) |
+| apps/aidbase | 12 | ticket-list | new-chat, new-chatbot, new-chatbot-knowledge, new-email, new-email-inbox, new-email-inbox-knowledge, new-faq-item, new-knowledge-item, new-knowledge-sub-page, new-ticket, new-ticket-form, new-ticket-form-knowledge | apps/aidbase/README.md Triggers section (verified 2026-11-10) | hand | created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference) |
 | apps/aircall | 1 | call-list | new-call | apps/aircall/README.md Triggers section (verified 2026-11-09) | hand | Call list supports documented descending order (https://developer.aircall.io/api-references/). |
 | apps/airtable | 3 | search-records | new-record, new-or-updated-record, new-base | apps/airtable/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over search-records and list-bases; Airtable webhooks are ping-only and need a saved payload cursor (https://airtable.com/developers/web/api/webhooks-overview) |
 | apps/alegra | 1 | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
@@ -834,7 +834,7 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/axonaut | 2 | invoice-list | new-invoice, new-or-updated-invoice | apps/axonaut/README.md Triggers section (verified 2026-11-09) | hand | Invoice list has creation_date_after and updated_after filters (DD/MM/YYYY, date-only); triggers filter with a one-day overlap and dedupe by id (https://axonaut.com/api/v2/doc). |
 | apps/balena | 1 | release-list | new-release | apps/balena/README.md Triggers section (verified 2026-11-09) | hand | release-list ($orderby=created_at desc, successful builds) wrapped; https://docs.balena.io/reference/api/resources/release/ |
 | apps/bamboohr | 1 | list-employees | new-employee | apps/bamboohr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-employees |
-| apps/bannerbear | 1 | image-list | new-image | apps/bannerbear/README.md Triggers section (verified 2026-11-09) | hand | Bannerbear documents image-list as the recent image render feed |
+| apps/bannerbear | 11 | image-list | new-animation, new-animation-template, new-asset, new-batch, new-image, new-image-template, new-instant-url, new-publication, new-tool-job, new-workflow, new-workflow-run | apps/bannerbear/README.md Triggers section (verified 2026-11-10) | hand | newest-first page 1 of each v5 list endpoint; the reference says tool jobs are newest first and all lists share that polling shape (https://developers.bannerbear.com/v5/) |
 | apps/baremetrics | 1 | customer-list | new-customer | apps/baremetrics/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/base44 | 1 | list-audit-logs | new-audit-log | apps/base44/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-audit-logs |
 | apps/basecamp | 1 | project-list | new-project | apps/basecamp/README.md Triggers section (verified 2026-11-10) | hand | GET /projects.json is 'sorted by most recently created project first' (https://github.com/basecamp/bc3-api/blob/master/sections/projects.md); message and to-do events are webhook-only and not shipped |
@@ -1210,7 +1210,7 @@ depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-p
 | apps/tapfiliate | 9 | conversion-list | new-conversion, new-customer, new-click, new-program, new-affiliate-group, new-affiliate-payment, new-affiliate-program, new-program-affiliate, new-affiliate | apps/tapfiliate/README.md Triggers section (verified 2026-11-10) | hand | conversion-list, customer-list and click-list take day-granular date_from/date_to with no sort (since-filter polls filtered by created_at); programs, affiliates, affiliate groups, one program's affiliates and one affiliate's payments/programs have no usable order or date filter and are read in full and diffed (snapshot); webhook triggers (dashboard-set, unsigned) are queued (https://developers.tapfiliate.com/automation/webhooks) |
 | apps/teachable | 1 | transaction-list | new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-09) | hand | since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions) |
 | apps/teamleader | 2 | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
-| apps/teamup | 1 | invoices-list | new-invoice | apps/teamup/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): invoices-list sort=-id (documented enum id\|-id\|due_date\|-due_date, https://docs.goteamup.com/llms.txt) |
+| apps/teamup | 7 | invoices-list | new-course, new-instructor, new-invoice, new-membership-plan, new-offering-type, new-staff-member, new-venue | apps/teamup/README.md Triggers section (verified 2026-11-10) | hand | newest-first invoices-list sort=-id plus bounded snapshots of venues, instructors, staff, courses, membership plans and offering types (https://docs.goteamup.com/llms.txt) |
 | apps/teamwork | 1 | project-list | new-project | apps/teamwork/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): project-list orderBy=datecreated&orderMode=desc |
 | apps/telnyx | 1 | list-phone-numbers | new-phone-number | apps/telnyx/README.md Triggers section (verified 2026-11-09) | hand | GET /phone_numbers documents its default order: "If not given, results are sorted by created_at in descending order" (https://github.com/team-telnyx/openapi, spec3.json); signed message/call webhooks are also offered and queued (https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks) |
 | apps/textmagic | 1 | contact-list | new-contact | apps/textmagic/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): contact-list orderBy=id&direction=desc |
