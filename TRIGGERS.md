@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 46, manual-webhook: 17, poll: 396, none: 224
+**Totals:** 683 apps — webhook-api: 46, manual-webhook: 17, poll: 395, none: 225
 
 ## webhook-api (46)
 
@@ -83,7 +83,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (396)
+## poll (395)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -260,27 +260,26 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/ironclad | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
 | apps/iterable | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
 | apps/jibble | activity-list | new-activity-list | no | scan | list action activity-list has pagination and order/since params |
-| apps/jobber | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
-| apps/jobnimbus | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/jobber | invoice-list | new-invoice, new-or-updated-invoice | apps/jobber/README.md Triggers section (verified 2026-11-09) | hand | invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/) |
+| apps/jobnimbus | contact-list | new-contact, new-or-updated-contact | apps/jobnimbus/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x) |
 | apps/jobtread | list-jobs | new-job | no | hand | shipped poll trigger(s) over list action list-jobs |
-| apps/jumpcloud | user-group-list | new-user-group-list | no | scan | list action user-group-list has pagination and order/since params |
-| apps/justcall | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/kajabi | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/jumpcloud | user-list | new-user | apps/jumpcloud/README.md Triggers section (verified 2026-11-09) | hand | user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml) |
+| apps/justcall | contact-list | new-contact | apps/justcall/README.md Triggers section (verified 2026-11-09) | hand | contact-list order=desc by contact id, documented as most-recently-added first (https://developer.justcall.io/reference/contacts_list_v21) |
+| apps/kajabi | contact-list | new-contact | apps/kajabi/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=-created_at, default documented newest-first (https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml) |
 | apps/keap | contact-list | new-contact | apps/keap/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/kintone | comments-list | new-comment | apps/kintone/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action comments-list |
 | apps/kit | list-subscribers | new-subscriber | apps/kit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-subscribers |
-| apps/knack | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
+| apps/knack | record-list | new-record | apps/knack/README.md Triggers section (verified 2026-11-09) | hand | record-list sorted descending by a caller-named creation-time field (sort_field / sort_order, https://docs.knack.com/reference/sorting) |
 | apps/kommo | lead-list | new-lead | apps/kommo/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action lead-list |
 | apps/kudosity | sms-list | new-sms | no | hand | shipped poll trigger(s) over list action sms-list |
-| apps/kustomer | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
-| apps/kvcore | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/lawmatics | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
+| apps/kustomer | customer-list | new-customer, new-or-updated-customer | apps/kustomer/README.md Triggers section (verified 2026-11-09) | hand | customer-list sort=-createdAt / -updatedAt (https://developer.kustomer.com/api/core-resources/get-customers) |
+| apps/lawmatics | list-contacts | new-contact | apps/lawmatics/README.md Triggers section (verified 2026-11-09) | hand | list-contacts sort_by=created_at&sort_order=desc (https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw) |
 | apps/leexi | meeting-event-list | new-meeting-event | no | hand | shipped poll trigger(s) over list action meeting-event-list |
-| apps/lemonsqueezy | order-list | new-order-list | no | scan | list action order-list has pagination and order/since params |
-| apps/lever | posting-list | new-posting-list | no | scan | list action posting-list has pagination and order/since params |
-| apps/lexware-office | voucher-list | new-voucher-list | no | scan | list action voucher-list has pagination and order/since params |
-| apps/linkedin/linkedin | list-posts-by-author | new-posts-by-author | no | scan | list action list-posts-by-author has pagination and order/since params |
-| apps/linkedin/linkedin-ads | ad-account-list | new-ad-account-list | no | scan | list action ad-account-list has pagination and order/since params |
+| apps/lemonsqueezy | order-list | new-order | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09) | hand | order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders) |
+| apps/lever | posting-list | new-posting, new-or-updated-posting | apps/lever/README.md Triggers section (verified 2026-11-09) | hand | posting-list read as a bounded whole-collection snapshot (cursor pages of 100, max 5000), no sort relied on (https://hire.lever.co/developer/documentation#list-all-postings) |
+| apps/lexware-office | voucher-list | new-voucher, new-or-updated-voucher | apps/lexware-office/README.md Triggers section (verified 2026-11-09) | hand | voucher-list sort=createdDate,DESC / updatedDate,DESC (https://developers.lexware.io/docs/) |
+| apps/linkedin/linkedin | list-posts-by-author | new-post, new-or-updated-post | apps/linkedin/linkedin/README.md Triggers section (verified 2026-11-09) | hand | list-posts-by-author sortBy=CREATED / LAST_MODIFIED (https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api) |
+| apps/linkedin/linkedin-ads | ad-account-list | new-ad-account | apps/linkedin/linkedin-ads/README.md Triggers section (verified 2026-11-09) | hand | ad-account-list read as a bounded whole-collection snapshot via pageToken (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts) |
 | apps/linkupapi | job-candidates-list | new-candidate | no | hand | shipped poll trigger(s) over list action job-candidates-list |
 | apps/littlegreenlight | constituent-search | new-constituent-search | no | scan | list action constituent-search has pagination and order/since params |
 | apps/livestorm | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
@@ -484,7 +483,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (224)
+## none (225)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -572,6 +571,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/klaviyo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/klicktipp |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/klipfolio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/kvcore | new-user | apps/kvcore/README.md Triggers section (verified 2026-11-09) | hand | user-list takes only an updated-since filter and documents no created-time field or sort, so a new user cannot be told from an edited one (https://developer.insiderealestate.com/publicv2/reference/get_v2-public-users) |
 | apps/landbot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/launchdarkly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/leadfeeder |  | no | scan | no newest-first list action found by scan; vendor events not researched |

@@ -3142,23 +3142,25 @@
     "path": "apps/jobber",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice-list"
+      "new-invoice",
+      "new-or-updated-invoice"
     ],
     "pollAction": "invoice-list",
-    "reason": "list action invoice-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/)",
+    "verified": "apps/jobber/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jobnimbus",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x)",
+    "verified": "apps/jobnimbus/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jobtread",
@@ -3196,34 +3198,34 @@
     "path": "apps/jumpcloud",
     "mechanism": "poll",
     "candidates": [
-      "new-user-group-list"
+      "new-user"
     ],
-    "pollAction": "user-group-list",
-    "reason": "list action user-group-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "user-list",
+    "reason": "user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml)",
+    "verified": "apps/jumpcloud/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/justcall",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list order=desc by contact id, documented as most-recently-added first (https://developer.justcall.io/reference/contacts_list_v21)",
+    "verified": "apps/justcall/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/kajabi",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list sort=-created_at, default documented newest-first (https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml)",
+    "verified": "apps/kajabi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/keap",
@@ -3289,12 +3291,12 @@
     "path": "apps/knack",
     "mechanism": "poll",
     "candidates": [
-      "new-record-list"
+      "new-record"
     ],
     "pollAction": "record-list",
-    "reason": "list action record-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "record-list sorted descending by a caller-named creation-time field (sort_field / sort_order, https://docs.knack.com/reference/sorting)",
+    "verified": "apps/knack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/kommo",
@@ -3322,23 +3324,24 @@
     "path": "apps/kustomer",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer",
+      "new-or-updated-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "customer-list sort=-createdAt / -updatedAt (https://developer.kustomer.com/api/core-resources/get-customers)",
+    "verified": "apps/kustomer/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/kvcore",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-user-list"
+      "new-user"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "user-list takes only an updated-since filter and documents no created-time field or sort, so a new user cannot be told from an edited one (https://developer.insiderealestate.com/publicv2/reference/get_v2-public-users)",
+    "verified": "apps/kvcore/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/landbot",
@@ -3362,12 +3365,12 @@
     "path": "apps/lawmatics",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-contacts sort_by=created_at&sort_order=desc (https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw)",
+    "verified": "apps/lawmatics/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/leadfeeder",
@@ -3414,34 +3417,36 @@
     "path": "apps/lemonsqueezy",
     "mechanism": "poll",
     "candidates": [
-      "new-order-list"
+      "new-order"
     ],
     "pollAction": "order-list",
-    "reason": "list action order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders)",
+    "verified": "apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/lever",
     "mechanism": "poll",
     "candidates": [
-      "new-posting-list"
+      "new-posting",
+      "new-or-updated-posting"
     ],
     "pollAction": "posting-list",
-    "reason": "list action posting-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "posting-list read as a bounded whole-collection snapshot (cursor pages of 100, max 5000), no sort relied on (https://hire.lever.co/developer/documentation#list-all-postings)",
+    "verified": "apps/lever/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/lexware-office",
     "mechanism": "poll",
     "candidates": [
-      "new-voucher-list"
+      "new-voucher",
+      "new-or-updated-voucher"
     ],
     "pollAction": "voucher-list",
-    "reason": "list action voucher-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "voucher-list sort=createdDate,DESC / updatedDate,DESC (https://developers.lexware.io/docs/)",
+    "verified": "apps/lexware-office/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/line",
@@ -3470,23 +3475,24 @@
     "path": "apps/linkedin/linkedin",
     "mechanism": "poll",
     "candidates": [
-      "new-posts-by-author"
+      "new-post",
+      "new-or-updated-post"
     ],
     "pollAction": "list-posts-by-author",
-    "reason": "list action list-posts-by-author has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-posts-by-author sortBy=CREATED / LAST_MODIFIED (https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api)",
+    "verified": "apps/linkedin/linkedin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linkedin/linkedin-ads",
     "mechanism": "poll",
     "candidates": [
-      "new-ad-account-list"
+      "new-ad-account"
     ],
     "pollAction": "ad-account-list",
-    "reason": "list action ad-account-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "ad-account-list read as a bounded whole-collection snapshot via pageToken (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts)",
+    "verified": "apps/linkedin/linkedin-ads/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linkedin/linkedin-conversions",
