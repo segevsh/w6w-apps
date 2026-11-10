@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
 import apiKey from "./auth/api-key.ts";
 import meGet from "./actions/me-get.ts";
 import userList from "./actions/user-list.ts";
@@ -115,4 +116,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

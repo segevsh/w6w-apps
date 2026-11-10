@@ -197,3 +197,5 @@ per second, so the client names the limit in the error instead.
 - **Page settings, branding and custom domains.** Configured once, by a human.
 - **Postmortems.** Written prose with a publication workflow of their own; an
   automation has nothing useful to say in one.
+
+Triggers: not shipped — `incident-list` (`q`, `limit`, `page`) and `component-list` (`page`, `per_page`) document no sort order and no created-since filter, so a new record cannot be told from page 1; `GET /pages/{page_id}/subscribers` does document `sort_field=created_at` with `sort_direction=desc`, but it pages by a zero-based `page` plus `limit` while `subscriber-list` sends `page=1&per_page=…`, so a newest-first page 1 would skip the newest rows and fixing that changes the action's paging, which this change leaves alone (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers, verified 2026-11-09)

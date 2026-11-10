@@ -6,6 +6,7 @@ tailnet.
 - **Categories** — security, devops
 - **Auth methods** — api-key, oauth-client
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.tailscale.com`, `status.tailscale.com`
 - **Website** — https://tailscale.com
 - **API docs** — https://tailscale.com/api
@@ -218,3 +219,11 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus four specific to this app: **no action writes the policy file**,
 the irreversible actions **require a confirmation**, `device-routes-set` gates
 approving an **exit node**, and no action logs a key, an address or a login name.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | Poll (snapshot) | `user-list` | Each user who newly appears in the tailnet |
+
+Polled by comparing the whole `user-list` result with the previous check (members by default; more than 5000 users fails the check with a clear error). The first check records who exists without firing. Source: "The Tailscale API does not currently support pagination. All results are returned at once." and `GET /tailnet/{tailnet}/users` "List all users of a tailnet" ([API reference](https://tailscale.com/api), verified 2026-11-09).

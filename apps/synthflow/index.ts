@@ -23,6 +23,7 @@
  * the README for the full list of what is out.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCall from "./triggers/new-call.ts";
 import apiKey from "./auth/api-key.ts";
 
 import assistantList from "./actions/assistant-list.ts";
@@ -86,4 +87,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCall],
 } satisfies AppDefinition;
