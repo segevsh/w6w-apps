@@ -56,7 +56,13 @@ import memberList from "./actions/member-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newDeploy from "./triggers/new-deploy.ts";
 import newIssue from "./triggers/new-issue.ts";
+import newMember from "./triggers/new-member.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newProject from "./triggers/new-project.ts";
+import newRelease from "./triggers/new-release.ts";
+import newTeam from "./triggers/new-team.ts";
 
 export default {
   actions: [
@@ -90,5 +96,5 @@ export default {
   ],
   auth: [authToken, oauth2],
   healthChecks: [service, quota, site],
-  triggers: [newIssue],
+  triggers: [newIssue, newRelease, newProject, newTeam, newMember, newOrganization, newDeploy],
 } satisfies AppDefinition;

@@ -1,14 +1,22 @@
 # Sentry
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 ## Triggers
 
 | key — title | mechanism | wrapped action | what the run gets |
 | --- | --- | --- | --- |
 | `new-issue` — New Issue | poll | `issue-list` | Each newly first-seen issue. |
+| `new-release` — New Release | poll | `release-list` | Each new release (newest first). |
+| `new-project` — New Project | poll | `project-list` | Each project newly created in the organization. |
+| `new-team` — New Team | poll | `team-list` | Each team newly created in the organization. |
+| `new-member` — New Member | poll | `member-list` | Each member or approved invite newly added to the organization. |
+| `new-organization` — New Organization | poll | `organization-list` | Each organization newly visible to the credential. |
+| `new-deploy` — New Deploy | poll | `deploy-list` | Each deploy newly recorded against one release (release version is a param). |
 
-Sentry documents `sort=new` on [List Organization Issues](https://docs.sentry.io/api/events/list-an-organizations-issues/). Verified 2026-11-09.
+Sentry documents `sort=new` on [List Organization Issues](https://docs.sentry.io/api/events/list-an-organizations-issues/) and releases "sorted by most recent" on [List an Organization's Releases](https://docs.sentry.io/api/releases/list-an-organizations-releases/). Projects, teams, members, organizations and one release's deploys are small cursor-paged collections with no sort or date filter ([projects](https://docs.sentry.io/api/organizations/list-an-organizations-projects/), [teams](https://docs.sentry.io/api/teams/list-an-organizations-teams/), [members](https://docs.sentry.io/api/organizations/list-an-organizations-members/), [organizations](https://docs.sentry.io/api/organizations/list-your-organizations/), [deploys](https://docs.sentry.io/api/releases/list-a-releases-deploys/)), so their triggers read the whole list each check and emit ids not seen before; the first check fires nothing. Verified 2026-11-10.
+
+Not covered: `event-list` and `issue-event-list` — raw events are an unbounded stream whose docs ([project events](https://docs.sentry.io/api/events/list-a-projects-error-events/), [issue events](https://docs.sentry.io/api/events/list-an-issues-events/)) document cursor paging but no sort order, and the actions return a plain array without the paging cursor, so a busy project could not be drained; new issues are covered by `new-issue`.
 
 Triage Sentry issues, read events, and manage projects, releases and deploys.
 
