@@ -84,3 +84,7 @@ and the rest is picked up on the next check. No `new-or-updated-*` trigger: Hyro
 update-since filter or update stamp. The Hyros API Blueprint documents no webhook endpoints.
 
 Source: https://jsapi.apiary.io/apis/hyros.apib — "Retrieve Leads" and "Retrieve sales" (verified 2026-11-09).
+
+## Trigger floor assumption
+
+The new-lead and new-sale triggers floor on each record's creation timestamp; a sale's `creationDate` may not parse, and an item with no parseable timestamp is kept, so a first-check flood is possible there.

@@ -94,3 +94,7 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 Source: <https://docs.granola.ai/api-reference/openapi.json> (verified 2026-11-09).
 
 The audit log is returned in `collected_at` order (oldest first) and `page_size` is capped at 30, so the trigger lists `GET /v1/audit` with `occurred_after` set to the last check minus a 10-minute overlap, reads up to 10 pages of 30, and dedupes by event id. The vendor's line: "Return events that occurred after this date." More than 300 new events inside one window are emitted over later checks.
+
+## Trigger floor assumption
+
+The new-audit-event trigger floors on the event's `occurred_at` (assumed field); an event with no parseable timestamp is kept.

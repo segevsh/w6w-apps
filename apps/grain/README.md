@@ -297,3 +297,7 @@ deno task lint         # deno lint
 deno task fmt           # format (use this, never bare `deno fmt` — see CLAUDE.md)
 deno task test           # unit tests, mocked HookContext
 ```
+
+## Trigger floor assumption
+
+The new-recording trigger floors on the meeting's `start_datetime`: a recording of a meeting that started before the first check is never emitted, and a recording with no parseable timestamp is kept.
