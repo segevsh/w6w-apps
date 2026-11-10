@@ -12,12 +12,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1908 triggers, 2399 unaccounted list actions in 519 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
-| apps/heartbeat | 8 | 16 | 16 |
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
 | apps/chatbase | 0 | 12 | 12 |
@@ -596,6 +595,7 @@ depth: 682 apps, 1908 triggers, 2399 unaccounted list actions in 519 apps, n8n-p
 | apps/google/google-sheets | 4 | 1 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
 | apps/gusto | 15 | 14 | 0 |
+| apps/heartbeat | 19 | 16 | 0 |
 | apps/hibob | 7 | 13 | 0 |
 | apps/hospitable | 9 | 12 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
@@ -715,7 +715,7 @@ depth: 682 apps, 1908 triggers, 2399 unaccounted list actions in 519 apps, n8n-p
 | apps/gocanvas | 5 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks); unsigned (no signature documented), callback URL is the secret; delivery body undocumented so passed through whole |
 | apps/goto-webinar | 5 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation |
 | apps/gumroad | 2 | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
-| apps/heartbeat | 8 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered (PUT /webhooks, DELETE /webhooks/{id}); unsigned (no signature documented), callback URL is the secret; no poll: member and content lists are uncapped with no change filter |
+| apps/heartbeat | 19 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created, mention, direct-message, abandoned-invitation, any-event, new-channel, new-channel-category, new-group, new-course, new-invitation, new-video, new-direct-message | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat |
 | apps/helpscout | 4 | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/heygen | 2 | video-completed, video-failed | apps/heygen/README.md Triggers section (verified 2026-11-10) | hand | API-registered endpoint (POST /v3/webhooks/endpoints, one-time whsec secret kept in state); signature header hex HMAC-SHA256 of the raw body; no poll: GET /v3/videos documents no order or since filter |
 | apps/invoiceninja | 2 | invoice-webhook, new-invoice | apps/invoiceninja/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |

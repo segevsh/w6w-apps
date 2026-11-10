@@ -4309,12 +4309,49 @@
       "event-created",
       "event-rsvp",
       "course-completed",
-      "document-created"
+      "document-created",
+      "mention",
+      "direct-message",
+      "abandoned-invitation",
+      "any-event",
+      "new-channel",
+      "new-channel-category",
+      "new-group",
+      "new-course",
+      "new-invitation",
+      "new-video",
+      "new-direct-message"
     ],
-    "pollAction": null,
-    "reason": "API-registered (PUT /webhooks, DELETE /webhooks/{id}); unsigned (no signature documented), callback URL is the secret; no poll: member and content lists are uncapped with no change filter",
+    "pollAction": "list-direct-messages",
+    "reason": "API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat",
     "verified": "apps/heartbeat/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "list-users": "user-joined",
+      "find-user": "user-joined",
+      "list-threads": "thread-created",
+      "list-events": "event-created",
+      "list-documents": "document-created"
+    },
+    "skipped": {
+      "list-roles": "reference data: the community's role definitions (id, name), not a record feed",
+      "list-webhooks": "admin: this API key's own webhook registrations, which the triggers themselves create and delete",
+      "list-event-instances": "no stable id (items are only {startTime,endTime}) and unbounded: every past and future occurrence of a recurring event (https://heartbeat.readme.io/reference/geteventinstances)",
+      "list-chat-channel-messages": "cursor-paged (startingAfter/limit, default 50) with no documented order and no created/updated-since filter, and unbounded, so neither a newest-first poll nor a bounded snapshot is sound (https://heartbeat.readme.io/reference/getchatchannelmessages)"
+    },
+    "events": {
+      "USER_JOIN": "user-joined",
+      "USER_UPDATE": "user-updated",
+      "EVENT_CREATE": "event-created",
+      "EVENT_RSVP": "event-rsvp",
+      "THREAD_CREATE": "thread-created",
+      "MENTION": "mention",
+      "DIRECT_MESSAGE": "direct-message",
+      "COURSE_COMPLETED": "course-completed",
+      "GROUP_JOIN": "group-joined",
+      "ABANDONED_CART": "abandoned-invitation",
+      "DOCUMENT_CREATE": "document-created"
+    }
   },
   {
     "path": "apps/hedy",
