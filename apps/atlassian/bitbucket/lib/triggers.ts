@@ -30,7 +30,64 @@ import { BitbucketClient, type BitbucketListResponse } from "./client.ts";
 export interface TriggerParams {
   workspace?: string;
   repoSlug?: string;
+  /** Any-event trigger only: comma-separated event keys (empty = every key below). */
+  events?: string;
 }
+
+/**
+ * Every repository webhook event key Bitbucket Cloud documents (event payloads page, read
+ * 2026-11-10: https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/).
+ */
+export const EVENT_KEYS = [
+  "repo:push",
+  "repo:fork",
+  "repo:updated",
+  "repo:transfer",
+  "repo:deleted",
+  "repo:commit_comment_created",
+  "repo:commit_status_created",
+  "repo:commit_status_updated",
+  "issue:created",
+  "issue:updated",
+  "issue:comment_created",
+  "pullrequest:created",
+  "pullrequest:updated",
+  "pullrequest:approved",
+  "pullrequest:unapproved",
+  "pullrequest:fulfilled",
+  "pullrequest:rejected",
+  "pullrequest:comment_created",
+  "pullrequest:comment_updated",
+  "pullrequest:comment_deleted",
+  "pullrequest:comment_resolved",
+  "pullrequest:comment_reopened",
+  "pullrequest:changes_request_created",
+  "pullrequest:changes_request_removed",
+];
+
+/** The user's comma-separated event list (empty = every key) → validated keys. */
+export function chooseEvents(raw: unknown): string[] {
+  const wanted = (typeof raw === "string" ? raw : "").split(",").map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (wanted.length === 0) return [...EVENT_KEYS];
+  const bad = wanted.filter((e) => !EVENT_KEYS.includes(e));
+  if (bad.length > 0) {
+    throw new Error(
+      `Unknown Bitbucket event key(s): ${bad.join(", ")}. Use ${EVENT_KEYS.join(", ")}.`,
+    );
+  }
+  return [...new Set(wanted)];
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  advanced: true,
+  hint: `Comma-separated Bitbucket event keys to fire on: ${
+    EVENT_KEYS.join(", ")
+  }. Leave empty for all of them.`,
+};
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
 export interface TriggerState {
@@ -170,8 +227,8 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** The Bitbucket event key (`X-Event-Key`) this trigger fires on. */
-  event: string;
+  /** The Bitbucket event key (`X-Event-Key`) this trigger fires on. Omit for the Any-event trigger. */
+  event?: string;
   output: OutputField[];
   samplePayload: Record<string, unknown>;
 }
@@ -180,8 +237,10 @@ export interface WebhookTriggerSpec {
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, BitbucketEvent, TriggerState> {
+  const chosen = (params: TriggerParams | undefined) =>
+    spec.event ? [spec.event] : chooseEvents(params?.events);
   const sample: BitbucketEvent = {
-    event: spec.event,
+    event: spec.event ?? "repo:push",
     deliveryId: "1f0e2b9c-6c0e-4e1f-9a53-0f8c2f3d4e5a",
     repository: "teamsinspace/documentation-tests",
     actor: "Emma",
@@ -191,13 +250,16 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [WORKSPACE_PARAM, REPO_PARAM],
+    params: spec.event
+      ? [WORKSPACE_PARAM, REPO_PARAM]
+      : [WORKSPACE_PARAM, REPO_PARAM, EVENTS_PARAM],
     output: [...BASE_OUTPUT, ...spec.output],
     sample,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const workspace = required(params.workspace, "Workspace");
       const repoSlug = required(params.repoSlug, "Repository");
+      const events = chosen(params); // validated before any request
       const client = new BitbucketClient(ctx);
       for (const id of await hooksPointingAt(client, workspace, repoSlug, callbackUrl)) {
         await deleteHook(client, workspace, repoSlug, id);
@@ -210,12 +272,12 @@ export function webhookTrigger(
           url: callbackUrl,
           active: true,
           secret,
-          events: [spec.event],
+          events,
         },
       });
       const hookId = bareUuid(created?.uuid);
       if (!hookId) throw new Error("Bitbucket created the webhook but returned no uuid.");
-      return { hookId, workspace, repoSlug, event: spec.event, secret };
+      return { hookId, workspace, repoSlug, event: events.join(","), secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
@@ -226,14 +288,15 @@ export function webhookTrigger(
       }
     },
 
-    async handleIngest({ raw, state }) {
+    async handleIngest({ raw, params, state }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Bitbucket delivers webhooks with POST, not ${raw.method}.`);
       }
       const payload = await verifiedPayload(raw, state?.secret);
-      if (header(raw, "x-event-key") !== spec.event) return [];
+      const key = header(raw, "x-event-key");
+      if (key === undefined || !chosen(params).includes(key)) return [];
       return [{
-        event: spec.event,
+        event: key,
         deliveryId: header(raw, "x-request-uuid") ?? null,
         repository: str(asObject(payload.repository)?.full_name),
         actor: str(asObject(payload.actor)?.display_name),
