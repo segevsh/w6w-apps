@@ -1,18 +1,5 @@
 # YouCanBookMe
 
-## Triggers
-
-| Key | Mechanism | Wrapped list action | The run gets |
-|---|---|---|---|
-| `new-booking-page` | poll (5 min) | `list-profiles` | each booking page newly created for an account |
-
-`GET /{accountId}/profiles` returns every booking page (profile) of the account unpaginated, so the
-trigger snapshot-diffs it (additions only; more than 5000 throws). The first check only records the
-pages. Bookings are not a trigger: `list-bookings` is cursor-paged by start time with no created
-order or since filter. No webhook offering exists in the documented API.
-
-Source: https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api (verified 2026-11-09).
-
 List, read, create, reschedule/cancel and delete YouCanBookMe (YCBM) bookings; list and read the
 booking pages ("profiles") behind them; add appointment types and team members to a booking page.
 
@@ -25,6 +12,19 @@ booking pages ("profiles") behind them; add appointment types and team members t
 - **API docs** — vendor's own docs page (`api.youcanbook.me/docs/index.html`) has been a dead
   meta-refresh to a client-rendered Stoplight SPA (`ycbm.stoplight.io`) since at least 2020; see
   "How this app was verified" below for the actual sources used.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-booking-page` | poll (5 min) | `list-profiles` | each booking page newly created for an account |
+
+`GET /{accountId}/profiles` returns every booking page (profile) of the account unpaginated, so the
+trigger snapshot-diffs it (additions only; more than 5000 throws). The first check only records the
+pages. Bookings are not a trigger: `list-bookings` is cursor-paged by start time with no created
+order or since filter. No webhook offering exists in the documented API.
+
+Source: https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api (verified 2026-11-09).
 
 ## How this app was verified
 

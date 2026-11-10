@@ -1,5 +1,19 @@
 # Wati
 
+Send WhatsApp template and session messages, manage contacts, and read
+conversation history through Wati's WhatsApp Team Inbox / Business API
+platform — each customer's own tenant endpoint.
+
+- **Categories** — communication, support
+- **Auth methods** — api-token
+- **Actions** — 12
+- **Triggers** — 1 (poll)
+- **Egress allowlist** — `*` (every Wati tenant is its own host — see below)
+- **Website** — https://wati.io
+- **API docs** — https://docs.wati.io/ (ReadMe-hosted; the OpenAPI 3.0.4 document, `info.title:
+  "WhatsApp chat API"`, `info.version: "v3"`, is embedded per-endpoint rather than published as a
+  single downloadable file — extracted directly from the reference pages). Read 2026-09-05.
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -17,20 +31,6 @@ API; they are not wired here (webhook candidate recorded for a webhook node).
 
 Sources: https://docs.wati.io/reference/messagetemplate_getmessagetemplates.md,
 https://docs.wati.io/reference/introduction-1.md (verified 2026-11-09).
-
-Send WhatsApp template and session messages, manage contacts, and read
-conversation history through Wati's WhatsApp Team Inbox / Business API
-platform — each customer's own tenant endpoint.
-
-- **Categories** — communication, support
-- **Auth methods** — api-token
-- **Actions** — 12
-- **Triggers** — 1 (poll)
-- **Egress allowlist** — `*` (every Wati tenant is its own host — see below)
-- **Website** — https://wati.io
-- **API docs** — https://docs.wati.io/ (ReadMe-hosted; the OpenAPI 3.0.4 document, `info.title:
-  "WhatsApp chat API"`, `info.version: "v3"`, is embedded per-endpoint rather than published as a
-  single downloadable file — extracted directly from the reference pages). Read 2026-09-05.
 
 ## Setup
 

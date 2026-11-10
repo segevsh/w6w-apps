@@ -1,37 +1,34 @@
 # SendGrid
 
-## Triggers
-
-| Key | Mechanism | Wrapped list action | The run gets |
-|---|---|---|---|
-| `new-contact` | poll (5 min) | `contact-get-all` | each newly created Marketing Campaigns contact |
-| `new-or-updated-contact` | poll (5 min) | `contact-get-all` | each contact that is created or edited (event identity `id:updated_at`) |
-| `new-list` | poll (5 min) | `list-get-all` | each newly created Marketing Campaigns list |
-
-The contact triggers run the existing `contact-get-all` search with the SGQL query
-`created_at >= TIMESTAMP '<cursor − 2 min>'` (or `updated_at >=`). `created_at` and `updated_at` are
-documented contact fields and `TIMESTAMP '…'` is SGQL's documented time literal. Search results are
-unordered, so the window is deduped by contact id; a window larger than one check's cap (1000) is
-drained over successive checks with the cursor held back. The first check only records the start
-time: contacts stamped before it are never emitted. `new-list` snapshot-diffs the list index
-(`list-get-all`, additions only).
-
-SendGrid also offers an Event Webhook (delivered, bounce, open, click, …) configured in the
-dashboard; it is not wired here (webhook candidate recorded for a webhook node).
-
-Sources: https://www.twilio.com/docs/sendgrid/for-developers/sending-email/segmentation-query-language
-(fields, `TIMESTAMP` literal), https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists
-(verified 2026-11-09), https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook.
-
 Consume SendGrid API
 
 - **Categories** — email, communication
 - **Auth methods** — sendgrid-api
 - **Actions** — 10
-- **Triggers** — 3 (poll)
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.sendgrid.com`
 - **Website** — https://sendgrid.com
 - **API docs** — https://docs.sendgrid.com/api-reference
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-list` | poll (5 min) | `list-get-all` | each newly created Marketing Campaigns list |
+
+`new-list` snapshot-diffs the list index (`list-get-all`, additions only).
+
+There are deliberately no contact triggers: the only contact feed is `POST /v3/marketing/contacts/search`,
+which documents "Only the first 50 contacts that meet the search criteria will be returned" with no page
+token and no sort, and its timestamps have one-second resolution, so a window holding more than 50
+contacts (a bulk upsert or CSV import) cannot be read losslessly and would silently drop the rest.
+
+SendGrid also offers an Event Webhook (delivered, bounce, open, click, …) configured in the
+dashboard; it is not wired here (webhook candidate recorded for a webhook node).
+
+Sources: https://www.twilio.com/docs/sendgrid/for-developers/sending-email/segmentation-query-language
+(fields, `TIMESTAMP` literal), https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts (50-contact cap), https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists
+(verified 2026-11-09), https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook.
 
 ## Health check
 

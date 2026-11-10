@@ -1,5 +1,17 @@
 # WebinarJam / EverWebinar
 
+Read webinars, register attendees, list registrants and unsubscribe leads across WebinarJam
+(live webinars) and EverWebinar (automated, scheduled replays) — the same vendor's two
+products, over one shared account-wide API key.
+
+- **Categories** — video, marketing
+- **Auth methods** — api-key (custom, body-carried)
+- **Actions** — 5
+- **Triggers** — 1 (poll)
+- **Egress allowlist** — `api.webinarjam.com`
+- **Website** — https://webinarjam.com
+- **API docs** — https://support.webinarjam.com/en/collections/19655423-developer-api
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -13,18 +25,6 @@ trigger: `registrant-list` is per webinar and page, with no documented order. No
 is documented in the developer collection.
 
 Source: https://support.webinarjam.com/en/collections/19655423-developer-api (verified 2026-11-09).
-
-Read webinars, register attendees, list registrants and unsubscribe leads across WebinarJam
-(live webinars) and EverWebinar (automated, scheduled replays) — the same vendor's two
-products, over one shared account-wide API key.
-
-- **Categories** — video, marketing
-- **Auth methods** — api-key (custom, body-carried)
-- **Actions** — 5
-- **Triggers** — 1 (poll)
-- **Egress allowlist** — `api.webinarjam.com`
-- **Website** — https://webinarjam.com
-- **API docs** — https://support.webinarjam.com/en/collections/19655423-developer-api
 
 ## Verification
 

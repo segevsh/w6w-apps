@@ -1,5 +1,14 @@
 # VBOUT
 
+Marketing automation (email, contacts, social, goals) driven through the VBOUT REST API
+(`https://api.vbout.com/1`). 26 actions centred on the email-marketing surface.
+
+Every path, verb, parameter and enum was verified on 2026-10-06 against the OpenAPI 3.1 document at
+`developers.vbout.com/scripts/openapi.json` (71 paths), the Quickstart page and the vendor's cURL
+samples, plus unauthenticated probes of the host. The OpenAPI document is low quality (no security
+scheme, paths without a leading slash, every HTTP status listed, parameter names with stray
+spaces), so nothing was taken from it alone.
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -14,15 +23,6 @@ documented order. The OpenAPI document's `Webhook/*` paths describe popups (thei
 popup fields), so no webhook offering is recorded.
 
 Source: https://developers.vbout.com/scripts/openapi.json (`EmailMarketing/GetLists`; verified 2026-11-09).
-
-Marketing automation (email, contacts, social, goals) driven through the VBOUT REST API
-(`https://api.vbout.com/1`). 26 actions centred on the email-marketing surface.
-
-Every path, verb, parameter and enum was verified on 2026-10-06 against the OpenAPI 3.1 document at
-`developers.vbout.com/scripts/openapi.json` (71 paths), the Quickstart page and the vendor's cURL
-samples, plus unauthenticated probes of the host. The OpenAPI document is low quality (no security
-scheme, paths without a leading slash, every HTTP status listed, parameter names with stray
-spaces), so nothing was taken from it alone.
 
 ## Auth
 

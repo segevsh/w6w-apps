@@ -1,5 +1,13 @@
 # Wappalyzer
 
+Website technology intelligence: look up the tech stack behind up to ten URLs, discover a
+company's serving subdomains, verify an email address, and build technographic lead lists.
+
+- **Vendor:** [Wappalyzer](https://www.wappalyzer.com/) — Developer Tools
+- **API version:** v2 (`api.wappalyzer.com`)
+- **Auth:** API key (`x-api-key` header). A **Business plan or higher** is required for API
+  access, per every reference page's own gating banner.
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -11,14 +19,6 @@
 first check only records the lists. Wappalyzer documents no webhooks.
 
 Source: https://www.wappalyzer.com/openapi/v2-public.yaml (`/lists`; verified 2026-11-09).
-
-Website technology intelligence: look up the tech stack behind up to ten URLs, discover a
-company's serving subdomains, verify an email address, and build technographic lead lists.
-
-- **Vendor:** [Wappalyzer](https://www.wappalyzer.com/) — Developer Tools
-- **API version:** v2 (`api.wappalyzer.com`)
-- **Auth:** API key (`x-api-key` header). A **Business plan or higher** is required for API
-  access, per every reference page's own gating banner.
 
 ## What was verified, and how
 

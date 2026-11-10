@@ -1,5 +1,16 @@
 # Workflowy
 
+Capture, edit, organise and export [WorkFlowy](https://workflowy.com) outline nodes over the public
+API v1 (`https://workflowy.com/api/v1`). Reference: <https://workflowy.com/api-reference/>.
+
+- **Auth:** API key, sent as `Authorization: Bearer <key>` (stamped by `sign` only). Generate one at
+  <https://workflowy.com/api-key/>.
+- **Network:** `workflowy.com` (API) and, for the unsigned status check only,
+  `status.workflowy.com`.
+- **Icon:** `assets/icon.svg` is the vendor's own mark, served verbatim from
+  `workflowy.com/media/home/images/workflowy-logo.svg` (no `favicon.svg` exists; the
+  apple-touch-icon is PNG only).
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -11,17 +22,6 @@ the trigger snapshot-diffs the children (additions only; more than 5000 children
 first check only records the children. WorkFlowy documents no webhooks.
 
 Source: https://workflowy.com/api-reference/ (verified 2026-11-09).
-
-Capture, edit, organise and export [WorkFlowy](https://workflowy.com) outline nodes over the public
-API v1 (`https://workflowy.com/api/v1`). Reference: <https://workflowy.com/api-reference/>.
-
-- **Auth:** API key, sent as `Authorization: Bearer <key>` (stamped by `sign` only). Generate one at
-  <https://workflowy.com/api-key/>.
-- **Network:** `workflowy.com` (API) and, for the unsigned status check only,
-  `status.workflowy.com`.
-- **Icon:** `assets/icon.svg` is the vendor's own mark, served verbatim from
-  `workflowy.com/media/home/images/workflowy-logo.svg` (no `favicon.svg` exists; the
-  apple-touch-icon is PNG only).
 
 ## Actions (12)
 

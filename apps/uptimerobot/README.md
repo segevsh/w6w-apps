@@ -1,5 +1,16 @@
 # UptimeRobot
 
+Manage monitors and alert contacts, and check account status, via the UptimeRobot API v2.
+
+- **Categories** — monitoring
+- **Auth method** — api-key (`apiKey`, body-located)
+- **Actions** — 8
+- **Triggers** — 2 (poll)
+- **Egress allowlist** — `api.uptimerobot.com`
+- **Website** — https://uptimerobot.com
+- **API docs** — https://uptimerobot.com/api/legacy/ (the v2 API; UptimeRobot's newer v3 REST
+  API exists but was not used here — see "Why v2" below)
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -16,17 +27,6 @@ UptimeRobot can also notify a `web-hook` alert contact on monitor alerts (config
 dashboard, unsigned); it is not wired here (webhook candidate recorded for a webhook node).
 
 Source: https://uptimerobot.com/api/legacy/ (verified 2026-11-09).
-
-Manage monitors and alert contacts, and check account status, via the UptimeRobot API v2.
-
-- **Categories** — monitoring
-- **Auth method** — api-key (`apiKey`, body-located)
-- **Actions** — 8
-- **Triggers** — 2 (poll)
-- **Egress allowlist** — `api.uptimerobot.com`
-- **Website** — https://uptimerobot.com
-- **API docs** — https://uptimerobot.com/api/legacy/ (the v2 API; UptimeRobot's newer v3 REST
-  API exists but was not used here — see "Why v2" below)
 
 ## Actions
 

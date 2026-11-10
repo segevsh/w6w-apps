@@ -8,7 +8,7 @@ import { clock } from "../../lib/triggers.ts";
 export const T0 = 1_794_182_400_000;
 const JSON_HEADERS = { "content-type": "application/json" };
 
-const idsOf = (events: unknown[]) => events.map((e) => (e as { id: number }).id);
+export const idsOf = (events: unknown[]) => events.map((e) => (e as { id: number }).id);
 
 /** The §5 / §9.8 / §9.9 cases shared by the Uscreen since-filter triggers. */
 export function sinceSuite(
@@ -16,8 +16,10 @@ export function sinceSuite(
   trigger: TriggerDefinition,
   /** The literal request URL prefix, up to and including the path. */
   base: string,
+  /** The `date_field` the trigger filters on, and the stamp its seed floor compares. */
+  field: "created_at" | "updated_at" = "created_at",
 ) {
-  const item = (id: number, createdSec = T0 / 1000 + 30) => ({ id, created_at: createdSec });
+  const item = (id: number, sec = T0 / 1000 + 30) => ({ id, created_at: sec, updated_at: sec });
   const page = (items: unknown[], next?: number) => ({
     body: items,
     headers: {
@@ -31,7 +33,7 @@ export function sinceSuite(
     return { r, calls: m.calls };
   };
   const cur = (s: unknown) => (s as { cursor?: string }).cursor;
-  const win = "from=2026-11-08T23%3A58%3A00.000Z&date_field=created_at";
+  const win = `from=2026-11-08T23%3A58%3A00.000Z&date_field=${field}`;
 
   test(`${name}: seeds, emits only new items, retries idempotently, literal request`, async () => {
     clock.now = () => T0;

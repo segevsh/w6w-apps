@@ -44,6 +44,7 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
 
 export default {
   actions: [
@@ -83,5 +84,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newCustomer, newInvoice],
+  triggers: [newCustomer, newInvoice, newOrUpdatedInvoice],
 } satisfies AppDefinition;

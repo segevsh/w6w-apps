@@ -1,5 +1,10 @@
 # Zeplin
 
+Read and update Zeplin design handoff data from a workflow: projects, screens and their versions
+(image, layers, assets), notes and comments, components, colors, text styles, design tokens and
+styleguides. API reference: <https://docs.zeplin.dev/llms.txt> (per-operation OpenAPI 3.0.2
+fragments; server `https://api.zeplin.dev`, paths under `/v1`).
+
 ## Triggers
 
 | Key | Mechanism | Wrapped list action | The run gets |
@@ -16,11 +21,6 @@ are not wired here (webhook candidate recorded for a webhook node).
 
 Sources: https://docs.zeplin.dev/reference/getprojectscreens.md,
 https://docs.zeplin.dev/reference/createprojectwebhooks.md (verified 2026-11-09).
-
-Read and update Zeplin design handoff data from a workflow: projects, screens and their versions
-(image, layers, assets), notes and comments, components, colors, text styles, design tokens and
-styleguides. API reference: <https://docs.zeplin.dev/llms.txt> (per-operation OpenAPI 3.0.2
-fragments; server `https://api.zeplin.dev`, paths under `/v1`).
 
 ## Connecting
 
