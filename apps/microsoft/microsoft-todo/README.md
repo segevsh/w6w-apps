@@ -326,6 +326,4 @@ docs-verified rather than wire-verified, since the To Do endpoints have no unaut
 All status-page candidates in the health section **were** probed on the wire — see the table for
 what each returned.
 
-## Triggers
-
-- **New Task Change** wraps `list-task-changes` with `receivedDateTime desc`. [Microsoft Graph To Do delta](https://learn.microsoft.com/en-us/graph/api/todotask-delta), verified 2026-11-09.
+Triggers: not shipped — the Graph docs name no sort or created-since parameter that list-tasks is documented to honour (only "some OData query parameters"), and list-task-changes is delta-ordered, so no newest-first or since-filter feed can be verified (https://learn.microsoft.com/en-us/graph/api/todotasklist-list-tasks?view=graph-rest-1.0).
