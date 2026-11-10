@@ -1,5 +1,5 @@
 import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { type IdsState, pollNewItems } from "../../_shared/poll/mod.ts";
+import { type IdsState, pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
@@ -49,7 +49,10 @@ export function sinceTrigger(spec: {
   description: string;
   action: ActionDefinition;
   pageSize: number;
-  input(window: { since: string; until: string }): Record<string, unknown>;
+  input(
+    window: { since: string; until: string },
+    params: Record<string, unknown>,
+  ): Record<string, unknown>;
   nextPageInput?(
     input: Record<string, unknown>,
     result: unknown,
@@ -78,7 +81,7 @@ export function sinceTrigger(spec: {
     output: spec.output,
     sample: spec.sample,
     minIntervalMs: spec.minIntervalMs ?? 300_000,
-    async poll({ state }, ctx) {
+    async poll({ state, params }, ctx) {
       const prior = state as { cursor?: unknown; resume?: unknown; seeded?: unknown } | null;
       const resume = prior?.seeded === true && isResume(prior.resume) ? prior.resume : undefined;
       const checkedAt = resume ? resume.checkedAt : clock.now();
@@ -109,7 +112,7 @@ export function sinceTrigger(spec: {
           let input: Record<string, unknown> | undefined = resume ? resume.input : spec.input({
             since: stamp(cursor - OVERLAP_MS),
             until: stamp(checkedAt),
-          });
+          }, (params ?? {}) as Record<string, unknown>);
           for (let page = 0; input && page < MAX_PAGES; page++) {
             const result = await spec.action.execute(input, ctx);
             items.push(...spec.items(result).filter(afterFloor));
@@ -130,4 +133,48 @@ export function sinceTrigger(spec: {
       };
     },
   };
+}
+
+/** "New <record>" over a small bounded collection: diff the ids against the previous check. */
+export async function newRecords(o: {
+  state: unknown;
+  items: unknown[];
+  idOf(item: unknown): unknown;
+}): Promise<{ events: unknown[]; nextState: unknown }> {
+  const byId = new Map<string, unknown>();
+  for (const item of o.items) {
+    const id = o.idOf(item);
+    if (typeof id !== "string" || id === "") {
+      throw new Error("Quo list returned a record without an id");
+    }
+    byId.set(id, item);
+  }
+  const { events, nextState } = await pollSnapshot({
+    state: o.state,
+    rows: [...byId.keys()].map((key) => ({ key, values: { key } })),
+    emit: { added: true, updated: false },
+  });
+  return { events: events.map((e) => byId.get(e.key)), nextState };
+}
+
+/** Pages read for a snapshot of a bounded list (100 rows each; the kit caps a snapshot at 5000). */
+const SNAPSHOT_PAGES = 50;
+
+/** Reads a whole small list through the app's OWN list action, following `nextPageToken`. */
+export async function readAllPages(
+  action: ActionDefinition,
+  ctx: Parameters<ActionDefinition["execute"]>[1],
+): Promise<unknown[]> {
+  const all: unknown[] = [];
+  let pageToken: string | undefined;
+  for (let page = 0; page < SNAPSHOT_PAGES; page++) {
+    const res = await action.execute(
+      { maxResults: 100, ...(pageToken ? { pageToken } : {}) },
+      ctx,
+    ) as { data?: unknown[]; nextPageToken?: string | null };
+    all.push(...(res.data ?? []));
+    if (!res.nextPageToken) return all;
+    pageToken = res.nextPageToken;
+  }
+  throw new Error(`Quo list is longer than ${SNAPSHOT_PAGES} pages; refusing to snapshot it`);
 }
