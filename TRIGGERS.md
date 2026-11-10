@@ -12,12 +12,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1793 triggers, 2563 unaccounted list actions in 536 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
-| apps/eventbrite | 16 | 23 | 23 |
 | apps/heartbeat | 8 | 16 | 16 |
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
@@ -588,6 +587,7 @@ depth: 682 apps, 1793 triggers, 2563 unaccounted list actions in 536 apps, n8n-p
 | apps/dropbox/dropbox | 2 | 2 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
+| apps/eventbrite | 27 | 23 | 0 |
 | apps/everhour | 10 | 23 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
 | apps/findymail | 5 | 12 | 0 |
@@ -704,7 +704,7 @@ depth: 682 apps, 1793 triggers, 2563 unaccounted list actions in 536 apps, n8n-p
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
 | apps/copper | 7 | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/elastic-email | 7 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept. |
-| apps/eventbrite | 16 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated | no | hand | shipped: webhook registered through the vendor API |
+| apps/eventbrite | 27 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated, new-or-updated-attendee, new-organizer, new-venue, new-ticket-group, new-inventory-tier, new-seat-map, new-event-team, new-discount, new-custom-question, new-default-question, new-organization-member | apps/eventbrite/README.md Triggers section (verified 2026-11-10) | hand | shipped: 16 webhook triggers registered through the vendor API (unsigned deliveries; callback URL is the secret, https://www.eventbrite.com/platform/docs/webhooks) plus 11 poll triggers for records with no webhook |
 | apps/exa | 2 | new-webset-item, webset-item-enriched | apps/exa/README.md Triggers section (verified 2026-11-10) | hand | shipped: Websets webhooks registered through POST /websets/v0/webhooks (webset.item.created, webset.item.enriched); Exa-Signature t=,v1= HMAC-SHA256 of '<t>.<raw body>' with the secret returned once at creation, 5-minute window. The research note 'unsigned monitors' was wrong: Exa signs both Monitors and Websets webhooks. |
 | apps/figma | 5 | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/fivetran | 4 | new-connection, sync-started, sync-ended, connection-failure | apps/fivetran/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret; X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); the earlier New Connection poll (connection-list) is kept. |
