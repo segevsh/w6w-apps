@@ -30,7 +30,7 @@ export default snapshotTrigger<{ container: "workspace" | "folder"; containerId:
     id: 4583173393803140,
     resourceType: "sheet",
     name: "Project plan",
-    permalink: "https://app.smartsheet.com/sheets/sample-sheet",
+    permalink: "sample-permalink",
     createdAt: "2026-11-09T09:00:00Z",
     modifiedAt: "2026-11-09T09:00:00Z",
   },

@@ -20,7 +20,7 @@ export default snapshotTrigger({
     id: 7116448184199044,
     name: "Marketing",
     accessLevel: "OWNER",
-    permalink: "https://app.smartsheet.com/workspaces/sample-workspace",
+    permalink: "sample-permalink",
   },
   rows: (_p, ctx) => readTokens("new-workspace", listWorkspaces, {}, ctx),
   idOf: (r) => String(r.id),

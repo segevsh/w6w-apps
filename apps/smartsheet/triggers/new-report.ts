@@ -22,7 +22,7 @@ export default snapshotTrigger({
     id: 987654321,
     name: "Q2 Earnings",
     accessLevel: "OWNER",
-    permalink: "https://app.smartsheet.com/reports/sample-report",
+    permalink: "sample-permalink",
     isSummaryReport: false,
   },
   rows: (_p, ctx) => readPages("new-report", listReports, {}, ctx),
