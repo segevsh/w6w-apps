@@ -6,7 +6,7 @@ and offers — on the **Harvest v3 API**.
 - **Categories** — hr
 - **Auth methods** — `oauth-client-credentials`, `api-key` (transitional)
 - **Actions** — 24 (17 reads, 7 writes)
-- **Triggers** — 1 (poll)
+- **Triggers** — 34 (poll)
 - **Health checks** — 3 live (`service`, `api`, `quota`) + 1 declared absence (~~`silo`~~) + the two
   derived `auth:*` checks
 - **Egress allowlist** — `harvest.greenhouse.io`, `auth.greenhouse.io` (the `service` check adds
@@ -463,7 +463,11 @@ serves a catch-all HTML page for every asset path, so the vendor-favicon route i
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-interview` — New Interview | poll | `list-interviews` | Each newly scheduled interview |
+| `new-application-stage`, `new-application`, `new-attachment`, `new-candidate`, `new-department`, `new-job-interview-stage`, `new-job-post`, `new-job`, `new-note`, `new-offer`, `new-office`, `new-opening`, `new-rejection-reason`, `new-scorecard`, `new-source`, `new-user` | poll | Matching `list-*` action | Each newly created record |
+| `new-or-updated-application-stage`, `new-or-updated-application`, `new-or-updated-attachment`, `new-or-updated-candidate`, `new-or-updated-department`, `new-or-updated-interview`, `new-or-updated-job-interview-stage`, `new-or-updated-job-post`, `new-or-updated-job`, `new-or-updated-note`, `new-or-updated-offer`, `new-or-updated-office`, `new-or-updated-opening`, `new-or-updated-rejection-reason`, `new-or-updated-scorecard`, `new-or-updated-source`, `new-or-updated-user` | poll | Matching `list-*` action | Each newly created or updated record |
 
 Source: <https://harvestdocs.greenhouse.io/reference/get_v3-interviews> (verified 2026-11-09).
 
-The v3 `GET /v3/interviews` reference documents a `created_at` filter (`gte|<timestamp>`) and a cursor that must travel alone, but no sort order. The trigger therefore filters `created_at` to the last check minus two minutes, reads up to 5 pages of 100 by following the cursor, and dedupes by interview id.
+The v3 list references document `created_at` and `updated_at` filters (`gte|<timestamp>`) and a cursor that must travel alone, but no sort order. Each trigger therefore filters the selected timestamp to the last check minus two minutes, reads up to 5 pages of 100 by following the cursor, and dedupes by id (or `id:updated_at` for update feeds). The first check stores a time floor without reading, so pre-existing records never cause a later flood.
+
+Sources (verified 2026-11-10): one Harvest v3 list reference per trigger family, each documenting the `created_at` and `updated_at` filters: <https://harvestdocs.greenhouse.io/reference/get_v3-application-stages>, <https://harvestdocs.greenhouse.io/reference/get_v3-applications>, <https://harvestdocs.greenhouse.io/reference/get_v3-attachments>, <https://harvestdocs.greenhouse.io/reference/get_v3-candidates>, <https://harvestdocs.greenhouse.io/reference/get_v3-departments>, <https://harvestdocs.greenhouse.io/reference/get_v3-job-interview-stages>, <https://harvestdocs.greenhouse.io/reference/get_v3-job-posts>, <https://harvestdocs.greenhouse.io/reference/get_v3-jobs>, <https://harvestdocs.greenhouse.io/reference/get_v3-notes>, <https://harvestdocs.greenhouse.io/reference/get_v3-offers>, <https://harvestdocs.greenhouse.io/reference/get_v3-offices>, <https://harvestdocs.greenhouse.io/reference/get_v3-openings>, <https://harvestdocs.greenhouse.io/reference/get_v3-rejection-reasons>, <https://harvestdocs.greenhouse.io/reference/get_v3-scorecards>, <https://harvestdocs.greenhouse.io/reference/get_v3-sources>, <https://harvestdocs.greenhouse.io/reference/get_v3-users>, <https://harvestdocs.greenhouse.io/reference/get_v3-interviews>; overview <https://harvestdocs.greenhouse.io/>.
