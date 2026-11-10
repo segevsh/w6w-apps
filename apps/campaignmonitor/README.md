@@ -5,7 +5,7 @@ add and import subscribers, build and send campaigns, read campaign reporting, a
 transactional email.
 
 - **API host:** `https://api.createsend.com/api/v3.3`
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Docs:** <https://www.campaignmonitor.com/api/v3-3/getting-started/>
 - **Auth:** HTTP Basic with an API key as the username, **or** OAuth 2.0
 - **Egress:** `api.createsend.com` only
@@ -319,12 +319,20 @@ shipped and the host's standard refresh against `refreshUrl` is used.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-subscriber` — New Subscriber | Poll | `list-subscribers-get` | Each subscriber who becomes active on the chosen list |
+| `new-client` — New Client | Poll | `client-list` | Each client (sub-account) newly added to the account |
+| `new-smart-email` — New Smart Email | Poll | `smart-email-list` | Each smart transactional email newly created (pick the client for an account-wide key) |
 
 Polled newest-first through `list-subscribers-get` (state `active`) with `orderfield=date&orderdirection=desc`; `date` is when the subscriber entered the state, so a re-subscribed address is not repeated (de-duplicated by email address). `list-stats-get` is an analytics report and is not used. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
+`client-list` (`GET /clients.json`) and `smart-email-list` (`GET /transactional/smartEmail`) return the
+whole collection in one response with no paging, order or since filter, so those two triggers snapshot-diff
+it (additions only; more than 5000 rows throws); the first check only records what exists.
+
+Not covered: none of the listed actions is skipped.
+
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://www.campaignmonitor.com/api/v3-3/lists/) (verified 2026-11-09).
+Sources (verified 2026-11-10): [Lists and subscribers](https://www.campaignmonitor.com/api/v3-3/lists/), [Account — getting your clients](https://www.campaignmonitor.com/api/v3-3/account/), [Transactional — smart email listing](https://www.campaignmonitor.com/api/v3-3/transactional/).
 
 ## Health checks
 
