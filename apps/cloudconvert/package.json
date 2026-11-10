@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cloudconvert",
   "version": "0.3.0",
-  "description": "Convert, compress and manipulate files with CloudConvert's job/task pipeline. Signed webhook triggers start a workflow when a job is created, finishes or fails, or on any job event you choose (registered through the API).",
+  "description": "Convert, compress and manipulate files with CloudConvert's job/task pipeline. Signed webhook triggers fire when a job is created, finishes or fails, or on any job event you choose.",
   "license": "MIT",
   "author": {
     "name": "w6w"

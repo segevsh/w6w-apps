@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/webflow",
   "version": "0.3.0",
-  "description": "Manage Webflow sites, CMS collections and items, products, and orders via the Webflow Data API v2, and start workflows from form submissions, CMS item, order, inventory, page, comment and site-publish events (or any event you choose), and new collections, sites and products.",
+  "description": "Manage Webflow sites, CMS collections and items, products and orders via the Data API v2, and start workflows from form, CMS, order, inventory, page, comment and publish events or any event you pick.",
   "license": "MIT",
   "author": {
     "name": "w6w"
