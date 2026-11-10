@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/greenhouse",
-  "version": "0.2.0",
-  "description": "Manage Greenhouse interviews and trigger workflows on newly scheduled interviews.",
+  "version": "0.3.0",
+  "description": "Manage Greenhouse recruiting records and trigger workflows on newly created or updated records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
