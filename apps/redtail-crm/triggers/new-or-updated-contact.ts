@@ -1,15 +1,20 @@
 import contactSearch from "../actions/contact-search.ts";
 import { sinceTrigger } from "../lib/triggers.ts";
 
-/** `GET /contacts/search` takes the documented `updated_since`; the action exposes no paging. */
+/** `GET /contacts/search` takes `updated_since`; its responses carry `meta.total_pages`; pages are 50. */
 export default sinceTrigger({
   key: "new-or-updated-contact",
   title: "New or Updated Contact",
   description: "The run gets each contact when it is created or updated.",
   action: contactSearch,
-  pageSize: 100,
+  pageSize: 50,
   input: ({ since }) => ({ updatedSince: since }),
   items: (result) => (result as { contacts?: unknown[] }).contacts ?? [],
+  nextPageInput: (input, result) => {
+    const pages = (result as { meta?: { total_pages?: number } }).meta?.total_pages;
+    const page = Number(input.page ?? 1);
+    return typeof pages === "number" && page < pages ? { ...input, page: page + 1 } : undefined;
+  },
   idOf: (item) => {
     const c = item as { id?: unknown; updated_at?: unknown };
     return `${c.id ?? ""}:${c.updated_at ?? ""}`;
