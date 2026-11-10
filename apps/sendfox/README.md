@@ -1,5 +1,15 @@
 # SendFox
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact. |
+
+SendFox documents the `filter[created_after]` contact filter in its [developer reference](https://sendfox.com/developers). Verified 2026-11-09.
+
 Manage contacts, tags, lists, campaigns, forms and automations on the **SendFox** email-newsletter
 platform for content creators, over its REST API.
 

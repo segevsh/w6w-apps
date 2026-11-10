@@ -1,5 +1,15 @@
 # SamCart
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | poll | `order-list` | Each newly created order. |
+
+SamCart documents the `created_at_min` filter on [List Orders](https://api.samcart.com/docs). Verified 2026-11-09.
+
 Read SamCart orders, charges, failed charges, customers, products, refunds and subscriptions, and
 add a product to an order, refund a charge, cancel or reschedule a subscription, on the
 **SamCart Public API**.

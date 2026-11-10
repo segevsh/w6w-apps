@@ -1,5 +1,16 @@
 # Sender
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | poll | `subscriber-list` | Each newly created subscriber. |
+| `new-or-updated-subscriber` — New or Updated Subscriber | poll | `subscriber-list` | Each newly created or updated subscriber. |
+
+Sender documents `order` and `direction` on [its pagination endpoint](https://api.sender.net/pagination/). Verified 2026-11-09.
+
 Send campaigns, manage subscribers/groups/segments, custom fields and custom events, and manage
 account webhooks on **Sender (sender.net)**, an email (and SMS) marketing platform.
 

@@ -1,5 +1,16 @@
 # Retell AI
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-agent` — New Agent | poll | `list-agents` | Each newly created agent. |
+| `new-or-updated-agent` — New or Updated Agent | poll | `list-agents` | Each newly created or updated agent. |
+
+Retell documents `sort_order` on [List Agents](https://docs.retellai.com/api-references/list-agents). Verified 2026-11-09.
+
 Place outbound phone and web calls, batch-dial a list of numbers, search call history, and read
 agent/phone-number/voice catalogs, on Retell AI's voice-agent platform.
 

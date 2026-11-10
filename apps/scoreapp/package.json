@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/scoreapp",
-  "version": "0.1.0",
-  "description": "Read ScoreApp scorecards, their questions and scoring categories, and the results (leads) they collect, with each result's per-question answers.",
+  "version": "0.2.0",
+  "description": "Read ScoreApp scorecards, their questions and scoring categories, the results (leads) they collect with each result's per-question answers, and trigger workflows on new results.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "open-api.scoreapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

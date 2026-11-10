@@ -1,5 +1,16 @@
 # RegFox
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-form` — New Form | poll | `form-list` | Each newly created registration form. |
+| `new-or-updated-form` — New or Updated Form | poll | `form-list` | Each newly created or updated registration form. |
+
+The `form-list` sort and date filters are documented by [RegFox's Forms API](https://api.webconnex.com/docs). Verified 2026-11-09.
+
 Event registration on the Webconnex platform, driven through the Webconnex public API v2
 (`https://api.webconnex.com/v2/public`). The same API and key also reach TicketSpice, RedPodium and
 GivingFuel; every search takes a `product` (default `regfox.com`).

@@ -1,5 +1,7 @@
 # SendPulse
 
+Triggers: not shipped — deals-list is offset-paginated with no documented creation/update ordering or since filter (https://api.sendpulse.com/.well-known/openapi/crm.yaml)
+
 Manage SendPulse **CRM** deals and contacts, and send **Bulk Email** campaigns, against
 SendPulse's own published OpenAPI 3 documents.
 

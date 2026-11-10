@@ -1,5 +1,16 @@
 # Relevance AI
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-agent` — New Agent | poll | `agent-list` | Each newly created agent. |
+| `new-or-updated-agent` — New or Updated Agent | poll | `agent-list` | Each newly created or updated agent. |
+
+The agent-list sort DSL is documented by [Relevance AI's API reference](https://documentation.relevanceai.com/reference/list-agents). Verified 2026-11-09.
+
 Relevance AI is an agent-building platform — you compose **Agents** (and the **Tools** they call) in
 its UI, then drive them from anywhere. This app drives them from w6w: trigger an agent with a
 message, run a tool and read its output, poll and cancel long-running jobs, and list what exists.

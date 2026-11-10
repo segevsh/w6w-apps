@@ -1,5 +1,16 @@
 # Salla
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | poll | `order-list` | Each newly created order. |
+| `new-or-updated-order` — New or Updated Order | poll | `order-list` | Each newly created or updated order. |
+
+Salla documents the order-list `sort_by` field in its [Orders API](https://docs.salla.dev/doc-421135). Verified 2026-11-09.
+
 Products, orders, customers, categories, brands, discount coupons and store details in Salla, the
 Saudi e-commerce platform, over the Merchant API (`api.salla.dev/admin/v2`).
 

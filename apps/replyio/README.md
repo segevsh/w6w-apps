@@ -1,5 +1,7 @@
 # Reply.io
 
+Triggers: not shipped — contact-list is offset-paginated with no documented creation ordering or created-since filter (https://docs.reply.io/api-reference/contacts/get-all-contacts)
+
 Manage contacts, sequences (multichannel outreach campaigns), email accounts, custom fields, and
 team-wide email reporting, on the **Reply API v3**.
 
