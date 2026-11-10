@@ -84,6 +84,7 @@ import createNote from "./actions/create-note.ts";
 import moveApplication from "./actions/move-application.ts";
 import rejectApplication from "./actions/reject-application.ts";
 import hireApplication from "./actions/hire-application.ts";
+import newInterview from "./triggers/new-interview.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
@@ -127,4 +128,5 @@ export default {
   // end-of-life.
   auth: [oauthClientCredentials, apiKey],
   healthChecks: [service, api, quota, silo],
+  triggers: [newInterview],
 } satisfies AppDefinition;

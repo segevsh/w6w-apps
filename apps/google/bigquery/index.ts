@@ -71,6 +71,7 @@ import projectList from "./actions/project-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newJobList from "./triggers/new-job-list.ts";
 
 export default {
   actions: [
@@ -101,4 +102,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newJobList],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bigquery",
-  "version": "0.1.0",
-  "description": "Run BigQuery SQL, stream rows in, and manage datasets, tables and jobs.",
+  "version": "0.2.0",
+  "description": "Run BigQuery SQL, manage jobs, and trigger workflows on new jobs.",
   "license": "MIT",
   "author": {
     "name": "w6w"

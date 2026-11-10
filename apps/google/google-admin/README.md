@@ -1,5 +1,7 @@
 # Google Workspace Admin
 
+Triggers: not shipped — users.list can only be ordered by EMAIL, FAMILY_NAME or GIVEN_NAME and its query has no creation-time filter, so no existing list can see new users (<https://developers.google.com/workspace/admin/directory/reference/rest/v1/users/list>).
+
 Manage Google Workspace users, groups and organizational units via the Admin SDK Directory API.
 
 - **Categories** — security, productivity

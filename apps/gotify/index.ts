@@ -91,6 +91,7 @@ import versionGet from "./actions/version-get.ts";
 
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -113,4 +114,5 @@ export default {
   ],
   auth: [clientToken],
   healthChecks: [instance, service],
+  triggers: [newMessage],
 } satisfies AppDefinition;

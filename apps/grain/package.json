@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/grain",
-  "version": "0.1.0",
-  "description": "List, read and manage Grain meeting recordings, transcripts, tags, shares and webhooks, plus a workspace's users, teams and meeting types, via the Grain Public API (v2).",
+  "version": "0.2.0",
+  "description": "Manage Grain meeting recordings and trigger workflows on new recordings.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.grain.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

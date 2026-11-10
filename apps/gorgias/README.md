@@ -5,6 +5,7 @@ Manage Gorgias tickets, customers, messages, tags, views and satisfaction survey
 - **Categories** — support
 - **Auth methods** — basic
 - **Actions** — 22
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.gorgias.com`
 - **Website** — https://www.gorgias.com
 - **API docs** — https://developers.gorgias.com/reference/introduction
@@ -111,3 +112,12 @@ core this app targets. Deliberately left out, with why:
 
 Researched and endpoint-verified 2026-08-29 against developers.gorgias.com/reference/* (the
 OpenAPI schema embedded in each reference page) and status.gorgias.com.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-get-many` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | poll | `customer-get-many` | Each newly created or updated customer |
+
+Source: <https://developers.gorgias.com/reference/list-customers> (verified 2026-11-09).

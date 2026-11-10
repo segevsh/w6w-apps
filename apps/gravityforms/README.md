@@ -7,6 +7,7 @@ Forms site, through the WordPress REST API.
 - **Auth:** `basic` (HTTP Basic — WordPress Application Password or Gravity Forms consumer
   key/secret)
 - **Actions:** 12 · **Health checks:** `service`, `quota`, `site`
+- **Triggers** — 2 (poll)
 
 Everything below was verified against the vendor's own documentation on 2026-08-03; the pages used
 are listed under [Links](#links). No endpoint, parameter or response key here was written from
@@ -249,3 +250,12 @@ Only URLs verified on 2026-08-03 are listed.
   - <https://docs.gravityforms.com/sending-notifications-with-the-rest-api-v2/>
 - **GitHub org:** <https://github.com/gravityforms> — the plugin core is not open source; the org
   publishes tooling such as the Gravity Forms CLI.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-entry` — New Entry | poll | `entry-get-many` | Each newly submitted form entry |
+| `new-or-updated-entry` — New or Updated Entry | poll | `entry-get-many` | Each newly created or updated form entry |
+
+Source: <https://docs.gravityforms.com/searching-and-getting-entries-with-the-rest-api-v2/> (verified 2026-11-09).

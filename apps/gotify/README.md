@@ -5,6 +5,7 @@ Send and manage push notifications through a self-hosted Gotify server.
 - **Categories** — communication, monitoring
 - **Auth methods** — client-token
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://gotify.net
 - **API docs** — https://gotify.net/api-docs · schema:
@@ -176,3 +177,13 @@ every non-2xx response. `errorDescription` is what actually says what went
 wrong — `error` alone just repeats the HTTP reason phrase. Failures thrown by
 this app's client surface `errorDescription` (falling back to `error`, then
 the raw body) alongside the status.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | poll | `message-list` | Each newly received message |
+
+Source: <https://gotify.net/docs/swagger-docs> (verified 2026-11-09).
+
+Order: the spec (<https://raw.githubusercontent.com/gotify/server/master/docs/spec.json>) pages with `since` = "return all messages with an ID less than this value", which implies newest-first; that is inferred, not stated outright.
