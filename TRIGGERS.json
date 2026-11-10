@@ -15,11 +15,12 @@
     "mechanism": "poll",
     "candidates": [
       "new-activity",
+      "new-or-updated-activity",
       "new-company",
       "new-job"
     ],
     "pollAction": "activity-list",
-    "reason": "list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity orders activity-list by date_modified (documented order field) and keys on id:date_modified",
+    "reason": "list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity requests the documented date_modified field via _fields and orders activity-list by order_by_desc(date_modified), keyed on id:date_modified",
     "verified": "apps/accelo/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
@@ -5134,13 +5135,13 @@
   },
   {
     "path": "apps/plaid",
-    "mechanism": "none",
+    "mechanism": "poll",
     "candidates": [
-      "new-institution"
+      "new-transaction"
     ],
-    "pollAction": null,
-    "reason": "institution-list (POST /institutions/get) pages the supported-institution catalog at count<=500 with no sort order or created filter: neither newest-first nor a bounded <=5000 snapshot (https://plaid.com/docs/api/institutions/)",
-    "verified": "apps/plaid/README.md Triggers section (verified 2026-11-09)",
+    "pollAction": "transaction-sync",
+    "reason": "transaction-sync (POST /transactions/sync) is a documented cursor change feed (added/modified/removed + next_cursor, https://plaid.com/docs/api/products/transactions/#transactionssync): new-transaction stores the cursor (pollToken) and emits added; institution-list stays unwrapped (catalog with no sort or created filter)",
+    "verified": "apps/plaid/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6372,15 +6373,13 @@
   },
   {
     "path": "apps/statuspage",
-    "mechanism": "none",
+    "mechanism": "poll",
     "candidates": [
-      "new-incident",
-      "new-component",
       "new-subscriber"
     ],
-    "pollAction": null,
-    "reason": "incident-list (q, limit, page) and component-list (page, per_page) document no sort order and no created-since filter; subscriber-list's endpoint documents sort_field=created_at + sort_direction=desc but pages by zero-based page + limit while the action sends page=1&per_page, so newest-first page 1 would skip rows and fixing it changes existing paging (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers)",
-    "verified": "apps/statuspage/README.md Triggers section (verified 2026-11-09)",
+    "pollAction": "subscriber-list",
+    "reason": "subscriber-list with the new newestFirst option sends the documented sort_field=created_at, sort_direction=desc, zero-based page + limit (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers); incident-list and component-list document no sort order or created-since filter",
+    "verified": "apps/statuspage/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6695,11 +6694,12 @@
     "path": "apps/thanksio",
     "mechanism": "none",
     "candidates": [
-      "order-list"
+      "order-list",
+      "mailing-list-recipients-list"
     ],
     "pollAction": null,
-    "reason": "order-list documents only 'recent orders', no sort or since filter (https://docs.thanks.io/api-reference/openapi.json)",
-    "verified": "apps/thanksio/README.md Triggers: not shipped line (verified 2026-11-09)",
+    "reason": "order-list documents only 'recent orders' with no sort or since filter; mailing-list-recipients-list filters only by updated_since (an edit also matches), documents no sort order, prints created_at zone-less, and the action sends no page (https://docs.thanks.io/api-reference/openapi.json)",
+    "verified": "apps/thanksio/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
