@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 70, manual-webhook: 19, poll: 460, none: 134
+**Totals:** 683 apps — webhook-api: 70, manual-webhook: 19, poll: 456, none: 138
 
 ## webhook-api (70)
 
@@ -109,7 +109,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (460)
+## poll (456)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -506,22 +506,18 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/spotify | search | new-record | no | scan | list action search has pagination and order/since params |
 | apps/square | customer-get-many | new-customer | apps/square/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-get-many |
 | apps/squarespace-commerce | list-orders | new-orders | no | scan | list action list-orders has pagination and order/since params |
-| apps/stackexchange | user-answer-list | new-user-answer-list | no | scan | list action user-answer-list has pagination and order/since params |
-| apps/statuspage | component-list | new-component-list | no | scan | list action component-list has pagination and order/since params |
+| apps/stackexchange | user-answer-list | new-answer, new-or-updated-answer | apps/stackexchange/README.md Triggers section (verified 2026-11-09) | hand | sort=creation / sort=activity with order=desc, documented sorts on creation_date / last_activity_date (https://api.stackexchange.com/docs/answers-on-users); idOf of the update trigger includes last_activity_date |
 | apps/storyblok | story-list | new-story | apps/storyblok/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action story-list |
 | apps/strapi | entry-list | new-entry | apps/strapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
-| apps/streak | box-list | new-box-list | no | scan | list action box-list has pagination and order/since params |
-| apps/streamtime | search-records | new-records | no | scan | list action search-records has pagination and order/since params |
-| apps/supabase | rows-list | new-rows-list | no | scan | list action rows-list has pagination and order/since params |
-| apps/supadata | youtube-search | new-youtube-search | no | scan | list action youtube-search has pagination and order/since params |
-| apps/superchat | conversation-messages-list | new-conversation-messages-list | no | scan | list action conversation-messages-list has pagination and order/since params |
-| apps/synthflow | call-list | new-call-list | no | scan | list action call-list has pagination and order/since params |
-| apps/systemeio | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/tableau | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/tailscale | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/tally | submission-get-many | new-submission-get-many | no | scan | list action submission-get-many has pagination and order/since params |
-| apps/taskade | my-project-list | new-my-project-list | no | scan | list action my-project-list has pagination and order/since params |
-| apps/teachable | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
+| apps/streak | box-list | new-box, new-or-updated-box | apps/streak/README.md Triggers section (verified 2026-11-09) | hand | sortBy=creationTimestamp \| lastUpdatedTimestamp, 'Both are in descending order' (https://streak.readme.io/reference/list-all-boxes-in-pipeline) |
+| apps/supabase | rows-list | new-row | apps/supabase/README.md Triggers section (verified 2026-11-09) | hand | explicit PostgREST order=<creation column>.desc.nullslast,id.desc on the caller's named table and creation column (https://docs.postgrest.org/en/stable/references/api/tables_views.html) |
+| apps/superchat | contact-list | new-contact | apps/superchat/README.md Triggers section (verified 2026-11-09) | hand | 'Objects are sorted descendingly by their created_at value' (https://developers.superchat.com/reference/get_contacts); conversation list documents no sort |
+| apps/synthflow | call-list | new-call | apps/synthflow/README.md Triggers section (verified 2026-11-09) | hand | since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls) |
+| apps/systemeio | contact-list | new-contact | apps/systemeio/README.md Triggers section (verified 2026-11-09) | hand | order=desc, documented default; cursor is the item id so order is by id (https://developer.systeme.io/reference/api) |
+| apps/tableau | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
+| apps/tailscale | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |
+| apps/tally | submission-get-many | new-submission | apps/tally/README.md Triggers section (verified 2026-11-09) | hand | since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list) |
+| apps/teachable | transaction-list | new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-09) | hand | since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions) |
 | apps/teamleader | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
 | apps/teamup | invoices-list | new-invoice | apps/teamup/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): invoices-list sort=-id (documented enum id\|-id\|due_date\|-due_date, https://docs.goteamup.com/llms.txt) |
 | apps/teamwork | project-list | new-project | apps/teamwork/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): project-list orderBy=datecreated&orderMode=desc |
@@ -574,7 +570,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (134)
+## none (138)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -670,8 +666,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/snowflake |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/solapi |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/splunk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/statuspage | new-incident, new-component, new-subscriber | apps/statuspage/README.md Triggers section (verified 2026-11-09) | hand | incident-list (q, limit, page) and component-list (page, per_page) document no sort order and no created-since filter; subscriber-list's endpoint documents sort_field=created_at + sort_direction=desc but pages by zero-based page + limit while the action sends page=1&per_page, so newest-first page 1 would skip rows and fixing it changes existing paging (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers) |
+| apps/streamtime | new-record | apps/streamtime/README.md Triggers section (verified 2026-11-09) | hand | search-records sorts by a per-view sortColumn from Search Setup and defaults to ascending; the spec names no creation column or id for every view (https://api.streamtime.net/swagger.json) |
+| apps/supadata | new-youtube-result | apps/supadata/README.md Triggers section (verified 2026-11-09) | hand | youtube-search is a search over public YouTube results (sortBy relevance/rating/date/views), not a feed of the account's own records (https://docs.supadata.ai/youtube/search) |
 | apps/talentlms |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/tapfiliate |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/taskade | new-project | apps/taskade/README.md Triggers section (verified 2026-11-09) | hand | my-project-list documents only 'Sort options: viewed-asc, viewed-desc' (last viewed, not created) and no created-since filter (https://docs.taskade.com/developers/comprehensive-api-guide/) |
 | apps/tavily |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/telnyx |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/terraform |  | no | scan | no newest-first list action found by scan; vendor events not researched |

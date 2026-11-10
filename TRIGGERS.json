@@ -6292,23 +6292,26 @@
     "path": "apps/stackexchange",
     "mechanism": "poll",
     "candidates": [
-      "new-user-answer-list"
+      "new-answer",
+      "new-or-updated-answer"
     ],
     "pollAction": "user-answer-list",
-    "reason": "list action user-answer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort=creation / sort=activity with order=desc, documented sorts on creation_date / last_activity_date (https://api.stackexchange.com/docs/answers-on-users); idOf of the update trigger includes last_activity_date",
+    "verified": "apps/stackexchange/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/statuspage",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-component-list"
+      "new-incident",
+      "new-component",
+      "new-subscriber"
     ],
-    "pollAction": "component-list",
-    "reason": "list action component-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "incident-list (q, limit, page) and component-list (page, per_page) document no sort order and no created-since filter; subscriber-list's endpoint documents sort_field=created_at + sort_direction=desc but pages by zero-based page + limit while the action sends page=1&per_page, so newest-first page 1 would skip rows and fixing it changes existing paging (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers)",
+    "verified": "apps/statuspage/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/storyblok",
@@ -6349,23 +6352,24 @@
     "path": "apps/streak",
     "mechanism": "poll",
     "candidates": [
-      "new-box-list"
+      "new-box",
+      "new-or-updated-box"
     ],
     "pollAction": "box-list",
-    "reason": "list action box-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sortBy=creationTimestamp | lastUpdatedTimestamp, 'Both are in descending order' (https://streak.readme.io/reference/list-all-boxes-in-pipeline)",
+    "verified": "apps/streak/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/streamtime",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-records"
+      "new-record"
     ],
-    "pollAction": "search-records",
-    "reason": "list action search-records has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "search-records sorts by a per-view sortColumn from Search Setup and defaults to ascending; the spec names no creation column or id for every view (https://api.streamtime.net/swagger.json)",
+    "verified": "apps/streamtime/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/stripe",
@@ -6391,34 +6395,34 @@
     "path": "apps/supabase",
     "mechanism": "poll",
     "candidates": [
-      "new-rows-list"
+      "new-row"
     ],
     "pollAction": "rows-list",
-    "reason": "list action rows-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "explicit PostgREST order=<creation column>.desc.nullslast,id.desc on the caller's named table and creation column (https://docs.postgrest.org/en/stable/references/api/tables_views.html)",
+    "verified": "apps/supabase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/supadata",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-youtube-search"
+      "new-youtube-result"
     ],
-    "pollAction": "youtube-search",
-    "reason": "list action youtube-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "youtube-search is a search over public YouTube results (sortBy relevance/rating/date/views), not a feed of the account's own records (https://docs.supadata.ai/youtube/search)",
+    "verified": "apps/supadata/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/superchat",
     "mechanism": "poll",
     "candidates": [
-      "new-conversation-messages-list"
+      "new-contact"
     ],
-    "pollAction": "conversation-messages-list",
-    "reason": "list action conversation-messages-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "contact-list",
+    "reason": "'Objects are sorted descendingly by their created_at value' (https://developers.superchat.com/reference/get_contacts); conversation list documents no sort",
+    "verified": "apps/superchat/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/surveymonkey",
@@ -6435,45 +6439,46 @@
     "path": "apps/synthflow",
     "mechanism": "poll",
     "candidates": [
-      "new-call-list"
+      "new-call"
     ],
     "pollAction": "call-list",
-    "reason": "list action call-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls)",
+    "verified": "apps/synthflow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/systemeio",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order=desc, documented default; cursor is the item id so order is by id (https://developer.systeme.io/reference/api)",
+    "verified": "apps/systemeio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tableau",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-workbook",
+      "new-or-updated-workbook"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "workbook-list",
+    "reason": "sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp",
+    "verified": "apps/tableau/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tailscale",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-user"
     ],
     "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api)",
+    "verified": "apps/tailscale/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/talentlms",
@@ -6488,12 +6493,12 @@
     "path": "apps/tally",
     "mechanism": "poll",
     "candidates": [
-      "new-submission-get-many"
+      "new-submission"
     ],
     "pollAction": "submission-get-many",
-    "reason": "list action submission-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list)",
+    "verified": "apps/tally/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tapfiliate",
@@ -6506,14 +6511,14 @@
   },
   {
     "path": "apps/taskade",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-my-project-list"
+      "new-project"
     ],
-    "pollAction": "my-project-list",
-    "reason": "list action my-project-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "my-project-list documents only 'Sort options: viewed-asc, viewed-desc' (last viewed, not created) and no created-since filter (https://docs.taskade.com/developers/comprehensive-api-guide/)",
+    "verified": "apps/taskade/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tavily",
@@ -6528,12 +6533,12 @@
     "path": "apps/teachable",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-transaction"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "transaction-list",
+    "reason": "since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions)",
+    "verified": "apps/teachable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/teamleader",
