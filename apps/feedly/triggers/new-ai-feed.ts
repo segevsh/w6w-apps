@@ -20,5 +20,5 @@ export default snapshotTrigger({
     { key: "feedId", type: "string", label: "AI Feed stream ID" },
     { key: "name", type: "string", label: "Name" },
   ],
-  sample: { feedId: "feed/https://feedly.com/f/alert/sample-uuid", name: "Ransomware" },
+  sample: { feedId: "feed/alert/sample-uuid", name: "Ransomware" },
 });

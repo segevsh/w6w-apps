@@ -22,7 +22,7 @@ export default snapshotTrigger({
   ],
   sample: {
     id: "blocklist-1",
-    url: "https://github.com/example/private",
+    url: "https://example.com/repo",
     patterns: ["secrets/**"],
   },
 });
