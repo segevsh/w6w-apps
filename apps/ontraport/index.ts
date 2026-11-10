@@ -75,6 +75,10 @@ import purchaseGet from "./actions/purchase-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newPurchase from "./triggers/new-purchase.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
 
 export default {
   actions: [
@@ -120,4 +124,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newContact, newOrUpdatedContact, newPurchase, newOrUpdatedOrder],
 } satisfies AppDefinition;

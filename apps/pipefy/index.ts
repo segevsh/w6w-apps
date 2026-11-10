@@ -91,6 +91,7 @@ import tableRecordDelete from "./actions/table-record-delete.ts";
 import graphqlQuery from "./actions/graphql-query.ts";
 
 import service from "./health/service.ts";
+import newPipe from "./triggers/new-pipe.ts";
 
 export default {
   actions: [
@@ -132,4 +133,5 @@ export default {
   ],
   auth: [clientCredentials, personalAccessToken],
   healthChecks: [service],
+  triggers: [newPipe],
 } satisfies AppDefinition;

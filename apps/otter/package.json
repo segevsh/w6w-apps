@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/otter",
-  "version": "0.1.0",
-  "description": "Read Otter.ai channels, conversations, transcripts, action items, insights and outlines, download meeting audio, and import calls from a URL — over Otter's Enterprise Public API.",
+  "version": "0.2.0",
+  "description": "Read Otter.ai channels, conversations, transcripts, action items, insights and outlines, download meeting audio, import calls, and trigger on new conversations over Otter's Enterprise Public API.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://help.otter.ai/hc/en-us/articles/36130822688279"
     ],
-    "longDescription": "Otter.ai is an AI meeting assistant that records, transcribes and summarizes conversations, then turns them into searchable transcripts, abstractive summaries, action items, topic insights and outlines. This app reads that output into a workflow: list and search conversations, fetch one with any combination of its generated action items, insights, outline or full transcript, download the meeting's MP3, and organize by Channel (Otter's shared-folder concept) and workspace member.\n\nA `conversation-create` action covers the other direction — importing a publicly downloadable audio or video URL as a new Otter conversation, the documented path for pulling calls in from a dialer or another recording source.\n\nOtter's Public API is gated to Enterprise workspaces only; a Free, Pro or Business account has no access to any endpoint this app calls, and `Auth.test` reports that distinctly from a bad key. Real-time updates are documented as a separate Webhooks surface rather than anything pollable here — out of scope for this app's Actions, which only cover reads and the one documented write.",
+    "longDescription": "Otter.ai is an AI meeting assistant that records, transcribes and summarizes conversations, then turns them into searchable transcripts, abstractive summaries, action items, topic insights and outlines. This app reads that output into a workflow: list and search conversations, fetch one with any combination of its generated action items, insights, outline or full transcript, download the meeting's MP3, and organize by Channel (Otter's shared-folder concept) and workspace member.\n\nA `conversation-create` action covers the other direction — importing a publicly downloadable audio or video URL as a new Otter conversation, the documented path for pulling calls in from a dialer or another recording source. The New Conversation poll trigger checks Otter's documented most-recent-first conversation feed and emits only unseen conversations.\n\nOtter's Public API is gated to Enterprise workspaces only; a Free, Pro or Business account has no access to any endpoint this app calls, and `Auth.test` reports that distinctly from a bad key. Real-time updates are documented as a separate Webhooks surface rather than anything pollable here — out of scope for this app's Actions, which only cover reads and the one documented write.",
     "categories": [
       "ai",
       "productivity",
@@ -34,7 +34,10 @@
         "api.otter.ai"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

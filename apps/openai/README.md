@@ -6,6 +6,7 @@ moderations.
 - **Categories** — ai, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 13
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.openai.com`
 - **Website** — https://openai.com
 - **API docs** — https://developers.openai.com
@@ -72,3 +73,17 @@ reach a status host.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-file` | poll | `files-list` (`GET /v1/files`, `limit=20`, `order=desc`) | Each newly uploaded file. |
+| `new-model` | poll | `list-models` (`GET /v1/models`, whole catalog) | Each model newly available to the API key (additions only). |
+
+`new-file` relies on the documented `order` parameter ("Sort order by the `created_at` timestamp", default `desc`) and, to keep the request small, the documented `limit` (1-10000, default 10000); `files-list` gained optional, default-preserving `limit` and `order` inputs for it. `new-model` snapshots the full model list (one unpaginated request, a catalog of a few hundred models) and emits added ids only; renames, removals and edits are ignored. OpenAI publishes no webhook for file or model changes in the pages this app wraps.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://platform.openai.com/docs/api-reference/files/list (also in the OpenAPI spec: https://raw.githubusercontent.com/openai/openai-openapi/manual_spec/openapi.yaml, operation `listFiles`)
+- https://platform.openai.com/docs/api-reference/models/list

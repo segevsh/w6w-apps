@@ -4,6 +4,19 @@ Pipefy is a no-code work-management / process-automation platform (pipes, phases
 Database Tables). This app covers organizations, pipes, phases, cards and Database Tables over
 Pipefy's **GraphQL-only** API, plus a raw-query escape hatch.
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-pipe` | poll | `pipe-list` (GraphQL `organization(id) { pipes }`) | Each pipe newly created in the chosen organization (additions only). |
+
+`pipe-list` reads all pipes of one organization in a single GraphQL query with no ordering argument, so the trigger snapshots the list and emits ids not seen before (renames and removals are ignored). It takes the organization ID as a parameter. `organization-list` and `table-list` are not wrapped (an account has a handful of organizations; tables are created far less often than the records inside them). `card-list` filters by title only, so new cards stay a webhook candidate (Pipefy webhooks are registered through the API); no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://developers.pipefy.com/reference/pipes
+- https://developers.pipefy.com/reference/authentication
+
 ## Auth model
 
 Pipefy offers two ways to authenticate, and its own docs are explicit about which one to use:

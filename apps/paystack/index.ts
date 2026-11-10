@@ -29,6 +29,9 @@ import transferInitiate from "./actions/transfer-initiate.ts";
 import transferRecipientCreate from "./actions/transfer-recipient-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTransaction from "./triggers/new-transaction.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newRefund from "./triggers/new-refund.ts";
 
 export default {
   actions: [
@@ -55,4 +58,5 @@ export default {
   ],
   auth: [secretKey],
   healthChecks: [service, quota],
+  triggers: [newTransaction, newCustomer, newRefund],
 } satisfies AppDefinition;

@@ -1,5 +1,7 @@
 # PDF.co
 
+Triggers: not shipped — the app is a conversion/job API and exposes no existing list action returning a stable, changing record feed (https://developer.pdf.co/).
+
 Convert, generate, merge, split, and extract data from PDFs and other documents on the **PDF.co
 API v1/v2**.
 

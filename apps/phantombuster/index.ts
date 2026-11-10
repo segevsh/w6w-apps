@@ -56,6 +56,7 @@ import orgRunningContainersList from "./actions/org-running-containers-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import newAgent from "./triggers/new-agent.ts";
 
 export default {
   actions: [
@@ -82,4 +83,5 @@ export default {
   // the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
+  triggers: [newAgent],
 } satisfies AppDefinition;

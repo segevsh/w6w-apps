@@ -1,5 +1,7 @@
 # People Data Labs
 
+Triggers: not shipped — search/enrichment endpoints compute or query external data and do not expose an account-owned feed of newly created records (https://docs.peopledatalabs.com/).
+
 Enrich and search people and companies, identify a person from loose inputs, resolve IPs to
 companies, clean company, school and location strings, autocomplete field values, enrich job titles
 and search job postings, over the **People Data Labs (PDL) v5 API**.

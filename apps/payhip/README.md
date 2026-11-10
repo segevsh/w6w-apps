@@ -1,5 +1,7 @@
 # Payhip
 
+Triggers: not shipped — the Public API only verifies and manages a supplied license key and has no list feed; Payhip webhooks (paid, refunded, subscription.created, subscription.deleted) are queued for a webhook node (https://help.payhip.com/article/115-webhooks).
+
 Verify, enable, disable and count uses of Payhip **software license keys**.
 
 **Scope.** Payhip's public API covers software license keys and nothing else. It documents no

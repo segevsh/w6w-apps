@@ -15,6 +15,8 @@ import moderationsCreate from "./actions/moderations-create.ts";
 import listModels from "./actions/list-models.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newFile from "./triggers/new-file.ts";
+import newModel from "./triggers/new-model.ts";
 
 export default {
   actions: [
@@ -34,4 +36,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newFile, newModel],
 } satisfies AppDefinition;
