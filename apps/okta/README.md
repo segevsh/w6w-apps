@@ -1,6 +1,15 @@
 # Okta
 
-Triggers: not shipped — webhook candidate queued for a webhook node: Okta Event Hooks; Users and Groups lists page by opaque cursor without a documented creation-order or created-since filter (https://developer.okta.com/docs/concepts/event-hooks/)
+- **Triggers** — 2 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | poll | `user-list`, `search=created gt "<cursor − 30 min>"` | Each newly created user |
+| `new-or-updated-user` — New or Updated User | poll | `user-list`, `search=lastUpdated gt "<cursor − 30 min>"` | Each user that is new or changed (ID plus `lastUpdated` is the event identity) |
+
+Both triggers call the existing List Users action with Okta's documented SCIM `search` over the top-level `created` and `lastUpdated` properties (limit 100, one page). Okta states the `search` results are "sourced from an eventually consistent datasource and may not reflect the latest information", so each check re-reads a thirty-minute overlap and deduplicates by ID; a user that becomes visible later than that window is missed. Search also returns `DEPROVISIONED` users. Groups are not polled: `group-list` exposes only `q`. Verified 2026-11-10 against the Okta Management OpenAPI `listUsers` operation (https://github.com/okta/okta-management-openapi-spec) and https://developer.okta.com/docs/reference/api/users/.
 
 Manage Okta users and groups — identity lifecycle for an org.
 
