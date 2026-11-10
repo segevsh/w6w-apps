@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/diffbot",
   "version": "0.2.0",
-  "description": "Extract structured data from any web page, search the Diffbot Knowledge Graph, enrich people and companies, analyze text and crawl whole sites with Diffbot, and trigger workflows on new crawl or bulk job.",
+  "description": "Extract structured data from any web page, search the Diffbot Knowledge Graph, enrich people and companies, analyze text and crawl whole sites, and trigger workflows on new crawl jobs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
