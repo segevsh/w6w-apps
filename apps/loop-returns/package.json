@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/loop-returns",
-  "version": "0.2.0",
-  "description": "Loop Returns: returns and exchanges, orders, customers, destinations, labels, fraud reports, webhooks, and a poll trigger for new orders.",
+  "version": "0.3.0",
+  "description": "Loop Returns: returns and exchanges, orders, customers, destinations, labels, fraud reports, webhooks, and poll triggers for new orders, returns (new or updated), customers, bulk operations and label requests.",
   "license": "MIT",
   "author": {
     "name": "w6w"
