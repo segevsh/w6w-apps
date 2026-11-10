@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/deel",
-  "version": "0.2.0",
-  "description": "Manage Deel contracts, people, time off, timesheets and invoice adjustments, with a New Contract trigger.",
+  "version": "0.3.0",
+  "description": "Manage Deel contracts, people, time off, timesheets and invoice adjustments, with poll triggers for new contracts, people, timesheets and more.",
   "license": "MIT",
   "author": {
     "name": "w6w"
