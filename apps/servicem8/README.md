@@ -5,7 +5,6 @@ Clients, scheduling, staff, and the line items on a Job's Quote/Invoice — over
 API** (`api.servicem8.com/api_1.0`).
 
 - **18 actions** across Jobs, Clients, scheduling (Job Activities), Quote/Invoice line items
-- **Triggers** — 1 (poll)
   (Job Materials), Notes, Staff and reference data (Categories, Queues, the account itself).
 - **1 auth method**: an API Key (`X-Api-Key` header).
 - **2 declared health checks** plus 1 derived `auth:api-key` check.
@@ -303,6 +302,17 @@ and records requests, and a no-op `ctx.log`. No network, no server.
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-category` — New Category | poll | `category-list` | Each newly created category. |
+| `new-category` — New Category | poll | `category-list` | Each job category newly added to the account. |
+| `new-or-updated-category` — New or Updated Category | poll | `category-list` | Each job category that is added or edited (with `change`: `added` or `updated`). |
 
-Vendor documentation: https://developer.servicem8.com/docs/filtering (verified 2026-11-09).
+Job Categories are a small configuration list, so these are **snapshot** polls: each check calls the
+`category-list` request `GET /category.json?cursor=-1` and compares a per-row hash with the previous
+check (the state holds hashes, never row contents). `new-category` emits added rows only;
+`new-or-updated-category` also emits rows whose content, including `edit_date`, changed. The first
+check only stores the snapshot. The collection is bounded by the vendor's pagination: "Each successful
+response returns up to 1,000 records" and an `x-next-cursor` header marks a further page, so a second
+page is refused with an error rather than truncated. (The vendor documents `$sort=edit_date desc` but
+no `created_at` field on a Category, so a sorted read is not used.)
+
+Vendor documentation: https://developer.servicem8.com/reference/listcategories and
+https://developer.servicem8.com/docs/pagination (verified 2026-11-09).
