@@ -52,3 +52,9 @@ comment, area, arrow, file, image and shape; assets.
   body's `code` (`UNAUTHORIZED` / `TOKEN_EXPIRED` mean rejected).
 - `quota`: declared unavailable, informational. The API definition documents no rate-limit headers,
   429 or usage endpoint.
+
+## Triggers
+
+- **new-mural** — poll; wraps the existing list action and emits each newly created mural.
+
+Vendor API reference: https://app.mural.co/developers/apps (verified 2026-11-09)

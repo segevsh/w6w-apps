@@ -96,6 +96,7 @@ import customFieldList from "./actions/custom-field-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import nation from "./health/nation.ts";
+import newPerson from "./triggers/new-person.ts";
 
 export default {
   actions: [
@@ -131,4 +132,5 @@ export default {
   ],
   auth: [oauth2, apiToken],
   healthChecks: [service, quota, nation],
+  triggers: [newPerson],
 } satisfies AppDefinition;

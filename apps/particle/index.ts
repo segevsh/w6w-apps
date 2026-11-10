@@ -27,6 +27,7 @@ import eventPublish from "./actions/event-publish.ts";
 import productList from "./actions/product-list.ts";
 import productDeviceAdd from "./actions/product-device-add.ts";
 import simList from "./actions/sim-list.ts";
+import newDevice from "./triggers/new-device.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -46,6 +47,7 @@ const app: AppDefinition = {
   ],
   auth: [accessToken],
   healthChecks: [service, quota],
+  triggers: [newDevice],
 };
 
 export default app;

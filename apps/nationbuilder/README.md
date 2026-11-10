@@ -141,3 +141,9 @@ Researched and endpoint-verified 2026-09-15 against the vendor's downloadable Op
 spec (`nationbuilder.com/api/v2/reference`) and the `support.nationbuilder.com` API
 collection. Status surfaces and OAuth registration requirements move; re-verify if a probe
 starts failing for everyone at once, or if a nation reports it cannot register an OAuth app.
+
+## Triggers
+
+- **new-person** — poll; wraps the existing list action and emits each newly created person.
+
+Vendor API reference: https://nationbuilder.com/api/v2/reference (verified 2026-11-09)

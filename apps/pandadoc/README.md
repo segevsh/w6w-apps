@@ -300,3 +300,9 @@ Researched and endpoint-verified 2026-08-03 against PandaDoc's official referenc
 `developers.pandadoc.com/reference/*`, cross-checked live against `api.pandadoc.com` and
 `status.pandadoc.com`. No endpoint or parameter in this app was inferred from a naming pattern.
 Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+- **new-document** — poll; wraps the existing list action and emits each newly created document.
+
+Vendor API reference: https://developers.pandadoc.com/reference/api-key-authentication-process (verified 2026-11-09)

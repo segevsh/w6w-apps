@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/pandadoc",
-  "version": "0.1.1",
-  "description": "Create documents from PandaDoc templates, send them for signature, track their status, and manage templates, contacts and webhook subscriptions.",
+  "version": "0.2.0",
+  "description": "Create documents from PandaDoc templates, send them for signature, track their status, and manage templates, contacts and webhook subscriptions. Includes poll triggers for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://developers.pandadoc.com/reference/authentication-process",
       "https://developers.pandadoc.com/reference/limits"
     ],
-    "longDescription": "PandaDoc creates documents from templates, sends them out for signature, and tracks their status through completion — and this app covers that lifecycle: creating a document from a template, sending it, checking and changing its status, downloading the signed PDF, and reading back the templates, contacts and webhook subscriptions that feed those steps, over PandaDoc's own API.\n\nBecause PandaDoc merges a template asynchronously, this app exposes the intermediate status explicitly rather than hiding it, so a workflow can wait for a document to become sendable before sending it and treat a merge failure as the real error it is. Contact creation has no dedup or upsert guard on PandaDoc's side, so a workflow that cares about duplicates should look a contact up by its exact email first; reading a template's roles and fields before creating a document is likewise how a request actually succeeds.\n\nGood for generating a proposal or contract from a template the moment a deal reaches a certain stage, sending it for signature automatically, tracking its progress without polling the PandaDoc dashboard, and pulling the finished PDF into storage once every recipient has signed.",
+    "longDescription": "PandaDoc creates documents from templates, sends them out for signature, and tracks their status through completion — and this app covers that lifecycle: creating a document from a template, sending it, checking and changing its status, downloading the signed PDF, and reading back the templates, contacts and webhook subscriptions that feed those steps, over PandaDoc's own API.\n\nBecause PandaDoc merges a template asynchronously, this app exposes the intermediate status explicitly rather than hiding it, so a workflow can wait for a document to become sendable before sending it and treat a merge failure as the real error it is. Contact creation has no dedup or upsert guard on PandaDoc's side, so a workflow that cares about duplicates should look a contact up by its exact email first; reading a template's roles and fields before creating a document is likewise how a request actually succeeds.\n\nGood for generating a proposal or contract from a template the moment a deal reaches a certain stage, sending it for signature automatically, tracking its progress without polling the PandaDoc dashboard, and pulling the finished PDF into storage once every recipient has signed.\n\nPoll triggers start workflows when new records appear.",
     "categories": [
       "documents",
       "legal",
@@ -36,7 +36,12 @@
         "api.pandadoc.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -138,3 +138,9 @@ Left out because they were not needed for a first cut or a detail was unconfirme
 is the Salesforce cloud). That file in turn comes from n8n's `Salesforce` node
 (`packages/nodes-base/nodes/Salesforce/salesforce.svg`). Always format with `deno task fmt`,
 never bare `deno fmt`, which rewrites the SVG.
+
+## Triggers
+
+- **new-landing-page** — poll; wraps the existing list action and emits each newly created landing page.
+
+Vendor API reference: https://developer.salesforce.com/docs/marketing/pardot/guide/version5overview.html (verified 2026-11-09)

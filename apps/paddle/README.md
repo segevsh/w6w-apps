@@ -59,6 +59,12 @@ marker. Paddle's guidance is to revoke and replace them; this app detects one an
 This is the single most common way to write a broken Paddle workflow:
 
 ```
+
+## Triggers
+
+- **new-customer** — poll; wraps the existing list action and emits each newly created customer.
+
+Vendor API reference: https://developer.paddle.com/api-reference/overview (verified 2026-11-09)
 POST /subscriptions/sub_…/cancel     → 200, status: "active", scheduled_change: { action: "cancel" }
 ```
 

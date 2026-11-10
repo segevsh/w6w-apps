@@ -231,3 +231,9 @@ noted here rather than silently omitted.
 Researched and endpoint-verified 2026-09-22 against `pennylane.readme.io` and
 `status.pennylane.com`. Status surfaces move; re-check with `_tools/audit.ts` conventions
 in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+- **new-customer-invoice** — poll; wraps the existing list action and emits each newly created customer invoice.
+
+Vendor API reference: https://pennylane.readme.io/reference (verified 2026-11-09)

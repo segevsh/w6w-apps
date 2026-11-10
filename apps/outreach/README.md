@@ -142,3 +142,9 @@ products/purchases, content categories, kaia recordings, the bulk **batches** an
 logs, compliance requests, custom objects, and the other nine task member actions (snooze, reschedule,
 reassign, …). The service-to-service (S2S) token, which reaches only a small endpoint subset, and the
 undocumented-in-the-spec `POST /webhooks/cleanup` endpoint are not used.
+
+## Triggers
+
+- **new-account** — poll; wraps the existing list action and emits each newly created account.
+
+Vendor API reference: https://developers.outreach.io/api/ (verified 2026-11-09)

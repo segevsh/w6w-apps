@@ -167,3 +167,9 @@ Researched and endpoint-verified 2026-08-25 by fetching OnceHub's own OpenAPI 3.
 (`help.oncehub.com/developers/api/booking-calendars-api.yaml`, 4,337 lines, `info.version`
 2.0.0) in full, plus live probes against `api.oncehub.com` and `status.oncehub.com`. Re-verify
 if a probe starts failing for everyone at once.
+
+## Triggers
+
+- **new-sms-notification** — poll; wraps the existing list action and emits each newly created sms notification.
+
+Vendor API reference: https://help.oncehub.com/developers/overview/introduction/ (verified 2026-11-09)

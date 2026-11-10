@@ -1,6 +1,10 @@
 # PDFMonkey
 
-Triggers: not shipped — list-templates is a configuration catalogue, not a new runtime-record feed (https://docs.pdfmonkey.io/).
+## Triggers
+
+- **new-document** — poll; wraps the existing list action and emits each newly created document.
+
+Vendor API reference: https://pdfmonkey.io/docs/api/ (verified 2026-11-09)
 
 Generate PDFs and images from PDFMonkey templates.
 

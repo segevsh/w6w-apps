@@ -378,3 +378,9 @@ for field names.
 [json2]: https://www.odoo.com/documentation/19.0/developer/reference/external_api.html
 [rpc]: https://www.odoo.com/documentation/19.0/developer/reference/external_rpc_api.html
 [pricing]: https://www.odoo.com/pricing
+
+## Triggers
+
+- **new-contact** — poll; wraps the existing list action and emits each newly created contact.
+
+Vendor API reference: https://www.odoo.com/documentation/19.0/developer/reference/external_api.html (verified 2026-11-09)

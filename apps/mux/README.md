@@ -211,3 +211,9 @@ endpoint group with no usage endpoint to consult.
   platforms' stream keys — a credential decision of its own.
 - **Real-time (spaces) and Mux Player configuration.** A front-end concern, not a
   workflow step.
+
+## Triggers
+
+- **new-asset** — poll; wraps the existing list action and emits each newly created asset.
+
+Vendor API reference: https://docs.mux.com/api-reference (verified 2026-11-09)

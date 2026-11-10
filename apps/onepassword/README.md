@@ -1,5 +1,7 @@
 # 1Password
 
+Triggers: not shipped — item-file-list is a sub-resource requiring a user-selected vault and item (https://developer.1password.com/docs/connect/api-reference/).
+
 Read and manage vault items through a self-hosted Connect server, and read the
 account's audit trail through the Events API.
 

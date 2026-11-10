@@ -177,3 +177,9 @@ consequential path is still gated or checked**, **publishing still defaults to
 private and the device checks still default to on**, and **nothing logs a
 variable value, a function argument or an event payload**, checked on the log
 call's values rather than its keys.
+
+## Triggers
+
+- **new-device** — poll; wraps the existing list action and emits each newly created device.
+
+Vendor API reference: https://docs.particle.io/reference/cloud-apis/api/ (verified 2026-11-09)

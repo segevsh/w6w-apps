@@ -63,6 +63,7 @@ import adjustmentCreate from "./actions/adjustment-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -97,4 +98,5 @@ export default {
   // opening checkouts and previewing prices.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;
