@@ -1,5 +1,6 @@
 import suppressionList from "../actions/suppression-list.ts";
 import { MAX_EVENTS, sinceTrigger } from "../lib/triggers.ts";
+import { toMs } from "../lib/window.ts";
 
 /** `ListSuppressedDestinations` `StartDate` keeps only addresses added after that date. */
 export default sinceTrigger({
@@ -24,4 +25,5 @@ export default sinceTrigger({
     return { items: res.destinations ?? [], nextToken: res.nextToken };
   },
   idOf: (item) => String((item as { emailAddress?: unknown }).emailAddress ?? ""),
+  tsOf: (item) => toMs((item as { lastUpdateTime?: unknown }).lastUpdateTime),
 });

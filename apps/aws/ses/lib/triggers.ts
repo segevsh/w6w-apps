@@ -1,5 +1,6 @@
 import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
+import { pollSnapshot } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "./window.ts";
 
 /** One page of an SES v2 list answer, already reduced to items + the continuation token. */
 export interface SesPage {
@@ -70,9 +71,10 @@ export function snapshotTrigger(spec: {
 
 /**
  * A "new <record>" trigger over a list with an added-after filter (`StartDate`): each check asks
- * for what was added since `cursor - 2 minutes`, de-duplicates by id (`pollNewItems`), and moves
- * the cursor to "now" only when everything the filter matched was read and emitted. A first check
- * records the ids of the last two minutes and the cursor and emits nothing.
+ * for what was added since `cursor - 2 minutes` and de-duplicates by id. A window longer than
+ * `MAX_PAGES` pages is resumed from the persisted `NextToken` on the next check and the cursor
+ * moves only once it drains (brief 9.8). The first check stores `floor = now` and emits nothing;
+ * later checks drop records stamped before the floor (brief 9.9, `tsOf`).
  */
 export function sinceTrigger(spec: {
   key: string;
@@ -82,6 +84,8 @@ export function sinceTrigger(spec: {
   sample: unknown;
   list(ctx: HookContext, since: string, nextToken?: string): Promise<SesPage>;
   idOf(item: unknown): string;
+  /** Epoch ms the record was added (the field the `StartDate` filter compares); undefined keeps it. */
+  tsOf?(item: unknown): number | undefined;
 }): TriggerDefinition {
   return {
     key: spec.key,
@@ -90,32 +94,21 @@ export function sinceTrigger(spec: {
     minIntervalMs: MIN_INTERVAL_MS,
     output: spec.output,
     sample: spec.sample,
-    async poll({ state }, ctx) {
-      const now = Date.now();
-      const prior = (state as { cursor?: unknown } | null)?.cursor;
-      const cursor = typeof prior === "number" ? prior : now;
-      const since = new Date(cursor - OVERLAP_MS).toISOString();
-      let more = false;
-      const { events, nextState } = await pollNewItems<unknown>({
+    poll({ state }, ctx) {
+      return pollWindow<unknown, string>({
         state,
-        maxPages: 1,
-        maxEvents: MAX_EVENTS,
+        now: Date.now(),
+        overlapMs: OVERLAP_MS,
+        maxPages: MAX_PAGES,
+        pageSize: MAX_EVENTS,
+        seenWindow: 1000,
         idOf: spec.idOf,
-        async fetchPage() {
-          const items: unknown[] = [];
-          let token: string | undefined;
-          for (let page = 0; page < MAX_PAGES; page++) {
-            const res = await spec.list(ctx, since, token);
-            items.push(...res.items);
-            token = res.nextToken;
-            if (!token) break;
-          }
-          more = token !== undefined;
-          return { items };
+        tsOf: spec.tsOf ?? (() => undefined),
+        async load(sinceMs, token) {
+          const res = await spec.list(ctx, new Date(sinceMs).toISOString(), token);
+          return { items: res.items, next: res.nextToken || undefined };
         },
       });
-      const caughtUp = !more && events.length < MAX_EVENTS;
-      return { events, nextState: { ...nextState, cursor: caughtUp ? now : cursor } };
     },
   };
 }
