@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1352 triggers, 3093 unaccounted list actions in 592 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -335,7 +335,6 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/certifier | 2 | 5 | 4 |
 | apps/cloudconvert | 3 | 4 | 4 |
 | apps/coda | 0 | 4 | 4 |
-| apps/discord | 1 | 5 | 4 |
 | apps/dub | 1 | 5 | 4 |
 | apps/ecwid | 1 | 5 | 4 |
 | apps/elevenlabs | 1 | 5 | 4 |
@@ -462,7 +461,6 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/short-io | 1 | 4 | 3 |
 | apps/strava | 3 | 3 | 3 |
 | apps/teamleader | 2 | 4 | 3 |
-| apps/woocommerce | 7 | 3 | 3 |
 | apps/zoho/zoho-analytics | 1 | 4 | 3 |
 | apps/zoho/zoho-bookings | 1 | 4 | 3 |
 | apps/zoho/zoho-creator | 1 | 5 | 3 |
@@ -624,6 +622,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
 | apps/dice | 3 | 0 | 0 |
+| apps/discord | 5 | 5 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
@@ -669,7 +668,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/superchat | 11 | 17 | 0 |
-| apps/telegram | 2 | 0 | 0 |
+| apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
 | apps/twilio/sendgrid | 1 | 0 | 0 |
@@ -680,6 +679,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/uptimerobot | 2 | 2 | 0 |
 | apps/vanta | 15 | 17 | 0 |
 | apps/vero | 1 | 0 | 0 |
+| apps/woocommerce | 10 | 3 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
 | apps/zulip | 1 | 0 | 0 |
@@ -743,7 +743,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/signwell | 3 | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
 | apps/stripe | 33 | charge-captured, charge-failed, charge-refunded, charge-succeeded, charge-updated, checkout-completed, checkout-expired, customer-created, customer-deleted, customer-updated, event, invoice-created, invoice-deleted, invoice-finalized, invoice-paid, invoice-payment-failed, invoice-updated, invoice-voided, payment-failed, payment-intent-canceled, payment-intent-created, payment-succeeded, price-created, price-deleted, price-updated, product-created, product-deleted, product-updated, refund-created, refund-updated, subscription-canceled, subscription-created, subscription-updated | apps/stripe/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (POST /v1/webhook_endpoints); 32 named event triggers plus the Any-event trigger `event`, Stripe-Signature HMAC-SHA256 verified with the endpoint secret |
 | apps/surveymonkey | 1 | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/telegram | 2 | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/telegram | 11 | callback-query, channel-post, chat-member-updated, edited-channel-post, edited-message, inline-query, new-message, poll, pre-checkout-query, shipping-query, update | apps/telegram/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (setWebhook with a secret_token); one trigger per update type plus the Any-event trigger `update`; no list actions (https://core.telegram.org/bots/api#update) |
 | apps/terraform | 4 | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
 | apps/thrivecart | 4 | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret |
 | apps/tiktok-lead-generation | 1 | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
@@ -751,7 +751,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/typeform | 8 | new-response, new-partial-response, any-event, new-form, new-or-updated-form, new-workspace, new-theme, new-image | apps/typeform/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images |
 | apps/webex | 2 | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webflow | 4 | collection-item-changed, collection-item-created, form-submission, new-order | apps/webflow/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/woocommerce | 7 | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
 | apps/zendesk/zendesk | 3 | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
 ## manual-webhook (34)
@@ -899,7 +899,7 @@ depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-p
 | apps/diffbot | 1 | crawl-get | new-crawl-job | apps/diffbot/README.md Triggers section (verified 2026-11-09) | hand | crawl-get with no name lists every crawl/bulk job on the token: small bounded snapshot keyed by job name (https://docs.diffbot.com/reference/) |
 | apps/digistore24 | 1 | list-purchases | new-purchase | apps/digistore24/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-purchases |
 | apps/digitalocean | 1 | domain-record-list | new-domain-record | apps/digitalocean/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly |
-| apps/discord | 1 | list-messages | new-message | apps/discord/README.md Triggers section (verified 2026-11-09) | hand | Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages) |
+| apps/discord | 5 | list-messages | new-channel, new-guild, new-member, new-message, new-role | apps/discord/README.md Triggers section (verified 2026-11-10) | hand | Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages); servers, channels, roles and members are bounded snapshots via their list actions (no newest-first order or since filter in the HTTP API); Webhook Events are app-level only and need a 204 acknowledgement the w6w ingest route cannot send (https://discord.com/developers/docs/events/webhook-events) |
 | apps/discourse | 1 | topic-list-latest | new-topic | apps/discourse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action topic-list-latest |
 | apps/dixa | 1 | agent-list | new-agent | apps/dixa/README.md Triggers section (verified 2026-11-09) | hand | agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) |
 | apps/docparser | 1 | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
