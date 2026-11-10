@@ -38,3 +38,15 @@ test("new-inference-model seeds, emits, retries, and reads the router catalogue"
     url: "https://router.huggingface.co/v1/models",
   });
 });
+
+test("new-inference-model does not fire when an existing model is edited", async () => {
+  const seeded = await trigger.poll!(
+    { params: {}, state: {} } as never,
+    mockCtx([{ body: { data: [{ id: "m1", providers: [] }] } }]).ctx,
+  );
+  const result = await trigger.poll!(
+    { params: {}, state: seeded.nextState } as never,
+    mockCtx([{ body: { data: [{ id: "m1", providers: [{ provider: "p" }] }] } }]).ctx,
+  );
+  assertEquals(result.events, []);
+});

@@ -46,7 +46,7 @@ export default {
     const { events, nextState } = await pollSnapshot({
       state,
       rows,
-      emit: { added: true },
+      emit: { added: true, updated: false },
       maxRows: MAX_ROWS,
     });
     return { events: events.map((e) => e.values), nextState };

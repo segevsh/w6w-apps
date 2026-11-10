@@ -26,3 +26,16 @@ test("new-project seeds, emits, retries, and walks every project page", async ()
     "https://api.hubstaff.com/v2/organizations/7/projects?status=all&page_start_id=50&page_limit=100",
   ]);
 });
+
+test("new-project does not fire when an existing project is edited", async () => {
+  const input = (state: unknown) => ({ params: { organizationId: 7 }, state }) as never;
+  const seeded = await trigger.poll!(
+    input({}),
+    mockCtx([{ body: listEnvelope("projects", [{ id: 1, name: "Website" }]) }]).ctx,
+  );
+  const result = await trigger.poll!(
+    input(seeded.nextState),
+    mockCtx([{ body: listEnvelope("projects", [{ id: 1, name: "Website v2" }]) }]).ctx,
+  );
+  assertEquals(result.events, []);
+});

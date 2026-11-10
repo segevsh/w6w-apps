@@ -20,7 +20,7 @@ export default {
     const { events, nextState } = await pollSnapshot({
       state,
       rows: (res.models ?? []).map((m) => ({ key: String(m.id ?? ""), values: m })),
-      emit: { added: true },
+      emit: { added: true, updated: false },
     });
     return { events: events.map((e) => e.values), nextState };
   },
