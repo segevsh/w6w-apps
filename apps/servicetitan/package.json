@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/servicetitan",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage ServiceTitan customers and field-service operations, and poll for new or updated customers.",
   "license": "MIT",
   "author": {
