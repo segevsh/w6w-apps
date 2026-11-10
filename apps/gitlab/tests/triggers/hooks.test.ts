@@ -62,7 +62,7 @@ function ingest(
   );
 }
 
-test("app: six webhook triggers, each with output and sample", () => {
+test("app: twelve webhook triggers, each with output and sample", () => {
   assertEquals(app.triggers.map((t) => t.key), [
     "push",
     "merge-request",
@@ -70,6 +70,12 @@ test("app: six webhook triggers, each with output and sample", () => {
     "comment",
     "pipeline",
     "release",
+    "tag-push",
+    "job",
+    "deployment",
+    "wiki-page",
+    "milestone",
+    "any-event",
   ]);
   for (const t of app.triggers) {
     assert(t.output!.length > 0, `${t.key} output`);

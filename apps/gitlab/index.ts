@@ -40,6 +40,12 @@ import issueEvent from "./triggers/issue.ts";
 import comment from "./triggers/comment.ts";
 import pipeline from "./triggers/pipeline.ts";
 import releaseEvent from "./triggers/release.ts";
+import tagPush from "./triggers/tag-push.ts";
+import job from "./triggers/job.ts";
+import deployment from "./triggers/deployment.ts";
+import wikiPage from "./triggers/wiki-page.ts";
+import milestone from "./triggers/milestone.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -68,7 +74,20 @@ export default {
     // user
     userGetCurrent,
   ],
-  triggers: [push, mergeRequestEvent, issueEvent, comment, pipeline, releaseEvent],
+  triggers: [
+    push,
+    mergeRequestEvent,
+    issueEvent,
+    comment,
+    pipeline,
+    releaseEvent,
+    tagPush,
+    job,
+    deployment,
+    wikiPage,
+    milestone,
+    anyEvent,
+  ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
