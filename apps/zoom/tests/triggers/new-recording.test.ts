@@ -44,8 +44,23 @@ test("new-recording: emits the new recording once; a retry is identical; request
   assertEquals(c.calls[0].method, "GET");
   assertEquals(
     c.calls[0].url,
-    "https://api.zoom.us/v2/users/me/recordings?from=2026-11-09&to=2026-11-09&page_size=100",
+    "https://api.zoom.us/v2/users/me/recordings?from=2026-11-09&to=2026-11-10&page_size=300",
   );
+});
+
+test("new-recording: a recording from today is requested (to is tomorrow, safe if to is exclusive)", async () => {
+  const { r: seeded } = await seed();
+  clock.now = () => T1;
+  // fake vendor whose `to` is date-EXCLUSIVE: it only returns meetings in [from, to)
+  const today = rec("today-1", POST);
+  const visible = (m: { start_time?: string }, u: URL) =>
+    m.start_time!.slice(0, 10) >= u.searchParams.get("from")! &&
+    m.start_time!.slice(0, 10) < u.searchParams.get("to")!;
+  const c2 = mockCtx([page([today])]);
+  const out = await trigger.poll!({ ...input, state: next(seeded) } as never, c2.ctx);
+  const sent = new URL(c2.calls[0].url);
+  assertEquals(visible(today, sent), true);
+  assertEquals(events(out), [today]);
 });
 
 test("new-recording: a window longer than maxPages is resumed with the page token, then drains", async () => {

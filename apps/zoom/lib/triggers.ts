@@ -112,8 +112,11 @@ const day = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 /**
  * `GET /users/{userId}/recordings` takes `from` / `to` as `yyyy-mm-dd` UTC dates ("The maximum
  * range can be a month"; without them it defaults to the current date) and pages with
- * `next_page_token` (valid 15 minutes). A check reads `[day(since), today]`, clamped to the
- * 30 days the vendor allows, and resumes an undrained window with that token. A token the vendor
+ * `next_page_token` (valid 15 minutes). The docs do not say whether `to` is inclusive; their own
+ * default window is `[today, tomorrow]` (request on June 30 -> `from` 2020-06-30, `to` 2020-07-01),
+ * so `to` is tomorrow's UTC date and today's recordings are visible either way. A check reads
+ * `[day(since), tomorrow]`, clamped to the 30 days the vendor allows, with the maximum page size
+ * (300) so a window rarely needs a token, and resumes an undrained window with that token. A token the vendor
  * no longer accepts restarts the window from its first page (ids are deduped, so nothing repeats).
  */
 async function fetchSince(
@@ -123,10 +126,10 @@ async function fetchSince(
   ctx: HookContext,
 ): Promise<{ items: Meeting[]; next?: Pos }> {
   const now = clock.now();
-  const to = day(now);
+  const to = day(now + DAY_MS);
   const from = day(Math.max(Date.parse(sinceIso), now - 30 * DAY_MS));
   const call = (nextPageToken?: string) =>
-    action.execute!({ userId, from, to, pageSize: 100, nextPageToken }, ctx) as Promise<
+    action.execute!({ userId, from, to, pageSize: 300, nextPageToken }, ctx) as Promise<
       RecordingPage
     >;
   let res: RecordingPage;

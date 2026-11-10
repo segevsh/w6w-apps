@@ -43,3 +43,23 @@ test("new-team-member does not emit a removed member or an unchanged roster", as
   );
   assertEquals(next.events, []);
 });
+
+test("new-team-member does not emit an existing member whose attributes changed", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} },
+    mockWorkDriveCtx([members("a", "b")]).ctx,
+  );
+  const edited = {
+    body: {
+      data: [
+        { id: "a", type: "users", attributes: { email_id: "a@x.test" } },
+        { id: "b", type: "users", attributes: { email_id: "renamed@x.test" } },
+      ],
+    },
+  };
+  const next = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockWorkDriveCtx([edited]).ctx,
+  );
+  assertEquals(next.events, []);
+});

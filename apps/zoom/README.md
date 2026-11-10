@@ -11,7 +11,7 @@
 Zoom's List Recordings takes `from`/`to` as `yyyy-mm-dd` UTC dates ("The maximum range can be a
 month") and pages with `next_page_token` (valid 15 minutes):
 https://developers.zoom.us/docs/api/meetings/ (verified 2026-11-09). Each check reads from the day
-of the last drain, minus a 2 minute overlap, to today; a window of more than three pages is resumed
+of the last drain, minus a 2 minute overlap, to tomorrow's date (Zoom does not say whether `to` is inclusive; its own default window is today to tomorrow); a window of more than three pages is resumed
 with the page token (a token Zoom rejects restarts the window, and ids are de-duplicated). A meeting
 that started before the trigger was first checked is never emitted. Pick the user with the `userId`
 trigger param (default `me`).

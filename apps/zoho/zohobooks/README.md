@@ -11,9 +11,11 @@
 
 Zoho Books documents `sort_column` on List Contacts ("Allowed Values: contact_name, first_name,
 last_name, email, outstanding_receivable_amount, created_time and last_modified_time"):
-https://www.zoho.com/books/api/v3/contacts/ (verified 2026-11-09). The docs show no request value
-for the sort direction, only `page_context.sort_order: "D"` in responses, so the triggers send just
-`sort_column` and refuse to run if a response reports another direction.
+https://www.zoho.com/books/api/v3/contacts/ (verified 2026-11-09). The docs state no default sort direction and no request value for one, so the triggers do not
+depend on it: they read page 1 (200 contacts) and tell the direction from that page's own timestamps.
+Newest-first needs page 1 only; anything else (oldest-first, ties, no stamps) also reads the last
+two pages, found by doubling and bisecting on `has_more_page`. Contacts are de-duplicated by id
+(`new-or-updated-contact`: id plus `last_modified_time`), so page order never matters.
 
 Create, send and manage contacts, items, invoices and estimates in Zoho Books — accounting and
 invoicing software.
