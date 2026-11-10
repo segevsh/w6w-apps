@@ -112,6 +112,7 @@ import service from "./health/service.ts";
 import newOrUpdatedPullRequest from "./triggers/new-or-updated-pull-request.ts";
 import newIssue from "./triggers/new-issue.ts";
 import newOrUpdatedIssue from "./triggers/new-or-updated-issue.ts";
+import newIssueComment from "./triggers/new-issue-comment.ts";
 import newCommit from "./triggers/new-commit.ts";
 import newBranch from "./triggers/new-branch.ts";
 import newTag from "./triggers/new-tag.ts";
@@ -158,6 +159,7 @@ export default {
     newOrUpdatedPullRequest,
     newIssue,
     newOrUpdatedIssue,
+    newIssueComment,
     newCommit,
     newBranch,
     newTag,

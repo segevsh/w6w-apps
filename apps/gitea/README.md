@@ -5,7 +5,7 @@ Manage Gitea repositories, issues, pull requests, releases and files.
 - **Categories** — version-control, developer-tools, devops
 - **Auth methods** — token
 - **Actions** — 26
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://about.gitea.com
 - **API docs** — https://docs.gitea.com/api ·
@@ -222,6 +222,7 @@ Poll triggers built on the app's existing list actions (same client, endpoint an
 | `new-or-updated-pull-request` — New or Updated Pull Request | poll | `pull-request-list` | Each pull request in the chosen repository that is new or has been updated, once per update. |
 | `new-issue` — New Issue | poll (since filter) | `issue-list` | Each issue opened in the chosen repository (pull requests excluded). |
 | `new-or-updated-issue` — New or Updated Issue | poll (since filter) | `issue-list` | Each issue that is new or has been updated, once per update. |
+| `new-issue-comment` — New Issue Comment | poll (since filter) | `issue-comment-list` | Each new comment on one issue or pull request (Issue or PR Number is required). |
 | `new-commit` — New Commit | poll (since filter) | `commit-list` | Each commit made on the default branch of the chosen repository. |
 | `new-branch` — New Branch | poll (snapshot) | `branch-list` | Each branch newly created in the chosen repository. |
 | `new-tag` — New Tag | poll (snapshot) | `tag-list` | Each git tag newly created in the chosen repository. |
@@ -230,7 +231,9 @@ Poll triggers built on the app's existing list actions (same client, endpoint an
 
 How the feeds are read: pull requests with `sort=recentupdate`, `state=all`; issues and commits with the documented `since` filter (an update window, 2-minute look-back, oldest first, a large window drained over several checks); branches, tags and releases by comparing the whole list (at most 5000 rows) through the documented `page`/`limit` pager; repositories with `sort=created&order=desc`. A commit is matched by its own date, so one pushed later with an older date than the previous check is not seen.
 
-Not covered: `label-list` (label definitions) and `issue-comment-list` (Gitea's swagger documents `since`/`before` but no `page`/`limit` for the per-issue comment list, so there is no documented pager to walk or order to rely on).
+Issue comments: Gitea's per-issue comment list documents `since`/`before` and no `page`/`limit`, so the trigger (and `issue-comment-list`, which now takes `since`) makes a single request and gets every comment updated since the look-back.
+
+Not covered: `label-list` (label definitions).
 
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 
