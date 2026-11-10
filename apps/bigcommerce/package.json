@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/bigcommerce",
-  "version": "0.4.0",
+  "version": "0.3.0",
   "description": "Manage a BigCommerce store's catalog, orders, customers, carts, inventory, price lists and webhooks, with poll triggers for orders, products and customers.",
   "license": "MIT",
   "author": {
