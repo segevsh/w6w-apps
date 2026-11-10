@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -30,9 +30,6 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/gumroad | 2 | 12 | 11 |
 | apps/lokalise | 5 | 11 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
-| apps/circle | 1 | 11 | 10 |
-| apps/followupboss | 2 | 11 | 10 |
-| apps/givebutter | 2 | 11 | 10 |
 | apps/lemonsqueezy | 1 | 11 | 10 |
 | apps/mighty-networks | 3 | 10 | 10 |
 | apps/practicebetter | 2 | 11 | 10 |
@@ -54,7 +51,6 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/gitea | 1 | 10 | 9 |
 | apps/highlevel | 4 | 9 | 9 |
 | apps/jibble | 1 | 10 | 9 |
-| apps/leadfeeder | 1 | 10 | 9 |
 | apps/lofty | 1 | 10 | 9 |
 | apps/lusha | 1 | 9 | 9 |
 | apps/maintainx | 2 | 10 | 9 |
@@ -583,6 +579,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
 | apps/checkly | 7 | 11 | 0 |
+| apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
@@ -598,9 +595,11 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/everhour | 10 | 23 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
 | apps/findymail | 5 | 12 | 0 |
+| apps/followupboss | 10 | 11 | 0 |
 | apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
+| apps/givebutter | 8 | 11 | 0 |
 | apps/google/gmail | 4 | 4 | 0 |
 | apps/google/google-calendar | 7 | 2 | 0 |
 | apps/google/google-drive | 5 | 3 | 0 |
@@ -621,6 +620,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/keap | 17 | 17 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
 | apps/knack | 1 | 1 | 0 |
+| apps/leadfeeder | 7 | 10 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
 | apps/linear | 7 | 5 | 0 |
 | apps/linkedin/linkedin | 2 | 1 | 0 |
@@ -869,7 +869,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/chargebee | 1 | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
 | apps/chatwork | 1 | room-message-list | new-message | apps/chatwork/README.md Triggers section (verified 2026-11-09) | hand | force=1 returns the latest 100 messages, re-sorted by send_time desc |
 | apps/checkly | 7 | check-result-list | new-check-result, new-check-alert, new-check, new-or-updated-check, new-check-group, new-alert-channel, new-maintenance-window | apps/checkly/README.md Triggers section (verified 2026-11-10) | hand | Check results and alerts by documented from= since filter (alerts floor-guarded); checks, groups, alert channels and maintenance windows are bounded snapshots, no sort or created-since filter (https://api.checklyhq.com/openapi.json). |
-| apps/circle | 1 | event-list | new-event | apps/circle/README.md Triggers section (verified 2026-11-09) | hand | Admin API v2 documents default order newest by created_at; records array |
+| apps/circle | 9 | event-list | new-event, new-post, new-or-updated-post, new-comment, new-member-tag, new-space, new-space-group, new-event-attendee, new-space-member | apps/circle/README.md Triggers section (verified 2026-11-10) | hand | newest-first via documented sort/default order (events, posts sort=latest/latest_updated, comments, member tags sort=newest); bounded snapshots for spaces, space groups, one event's RSVPs, one space's members |
 | apps/circleci | 1 | pipeline-list | new-pipeline | apps/circleci/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id |
 | apps/clerk | 2 | user-list | new-user, new-or-updated-user | apps/clerk/README.md Triggers section (verified 2026-11-09) | hand | order_by=-created_at / -updated_at via new optional orderBy input |
 | apps/cleverreach | 1 | group-list | new-group | apps/cleverreach/README.md Triggers section (verified 2026-11-09) | hand | order=created DESC; changed-field name not verified so no updated trigger |
@@ -942,7 +942,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/firestore | 1 | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
 | apps/float | 2 | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
 | apps/folk | 1 | list-groups | new-group | apps/folk/README.md Triggers section (verified 2026-11-09) | hand | unpaginated group collection is snapshotted for additions |
-| apps/followupboss | 2 | search-people | new-person, new-or-updated-person | apps/followupboss/README.md Triggers section (verified 2026-11-09) | hand | search-people sorted -created / -updated (documented sort values, '-' = descending) |
+| apps/followupboss | 10 | search-people | new-person, new-or-updated-person, new-deal, new-task, new-lead-event, new-appointment, new-user, new-pipeline, new-smart-list, new-action-plan | apps/followupboss/README.md Triggers section (verified 2026-11-10) | hand | people sort -created/-updated; deals, tasks, events, appointments, users default to reverse id order (https://docs.followupboss.com/reference/pagination); bounded snapshots for pipelines, smart lists, action plans |
 | apps/formbricks | 1 | survey-list | new-survey | apps/formbricks/README.md Triggers section (verified 2026-11-09) | hand | workspace survey collection is snapshotted for additions |
 | apps/formsite | 1 | result-list | new-result | apps/formsite/README.md Triggers section (verified 2026-11-09) | hand | result-list with sort_direction=desc on the documented default result_id sort |
 | apps/formstack-documents | 1 | document-list | new-document | apps/formstack-documents/README.md Triggers section (verified 2026-11-09) | hand | unpaginated document template collection is snapshotted for additions |
@@ -957,7 +957,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/getresponse | 1 | contact-list | new-contact | apps/getresponse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/ghost | 1 | list-posts | new-post | no | hand | shipped poll trigger(s) over list action list-posts |
 | apps/gitea | 1 | pull-request-list | new-or-updated-pull-request | apps/gitea/README.md Triggers section (verified 2026-11-09) | hand | pull-request-list sort=recentupdate (documented sort enum has no created-order value), state=all; only the update-ordered trigger fits |
-| apps/givebutter | 2 | contact-list | new-contact, new-or-updated-contact | apps/givebutter/README.md Triggers section (verified 2026-11-09) | hand | contact-list sortByDesc=created_at for new; updatedAfter filter (since-filter poll) for updated |
+| apps/givebutter | 8 | contact-list | new-contact, new-or-updated-contact, new-transaction, new-or-updated-transaction, new-campaign, new-fund, new-payout, new-message | apps/givebutter/README.md Triggers section (verified 2026-11-10) | hand | sortByDesc=created_at for contacts and transactions; updatedAfter since-filter for updates; bounded snapshots for campaigns, funds, payouts, messages |
 | apps/gladia | 1 | transcription-list | new-transcription | apps/gladia/README.md Triggers section (verified 2026-11-09) | hand | transcription-list has no documented order, so a since-filter poll on after_date |
 | apps/glide | 1 | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
 | apps/gocardless | 1 | list-customers | new-customer | apps/gocardless/README.md Triggers section (verified 2026-11-09) | hand | Newest-created customer page is polled. |
@@ -1024,7 +1024,7 @@ depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-p
 | apps/landbot | 1 | channel-list | new-channel | apps/landbot/README.md Triggers section (verified 2026-11-09) | hand | channel-list is the whole workspace channel set through offset/limit with a total; customer-list has no documented order or since filter (https://dev.landbot.io/api-reference/platform/openapi.json) |
 | apps/launchdarkly | 2 | flag-list | new-flag, new-audit-log-entry | apps/launchdarkly/README.md Triggers section (verified 2026-11-09) | hand | flag-list sorted -creationDate (documented sort field) and audit-log-list with the documented epoch-ms after filter (https://launchdarkly.com/docs/api/feature-flags/get-feature-flags) |
 | apps/lawmatics | 1 | list-contacts | new-contact | apps/lawmatics/README.md Triggers section (verified 2026-11-09) | hand | list-contacts sort_by=created_at&sort_order=desc (https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw) |
-| apps/leadfeeder | 1 | visitor-company-list | new-visitor-company | apps/leadfeeder/README.md Triggers section (verified 2026-11-09) | hand | visitor-company-list over a date range; the vendor documents most-recent-visitor-first when no sort is given (https://api.leadfeeder.com/openapi.yaml) |
+| apps/leadfeeder | 7 | visitor-company-list | new-visitor-company, new-campaign, new-custom-feed, new-tag, new-list, new-list-item, new-web-visit | apps/leadfeeder/README.md Triggers section (verified 2026-11-10) | hand | visitor-company-list most-recent-visitor-first by documented default (https://api.leadfeeder.com/openapi.yaml); bounded snapshots for campaigns, custom feeds, tags, lists and one list's items; web visits via a since-filter (start_date/end_date) poll on web-visit-search |
 | apps/learnworlds | 1 | users-list | new-user | apps/learnworlds/README.md Triggers section (verified 2026-11-09) | hand | users-list returns users newest registered first per the existing action's own documented behaviour; the vendor portal is JavaScript-rendered so the order is not independently re-verified (https://www.learnworlds.dev/) |
 | apps/leexi | 1 | meeting-event-list | new-meeting-event | no | hand | shipped poll trigger(s) over list action meeting-event-list |
 | apps/lemonsqueezy | 1 | order-list | new-order | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09) | hand | order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders) |

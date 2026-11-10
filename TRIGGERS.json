@@ -1618,12 +1618,25 @@
     "path": "apps/circle",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-event",
+      "new-post",
+      "new-or-updated-post",
+      "new-comment",
+      "new-member-tag",
+      "new-space",
+      "new-space-group",
+      "new-event-attendee",
+      "new-space-member"
     ],
     "pollAction": "event-list",
-    "reason": "Admin API v2 documents default order newest by created_at; records array",
-    "verified": "apps/circle/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first via documented sort/default order (events, posts sort=latest/latest_updated, comments, member tags sort=newest); bounded snapshots for spaces, space groups, one event's RSVPs, one space's members",
+    "verified": "apps/circle/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "member-list": "no sort or since filter, order undocumented and the roster is unbounded (https://api-headless.circle.so/api/admin/v2/swagger.yaml, getCommunityMembers)",
+      "member-search": "exact-match lookup of one member by email, not a list",
+      "search": "ranked full-text query across mixed record types, no stable newest-first order (advanced_search)"
+    }
   },
   {
     "path": "apps/circleci",
@@ -3027,12 +3040,24 @@
     "mechanism": "poll",
     "candidates": [
       "new-person",
-      "new-or-updated-person"
+      "new-or-updated-person",
+      "new-deal",
+      "new-task",
+      "new-lead-event",
+      "new-appointment",
+      "new-user",
+      "new-pipeline",
+      "new-smart-list",
+      "new-action-plan"
     ],
     "pollAction": "search-people",
-    "reason": "search-people sorted -created / -updated (documented sort values, '-' = descending)",
-    "verified": "apps/followupboss/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "people sort -created/-updated; deals, tasks, events, appointments, users default to reverse id order (https://docs.followupboss.com/reference/pagination); bounded snapshots for pipelines, smart lists, action plans",
+    "verified": "apps/followupboss/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-stages": "reference data: the account's contact stage names (Lead, Past Client, Trash), a configuration lookup",
+      "list-custom-fields": "field definitions (custom field names, types and choices), not records"
+    }
   },
   {
     "path": "apps/formbricks",
@@ -3505,12 +3530,25 @@
     "mechanism": "poll",
     "candidates": [
       "new-contact",
-      "new-or-updated-contact"
+      "new-or-updated-contact",
+      "new-transaction",
+      "new-or-updated-transaction",
+      "new-campaign",
+      "new-fund",
+      "new-payout",
+      "new-message"
     ],
     "pollAction": "contact-list",
-    "reason": "contact-list sortByDesc=created_at for new; updatedAfter filter (since-filter poll) for updated",
-    "verified": "apps/givebutter/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "sortByDesc=created_at for contacts and transactions; updatedAfter since-filter for updates; bounded snapshots for campaigns, funds, payouts, messages",
+    "verified": "apps/givebutter/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhook-list": "webhook endpoint configuration of the account, not business records",
+      "household-list": "no since filter and no documented default order; sortByDesc is accepted but the API document lists no values (https://docs.givebutter.com/api-reference/households/list-all-households), unbounded",
+      "plan-list": "no sort or since filter, no documented default order (https://docs.givebutter.com/api-reference/pagination), unbounded",
+      "pledge-list": "no sort or since filter, no documented default order (https://docs.givebutter.com/api-reference/pagination), unbounded",
+      "ticket-list": "no sort or since filter, no documented default order (https://docs.givebutter.com/api-reference/pagination), unbounded"
+    }
   },
   {
     "path": "apps/gladia",
@@ -5006,12 +5044,23 @@
     "path": "apps/leadfeeder",
     "mechanism": "poll",
     "candidates": [
-      "new-visitor-company"
+      "new-visitor-company",
+      "new-campaign",
+      "new-custom-feed",
+      "new-tag",
+      "new-list",
+      "new-list-item",
+      "new-web-visit"
     ],
     "pollAction": "visitor-company-list",
-    "reason": "visitor-company-list over a date range; the vendor documents most-recent-visitor-first when no sort is given (https://api.leadfeeder.com/openapi.yaml)",
-    "verified": "apps/leadfeeder/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "visitor-company-list most-recent-visitor-first by documented default (https://api.leadfeeder.com/openapi.yaml); bounded snapshots for campaigns, custom feeds, tags, lists and one list's items; web visits via a since-filter (start_date/end_date) poll on web-visit-search",
+    "verified": "apps/leadfeeder/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "account-list": "the accounts the API key can reach: account administration, not a record feed",
+      "company-search": "requires user-supplied search criteria (\"At least one search criterion must be provided\", vendor OpenAPI), so there is no criteria-free feed to poll",
+      "contact-search": "searches the vendor-wide contact database by caller-chosen criteria only (search terms, buyer persona, company location; the body has no criteria-free feed form), so it is a user query, not a record feed to poll (vendor OpenAPI searchContacts)"
+    }
   },
   {
     "path": "apps/learnworlds",
