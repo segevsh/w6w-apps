@@ -5,7 +5,7 @@ Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, iss
 - **Categories** — project-management, crm, productivity
 - **Auth methods** — client-credentials (Service Application)
 - **Actions** — 34
-- **Triggers** — 4 (poll)
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `*.api.accelo.com`
 - **Website** — https://www.accelo.com
 - **API docs** — https://api.accelo.com/docs/ (the older `affinitylive.jira.com` link is stale)
@@ -22,11 +22,10 @@ Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, iss
 | `new-activity` | poll | `activity-list` | Each newly created activity. |
 | `new-company` | poll | `company-list` | Each newly created company. |
 | `new-job` | poll | `job-list` | Each newly created job. |
-| `new-or-updated-activity` | poll | `activity-list` | Each activity that is created or modified (ordered by `date_modified`). |
 
 Each check asks the list endpoint for 100 rows with the documented `order_by_desc(id)` filter (ids rise with creation) and emits the ids it has not seen. Source: https://api.accelo.com/docs/ (list filters `order_by_asc(<field>)` / `order_by_desc(<field>)`; verified 2026-11-10).
 
-`new-or-updated-activity` orders by `order_by_desc(date_modified)` (a documented order field; activities carry `date_modified`) and de-duplicates on `id:date_modified`, so a modified activity is emitted again. Companies and jobs have no `new-or-updated-*` trigger: only activities were verified to expose `date_modified` as an order field.
+No `new-or-updated-*` trigger ships: the activity list does not return `date_modified` unless it is requested explicitly, which is not yet verified against Accelo's docs.
 
 ## Connecting
 

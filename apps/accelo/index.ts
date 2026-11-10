@@ -68,7 +68,6 @@ import service from "./health/service.ts";
 import deployment from "./health/deployment.ts";
 import quota from "./health/quota.ts";
 import newActivity from "./triggers/new-activity.ts";
-import newOrUpdatedActivity from "./triggers/new-or-updated-activity.ts";
 import newCompany from "./triggers/new-company.ts";
 import newJob from "./triggers/new-job.ts";
 
@@ -121,5 +120,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, deployment, quota],
-  triggers: [newActivity, newCompany, newJob, newOrUpdatedActivity],
+  triggers: [newActivity, newCompany, newJob],
 } satisfies AppDefinition;
