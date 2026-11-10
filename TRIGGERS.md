@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 66, manual-webhook: 30, poll: 488, none: 99
+**Totals:** 683 apps — webhook-api: 67, manual-webhook: 32, poll: 486, none: 98
 
-## webhook-api (66)
+## webhook-api (67)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -60,6 +60,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/patreon | new-pledge, post-published | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks) |
 | apps/paypal | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | new-deal | apps/pipedrive/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/pipefy | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (createWebhook GraphQL mutation) for card.create / card.done / card.move; Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
 | apps/posthog | event | apps/posthog/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event delivery; existing offset lists lack documented order |
 | apps/qualtrics | event subscription | apps/qualtrics/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Qualtrics event subscriptions; existing lists have no safe creation order |
 | apps/rendex | watch.changed, watch.recovered, watch.error | apps/rendex/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: Rendex Watch changed, recovered and error events |
@@ -81,7 +82,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (30)
+## manual-webhook (32)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -106,6 +107,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mighty-networks | member-joined, post-created, network-event | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings; no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time |
 | apps/netlify | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/payhip | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
+| apps/peopledatalabs | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |
+| apps/phantombuster | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/strava | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/tiktok-lead-generation | lead.generated | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: lead-generation events; the existing lead retrievals (get-lead by id, download-page-leads as an async export task) have no documented order or since filter (https://business-api.tiktok.com/portal/docs) |
@@ -116,7 +119,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wiza | list-finished, reveal-finished | apps/wiza/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 
-## poll (488)
+## poll (486)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -434,10 +437,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/perplexity | list-models | new-model | apps/perplexity/README.md Triggers section (verified 2026-11-09) | hand | Snapshots the short vendor-wide Agent API model catalog (GET /v1/models, one request) and emits additions only; web-search is an ad-hoc ranked search, not a record feed (https://docs.perplexity.ai/api-reference/models-get) |
 | apps/personio | list-employees | new-employee, new-or-updated-employee | apps/personio/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-employees updatedSince = cursor-10min, id dedupe; new-employee keeps created_at in window (https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml) |
 | apps/perspective | contact-list | new-contact | apps/perspective/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
-| apps/phantombuster | agent-list | new-agent | apps/phantombuster/README.md Triggers section (verified 2026-11-09) | hand | agents/fetch-all returns all agents in one response (snapshot, additions only); container-list only has beforeEndedAt so no run feed; per-agent end-of-run webhook recorded in webhooks file. |
 | apps/phrase | job-list | new-job, new-or-updated-job | apps/phrase/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll with a declared projectId param: job-list updatedSince = cursor-10min, id dedupe (https://developers.phrase.com/en/api/strings/jobs/list-jobs) |
 | apps/pinecone | index-list | new-index, new-backup | apps/pinecone/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshots (<=200 indexes, <=1000 backups per project per https://docs.pinecone.io/reference/api/database-limits/object-limits), additions only; namespace-list unbounded, model-list is a vendor catalog, record-list is lexicographic id enumeration |
-| apps/pipefy | pipe-list | new-pipe | apps/pipefy/README.md Triggers section (verified 2026-11-09) | hand | pipe-list reads one organization's pipes in a single GraphQL query (snapshot, additions only); card-list filters by title only so cards stay a webhook candidate (recorded in webhooks file); organization-list/table-list not wrapped. |
 | apps/placid | template-list | new-template, new-or-updated-template | apps/placid/README.md Triggers section (verified 2026-11-09) | hand | Polls created and updated template sort orders. |
 | apps/plaid | transaction-sync | new-transaction | apps/plaid/README.md Triggers section (verified 2026-11-10) | hand | transaction-sync (POST /transactions/sync) is a documented cursor change feed (added/modified/removed + next_cursor, https://plaid.com/docs/api/products/transactions/#transactionssync): new-transaction stores the cursor (pollToken) and emits added; institution-list stays unwrapped (catalog with no sort or created filter) |
 | apps/planningcenter | list-event-instances | new-event-instance, new-or-updated-event-instance | apps/planningcenter/README.md Triggers section (verified 2026-11-09) | hand | list-event-instances order=-created_at / -updated_at (orderable per https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) |
@@ -609,7 +610,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (99)
+## none (98)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -676,8 +677,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/onesimpleapi |  | apps/onesimpleapi/README.md Triggers section (verified 2026-11-09) | hand | stateless conversion, generation, lookup, and validation utility API with no account records |
 | apps/openrouter |  | apps/openrouter/README.md Triggers section (verified 2026-11-09) | hand | list-models is offset-paged (limit up to 1000) with no total, so one request cannot be shown to hold the whole catalog for a snapshot; the other actions are inference, usage or single-resource lookups with no record feed; no webhook offering found in the API reference. |
 | apps/opusclip | project created | apps/opusclip/README.md Triggers section (verified 2026-11-10) | hand | the only webhook is a conclusionActions WEBHOOK on the create-project request, a completion callback for a project the caller starts, not an account event stream; clip-list needs a selected project and has no creation-order or since filter (https://help.opus.pro/api-reference/webhook) |
-| apps/pdfco |  | apps/pdfco/README.md Triggers section (verified 2026-11-09) | hand | stateless conversion/job API: no list action returns account records; the only event offering is a per-request async-job callback URL (recorded in webhooks file), not a subscription. |
-| apps/peopledatalabs |  | apps/peopledatalabs/README.md Triggers section (verified 2026-11-09) | hand | search/enrichment endpoints query PDL's external dataset, not an account-owned record feed; PDL webhooks (person data updates) are enterprise-only and registered through PDL staff (recorded in webhooks file). |
+| apps/pdfco |  | apps/pdfco/README.md Triggers section (verified 2026-11-10) | hand | PDF.co's only webhook is a per-request `callback` URL reporting completion of an async job the caller starts itself; no account event stream or webhook registration, and no list action with a changing feed (https://developer.pdf.co/api/webhooks) |
 | apps/pinterest | new-pin | apps/pinterest/README.md Triggers section (verified 2026-11-09) | hand | pin-list/pin-search (GET /v5/pins) document no sort order and no date filter, and boards/ad accounts are not documented as bounded (https://developers.pinterest.com/docs/api/v5/pins-list/) |
 | apps/plaud |  | apps/plaud/README.md Triggers section (verified 2026-11-09) | hand | transcription-get and device-binding-get need a supplied resource id; docs.plaud.ai/llms.txt lists no list endpoint and no webhook offering. |
 | apps/postbin |  | apps/postbin/README.md Triggers section (verified 2026-11-09) | hand | request inbox actions fetch or shift one known request and expose no bounded list of new requests |

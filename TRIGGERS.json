@@ -4972,8 +4972,8 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "stateless conversion/job API: no list action returns account records; the only event offering is a per-request async-job callback URL (recorded in webhooks file), not a subscription.",
-    "verified": "apps/pdfco/README.md Triggers section (verified 2026-11-09)",
+    "reason": "PDF.co's only webhook is a per-request `callback` URL reporting completion of an async job the caller starts itself; no account event stream or webhook registration, and no list action with a changing feed (https://developer.pdf.co/api/webhooks)",
+    "verified": "apps/pdfco/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5012,11 +5012,13 @@
   },
   {
     "path": "apps/peopledatalabs",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "person-updates"
+    ],
     "pollAction": null,
-    "reason": "search/enrichment endpoints query PDL's external dataset, not an account-owned record feed; PDL webhooks (person data updates) are enterprise-only and registered through PDL staff (recorded in webhooks file).",
-    "verified": "apps/peopledatalabs/README.md Triggers section (verified 2026-11-09)",
+    "reason": "enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks)",
+    "verified": "apps/peopledatalabs/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5055,13 +5057,14 @@
   },
   {
     "path": "apps/phantombuster",
-    "mechanism": "poll",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "new-agent"
+      "new-agent",
+      "agent-run-finished"
     ],
     "pollAction": "agent-list",
-    "reason": "agents/fetch-all returns all agents in one response (snapshot, additions only); container-list only has beforeEndedAt so no run feed; per-agent end-of-run webhook recorded in webhooks file.",
-    "verified": "apps/phantombuster/README.md Triggers section (verified 2026-11-09)",
+    "reason": "poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks)",
+    "verified": "apps/phantombuster/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5112,13 +5115,16 @@
   },
   {
     "path": "apps/pipefy",
-    "mechanism": "poll",
+    "mechanism": "webhook-api",
     "candidates": [
-      "new-pipe"
+      "new-pipe",
+      "new-card",
+      "card-done",
+      "card-moved"
     ],
     "pollAction": "pipe-list",
-    "reason": "pipe-list reads one organization's pipes in a single GraphQL query (snapshot, additions only); card-list filters by title only so cards stay a webhook candidate (recorded in webhooks file); organization-list/table-list not wrapped.",
-    "verified": "apps/pipefy/README.md Triggers section (verified 2026-11-09)",
+    "reason": "API-registered webhooks (createWebhook GraphQL mutation) for card.create / card.done / card.move; Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks)",
+    "verified": "apps/pipefy/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
