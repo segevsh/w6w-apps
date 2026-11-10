@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jobber",
-  "version": "0.1.1",
-  "description": "Jobber field-service management — clients, properties, requests, quotes, jobs, visits and invoices — over Jobber's GraphQL API.",
+  "version": "0.2.0",
+  "description": "Jobber field-service management — clients, properties, requests, quotes, jobs, visits and invoices — over Jobber's GraphQL API. Includes a new invoice poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.getjobber.com/docs"
     ],
-    "longDescription": "Jobber runs the office side of a home-service business — plumbing, landscaping, HVAC, cleaning — and this app models the chain that is the product: a request becomes a quote, a quote becomes a job, a job is made of visits, and completed visits become an invoice, over Jobber's own GraphQL API.\n\nIt covers clients and their serviced properties, work requests, quotes (create and approve), jobs created from an approved quote, visits (create, list, complete) and invoices generated straight from a job's uninvoiced work. An escape-hatch action runs any GraphQL query or mutation directly, reaching timesheets, expenses, job costing, payouts and everything else in Jobber's much larger schema that the named actions don't cover.\n\nGood for turning an external booking or web-form request into a Jobber request automatically, converting an approved quote into a scheduled job, generating and marking invoices as sent once a job wraps up, or syncing visit schedules with a dispatch or calendar tool.",
+    "longDescription": "Jobber runs the office side of a home-service business — plumbing, landscaping, HVAC, cleaning — and this app models the chain that is the product: a request becomes a quote, a quote becomes a job, a job is made of visits, and completed visits become an invoice, over Jobber's own GraphQL API.\n\nIt covers clients and their serviced properties, work requests, quotes (create and approve), jobs created from an approved quote, visits (create, list, complete) and invoices generated straight from a job's uninvoiced work. An escape-hatch action runs any GraphQL query or mutation directly, reaching timesheets, expenses, job costing, payouts and everything else in Jobber's much larger schema that the named actions don't cover.\n\nGood for turning an external booking or web-form request into a Jobber request automatically, converting an approved quote into a scheduled job, generating and marking invoices as sent once a job wraps up, or syncing visit schedules with a dispatch or calendar tool.\n\nA new invoice poll trigger starts workflows from the existing invoice-list action.",
     "categories": [
       "calendar",
       "crm",
@@ -34,7 +34,12 @@
         "api.getjobber.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

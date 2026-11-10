@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/justcall",
-  "version": "0.1.1",
-  "description": "Read and manage JustCall calls, texts, contacts, phone numbers, users and webhooks.",
+  "version": "0.2.0",
+  "description": "Read and manage JustCall calls, texts, contacts, phone numbers, users and webhooks. Includes a new contact poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.justcall.io/reference/authentication"
     ],
-    "longDescription": "JustCall is a cloud phone system and SMS/calling platform: phone numbers, agents, calls and text messages in one account. This app covers the core of a JustCall-driven workflow — read and update calls, send and read SMS, manage contacts (including DND/DNM/blacklist status), read phone numbers and their capabilities, look up and update user availability, and manage webhook subscriptions.\n\nThe API answers most reads with a paginated envelope (`status`, `data`, `count`, `next_page_link`) and a few writes with a bare `{status}` or a single-item `data` array rather than a single object — every action here follows the shape JustCall's own OpenAPI document declares for that specific endpoint, not a single assumed shape for the whole app.\n\nHealth is tracked against JustCall's own Statuspage, which names a genuine `Developer APIs` component distinct from the dashboard and calling infrastructure, plus the account's own hourly and per-minute rate-limit headroom read from the documented `X-Rate-Limit-*` response headers.",
+    "longDescription": "JustCall is a cloud phone system and SMS/calling platform: phone numbers, agents, calls and text messages in one account. This app covers the core of a JustCall-driven workflow — read and update calls, send and read SMS, manage contacts (including DND/DNM/blacklist status), read phone numbers and their capabilities, look up and update user availability, and manage webhook subscriptions.\n\nThe API answers most reads with a paginated envelope (`status`, `data`, `count`, `next_page_link`) and a few writes with a bare `{status}` or a single-item `data` array rather than a single object — every action here follows the shape JustCall's own OpenAPI document declares for that specific endpoint, not a single assumed shape for the whole app.\n\nHealth is tracked against JustCall's own Statuspage, which names a genuine `Developer APIs` component distinct from the dashboard and calling infrastructure, plus the account's own hourly and per-minute rate-limit headroom read from the documented `X-Rate-Limit-*` response headers.\n\nA new contact poll trigger starts workflows from the existing contact-list action.",
     "categories": [
       "communication",
       "crm"
@@ -39,7 +39,12 @@
         "api.justcall.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
