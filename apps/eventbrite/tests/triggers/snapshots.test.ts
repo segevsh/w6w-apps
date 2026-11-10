@@ -78,8 +78,8 @@ const ROWS: Row[] = [
     trigger: newDefaultQuestion,
     params: { eventId: "evt-1" },
     list: "questions",
-    url: `${API}/events/evt-1/canned_questions/`,
-    page2: `${API}/events/evt-1/canned_questions/?continuation=tok1`,
+    url: `${API}/events/evt-1/canned_questions/?include_all=false`,
+    page2: `${API}/events/evt-1/canned_questions/?include_all=false&continuation=tok1`,
   },
   {
     trigger: newOrganizationMember,

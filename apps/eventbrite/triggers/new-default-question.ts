@@ -4,8 +4,9 @@ import { QUESTION_LIST_ITEM_OUTPUT, QUESTION_SAMPLE } from "../lib/outputs.ts";
 
 /**
  * Eventbrite sends no webhook for registration questions. The event's default (canned) questions
- * (`GET /events/{id}/canned_questions/`, read by `list-default-questions`, without `include_all`
- * so it is the event's own selection, not Eventbrite's whole catalog) are compared check to check.
+ * (`GET /events/{id}/canned_questions/`, read by `list-default-questions` with `include_all=false`
+ * so it is the event's own selection, not Eventbrite's whole catalog; the vendor reference marks
+ * `include_all` required) are compared check to check.
  * https://www.eventbrite.com/platform/api (verified 2026-11-10).
  */
 const newDefaultQuestion = snapshotTrigger({
@@ -23,7 +24,7 @@ const newDefaultQuestion = snapshotTrigger({
     required: true,
     hint: "The event to watch.",
   }],
-  input: (p) => ({ eventId: String(p.eventId ?? "").trim() }),
+  input: (p) => ({ eventId: String(p.eventId ?? "").trim(), includeAll: false }),
   output: QUESTION_LIST_ITEM_OUTPUT,
   sample: QUESTION_SAMPLE,
 });

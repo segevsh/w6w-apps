@@ -83,6 +83,37 @@ webhook for.
 | `venue-updated` — Venue Updated | `venue.updated` | the venue |
 | `activity` — Organization Activity | the **Actions** you choose | whichever record fired |
 
+**Params.** *Organization ID* — leave it blank when the account belongs to exactly one organization
+and it is looked up; with several, the subscription fails and names them. *Event ID* — limits the
+webhook to one event. *Actions* — `activity` only.
+
+**Lifecycle.**
+
+- *Subscribe* creates an organization webhook (`POST /organizations/{id}/webhooks/`) whose
+  `endpoint_url` is the subscription's callback URL, and stores the webhook id, organization,
+  actions and event on the subscription. Before creating it, any webhook already pointed at that
+  callback URL is deleted: the URL is unique to the subscription, so such a webhook is a leftover
+  of an earlier attempt (a retried registration never leaves a duplicate behind).
+- *Unsubscribe* deletes that webhook (`DELETE /webhooks/{id}/`). A webhook Eventbrite no longer has
+  counts as deleted.
+- *Receive.* Eventbrite's delivery is a notification, not the record:
+  `{ "config": { "action", "webhook_id", "user_id", "endpoint_url" }, "api_url" }`. The ingest
+  parser stores one event for it — `action`, `resourceType`, `resourceId`, `apiUrl`, `webhookId`,
+  `userId`. The dashboard's **Test** ping and an action the subscription did not register are
+  acknowledged with no event.
+- *Run.* At dispatch the output parser fetches `api_url` with the subscription's connection, and
+  the run's `trigger.event` is the stored event plus `resource`, the record as it is at that
+  moment. A record that is gone (404) gives `resource: null`; any other failure is retried by the
+  dispatcher.
+
+**Verification.** Eventbrite does not sign webhook deliveries. The callback URL is the shared
+secret; on top of it a delivery that names a different webhook id than the subscription
+registered is refused (recorded as a failed call), and `api_url` must be on
+`www.eventbriteapi.com/v3/` before it is fetched with the connection's credential.
+
+Eventbrite retries a delivery it did not get a 2xx for, so a run can see the same change twice:
+key on `trigger.event.id` (host-issued) or the record's own id when that matters.
+
 **Poll triggers.** Each checks every five minutes or more, through the same list action the app
 ships (same request, same connection), and the first check only records what exists, so nothing that
 was there before the workflow was switched on fires.
@@ -112,9 +143,14 @@ actions need no poll: `list-events` (`event-created`), `list-orders` (`order-pla
 `list-ticket-classes` (`ticket-class-created`). Eventbrite's webhooks for organizers and venues are
 update-only, so brand-new ones come from the `new-organizer` and `new-venue` polls. **Not covered by
 a trigger**, because they are reference data or account administration that does not produce
-events: categories, subcategories, formats, organization roles and fee rates (Eventbrite's fixed
-reference data), your webhook list (the registrations this app itself creates), and the list of
-organizations your account belongs to.
+events: categories, subcategories, formats and fee rates (Eventbrite's reference data), organization
+roles (permission sets an organization owns, set up by its admins), your webhook list (the
+registrations this app itself creates), and the list of organizations your account belongs to.
+
+**Sources.** The webhook catalog and delivery format follow Eventbrite's webhook guide,
+<https://www.eventbrite.com/platform/docs/webhooks>; the list endpoints, their parameters and
+pagination follow the API reference, <https://www.eventbrite.com/platform/api>; the organizers
+endpoint follows <https://www.eventbrite.com/platform/docs/organizations>. All verified 2026-11-10.
 
 ## Pickers
 
