@@ -4,37 +4,59 @@ import { mockCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-record.ts";
 
 const input = { params: { tableId: "tbl-1" }, subscriptionId: "sub-1" };
-const item = { id: "record-a" };
-const body = (items: unknown[]) => ({ items: items });
+const rec = (id: string) => ({ id, first_created: { on: "2026-11-09T09:00:00.000000Z" } });
+const page = (items: unknown[]) => ({
+  body: { total: items.length, offset: 0, limit: 100, items },
+});
+const next = (r: unknown) => (r as { nextState: unknown }).nextState;
+const events = (r: unknown) => (r as { events: unknown[] }).events;
 
-test("new-record: seeds, emits unseen rows, retries idempotently, and requests the wrapped feed", async () => {
-  const seededCtx = mockCtx([{ body: body([item]) }]);
-  const seeded = await trigger.poll!({ ...input, state: {} } as never, seededCtx.ctx);
-  assertEquals((seeded as { events: unknown[] }).events, []);
-  assertEquals((seeded as { nextState: { seeded?: boolean } }).nextState.seeded, true);
-  const added = {
-    ...item,
-    id: "new-id",
-    contactId: "new-id",
-    shipmentId: "new-id",
-    sequenceId: "new-id",
-  };
-  const page = body([added, item]);
-  const nextCtx = mockCtx([{ body: page }]);
+test("new-record: seeds without emitting", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} } as never,
+    mockCtx([page([rec("a")])]).ctx,
+  );
+  assertEquals(events(seeded), []);
+  assertEquals((next(seeded) as { seeded?: boolean }).seeded, true);
+});
+
+test("new-record: emits only the unseen record and is idempotent on retry", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} } as never,
+    mockCtx([page([rec("a")])]).ctx,
+  );
   const first = await trigger.poll!(
-    { ...input, state: (seeded as { nextState: unknown }).nextState } as never,
-    nextCtx.ctx,
+    { ...input, state: next(seeded) } as never,
+    mockCtx([page([rec("b"), rec("a")])]).ctx,
   );
   const retry = await trigger.poll!(
-    { ...input, state: (seeded as { nextState: unknown }).nextState } as never,
-    mockCtx([{ body: page }]).ctx,
+    { ...input, state: next(seeded) } as never,
+    mockCtx([page([rec("b"), rec("a")])]).ctx,
   );
-  assertEquals((first as { events: unknown[] }).events, [added]);
+  assertEquals(events(first), [rec("b")]);
   assertEquals(retry, first);
-  assertEquals(nextCtx.calls[0].method, "POST");
+});
+
+test("new-record: an edited old record is not new", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} } as never,
+    mockCtx([page([rec("a")])]).ctx,
+  );
+  const edited = { ...rec("a"), last_updated: { on: "2026-11-10T09:00:00.000000Z" } };
+  const r = await trigger.poll!(
+    { ...input, state: next(seeded) } as never,
+    mockCtx([page([edited])]).ctx,
+  );
+  assertEquals(events(r), []);
+});
+
+test("new-record: requests the table's records sorted by first_created desc", async () => {
+  const c = mockCtx([page([rec("a")])]);
+  await trigger.poll!({ ...input, state: {} } as never, c.ctx);
+  assertEquals(c.calls[0].method, "POST");
   assertEquals(
-    nextCtx.calls[0].url,
+    c.calls[0].url,
     "https://app.smartsuite.com/api/v1/applications/tbl-1/records/list/?offset=0&limit=100",
   );
-  assertEquals(nextCtx.calls[0].body, '{"sort":[{"field":"created_at","direction":"desc"}]}');
+  assertEquals(c.calls[0].body, '{"sort":[{"field":"first_created","direction":"desc"}]}');
 });

@@ -75,7 +75,6 @@ second create makes a second note). The other `perform` actions set a state and 
 ### Things that bite
 
 - **Pagination is two different things.** Notes, children, knowledge-management, users and groups
-- **Triggers** — 1 (poll)
   use an opaque `cursor`; read `nextCursor` from the output and pass it back as `cursor`. Note search
   uses a zero-based `page` plus `hitsPerPage` (1-100) and reports `nbPages`.
 - **`ask` can answer 202.** A slow answer is `{status: "processing", threadId, retryAfterSeconds}`,
@@ -129,6 +128,14 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-note` — New Knowledge-management Note | poll | `km-note-list` | Each newly created knowledge-management note. |
+| `new-or-updated-note` — New or Updated Note | poll | `note-list` | Each note that is created or edited. |
 
-Vendor documentation: https://developers.slite.com/reference/listnotesforknowledgemanagement (verified 2026-11-09).
+The poll calls `GET /v1/notes?orderBy=lastEditedAt_DESC` (the `note-list` request): List notes
+documents `orderBy` with the values `lastEditedAt_DESC`, `lastEditedAt_ASC`, `listPosition_DESC`,
+`listPosition_ASC`, and each note carries `lastEditedAt`, which the event id includes — so an edit is
+a new event. There is **no separate `new-note` trigger**: Slite documents no created-time order
+(`listPosition` is "seeded from the creation date" but "manual reordering overrides it"), and
+`km-note-list` takes only review-state/owner/channel/recency filters with no sort, so a pure
+"created" feed is not available from an existing list action.
+
+Vendor documentation: https://developers.slite.com/reference/listnotes (verified 2026-11-09).

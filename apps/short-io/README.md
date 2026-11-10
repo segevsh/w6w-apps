@@ -108,6 +108,10 @@ Things worth knowing:
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-link` — New Link | poll | `link-list` | Each newly created link. |
+| `new-link` — New Link | poll | `link-list` | Each newly created link on the chosen domain. |
 
-Vendor documentation: https://developers.short.io/reference/get-links (verified 2026-11-09).
+The poll reads `GET /api/links?domain_id=<id>&limit=100&dateSortOrder=desc` — the vendor's documented
+`dateSortOrder` parameter (`asc`/`desc`) on the same request `link-list` makes — and emits links whose
+`idString` has not been seen. Links have no update stamp, so there is no `new-or-updated-link`.
+
+Vendor documentation: https://developers.short.io/reference/get_api-links (verified 2026-11-09).

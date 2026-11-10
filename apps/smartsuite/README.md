@@ -3,7 +3,7 @@
 Manage Solutions, Tables, Records, Fields, Comments and Members in SmartSuite.
 
 - **Categories** — databases, project-management, productivity
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 - **Auth methods** — api-key (Workspace ID + API Key, `custom`)
 - **Actions** — 17
 - **Egress allowlist** — `app.smartsuite.com`
@@ -158,12 +158,20 @@ and its `API US` component id were confirmed live on the same date; status
 surfaces move, so re-run `deno task validate` if a probe starts failing for
 everyone at once.
 
-Triggers: not shipped — `list-records` takes a raw `sort` array, but the system created-at field slug is not confirmed from SmartSuite's docs (https://developer.smartsuite.com/, unreadable 2026-11-09) and a poll needs newest-first guaranteed.
-
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-record` — New Record | poll | `list-records` | Each newly created record. |
+| `new-record` — New Record | poll | `list-records` | Each newly created record in the chosen table. |
+| `new-or-updated-record` — New or Updated Record | poll | `list-records` | Each record that is created or edited in the chosen table. |
 
-Vendor documentation: https://developers.smartsuite.com/docs/list-records (verified 2026-11-09).
+Both polls call `POST /applications/{tableId}/records/list/` (the `list-records` request, `limit=100`)
+with an explicit sort on a system field, newest first: `first_created` for `new-record`,
+`last_updated` for `new-or-updated-record` (whose event id includes the `last_updated.on` stamp, so
+an edit is a new event). The vendor's "Sorting and Filtering Records" page lists the "First Created"
+(`firstcreatedfield`) and "Last Updated" (`lastupdatedfield`) fields as sortable `asc`/`desc`, and
+the sort syntax is `"sort": [{ "field": "<slug>", "direction": "desc" }]`; the record payload keys
+those fields `first_created` and `last_updated` (each `{ on, by }`).
+
+Vendor documentation: https://developers.smartsuite.com/docs/solution-data/records/sort-filter and
+https://developers.smartsuite.com/docs/solution-data/records/list-records (verified 2026-11-09).
