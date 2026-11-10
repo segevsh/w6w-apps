@@ -116,6 +116,20 @@ import newContact from "./triggers/new-contact.ts";
 import contactUpdated from "./triggers/contact-updated.ts";
 import contactDeleted from "./triggers/contact-deleted.ts";
 import formSubmitted from "./triggers/form-submitted.ts";
+import companySaved from "./triggers/company-saved.ts";
+import companyDeleted from "./triggers/company-deleted.ts";
+import contactPointsChanged from "./triggers/contact-points-changed.ts";
+import contactChannelSubscriptionChanged from "./triggers/contact-channel-subscription-changed.ts";
+import contactCompanyChanged from "./triggers/contact-company-changed.ts";
+import emailSent from "./triggers/email-sent.ts";
+import emailOpened from "./triggers/email-opened.ts";
+import smsSent from "./triggers/sms-sent.ts";
+import pageHit from "./triggers/page-hit.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newSegment from "./triggers/new-segment.ts";
+import newEmail from "./triggers/new-email.ts";
+import newTag from "./triggers/new-tag.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 
@@ -157,7 +171,26 @@ export default {
     // who this is
     userGetSelf,
   ],
-  triggers: [newContact, contactUpdated, contactDeleted, formSubmitted],
+  triggers: [
+    newContact,
+    contactUpdated,
+    contactDeleted,
+    formSubmitted,
+    companySaved,
+    companyDeleted,
+    contactPointsChanged,
+    contactChannelSubscriptionChanged,
+    contactCompanyChanged,
+    emailSent,
+    emailOpened,
+    smsSent,
+    pageHit,
+    anyEvent,
+    newCampaign,
+    newSegment,
+    newEmail,
+    newTag,
+  ],
   auth: [clientCredentials],
   healthChecks: [instance, service],
 } satisfies AppDefinition;
