@@ -202,7 +202,7 @@ test("onSubscribe refuses an empty watch id and unknown events without calling R
   assertEquals(calls.length, 0);
 });
 
-test("onUnsubscribe clears the webhook URL with null; 404 = gone; 500 rethrows", async () => {
+test("onUnsubscribe clears the webhook URL with null; 404 and 410 = gone; 500 rethrows", async () => {
   const input = { params: { watchId: "W1" }, state: { watchId: "W1" }, subscriptionId: "sub_1" };
   const ok = mockCtx([{ body: { success: true, data: {} } }]);
   await trigger.onUnsubscribe!(input, ok.ctx);
@@ -214,6 +214,8 @@ test("onUnsubscribe clears the webhook URL with null; 404 = gone; 500 rethrows",
     body: { success: false, error: { code: "NOT_FOUND", message: "no watch" } },
   }]);
   await trigger.onUnsubscribe!(input, gone.ctx);
+  const goneToo = mockCtx([{ status: 410, body: { success: false, error: { code: "GONE" } } }]);
+  await trigger.onUnsubscribe!(input, goneToo.ctx);
   const bad = mockCtx([{ status: 500, body: "boom" }]);
   await assertRejects(() => trigger.onUnsubscribe!(input, bad.ctx), Error, "500");
 });

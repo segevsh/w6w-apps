@@ -113,7 +113,7 @@ function str(v: unknown): string | null {
 
 /** True for the "no such webhook" answer `SavvyCalClient` throws. */
 function isGone(err: unknown): boolean {
-  return err instanceof Error && /^SavvyCal 404\b/.test(err.message);
+  return err instanceof Error && /^SavvyCal (404|410)\b/.test(err.message);
 }
 
 /**

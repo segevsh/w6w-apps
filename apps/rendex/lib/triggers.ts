@@ -158,7 +158,7 @@ function num(v: unknown): number | null {
 
 /** True for the "no such watch" answer `RendexClient` throws. */
 function isGone(err: unknown): boolean {
-  return err instanceof Error && /^Rendex 404\b/.test(err.message);
+  return err instanceof Error && /^Rendex (404|410)\b/.test(err.message);
 }
 
 /** The user's event list (default all) → validated Rendex event names. */

@@ -19,14 +19,16 @@ import { API_VERSION, SanityClient } from "./client.ts";
  *     with `randomSecret()` (D5 (1)) and keeps it, with the webhook `id`, in the subscription
  *     `state`. The token needs the `sanity.project.webhooks` create/delete grants.
  *   - `onUnsubscribe` deletes it with `DELETE /hooks/projects/{projectId}/{id}`; a webhook
- *     Sanity no longer has (404) counts as deleted.
+ *     Sanity no longer has (404 or 410) counts as deleted.
  *   - `handleIngest` verifies `sanity-webhook-signature` (`t=<unix ms>,v1=<base64url HMAC-SHA256
  *     of "<t>.<raw body>">`, Stripe-style) BEFORE it parses the body, and rejects a timestamp
  *     more than five minutes from now.
  *
  * Trust model: the signature binds the timestamp and the whole body. The `sanity-*` headers
- * (operation, document id, transaction) are NOT covered by it; the event data comes from the
- * signed body, the headers only fill the descriptive fields.
+ * (operation, document id, transaction, idempotency key) are NOT covered by it. `operation` is
+ * the one this webhook was registered for, `documentId` is the signed body's `_id`, and the
+ * idempotency key is derived from the signed `_id` + `_rev`; headers only fill the descriptive
+ * fields (and the document id / idempotency key when the body has none).
  *
  * Docs (verified 2026-11-10): https://www.sanity.io/docs/webhooks,
  * https://www.sanity.io/docs/http-reference/webhooks and the vendor's own verifier,
@@ -127,7 +129,7 @@ function str(v: unknown): string | null {
 
 /** True for the "no such webhook" answer `SanityClient` throws. */
 function isGone(err: unknown): boolean {
-  return err instanceof Error && /^Sanity 404\b/.test(err.message);
+  return err instanceof Error && /^Sanity (404|410)\b/.test(err.message);
 }
 
 /** Standard base64 → base64url without padding, the form Sanity signs in. */
@@ -182,16 +184,24 @@ export function normalizeDelivery(
   }
   const doc = asObject(parsed);
   if (!doc) throw new Error("Not a Sanity webhook delivery: expected a JSON object.");
+  // The signature covers the body only. Event identity (operation, document id, idempotency key)
+  // comes from the signed body or from what this webhook was registered for; an unsigned header
+  // is used only when the body lacks the field, and never overrides signed data.
+  const documentId = str(doc._id) ?? str(header({ headers }, "sanity-document-id"));
+  const rev = str(doc._rev);
+  const idempotencyKey = str(doc._id) && rev
+    ? `${fallbackOperation}:${str(doc._id)}:${rev}`
+    : str(header({ headers }, "idempotency-key"));
   return {
-    operation: str(header({ headers }, "sanity-operation")) ?? fallbackOperation,
-    documentId: str(header({ headers }, "sanity-document-id")) ?? str(doc._id),
+    operation: fallbackOperation,
+    documentId,
     documentType: str(doc._type),
     projectId: str(header({ headers }, "sanity-project-id")),
     dataset: str(header({ headers }, "sanity-dataset")),
     transactionId: str(header({ headers }, "sanity-transaction-id")),
     transactionTime: str(header({ headers }, "sanity-transaction-time")),
     webhookId: str(header({ headers }, "sanity-webhook-id")),
-    idempotencyKey: str(header({ headers }, "idempotency-key")),
+    idempotencyKey,
     document: doc,
   };
 }

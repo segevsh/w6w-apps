@@ -14,7 +14,7 @@ const CALLBACK = "https://api.example.test/triggers/webhooks/sub_1";
 const CONN = { display: { projectId: "p1", dataset: "production" } };
 
 // Non-canonical whitespace: JSON.stringify(JSON.parse(BODY)) !== BODY.
-const BODY = `{ "_id" : "post-1",  "_type":"post", "title":"Hello",
+const BODY = `{ "_id" : "post-1",  "_type":"post", "_rev":"rev-1", "title":"Hello",
   "body": [ { "_type":"block",   "children":[] } ] }`;
 
 const nowMs = () => Date.now();
@@ -75,8 +75,34 @@ test("valid signature (node:crypto, base64url) → one normalized event", async 
   assertEquals(out[0].documentId, "post-1");
   assertEquals(out[0].documentType, "post");
   assertEquals(out[0].dataset, "production");
-  assertEquals(out[0].idempotencyKey, "idem-1");
+  assertEquals(out[0].idempotencyKey, "create:post-1:rev-1");
   assertEquals((out[0].document as Record<string, unknown>).title, "Hello");
+});
+
+test("replay with edited unsigned headers does not change the emitted identity", async () => {
+  const base = evs(await ingest(call())) as Array<Record<string, unknown>>;
+  const tampered = call();
+  Object.assign(tampered.raw.headers, {
+    "sanity-operation": "delete",
+    "sanity-document-id": "someone-elses-doc",
+    "idempotency-key": "fresh-key-per-replay",
+  });
+  const out = evs(await ingest(tampered)) as Array<Record<string, unknown>>;
+  assertEquals(out[0].operation, "create");
+  assertEquals(out[0].documentId, "post-1");
+  assertEquals(out[0].idempotencyKey, base[0].idempotencyKey);
+});
+
+test("body without _id/_rev: headers are only a fallback", async () => {
+  const b = `{ "_type": "post" }`;
+  const c = call({ rawBody: b, body: JSON.parse(b), headers: {
+    "sanity-webhook-signature": sig(nowMs(), b),
+    "sanity-document-id": "hdr-doc",
+    "idempotency-key": "hdr-key",
+  } }, b);
+  const out = evs(await ingest(c)) as Array<Record<string, unknown>>;
+  assertEquals(out[0].documentId, "hdr-doc");
+  assertEquals(out[0].idempotencyKey, "hdr-key");
 });
 
 test("one flipped byte in the body → refused", async () => {
@@ -205,7 +231,7 @@ test("onSubscribe refuses a response without an id", async () => {
   );
 });
 
-test("onUnsubscribe DELETEs the webhook; 404 = already gone; 500 rethrows", async () => {
+test("onUnsubscribe DELETEs the webhook; 404 and 410 = already gone; 500 rethrows", async () => {
   const input = {
     params: {},
     state: { webhookId: "wh9", projectId: "p1", secret: "s" },
@@ -217,6 +243,8 @@ test("onUnsubscribe DELETEs the webhook; 404 = already gone; 500 rethrows", asyn
   assertEquals(ok.calls[0].url, "https://p1.api.sanity.io/v2025-02-19/hooks/projects/p1/wh9");
   const gone = mockCtx([{ status: 404, body: { message: "not found" } }], CONN);
   await created.onUnsubscribe!(input, gone.ctx);
+  const goneToo = mockCtx([{ status: 410, body: { message: "gone" } }], CONN);
+  await created.onUnsubscribe!(input, goneToo.ctx);
   const bad = mockCtx([{ status: 500, body: { message: "boom" } }], CONN);
   await assertRejects(() => created.onUnsubscribe!(input, bad.ctx), Error, "500");
 });

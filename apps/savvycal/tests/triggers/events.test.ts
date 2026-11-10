@@ -185,7 +185,7 @@ test("onUnsubscribe DELETEs /v1/webhooks/{id}", async () => {
   assertEquals(calls[0].url, "https://api.savvycal.com/v1/webhooks/wh_9");
 });
 
-test("onUnsubscribe treats 404 as already gone and rethrows other errors", async () => {
+test("onUnsubscribe treats 404 and 410 as already gone and rethrows other errors", async () => {
   const gone = mockCtx([{
     status: 404,
     body: "Not found",
@@ -194,6 +194,15 @@ test("onUnsubscribe treats 404 as already gone and rethrows other errors", async
   await created.onUnsubscribe!(
     { params: {}, state: { webhookId: "wh_9", secret: "s" }, subscriptionId: "sub_1" },
     gone.ctx,
+  );
+  const goneToo = mockCtx([{
+    status: 410,
+    body: "Gone",
+    headers: { "content-type": "text/plain" },
+  }]);
+  await created.onUnsubscribe!(
+    { params: {}, state: { webhookId: "wh_9", secret: "s" }, subscriptionId: "sub_1" },
+    goneToo.ctx,
   );
   const bad = mockCtx([{ status: 500, body: "boom", headers: { "content-type": "text/plain" } }]);
   await assertRejects(
