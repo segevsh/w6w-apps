@@ -11,7 +11,7 @@ export const clock = { now: (): number => Date.now() };
 
 interface ArchiveChat {
   id: string;
-  thread?: { id?: string };
+  thread?: { id?: string; created_at?: string };
 }
 
 /** Pages read per check; a longer window is drained over successive checks (§9.8). */
@@ -23,6 +23,8 @@ export interface NewChatThreadState {
   seeded: true;
   ids: string[];
   cursor: number;
+  /** Seed moment (ms): threads created before it are never events (brief 9.9). */
+  floor?: number;
   /** Resume position of an unfinished window: LiveChat's `next_page_id` and the window's end. */
   drain?: { pageId: string; end: number };
 }
@@ -48,6 +50,9 @@ export async function checkNewChatThread(
   const checkedAt = clock.now();
   const cursor = seeded ? prior!.cursor as number : checkedAt;
   const drain = seeded ? prior!.drain : undefined;
+  const priorFloor = (prior as { floor?: unknown } | null)?.floor;
+  // The seed stamps the floor; a state from before it existed has none and filters nothing.
+  const floor = seeded ? (typeof priorFloor === "number" ? priorFloor : undefined) : checkedAt;
   const end = drain ? drain.end : checkedAt;
 
   const listed: ArchiveChat[] = [];
@@ -60,7 +65,11 @@ export async function checkNewChatThread(
         : { from: rfc3339Micros(cursor - OVERLAP_MS), sortOrder: "desc", limit: PAGE_SIZE },
       ctx,
     ) as { chats?: ArchiveChat[]; nextPageId?: string };
-    listed.push(...(res.chats ?? []));
+    for (const chat of res.chats ?? []) {
+      // A thread stamped before the seed existed already; one without a stamp is kept.
+      const created = Date.parse(String(chat.thread?.created_at ?? ""));
+      if (floor === undefined || Number.isNaN(created) || created >= floor) listed.push(chat);
+    }
     pageId = res.nextPageId;
     if (!pageId) {
       drained = true;
@@ -76,8 +85,8 @@ export async function checkNewChatThread(
     idOf: (c) => `${c.id}:${c.thread?.id ?? ""}`,
     fetchPage: () => Promise.resolve({ items: listed }),
   });
-  if (!seeded || drained) return { events, nextState: { ...nextState, cursor: end } };
-  return { events, nextState: { ...nextState, cursor, drain: { pageId: pageId!, end } } };
+  if (!seeded || drained) return { events, nextState: { ...nextState, cursor: end, floor } };
+  return { events, nextState: { ...nextState, cursor, floor, drain: { pageId: pageId!, end } } };
 }
 
 export const newChatThreadTrigger: TriggerDefinition = {
