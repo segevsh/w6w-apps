@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/uscreen",
-  "version": "0.2.0",
-  "description": "Manage Uscreen customers, subscriptions and product access, groups, invoices, offers, content visibility and view analytics, and trigger workflows on new customers and invoices.",
+  "version": "0.3.0",
+  "description": "Manage Uscreen customers, subscriptions and product access, groups, invoices, offers, content visibility and view analytics, and trigger workflows on new customers, invoices, groups, group members, content, customer accesses, offers and playlist items.",
   "license": "MIT",
   "author": {
     "name": "w6w"

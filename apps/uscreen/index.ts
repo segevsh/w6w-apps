@@ -45,6 +45,13 @@ import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newInvoice from "./triggers/new-invoice.ts";
 import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newGroup from "./triggers/new-group.ts";
+import newOrUpdatedGroup from "./triggers/new-or-updated-group.ts";
+import newGroupMember from "./triggers/new-group-member.ts";
+import newContent from "./triggers/new-content.ts";
+import newCustomerAccess from "./triggers/new-customer-access.ts";
+import newOffer from "./triggers/new-offer.ts";
+import newPlaylistItem from "./triggers/new-playlist-item.ts";
 
 export default {
   actions: [
@@ -84,5 +91,16 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newCustomer, newInvoice, newOrUpdatedInvoice],
+  triggers: [
+    newCustomer,
+    newInvoice,
+    newOrUpdatedInvoice,
+    newGroup,
+    newOrUpdatedGroup,
+    newGroupMember,
+    newContent,
+    newCustomerAccess,
+    newOffer,
+    newPlaylistItem,
+  ],
 } satisfies AppDefinition;
