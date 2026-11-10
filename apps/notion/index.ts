@@ -136,6 +136,10 @@ import dataSourceDeleted from "./triggers/data-source-deleted.ts";
 import dataSourceSchemaUpdated from "./triggers/data-source-schema-updated.ts";
 import databaseCreated from "./triggers/database-created.ts";
 import databaseDeleted from "./triggers/database-deleted.ts";
+import fileUploadCompleted from "./triggers/file-upload-completed.ts";
+import fileUploadCreated from "./triggers/file-upload-created.ts";
+import fileUploadExpired from "./triggers/file-upload-expired.ts";
+import fileUploadUploadFailed from "./triggers/file-upload-upload-failed.ts";
 import newAgent from "./triggers/new-agent.ts";
 import newBlock from "./triggers/new-block.ts";
 import newComment from "./triggers/new-comment.ts";
@@ -159,7 +163,11 @@ import pageCreated from "./triggers/page-created.ts";
 import pageDeleted from "./triggers/page-deleted.ts";
 import pageMoved from "./triggers/page-moved.ts";
 import pagePropertiesUpdated from "./triggers/page-properties-updated.ts";
+import pageTranscriptDeleted from "./triggers/page-transcript-deleted.ts";
 import pageUndeleted from "./triggers/page-undeleted.ts";
+import viewCreated from "./triggers/view-created.ts";
+import viewDeleted from "./triggers/view-deleted.ts";
+import viewUpdated from "./triggers/view-updated.ts";
 
 export default {
   actions: [
@@ -302,6 +310,10 @@ export default {
     dataSourceSchemaUpdated,
     databaseCreated,
     databaseDeleted,
+    fileUploadCompleted,
+    fileUploadCreated,
+    fileUploadExpired,
+    fileUploadUploadFailed,
     newAgent,
     newBlock,
     newComment,
@@ -325,6 +337,10 @@ export default {
     pageDeleted,
     pageMoved,
     pagePropertiesUpdated,
+    pageTranscriptDeleted,
     pageUndeleted,
+    viewCreated,
+    viewDeleted,
+    viewUpdated,
   ],
 } satisfies AppDefinition;

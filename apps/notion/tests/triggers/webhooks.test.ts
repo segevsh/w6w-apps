@@ -13,12 +13,20 @@ import dataSourceDeleted from "../../triggers/data-source-deleted.ts";
 import dataSourceSchemaUpdated from "../../triggers/data-source-schema-updated.ts";
 import databaseCreated from "../../triggers/database-created.ts";
 import databaseDeleted from "../../triggers/database-deleted.ts";
+import fileUploadCompleted from "../../triggers/file-upload-completed.ts";
+import fileUploadCreated from "../../triggers/file-upload-created.ts";
+import fileUploadExpired from "../../triggers/file-upload-expired.ts";
+import fileUploadUploadFailed from "../../triggers/file-upload-upload-failed.ts";
 import pageContentUpdated from "../../triggers/page-content-updated.ts";
 import pageCreated from "../../triggers/page-created.ts";
 import pageDeleted from "../../triggers/page-deleted.ts";
 import pageMoved from "../../triggers/page-moved.ts";
 import pagePropertiesUpdated from "../../triggers/page-properties-updated.ts";
+import pageTranscriptDeleted from "../../triggers/page-transcript-deleted.ts";
 import pageUndeleted from "../../triggers/page-undeleted.ts";
+import viewCreated from "../../triggers/view-created.ts";
+import viewDeleted from "../../triggers/view-deleted.ts";
+import viewUpdated from "../../triggers/view-updated.ts";
 
 const SECRET = "test-secret-verification-token";
 const PARAMS = { signingSecret: SECRET };
@@ -74,6 +82,14 @@ const NAMED = [
   [commentCreated, "comment.created"],
   [commentUpdated, "comment.updated"],
   [commentDeleted, "comment.deleted"],
+  [viewCreated, "view.created"],
+  [viewUpdated, "view.updated"],
+  [viewDeleted, "view.deleted"],
+  [fileUploadCreated, "file_upload.created"],
+  [fileUploadCompleted, "file_upload.completed"],
+  [fileUploadExpired, "file_upload.expired"],
+  [fileUploadUploadFailed, "file_upload.upload_failed"],
+  [pageTranscriptDeleted, "page.transcription_block.transcript_deleted"],
 ] as const;
 
 const EXPECTED = (type: string) => ({
@@ -142,15 +158,20 @@ describe("notion webhook triggers (named)", () => {
         );
       });
 
-      test("a flipped signature byte throws without echoing it or the secret", async () => {
+      test("a flipped signature digit (first, middle or last) throws without echoing it or the secret", async () => {
         const body = eventBody(type);
         const good = sign(body);
-        const bad = good.slice(0, -1) + (good.endsWith("a") ? "b" : "a");
-        const err = await assertRejects(() =>
-          ingest(trigger, call({ "x-notion-signature": bad }, body))
-        );
-        assert(err.message.includes("refused"));
-        assert(!err.message.includes(bad) && !err.message.includes(SECRET));
+        // "sha256=" is 7 chars; the hex digest follows. Flip the first, a middle and the last digit.
+        for (const at of [7, 7 + 32, good.length - 1]) {
+          const flipped = good[at] === "a" ? "b" : "a";
+          const bad = good.slice(0, at) + flipped + good.slice(at + 1);
+          assert(bad !== good);
+          const err = await assertRejects(() =>
+            ingest(trigger, call({ "x-notion-signature": bad }, body))
+          );
+          assert(err.message.includes("refused"), `digit ${at}`);
+          assert(!err.message.includes(bad) && !err.message.includes(SECRET));
+        }
       });
 
       test("a missing signature header throws", async () => {
@@ -269,39 +290,83 @@ describe("any-event", () => {
   });
 });
 
-describe("setup handshake (unsigned verification_token)", () => {
+describe("setup handshake (verification_token, signed with the token it carries)", () => {
+  const TOKEN = "test-verification-token";
+  /** The vendor-shaped handshake: compact body, signed with the token it carries. */
+  const VENDOR = `{"verification_token":"${TOKEN}"}`;
+
   test("with the secret still empty, the handshake is delivered as a verification event", async () => {
     for (const trigger of [anyEvent, pageCreated]) {
       for (const params of [{}, { signingSecret: "" }]) {
-        const out = evs(await ingest(trigger, call({}, HANDSHAKE), params));
-        assertEquals(out.length, 1);
-        const event = out[0] as Record<string, unknown>;
-        assertEquals(event.type, "verification");
-        assertEquals(event.verificationToken, "test-verification-token");
-        assertEquals(event.id, null);
+        // Absent header, and the vendor's self-signed header (HMAC of the body keyed by its token).
+        for (const headers of [{}, { "x-notion-signature": sign(HANDSHAKE, TOKEN) }]) {
+          const out = evs(await ingest(trigger, call(headers, HANDSHAKE), params));
+          assertEquals(out.length, 1);
+          const event = out[0] as Record<string, unknown>;
+          assertEquals(event.type, "verification");
+          assertEquals(event.verificationToken, TOKEN);
+          assertEquals(event.id, null);
+        }
       }
     }
   });
 
-  test("once the secret is set, an unsigned handshake is refused", async () => {
-    await assertRejects(
-      () => ingest(anyEvent, call({}, HANDSHAKE)),
-      Error,
-      "header is missing",
-    );
+  test("the vendor-shaped self-signed handshake is delivered (header case and padding ignored)", async () => {
+    const good = sign(VENDOR, TOKEN);
+    for (const header of [good, good.toUpperCase().replace("SHA256=", "sha256="), ` ${good} `]) {
+      const out = evs(
+        await ingest(pageCreated, call({ "X-Notion-Signature": header }, VENDOR), {}),
+      );
+      assertEquals(out.length, 1);
+      assertEquals((out[0] as Record<string, unknown>).verificationToken, TOKEN);
+    }
   });
 
-  test("with the secret empty, a handshake carrying a signature header is refused", async () => {
-    const err = await assertRejects(() =>
-      ingest(anyEvent, call({ "x-notion-signature": sign(HANDSHAKE, "") }, HANDSHAKE), {})
+  test("with the secret empty, a handshake whose signature header is inconsistent is refused", async () => {
+    const good = sign(VENDOR, TOKEN);
+    const flip = (at: number) =>
+      good.slice(0, at) + (good[at] === "a" ? "b" : "a") + good.slice(at + 1);
+    const bads = [
+      sign(VENDOR, ""), // an empty key
+      sign(VENDOR, "another-token"), // a different token
+      sign(`{ "verification_token": "${TOKEN}" }`, TOKEN), // a different body
+      flip(7),
+      flip(7 + 32),
+      flip(good.length - 1),
+      "",
+      "sha256=",
+    ];
+    for (const bad of bads) {
+      const err = await assertRejects(() =>
+        ingest(anyEvent, call({ "x-notion-signature": bad }, VENDOR), {})
+      );
+      assert(/secret/i.test(err.message), err.message);
+      assert(!err.message.includes(TOKEN));
+    }
+  });
+
+  test("once the secret is set, an unsigned or self-signed handshake is never a verification event", async () => {
+    for (const headers of [{}, { "x-notion-signature": sign(VENDOR, TOKEN) }]) {
+      const err = await assertRejects(() => ingest(anyEvent, call(headers, VENDOR)));
+      assert(/refused/.test(err.message), err.message);
+    }
+  });
+
+  test("once the secret is set, the handshake body signed with that secret is an ordinary event body", async () => {
+    // Not a Notion event (no type): the verifier accepts it, the type check then rejects it.
+    await assertRejects(
+      () => ingest(anyEvent, call({ "x-notion-signature": sign(VENDOR) }, VENDOR)),
+      Error,
+      "type",
     );
-    assert(/secret/i.test(err.message));
   });
 
   test("with the secret empty, a body with extra fields is not a handshake", async () => {
     const body = '{ "verification_token": "test-verification-token", "type": "page.created" }';
-    const err = await assertRejects(() => ingest(anyEvent, call({}, body), {}));
-    assert(/secret/i.test(err.message));
+    for (const headers of [{}, { "x-notion-signature": sign(body, TOKEN) }]) {
+      const err = await assertRejects(() => ingest(anyEvent, call(headers, body), {}));
+      assert(/secret/i.test(err.message));
+    }
   });
 
   test("with the secret empty, an empty or non-string token is not a handshake", async () => {
@@ -311,9 +376,61 @@ describe("setup handshake (unsigned verification_token)", () => {
     }
   });
 
+  test("with the secret empty, a non-POST handshake is refused", async () => {
+    await assertRejects(() => ingest(anyEvent, call({}, VENDOR, "GET"), {}), Error, "POST");
+  });
+
   test("the handshake still needs a raw body", async () => {
     const raw = call({}, null);
     raw.body = JSON.parse(HANDSHAKE);
     await assertRejects(() => ingest(anyEvent, raw, {}), Error, "raw body");
+  });
+});
+
+describe("vendor-shaped payloads of the view and file-upload events", () => {
+  const withData = (type: string, entityType: string, data: unknown) =>
+    `{ "id": "e-1", "timestamp": "2026-11-10T09:00:00.000Z", "workspace_id": "ws-1", "workspace_name": "Acme", "subscription_id": "sub-9", "integration_id": "int-3", "type": "${type}", "authors": [], "attempt_number": 2, "api_version": "2025-09-03", "entity": { "id": "ent-1", "type": "${entityType}" }, "data": ${
+      JSON.stringify(data)
+    } }`;
+
+  test("view.updated keeps parent and updated_fields in data", async () => {
+    const data = { parent: { id: "db-1", type: "database" }, updated_fields: ["filter", "sorts"] };
+    const body = withData("view.updated", "view", data);
+    const out = evs(await ingest(viewUpdated, call({ "x-notion-signature": sign(body) }, body)));
+    assertEquals(out.length, 1);
+    const e = out[0] as Record<string, unknown>;
+    assertEquals(e.entityType, "view");
+    assertEquals(e.attemptNumber, 2);
+    assertEquals(e.data, data);
+  });
+
+  test("file_upload.upload_failed keeps the import result in data", async () => {
+    const data = {
+      file_import_result: {
+        type: "error",
+        imported_time: "2026-11-10T09:00:00.000Z",
+        error: {
+          type: "download_error",
+          code: "c",
+          message: "m",
+          parameter: null,
+          status_code: 404,
+        },
+      },
+    };
+    const body = withData("file_upload.upload_failed", "file_upload", data);
+    const out = evs(
+      await ingest(fileUploadUploadFailed, call({ "x-notion-signature": sign(body) }, body)),
+    );
+    assertEquals((out[0] as Record<string, unknown>).entityType, "file_upload");
+    assertEquals((out[0] as Record<string, unknown>).data, data);
+  });
+
+  test("a file_upload event is not delivered by a view trigger", async () => {
+    const body = withData("file_upload.completed", "file_upload", {});
+    assertEquals(
+      evs(await ingest(viewCreated, call({ "x-notion-signature": sign(body) }, body))),
+      [],
+    );
   });
 });

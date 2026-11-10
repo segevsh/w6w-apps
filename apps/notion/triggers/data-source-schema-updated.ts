@@ -16,7 +16,7 @@ export default webhookTrigger({
     "subscriptionId": "29d75c0d-5546-4414-8459-7b7a92f1fc4b",
     "integrationId": "0ef2e755-4912-8096-91c1-00376a88a5ca",
     "entityId": "153104cd-477e-809d-8dc4-ff2d96ae3090",
-    "entityType": "database",
+    "entityType": "data_source",
     "authors": [
       {
         "id": "c7c11cca-1d73-471d-9b6e-bdef51470190",

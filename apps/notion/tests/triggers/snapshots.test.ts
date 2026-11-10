@@ -144,6 +144,23 @@ for (const c of CASES) {
       assert(new URL(m.calls[1].url).searchParams.get("start_cursor") === "cur-2");
     });
 
+    test("an id repeated across pages (a shifting list) is one row, not an error", async () => {
+      const seeded = await c.trigger.poll!(
+        { state: {}, params: c.params } as never,
+        mockCtx([page(c, [c.item("a")])]).ctx,
+      );
+      const m = mockCtx([
+        page(c, [c.item("a"), c.item("b")], "cur-2"),
+        page(c, [c.item("b"), c.item("c")]),
+      ]);
+      const out = await c.trigger.poll!(
+        { state: seeded.nextState, params: c.params } as never,
+        m.ctx,
+      );
+      assertEquals(out.events, [c.item("b"), c.item("c")]);
+      assertEquals(m.calls.length, 2);
+    });
+
     test("a collection larger than the cap fails loudly instead of missing rows", async () => {
       const full = (i: number) => page(c, [c.item(`i${i}`)], `cur-${i + 1}`);
       const m = mockCtx(Array.from({ length: 20 }, (_, i) => full(i)));

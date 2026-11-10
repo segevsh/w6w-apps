@@ -25,13 +25,16 @@ import {
  *        request body>` keyed by the subscription's `verification_token` (D5 (2): a secret-typed
  *        `signingSecret` param). The signature carries no timestamp, so there is no replay window
  *        (Notion retries up to 24 hours). `handleIngest` verifies it BEFORE it parses anything.
- *      - Setup handshake: when a subscription is created Notion POSTs `{"verification_token": …}`
- *        UNSIGNED, and the user must paste that token back into Notion. The one carve-out from
- *        "a signed vendor is never accepted unsigned": while `signingSecret` is still EMPTY, a body
- *        that is exactly `{"verification_token": "<string>"}` is delivered as a single
- *        `verification` event so the user can read the token from the run and paste it into Notion
- *        and into the trigger's Verification Token param. Every other delivery needs the secret.
- *        Once the secret is set, every delivery (handshake included) must be signed.
+ *      - Setup handshake: when a subscription is created Notion POSTs `{"verification_token": …}`,
+ *        signed with the very token it carries (the docs' sample header is that HMAC), and the user
+ *        must paste that token back into Notion. The one carve-out from "a signed vendor is never
+ *        accepted without its secret": while `signingSecret` is still EMPTY, a body that is exactly
+ *        `{"verification_token": "<string>"}` is delivered as a single `verification` event when
+ *        the signature header is absent or equals the HMAC of the body keyed by that token (a
+ *        present but inconsistent header is refused), so the user can read the token from the run
+ *        and paste it into Notion and into the trigger's Verification Token param. Every other
+ *        delivery needs the secret. Once the secret is set, every delivery (handshake included)
+ *        is verified with the configured secret only.
  *
  * 2. Snapshot poll triggers (`snapshotTrigger`) for bounded collections that Notion returns in no
  *    guaranteed order: they walk the wrapped list action's cursor up to `MAX_PAGES` pages and diff
@@ -57,7 +60,7 @@ export interface WebhookState {
   callbackUrl: string;
 }
 
-/** The stored event: one verified delivery (or the unsigned setup `verification` handshake). */
+/** The stored event: one verified delivery (or the setup `verification` handshake). */
 export interface NotionEvent {
   id: string | null;
   type: string;
@@ -126,7 +129,7 @@ function parseJson(body: string): unknown {
   }
 }
 
-/** The unsigned setup body: exactly `{"verification_token": "<non-empty string>"}`. */
+/** The setup handshake body: exactly `{"verification_token": "<non-empty string>"}`. */
 function handshakeToken(body: string): string | null {
   let parsed: unknown;
   try {
@@ -137,6 +140,23 @@ function handshakeToken(body: string): string | null {
   const o = asObject(parsed);
   if (!o || Object.keys(o).length !== 1) return null;
   return str(o.verification_token);
+}
+
+/**
+ * Notion signs the setup handshake with the very token it carries (docs sample header =
+ * HMAC-SHA256 of the body keyed by its own token), so a header may be absent or self-consistent.
+ * A header that is present but does not match is refused. A self-signature over a token the
+ * sender chose proves nothing; the real gate is that the secret param is still empty.
+ */
+async function handshakeHeaderOk(
+  raw: { headers: Record<string, string> },
+  body: string,
+  token: string,
+): Promise<boolean> {
+  const given = header(raw, "x-notion-signature");
+  if (given === undefined) return true;
+  const expected = `sha256=${await hmac("SHA-256", token, body, "hex")}`;
+  return timingSafeEqual(expected, given.trim().toLowerCase());
 }
 
 /** Verify `X-Notion-Signature` over the exact bytes received. Never echoes secret or signature. */
@@ -210,9 +230,9 @@ export function webhookTrigger(
       const body = requireRawBody(raw);
       const configured = params?.signingSecret;
       if (typeof configured !== "string" || configured === "") {
-        // Setup phase: only the unsigned handshake gets through; everything else needs the secret.
+        // Setup phase: only the setup handshake gets through; everything else needs the secret.
         const token = handshakeToken(body);
-        if (token !== null && header(raw, "x-notion-signature") === undefined) {
+        if (token !== null && await handshakeHeaderOk(raw, body, token)) {
           return [{
             ...normalize({ type: "verification" }),
             verificationToken: token,

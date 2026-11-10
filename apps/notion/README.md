@@ -1,6 +1,6 @@
 # Notion
 
-- **Triggers** — 34 (16 webhook, 18 poll)
+- **Triggers** — 42 (24 webhook, 18 poll)
 
 ## Triggers
 
@@ -27,6 +27,14 @@ point the subscription at it and choose the matching event types.
 | `comment-created` — Comment Created | `comment.created` | the event, comment id, page id |
 | `comment-updated` — Comment Edited | `comment.updated` | the event, comment id |
 | `comment-deleted` — Comment Deleted | `comment.deleted` | the event, comment id |
+| `view-created` — View Created | `view.created` | the event, view id, parent, view type |
+| `view-updated` — View Updated | `view.updated` | the event, view id, parent, which parts changed (name, filter, sorts, configuration) |
+| `view-deleted` — View Deleted | `view.deleted` | the event, view id, parent |
+| `file-upload-created` — File Upload Created | `file_upload.created` | the event, file upload id |
+| `file-upload-completed` — File Upload Completed | `file_upload.completed` | the event, file upload id |
+| `file-upload-expired` — File Upload Expired | `file_upload.expired` | the event, file upload id |
+| `file-upload-upload-failed` — File Upload Failed | `file_upload.upload_failed` | the event, file upload id, import result with the error |
+| `page-transcript-deleted` — Page Transcript Deleted | `page.transcription_block.transcript_deleted` | the event, page id, transcription block, transcript id |
 | `any-event` — Any Event | any type, optionally narrowed by the **Events** param (comma-separated, blank = all) | the event; reaches `page.locked`, `page.unlocked`, `database.moved`, `database.undeleted`, `database.content_updated`, `database.schema_updated`, `data_source.moved`, `data_source.undeleted` |
 
 Setup, once per trigger:
@@ -34,11 +42,17 @@ Setup, once per trigger:
 1. Add the trigger to a workflow and copy its callback URL. Leave **Verification Token** empty.
 2. In Notion, open the integration > **Webhooks** > **Create a subscription**, paste the URL and pick
    the event types.
-3. Notion immediately POSTs a one-time `verification_token`. The trigger delivers it as a run whose
-   event has `type: "verification"` and `verificationToken` set. Copy it.
+3. Notion immediately POSTs a one-time `verification_token` (signed with that same token). The
+   trigger delivers it as a run whose event has `type: "verification"` and `verificationToken` set.
+   Copy it. Treat run history as sensitive from here on: the token sits in that run's event, and
+   anyone who can read it can forge deliveries.
 4. Paste it into Notion's **Verify** dialog, and into the trigger's **Verification Token** param.
+   Only trust a token that Notion's Verify dialog accepts: while the param is empty the callback
+   URL is the only gate, so any second `verification` run you did not trigger from Notion is an
+   injection. Do not paste its token anywhere.
 5. From then on every delivery must carry a valid signature. If you need Notion to send a token again
-   (**Resend token**), clear the param first; while it is empty, only that handshake is accepted.
+   (**Resend token**), clear the param first; while it is empty, only that handshake is accepted
+   (a handshake whose signature header does not match its own token is refused).
 
 Trust model: Notion signs each event with `X-Notion-Signature: sha256=<hex>`, an HMAC-SHA256 of the
 exact request body keyed by the verification token. The trigger verifies it (constant-time compare)
@@ -48,7 +62,11 @@ except the setup handshake above. The signature carries no timestamp, so there i
 data source with the matching action. The `database.*` schema/content events are deprecated by
 Notion in API version 2025-09-03 in favour of `data_source.*`. Sources:
 https://developers.notion.com/reference/webhooks and
-https://developers.notion.com/reference/webhooks-events-delivery (verified 2026-11-10).
+https://developers.notion.com/reference/webhooks-events-delivery; the per-event pages (for example
+https://developers.notion.com/reference/webhooks/view-created and
+https://developers.notion.com/reference/webhooks/file-upload-completed) list all 31 events: 23 on
+the delivery page plus `view.*`, `file_upload.*` and `page.transcription_block.transcript_deleted`
+(verified 2026-11-10).
 
 ### Poll triggers
 
@@ -79,7 +97,7 @@ first check only records what exists; nothing fires until something new appears.
 The list-diff triggers read up to 20 pages of 100 rows per check and fail with a clear error beyond
 that. Notion search (`new-or-updated-page`, `-data-source`, `-database`) is indexed and may show a
 change a little after it is made. Sources: https://developers.notion.com/reference/post-search,
-https://developers.notion.com/reference/post-database-query,
+https://developers.notion.com/reference/query-a-data-source,
 https://developers.notion.com/reference/list-file-uploads,
 https://developers.notion.com/reference/query-meeting-notes,
 https://developers.notion.com/reference/notion-agent-apis/query-agents,
