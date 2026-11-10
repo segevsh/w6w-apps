@@ -5,7 +5,7 @@ Create and manage Livestorm events, sessions, registrants and webhooks.
 - **Categories** — video, communication
 - **Auth methods** — apiKey (private API token)
 - **Actions** — 40
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `api.livestorm.co`
 - **Website** — https://livestorm.co
 - **API docs** — https://developers.livestorm.co/reference/get_ping
@@ -202,7 +202,20 @@ at once.
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each newly created event |
 | `new-or-updated-event` — New or Updated Event | Poll | `event-list` | Each event that was created or edited |
+| `new-session` — New Session | Poll | `session-list` | Each session newly created, across all events |
+| `new-or-updated-session` — New or Updated Session | Poll | `session-list` | Each session created or edited, once per edit |
+| `new-session-registrant` — New Session Registrant | Poll | `session-people-list` | Each person who registers for the chosen session (param `sessionId`) |
+| `new-or-updated-session-registrant` — New or Updated Session Registrant | Poll | `session-people-list` | Each registrant of the chosen session who is added or changes (for example attends) |
+| `new-session-question` — New Session Question | Poll | `session-questions-list` | Each question asked in the chosen session (param `sessionId`) |
+| `new-session-recording` — New Session Recording | Poll | `session-recordings-list` | Each recording that becomes available for the chosen session |
+| `new-user` — New User | Poll | `user-list` | Each team member newly added to the workspace |
 
-`GET /events` has no sort parameter, so both triggers are hand-written since-filter polls over the same `event-list` action: each check sends `filter[created_since]` (new) or `filter[updated_since]` (edited) set to the stored cursor minus a 120 s overlap (Unix seconds), pages through the result 0-indexed (`page[number]`, 100 per page, at most 5 pages), and dedupes by id (`id:updated_at` for the edited-record trigger). The first check records the cursor and emits nothing. More than 500 changes between two checks are not all seen. The first check records what exists without firing; later checks emit only unseen items.
+`GET /events`, `/sessions` and `/sessions/{id}/people` have no sort parameter, so those triggers are hand-written since-filter polls over the same list action: each check sends `filter[created_since]` (new) or `filter[updated_since]` (edited) set to the stored cursor minus a 120 s overlap (Unix seconds), pages through the result 0-indexed (`page[number]`, 100 per page) and dedupes by id (`id:updated_at` for the edited-record triggers). The first check records the cursor and a floor (`now`) and emits nothing. `new-event` and `new-or-updated-event` read at most 5 pages per check (more than 500 changes between two checks are not all seen). The session and registrant triggers resume a longer window on the next check (no page is read twice and the cursor only moves once the window is drained), and drop any record stamped before the trigger was switched on. Questions, recordings and users have no sort or since filter: each is a small list read whole and compared check to check, and only added rows fire (a list past 5000 rows is refused rather than compared).
 
-Source: [vendor docs: list events](https://developers.livestorm.co/reference/get_events) (verified 2026-11-10).
+`event-session-list` returns the sessions `new-session` already delivers (the same records, one event at a time).
+
+Not covered, by reason: `people-list` and `event-people-list` (`GET /people` and `/events/{id}/people` take only `filter[email]` and `filter[role]`: no sort and no since filter on an unbounded list — registrants are delivered per session by `new-session-registrant`); `session-chat-messages-list` (live chat stream: no sort or since filter, and a large session passes the 5000-row snapshot ceiling); `webhook-list` and `people-attribute-list` (webhook subscriptions and people-attribute definitions are configuration, not records); `job-tasks-list` (the tasks of one bulk-register job).
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own token makes the request.
+
+Sources: [list events](https://developers.livestorm.co/reference/get_events), [list sessions](https://developers.livestorm.co/reference/get_sessions), [list session people](https://developers.livestorm.co/reference/get_sessions-id-people), [list session questions](https://developers.livestorm.co/reference/get_sessions-id-questions), [list session recordings](https://developers.livestorm.co/reference/get_sessions-id-recordings), [list users](https://developers.livestorm.co/reference/get_users) (verified 2026-11-10).
