@@ -165,7 +165,7 @@ export const newRecordingTrigger: TriggerDefinition = {
     topic: "Weekly sync",
     start_time: "2026-11-09T09:00:00Z",
     recording_count: 2,
-    share_url: "https://example.zoom.us/rec/share/abc",
+    share_url: "https://zoom.us/rec/share/abc",
     recording_files: [],
   },
   minIntervalMs: 300_000,
