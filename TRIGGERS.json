@@ -2332,12 +2332,24 @@
     "path": "apps/datadog",
     "mechanism": "poll",
     "candidates": [
-      "new-log"
+      "new-log",
+      "new-event",
+      "new-monitor",
+      "new-dashboard",
+      "new-downtime",
+      "new-host",
+      "new-user"
     ],
     "pollAction": "log-search",
-    "reason": "shipped poll trigger(s) over list action log-search",
-    "verified": "apps/datadog/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "log-search and event-search newest-first (sort -timestamp); monitors, dashboards, downtimes, hosts and users have no created sort/filter so they are walked and snapshotted (https://docs.datadoghq.com/api/latest/)",
+    "verified": "apps/datadog/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "monitor-search": "new-monitor"
+    },
+    "skipped": {
+      "metric-list": "reference data: a bare list of metric names with no id or timestamp (metrics are queried, not created)"
+    }
   },
   {
     "path": "apps/dbtcloud",
@@ -2400,12 +2412,22 @@
     "path": "apps/deepgram",
     "mechanism": "poll",
     "candidates": [
-      "new-request"
+      "new-request",
+      "new-project",
+      "new-api-key",
+      "new-member",
+      "new-invite",
+      "new-member-scope"
     ],
     "pollAction": "request-list",
-    "reason": "request-list filters by date only (start/end truncate to YYYY-MM-DD) and the OpenAPI documents no order: the trigger reads yesterday and today (UTC) at limit 1000 over up to 5 pages, snapshots ids, and errors loudly at 5000 or more requests across those two days (https://developers.deepgram.com/openapi.json)",
-    "verified": "apps/deepgram/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "request-list filters by date only; management lists (projects, keys, members, invites, member scopes) are unpaginated and snapshotted (https://developers.deepgram.com/openapi.json)",
+    "verified": "apps/deepgram/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "balance-list": "billing balance metric (remaining credit), not a record feed",
+      "model-list": "reference/static data: the model and voice catalogue",
+      "usage-fields-list": "usage analytics dimensions (tags, models, features seen in a period), a report not a record feed"
+    }
   },
   {
     "path": "apps/deepl",
@@ -2499,12 +2521,24 @@
     "path": "apps/digistore24",
     "mechanism": "poll",
     "candidates": [
-      "new-purchase"
+      "new-purchase",
+      "new-transaction",
+      "new-product",
+      "new-voucher",
+      "new-delivery"
     ],
     "pollAction": "list-purchases",
-    "reason": "shipped poll trigger(s) over list action list-purchases",
-    "verified": "apps/digistore24/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "list-purchases and list-transactions newest-first (sort_by=date, sort_order=desc; vendor default is asc); products, vouchers, deliveries are unpaged and snapshotted (https://digistore24.com/api/docs/index.html)",
+    "verified": "apps/digistore24/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-purchases-of-email": "new-purchase"
+    },
+    "skipped": {
+      "list-buyers": "paginated with no sort and no filter (unbounded, unordered; docs listBuyers.yaml); each buyer arrives with their purchase in new-purchase",
+      "list-commissions": "commission amounts per period are a finance report over the same payments new-transaction delivers (docs listCommissions.yaml)",
+      "list-invoices": "invoices of one purchase id (docs listInvoices.yaml), a lookup under a purchase not a feed; the purchase itself is delivered by new-purchase"
+    }
   },
   {
     "path": "apps/digitalocean",
@@ -4784,12 +4818,22 @@
     "path": "apps/hubstaff",
     "mechanism": "poll",
     "candidates": [
-      "new-project"
+      "new-project",
+      "new-client",
+      "new-member",
+      "new-task",
+      "new-team",
+      "new-organization",
+      "new-timesheet"
     ],
     "pollAction": "project-list",
-    "reason": "shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs)",
-    "verified": "apps/hubstaff/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "no list endpoint documents a sort or created-after filter, so each trigger walks every page (page_start_id cursor, 100 per page) and snapshots ids (https://api.hubstaff.com/v2/docs)",
+    "verified": "apps/hubstaff/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "activity-list": "high-volume 10-minute activity telemetry that syncs late from desktop clients; the vendor change feed is /activities/updates, which no action wraps (https://api.hubstaff.com/v2/docs)",
+      "project-activity-list": "same activity telemetry as activity-list, scoped to one project; skipped for the same late-sync and volume reason"
+    }
   },
   {
     "path": "apps/huggingface",
@@ -5108,11 +5152,19 @@
     "mechanism": "poll",
     "candidates": [
       "new-invoice",
-      "new-or-updated-invoice"
+      "new-or-updated-invoice",
+      "new-or-updated-client",
+      "new-or-updated-job",
+      "new-quote",
+      "new-request",
+      "new-visit",
+      "new-product",
+      "new-property",
+      "new-user"
     ],
     "pollAction": "invoice-list",
-    "reason": "invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/)",
-    "verified": "apps/jobber/README.md Triggers section (verified 2026-11-09)",
+    "reason": "invoice, quote, request and visit lists sorted newest first (CREATED_AT / REQUESTED_AT); client and job offer only UPDATED_AT so they are new-or-updated; products, properties, users have no sort and are walked and snapshotted (https://developer.getjobber.com/docs/)",
+    "verified": "apps/jobber/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {

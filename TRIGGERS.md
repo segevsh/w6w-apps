@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2086 triggers, 2145 unaccounted list actions in 492 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -43,12 +43,7 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/braze | 1 | 9 | 8 |
 | apps/close | 1 | 9 | 8 |
 | apps/coingecko | 0 | 8 | 8 |
-| apps/datadog | 1 | 9 | 8 |
-| apps/deepgram | 1 | 9 | 8 |
-| apps/digistore24 | 1 | 9 | 8 |
 | apps/google/google-analytics | 0 | 8 | 8 |
-| apps/hubstaff | 1 | 9 | 8 |
-| apps/jobber | 2 | 9 | 8 |
 | apps/jumpcloud | 1 | 9 | 8 |
 | apps/kustomer | 2 | 9 | 8 |
 | apps/manychat | 1 | 9 | 8 |
@@ -553,9 +548,12 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/contentstack | 6 | 10 | 0 |
 | apps/copper | 19 | 13 | 0 |
 | apps/customerio | 4 | 0 | 0 |
+| apps/datadog | 7 | 9 | 0 |
 | apps/dbtcloud | 11 | 12 | 0 |
 | apps/deel | 8 | 12 | 0 |
+| apps/deepgram | 6 | 9 | 0 |
 | apps/dice | 3 | 0 | 0 |
+| apps/digistore24 | 5 | 9 | 0 |
 | apps/discord | 5 | 5 | 0 |
 | apps/dixa | 7 | 10 | 0 |
 | apps/document360 | 10 | 15 | 0 |
@@ -586,12 +584,14 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/hospitable | 9 | 12 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
+| apps/hubstaff | 7 | 9 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
 | apps/iclosed | 9 | 13 | 0 |
 | apps/insightly | 8 | 4 | 0 |
 | apps/intercom | 17 | 5 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
 | apps/jibble | 10 | 10 | 0 |
+| apps/jobber | 10 | 9 | 0 |
 | apps/kajabi | 18 | 19 | 0 |
 | apps/keap | 17 | 17 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
@@ -890,17 +890,17 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/crisp | 2 | list-conversations | new-conversation, new-or-updated-conversation | apps/crisp/README.md Triggers section (verified 2026-11-09) | hand | since-filter on filter_date_start (additive optional action param); new-conversation keeps created_at in window, dedupe by session_id; updated dedupes by session_id:updated_at |
 | apps/cursor | 1 | members-list | new-member | apps/cursor/README.md Triggers section (verified 2026-11-09) | hand | members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api) |
 | apps/databricks | 0 | catalog-list | job-run-finished | no | survey | AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker. |
-| apps/datadog | 1 | log-search | new-log | apps/datadog/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-search |
+| apps/datadog | 7 | log-search | new-log, new-event, new-monitor, new-dashboard, new-downtime, new-host, new-user | apps/datadog/README.md Triggers section (verified 2026-11-10) | hand | log-search and event-search newest-first (sort -timestamp); monitors, dashboards, downtimes, hosts and users have no created sort/filter so they are walked and snapshotted (https://docs.datadoghq.com/api/latest/) |
 | apps/dbtcloud | 11 | run-list | new-run, new-project, new-or-updated-project, new-job, new-or-updated-job, new-environment, new-environment-variable, new-connection, new-group, new-service-token, new-user | apps/dbtcloud/README.md Triggers section (verified 2026-11-10) | hand | run-list newest-first (order_by=-id) plus snapshot polls over each other list action (returnAll, <=5000 rows); new-or-updated variants on updated_at |
 | apps/deel | 8 | contract-list | new-contract, new-person, new-legal-entity, new-webhook, new-contract-milestone, new-time-off-request, new-timesheet, new-invoice-adjustment | apps/deel/README.md Triggers section (verified 2026-11-10) | hand | contract-list order_direction=desc plus snapshot polls over each other record list (100/page, <=5000 rows); timesheets and invoice adjustments watch a status set (default pending) |
-| apps/deepgram | 1 | request-list | new-request | apps/deepgram/README.md Triggers section (verified 2026-11-09) | hand | request-list filters by date only (start/end truncate to YYYY-MM-DD) and the OpenAPI documents no order: the trigger reads yesterday and today (UTC) at limit 1000 over up to 5 pages, snapshots ids, and errors loudly at 5000 or more requests across those two days (https://developers.deepgram.com/openapi.json) |
+| apps/deepgram | 6 | request-list | new-request, new-project, new-api-key, new-member, new-invite, new-member-scope | apps/deepgram/README.md Triggers section (verified 2026-11-10) | hand | request-list filters by date only; management lists (projects, keys, members, invites, member scopes) are unpaginated and snapshotted (https://developers.deepgram.com/openapi.json) |
 | apps/deepl | 1 | glossary-list | new-glossary | apps/deepl/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/glossaries returns every glossary in one unpaginated response: bounded snapshot, emit added ids (https://developers.deepl.com/api-reference/glossaries) |
 | apps/deputy | 2 | employee-search | new-employee, new-or-updated-employee | apps/deputy/README.md Triggers section (verified 2026-11-09) | hand | QUERY sort Id desc / Modified desc |
 | apps/devin | 2 | session-list | new-session, new-or-updated-session | apps/devin/README.md Triggers section (verified 2026-11-09) | hand | since-filter created_after / updated_after (no sort), dedupe by session_id |
 | apps/dialpad | 1 | call-list | new-call | apps/dialpad/README.md Triggers section (verified 2026-11-09) | hand | call-list is documented reverse-chronological by call start time |
 | apps/dice | 3 | orders-list | new-order, new-return, new-ticket-transfer | apps/dice/README.md Triggers section (verified 2026-11-09) | hand | orders-list/returns-list/ticket-transfers-list each take a documented on-or-after filter (purchasedAfter/returnedAfter/transferredAfter); since-filter poll with id dedupe (https://partners-endpoint.dice.fm/graphql/docs/index.html) |
 | apps/diffbot | 1 | crawl-get | new-crawl-job | apps/diffbot/README.md Triggers section (verified 2026-11-09) | hand | crawl-get with no name lists every crawl/bulk job on the token: small bounded snapshot keyed by job name (https://docs.diffbot.com/reference/) |
-| apps/digistore24 | 1 | list-purchases | new-purchase | apps/digistore24/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-purchases |
+| apps/digistore24 | 5 | list-purchases | new-purchase, new-transaction, new-product, new-voucher, new-delivery | apps/digistore24/README.md Triggers section (verified 2026-11-10) | hand | list-purchases and list-transactions newest-first (sort_by=date, sort_order=desc; vendor default is asc); products, vouchers, deliveries are unpaged and snapshotted (https://digistore24.com/api/docs/index.html) |
 | apps/digitalocean | 1 | domain-record-list | new-domain-record | apps/digitalocean/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly |
 | apps/discord | 5 | list-messages | new-channel, new-guild, new-member, new-message, new-role | apps/discord/README.md Triggers section (verified 2026-11-10) | hand | Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages); servers, channels, roles and members are bounded snapshots via their list actions (no newest-first order or since filter in the HTTP API); Webhook Events are app-level only and need a 204 acknowledgement the w6w ingest route cannot send (https://discord.com/developers/docs/events/webhook-events) |
 | apps/discourse | 1 | topic-list-latest | new-topic | apps/discourse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action topic-list-latest |
@@ -992,7 +992,7 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
 | apps/hotmart | 1 | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
 | apps/housecallpro | 14 | customer-list | new-customer, new-employee, new-estimate, new-or-updated-estimate, new-estimate-option-line-item, new-event, new-or-updated-event, new-invoice, new-job-appointment, new-job-invoice, new-job-line-item, new-job, new-or-updated-job, new-lead | apps/housecallpro/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover operational records; the listed static or derived lists are intentionally skipped. |
-| apps/hubstaff | 1 | project-list | new-project | apps/hubstaff/README.md Triggers section (verified 2026-11-09) | hand | shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs) |
+| apps/hubstaff | 7 | project-list | new-project, new-client, new-member, new-task, new-team, new-organization, new-timesheet | apps/hubstaff/README.md Triggers section (verified 2026-11-10) | hand | no list endpoint documents a sort or created-after filter, so each trigger walks every page (page_start_id cursor, 100 per page) and snapshots ids (https://api.hubstaff.com/v2/docs) |
 | apps/huggingface | 1 | inference-model-list | new-inference-model | apps/huggingface/README.md Triggers section (verified 2026-11-09) | hand | shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api) |
 | apps/hunter | 1 | lead-list | new-lead | apps/hunter/README.md Triggers section (verified 2026-11-09) | hand | Lead list is most recent first and exposes stable IDs. |
 | apps/hyros | 2 | leads-list | new-lead, new-sale | apps/hyros/README.md Triggers section (verified 2026-11-09) | hand | leads-list and sales-list take the documented fromDate (only records whose join date is more recent) with an opaque nextPageId cursor: since-filter + id dedupe; no update stamp, so no new-or-updated (https://jsapi.apiary.io/apis/hyros.apib) |
@@ -1005,7 +1005,7 @@ depth: 682 apps, 2057 triggers, 2185 unaccounted list actions in 497 apps, n8n-p
 | apps/iterable | 1 | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
 | apps/jenkins | 2 | get-job-info | new-build, new-job | apps/jenkins/README.md Triggers section (verified 2026-11-09) | hand | get-job-info exposes the job's builds, sorted by number in the trigger; list-jobs is a whole-root snapshot (https://www.jenkins.io/doc/book/using/remote-access-api/) |
 | apps/jibble | 10 | activity-list | new-activity, new-client, new-group, new-location, new-member, new-or-updated-member, new-or-updated-time-entry, new-project, new-time-entry, new-time-off-request | apps/jibble/README.md Triggers section (verified 2026-11-10) | hand | shape a: $orderby=createdAt\|updatedAt desc on Activity, Project, Client, Location, Group, Person and TimeEntry (https://workspace.prod.jibble.io/v1/$metadata); time-off requests via bounded snapshot of not-yet-ended requests |
-| apps/jobber | 2 | invoice-list | new-invoice, new-or-updated-invoice | apps/jobber/README.md Triggers section (verified 2026-11-09) | hand | invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/) |
+| apps/jobber | 10 | invoice-list | new-invoice, new-or-updated-invoice, new-or-updated-client, new-or-updated-job, new-quote, new-request, new-visit, new-product, new-property, new-user | apps/jobber/README.md Triggers section (verified 2026-11-10) | hand | invoice, quote, request and visit lists sorted newest first (CREATED_AT / REQUESTED_AT); client and job offer only UPDATED_AT so they are new-or-updated; products, properties, users have no sort and are walked and snapshotted (https://developer.getjobber.com/docs/) |
 | apps/jobnimbus | 2 | contact-list | new-contact, new-or-updated-contact | apps/jobnimbus/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x) |
 | apps/jobtread | 1 | list-jobs | new-job | no | hand | shipped poll trigger(s) over list action list-jobs |
 | apps/jumpcloud | 1 | user-list | new-user | apps/jumpcloud/README.md Triggers section (verified 2026-11-09) | hand | user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml) |
