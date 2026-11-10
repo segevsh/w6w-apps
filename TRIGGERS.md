@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 46, manual-webhook: 17, poll: 395, none: 225
+**Totals:** 683 apps — webhook-api: 50, manual-webhook: 17, poll: 400, none: 216
 
-## webhook-api (46)
+## webhook-api (50)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -47,6 +47,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mailerlite | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/mailgun | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
 | apps/mautic | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/mindee | inference.processed | apps/mindee/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll |
+| apps/monday | create_pulse, change_column_value | apps/monday/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: board and item events; existing board/item lists have no documented newest-first order or creation-since filter |
+| apps/murf | dubbing_job.completed | apps/murf/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter |
+| apps/neverbounce | job.completed | apps/neverbounce/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: bulk-job completion callback; job search has no documented newest-first order |
 | apps/onfleet | task-assigned, task-completed, task-created, task-failed, task-started, task-updated | apps/onfleet/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/paypal | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | new-deal | apps/pipedrive/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -83,7 +87,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (395)
+## poll (400)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -318,7 +322,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mixpanel | activity-list | new-activity-list | no | scan | list action activity-list has pagination and order/since params |
 | apps/moco | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/mollie | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
+| apps/moneybird | sales-invoice-list | new-sales-invoice, new-or-updated-sales-invoice | apps/moneybird/README.md Triggers section (verified 2026-11-10) | hand | sales-invoice-list passes the documented created_after/updated_after filters (exclusive, UTC) with a 10-minute overlap and id dedupe (https://developer.moneybird.com/api/sales_invoices); contact-list has no filter param so contacts stay webhook-only |
 | apps/mongodb-atlas | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/moonclerk | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
 | apps/mural | mural-list | new-mural-list | no | scan | list action mural-list has pagination and order/since params |
 | apps/mux | asset-list | new-asset-list | no | scan | list action asset-list has pagination and order/since params |
 | apps/nationbuilder | person-list | new-person-list | no | scan | list action person-list has pagination and order/since params |
@@ -326,11 +332,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/nocodb | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
 | apps/nocrm | lead-get-many | new-lead | apps/nocrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action lead-get-many |
 | apps/notion | get-many-database-pages | new-database-page | apps/notion/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action get-many-database-pages |
+| apps/nutshell | find-leads | new-lead | apps/nutshell/README.md Triggers section (verified 2026-11-10) | hand | Find Leads takes documented $orderBy/$orderDirection/$limit (https://developers-rpc.nutshell.com/detail/class_core.html); trigger reads one id-descending page of 100 with stable lead IDs |
 | apps/odoo | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
+| apps/okta | user-list | new-user, new-or-updated-user | apps/okta/README.md Triggers section (verified 2026-11-10) | hand | user-list passes SCIM search over documented top-level created/lastUpdated (Okta Management OpenAPI listUsers); search is eventually consistent so a 30-minute overlap plus id dedupe is used; group-list exposes only q so groups stay event-hook-only |
 | apps/omnisend | list-contacts | new-contact | apps/omnisend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
 | apps/oncehub | sms-notification-list | new-sms-notification-list | no | scan | list action sms-notification-list has pagination and order/since params |
 | apps/onepagecrm | list-contacts | new-contact | apps/onepagecrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
 | apps/onepassword | item-file-list | new-item-file-list | no | scan | list action item-file-list has pagination and order/since params |
+| apps/onesignal | view-messages | new-message | apps/onesignal/README.md Triggers section (verified 2026-11-10) | hand | view-messages (GET /notifications) is documented 'sorted by queued_at in descending order' (https://documentation.onesignal.com/reference/view-messages); webhook upgrade (delivery/click events) stays queued |
 | apps/outreach | account-list | new-account-list | no | scan | list action account-list has pagination and order/since params |
 | apps/paddle | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
 | apps/pagerduty | incident-list | new-incident | apps/pagerduty/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
@@ -483,7 +492,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (225)
+## none (216)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -599,23 +608,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/microsoft/powerbi |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/mighty-networks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/millionverifier |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mindee |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/mistral |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/monday |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/moneybird |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/moonclerk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/motion |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/msg91 |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/murf |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/netsuite |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/neverbounce |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/newrelic |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/nutshell |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/okta |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/ollama |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/ollama-cloud |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/onesignal |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/onesimpleapi |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/mistral |  | apps/mistral/README.md Triggers section (verified 2026-11-09) | hand | stateless AI inference API; its model list is a capability catalog, not a changing user-record feed |
+| apps/motion |  | apps/motion/README.md Triggers section (verified 2026-11-09) | hand | task and project actions use opaque cursors with no documented creation-time order or since filter |
+| apps/msg91 |  | apps/msg91/README.md Triggers section (verified 2026-11-09) | hand | no fetchable MSG91 webhook documentation found (docs.msg91.com/reference/webhooks 404); existing lists are templates, numbers, analytics and windowed delivery logs, not a stable new-record collection |
+| apps/netsuite |  | apps/netsuite/README.md Triggers section (verified 2026-11-09) | hand | generic record listing accepts arbitrary record types and filtering but has no fixed record schema or documented newest-first ordering for a safe poll |
+| apps/newrelic |  | apps/newrelic/README.md Triggers section (verified 2026-11-09) | hand | NerdGraph entity and issue searches use cursors but existing actions expose no documented newest-first or since-created query |
+| apps/ollama |  | apps/ollama/README.md Triggers section (verified 2026-11-09) | hand | local model listing is server capability state, not a user-record feed with creation ordering |
+| apps/ollama-cloud |  | apps/ollama-cloud/README.md Triggers section (verified 2026-11-09) | hand | hosted model listing is a capability catalog, not a changing user-record feed |
+| apps/onesimpleapi |  | apps/onesimpleapi/README.md Triggers section (verified 2026-11-09) | hand | stateless conversion, generation, lookup, and validation utility API with no account records |
 | apps/ontraport |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/openai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/openrouter |  | no | scan | no newest-first list action found by scan; vendor events not researched |

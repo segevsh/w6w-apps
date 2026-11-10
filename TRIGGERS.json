@@ -4120,12 +4120,14 @@
   },
   {
     "path": "apps/mindee",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "inference.processed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll",
+    "verified": "apps/mindee/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/miro",
@@ -4154,9 +4156,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless AI inference API; its model list is a capability catalog, not a changing user-record feed",
+    "verified": "apps/mistral/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mixmax",
@@ -4204,21 +4206,27 @@
   },
   {
     "path": "apps/monday",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "create_pulse",
+      "change_column_value"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: board and item events; existing board/item lists have no documented newest-first order or creation-since filter",
+    "verified": "apps/monday/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/moneybird",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-sales-invoice",
+      "new-or-updated-sales-invoice"
+    ],
+    "pollAction": "sales-invoice-list",
+    "reason": "sales-invoice-list passes the documented created_after/updated_after filters (exclusive, UTC) with a 10-minute overlap and id dedupe (https://developer.moneybird.com/api/sales_invoices); contact-list has no filter param so contacts stay webhook-only",
+    "verified": "apps/moneybird/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/mongodb-atlas",
@@ -4233,30 +4241,32 @@
   },
   {
     "path": "apps/moonclerk",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer"
+    ],
+    "pollAction": "customer-list",
+    "reason": "Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication",
+    "verified": "apps/moonclerk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/motion",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "task and project actions use opaque cursors with no documented creation-time order or since filter",
+    "verified": "apps/motion/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/msg91",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "no fetchable MSG91 webhook documentation found (docs.msg91.com/reference/webhooks 404); existing lists are templates, numbers, analytics and windowed delivery logs, not a stable new-record collection",
+    "verified": "apps/msg91/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mural",
@@ -4271,12 +4281,14 @@
   },
   {
     "path": "apps/murf",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "dubbing_job.completed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter",
+    "verified": "apps/murf/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mux",
@@ -4318,27 +4330,29 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "generic record listing accepts arbitrary record types and filtering but has no fixed record schema or documented newest-first ordering for a safe poll",
+    "verified": "apps/netsuite/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/neverbounce",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "job.completed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: bulk-job completion callback; job search has no documented newest-first order",
+    "verified": "apps/neverbounce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/newrelic",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "NerdGraph entity and issue searches use cursors but existing actions expose no documented newest-first or since-created query",
+    "verified": "apps/newrelic/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ninox",
@@ -4386,12 +4400,14 @@
   },
   {
     "path": "apps/nutshell",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": "find-leads",
+    "reason": "Find Leads takes documented $orderBy/$orderDirection/$limit (https://developers-rpc.nutshell.com/detail/class_core.html); trigger reads one id-descending page of 100 with stable lead IDs",
+    "verified": "apps/nutshell/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/odoo",
@@ -4406,30 +4422,33 @@
   },
   {
     "path": "apps/okta",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-user",
+      "new-or-updated-user"
+    ],
+    "pollAction": "user-list",
+    "reason": "user-list passes SCIM search over documented top-level created/lastUpdated (Okta Management OpenAPI listUsers); search is eventually consistent so a 30-minute overlap plus id dedupe is used; group-list exposes only q so groups stay event-hook-only",
+    "verified": "apps/okta/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/ollama",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "local model listing is server capability state, not a user-record feed with creation ordering",
+    "verified": "apps/ollama/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ollama-cloud",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "hosted model listing is a capability catalog, not a changing user-record feed",
+    "verified": "apps/ollama-cloud/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/omnisend",
@@ -4477,21 +4496,23 @@
   },
   {
     "path": "apps/onesignal",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "view-messages",
+    "reason": "view-messages (GET /notifications) is documented 'sorted by queued_at in descending order' (https://documentation.onesignal.com/reference/view-messages); webhook upgrade (delivery/click events) stays queued",
+    "verified": "apps/onesignal/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand"
   },
   {
     "path": "apps/onesimpleapi",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless conversion, generation, lookup, and validation utility API with no account records",
+    "verified": "apps/onesimpleapi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/onfleet",
