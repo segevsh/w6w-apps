@@ -417,7 +417,7 @@ Deno.test("Triggers: line — one line, counted from the fixture's poll trigger,
     l.startsWith("Triggers:")
   );
   assertEquals(trig.length, 1, lines.join("\n"));
-  assertEquals(trig[0][0], "Triggers: 1 apps (0 webhook, 1 poll)");
+  assertEquals(trig[0][0], "Triggers: 1 apps (0 webhook, 1 poll), 1 triggers");
   assertEquals(
     trig[0][1],
     lines.length - 2,
@@ -435,6 +435,7 @@ Deno.test("--json keeps per-app keys and adds `_triggers` separately", async () 
     webhookApps: 0,
     pollApps: 1,
     bothApps: 0,
+    triggers: 1,
   });
   assert(Array.isArray(r["../_tools/_fixtures/trigger-poll"]));
 });
