@@ -35,15 +35,14 @@ export interface TriggerParams {
 }
 
 /**
- * Every repository webhook event key Bitbucket Cloud documents (event payloads page, read
- * 2026-11-10: https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/).
+ * Every event key Bitbucket's own registry lists for the repository subject (`GET
+ * https://api.bitbucket.org/2.0/hook_events/repository`, read 2026-11-10). `repo:transfer` and
+ * `repo:deleted` are workspace-webhook events only, so a repository webhook must not subscribe them.
  */
 export const EVENT_KEYS = [
   "repo:push",
   "repo:fork",
   "repo:updated",
-  "repo:transfer",
-  "repo:deleted",
   "repo:commit_comment_created",
   "repo:commit_status_created",
   "repo:commit_status_updated",
@@ -51,6 +50,7 @@ export const EVENT_KEYS = [
   "issue:updated",
   "issue:comment_created",
   "pullrequest:created",
+  "pullrequest:push",
   "pullrequest:updated",
   "pullrequest:approved",
   "pullrequest:unapproved",
@@ -63,6 +63,7 @@ export const EVENT_KEYS = [
   "pullrequest:comment_reopened",
   "pullrequest:changes_request_created",
   "pullrequest:changes_request_removed",
+  "pipeline:span_created",
 ];
 
 /** The user's comma-separated event list (empty = every key) → validated keys. */

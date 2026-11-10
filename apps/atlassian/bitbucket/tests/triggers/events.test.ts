@@ -14,6 +14,33 @@ import repoUpdated from "../../triggers/repo-updated.ts";
 import commitStatusCreated from "../../triggers/commit-status-created.ts";
 import commitStatusUpdated from "../../triggers/commit-status-updated.ts";
 
+// Verbatim `values[].event` of GET https://api.bitbucket.org/2.0/hook_events/repository (2026-11-10).
+const REGISTRY_REPOSITORY_EVENTS = [
+  "repo:push",
+  "repo:fork",
+  "repo:updated",
+  "repo:commit_comment_created",
+  "repo:commit_status_created",
+  "repo:commit_status_updated",
+  "pullrequest:created",
+  "pullrequest:push",
+  "pullrequest:updated",
+  "pullrequest:approved",
+  "pullrequest:unapproved",
+  "pullrequest:changes_request_created",
+  "pullrequest:changes_request_removed",
+  "pullrequest:fulfilled",
+  "pullrequest:rejected",
+  "pullrequest:comment_created",
+  "pullrequest:comment_updated",
+  "pullrequest:comment_deleted",
+  "pullrequest:comment_resolved",
+  "pullrequest:comment_reopened",
+  "issue:created",
+  "issue:updated",
+  "issue:comment_created",
+  "pipeline:span_created",
+];
 const SECRET = "test-secret";
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
@@ -187,6 +214,10 @@ test("any-event: onSubscribe registers the chosen keys, or all 24 when empty; un
   const events = JSON.parse(all.calls[1].body!).events as string[];
   assertEquals(events.length, 24);
   assert(events.includes("pullrequest:changes_request_removed"));
+  assert(events.includes("pullrequest:push") && events.includes("pipeline:span_created"));
+  assert(!events.includes("repo:deleted") && !events.includes("repo:transfer"));
+  // Copy of GET /2.0/hook_events/repository (2026-11-10): the default must equal it exactly.
+  assertEquals([...events].sort(), [...REGISTRY_REPOSITORY_EVENTS].sort());
   assertEquals(state.event, events.join(","));
   const bad = mockCtx();
   await assertRejects(

@@ -9,31 +9,35 @@ const MAX_PAGES = 50;
  * The workspaces the connected user belongs to are a small bounded collection: `GET
  * /2.0/user/workspaces` pages with `page` / `pagelen` (maximum 100) and a `next` link, and it
  * documents no sort or created-since filter (https://developer.atlassian.com/cloud/bitbucket/rest/intro/,
- * verified 2026-11-10). Every check reads all pages through `list-workspaces` and diffs the uuids
- * (added only); the first check only records them.
+ * verified 2026-11-10). Every check reads all pages through `list-workspaces` and diffs the workspace uuids
+ * (added only; each item is a `workspace_access` record `{ type, administrator, workspace: { uuid, slug, ... } }`); the first check only records them.
  */
 const trigger: TriggerDefinition = {
   key: "new-workspace",
   title: "New Workspace",
   description: "The run gets each workspace the connected Bitbucket user newly belongs to.",
   output: [
-    { key: "uuid", type: "string", label: "Workspace UUID" },
-    { key: "slug", type: "string", label: "Slug" },
-    { key: "name", type: "string", label: "Name" },
-    { key: "created_on", type: "string", label: "Created on" },
+    { key: "type", type: "string", label: "Type" },
+    { key: "administrator", type: "boolean", label: "User is administrator" },
+    { key: "workspace", type: "object", label: "Workspace (uuid, slug, name, ...)" },
   ],
   sample: {
-    uuid: "{7c3b8a1e-0000-4000-8000-0123456789ab}",
-    slug: "teamsinspace",
-    name: "Teams in Space",
-    created_on: "2026-11-10T09:00:00.000000+00:00",
+    type: "workspace_access",
+    administrator: true,
+    workspace: {
+      type: "workspace",
+      uuid: "{7c3b8a1e-0000-4000-8000-0123456789ab}",
+      slug: "teamsinspace",
+      name: "Teams in Space",
+    },
   },
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
-    const workspaces: Array<{ uuid?: unknown }> = [];
+    type Item = { uuid?: unknown; workspace?: { uuid?: unknown } };
+    const workspaces: Item[] = [];
     for (let page = 1; page <= MAX_PAGES; page++) {
       const out = await listWorkspaces.execute({ page, pagelen: PAGELEN }, ctx) as {
-        values?: Array<{ uuid?: unknown }>;
+        values?: Item[];
         next?: string;
       };
       workspaces.push(...(Array.isArray(out?.values) ? out.values : []));
@@ -48,7 +52,13 @@ const trigger: TriggerDefinition = {
     }
     const { events, nextState } = await pollSnapshot({
       state,
-      rows: workspaces.map((w) => ({ key: String(w.uuid ?? ""), values: w })),
+      rows: workspaces.map((w) => {
+        const uuid = w.workspace?.uuid ?? w.uuid;
+        if (typeof uuid !== "string" || uuid === "") {
+          throw new Error("Bitbucket returned a workspace without a uuid; refusing to snapshot it");
+        }
+        return { key: uuid, values: w };
+      }),
       emit: { added: true, updated: false, removed: false },
     });
     return { events: events.map((change) => change.values), nextState };

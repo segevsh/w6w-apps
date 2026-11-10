@@ -34,7 +34,7 @@ deactivated. The credential needs the webhook scope and repository admin access.
 | `repo-updated` — Repository Updated | webhook | `repo:updated` | the repository and the changes |
 | `commit-status-created` — Build Status Created | webhook | `repo:commit_status_created` | the commit status |
 | `commit-status-updated` — Build Status Updated | webhook | `repo:commit_status_updated` | the commit status |
-| `any-event` — Any Event | webhook | the `events` you choose out of all 24 documented keys (all when empty) | the event key and the payload |
+| `any-event` — Any Event | webhook | the `events` you choose out of all 24 registry keys (all when empty) | the event key and the payload |
 | `new-repository` — New Repository | poll (5 min) | `list-repositories` with `sort=-created_on` for the chosen `workspace` | each newly created repository |
 | `new-or-updated-repository` — New or Updated Repository | poll (5 min) | `list-repositories` with `sort=-updated_on` | each repository created or updated (a push moves `updated_on`) |
 | `new-workspace` — New Workspace | poll (5 min) | `list-workspaces` (`/user/workspaces`, whole set diffed) | each workspace the user newly belongs to |
@@ -50,14 +50,14 @@ signature, a wrong one, or no secret on record is refused and starts no run. Bit
 no signed timestamp, so a captured delivery is replayable; the per-subscription secret and
 callback URL limit who could capture one.
 
-**Events.** Bitbucket documents 24 repository event keys: `repo:push`, `repo:fork`, `repo:updated`,
-`repo:transfer`, `repo:deleted`, `repo:commit_comment_created`, `repo:commit_status_created`,
+**Events.** Bitbucket's registry (`GET /2.0/hook_events/repository`) lists 24 repository event keys: `repo:push`, `repo:fork`, `repo:updated`,
+`repo:commit_comment_created`, `repo:commit_status_created`,
 `repo:commit_status_updated`, `issue:created`, `issue:updated`, `issue:comment_created`,
-`pullrequest:created`, `pullrequest:updated`, `pullrequest:approved`, `pullrequest:unapproved`,
+`pullrequest:created`, `pullrequest:push`, `pullrequest:updated`, `pullrequest:approved`, `pullrequest:unapproved`,
 `pullrequest:fulfilled`, `pullrequest:rejected`, `pullrequest:comment_created`,
 `pullrequest:comment_updated`, `pullrequest:comment_deleted`, `pullrequest:comment_resolved`,
-`pullrequest:comment_reopened`, `pullrequest:changes_request_created` and
-`pullrequest:changes_request_removed`. The named triggers above cover the ones people build on;
+`pullrequest:comment_reopened`, `pullrequest:changes_request_created`,
+`pullrequest:changes_request_removed` and `pipeline:span_created`. (`repo:transfer` and `repo:deleted` exist only for workspace webhooks, which this app does not manage.) The named triggers above cover the ones people build on;
 **Any Event** reaches all of them: its `events` param (comma-separated, empty = all) is the list the
 webhook is registered for, and anything else Bitbucket sends is acknowledged without a run.
 Workspace-level webhooks (`create-workspace-hook`) are not used by the triggers: each trigger

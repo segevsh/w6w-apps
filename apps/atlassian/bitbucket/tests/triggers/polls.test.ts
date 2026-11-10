@@ -79,7 +79,11 @@ test("repository polls refuse a missing workspace before any request", async () 
 });
 
 // ---- new-workspace: bounded snapshot over /user/workspaces ----------------------------------------
-const ws = (uuid: string) => ({ uuid, slug: uuid });
+const ws = (uuid: string) => ({
+  type: "workspace_access",
+  administrator: false,
+  workspace: { type: "workspace", uuid, slug: uuid },
+});
 test("new-workspace: seeds, emits the added workspace only, idempotent, literal request", async () => {
   const seed = mockCtx([page([ws("a")])]);
   const seeded = await newWorkspace.poll!({ params: {}, subscriptionId: "s", state: {} }, seed.ctx);
@@ -111,4 +115,30 @@ test("new-workspace: follows next links and fails loudly past 50 pages", async (
     message = (e as Error).message;
   }
   assertEquals(message.includes("more than 5000 workspaces"), true);
+});
+
+test("new-workspace: a user in two workspaces seeds fine and a third is emitted (vendor workspace_access shape)", async () => {
+  const seed = await newWorkspace.poll!(
+    { params: {}, subscriptionId: "s", state: {} },
+    mockCtx([page([ws("a"), ws("b")])]).ctx,
+  );
+  assertEquals(seed.events, []);
+  const next = await newWorkspace.poll!(
+    { params: {}, subscriptionId: "s", state: seed.nextState },
+    mockCtx([page([ws("a"), ws("b"), ws("c")])]).ctx,
+  );
+  assertEquals(next.events, [ws("c")]);
+});
+
+test("new-workspace: an item with no workspace uuid is refused, not keyed to an empty string", async () => {
+  let message = "";
+  try {
+    await newWorkspace.poll!(
+      { params: {}, subscriptionId: "s", state: {} },
+      mockCtx([page([{ type: "workspace_access", administrator: true }])]).ctx,
+    );
+  } catch (e) {
+    message = (e as Error).message;
+  }
+  assertEquals(message.includes("without a uuid"), true);
 });
