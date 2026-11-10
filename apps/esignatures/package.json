@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/esignatures",
   "version": "0.3.0",
-  "description": "Send contracts for e-signature from a template, manage signers and content, and track signing on eSignatures.com, with signed webhook triggers for contract and signer events and polls for new templates and collaborators.",
+  "description": "Send contracts for e-signature from a template, manage signers and content, and track signing on eSignatures.com, with signed webhook triggers for contract events and polls for new templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -18,7 +18,6 @@ const trigger: TriggerDefinition = {
   output: [
     { key: "id", type: "number", label: "Form ID" },
     { key: "name", type: "string", label: "Name" },
-    { key: "url", type: "string", label: "Live form URL" },
     { key: "active", type: "boolean", label: "Active" },
     { key: "created", type: "string", label: "Created" },
     { key: "updated", type: "string", label: "Last updated" },
@@ -27,7 +26,6 @@ const trigger: TriggerDefinition = {
   sample: {
     id: 1234567,
     name: "Contact us",
-    url: "https://example.formstack.com/forms/contact_us",
     active: true,
     created: "2026-11-09 12:00:00",
     updated: "2026-11-09 12:00:00",

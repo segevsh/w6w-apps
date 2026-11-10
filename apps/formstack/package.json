@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/formstack",
   "version": "0.3.0",
-  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions — on the V2025 API. Triggers fire on each new form submission (webhook, or by polling the submission list) and on each new form or folder (polls).",
+  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions on the V2025 API. Triggers: new submission (webhook or poll), new form, new folder.",
   "license": "MIT",
   "author": {
     "name": "w6w"
