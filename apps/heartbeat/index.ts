@@ -108,6 +108,17 @@ import eventCreated from "./triggers/event-created.ts";
 import eventRsvp from "./triggers/event-rsvp.ts";
 import courseCompleted from "./triggers/course-completed.ts";
 import documentCreated from "./triggers/document-created.ts";
+import mention from "./triggers/mention.ts";
+import directMessage from "./triggers/direct-message.ts";
+import abandonedInvitation from "./triggers/abandoned-invitation.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newChannelCategory from "./triggers/new-channel-category.ts";
+import newGroup from "./triggers/new-group.ts";
+import newCourse from "./triggers/new-course.ts";
+import newInvitation from "./triggers/new-invitation.ts";
+import newVideo from "./triggers/new-video.ts";
+import newDirectMessage from "./triggers/new-direct-message.ts";
 
 export default {
   actions: [
@@ -188,6 +199,17 @@ export default {
     eventRsvp,
     courseCompleted,
     documentCreated,
+    mention,
+    directMessage,
+    abandonedInvitation,
+    anyEvent,
+    newChannel,
+    newChannelCategory,
+    newGroup,
+    newCourse,
+    newInvitation,
+    newVideo,
+    newDirectMessage,
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
