@@ -10,7 +10,7 @@ import { parseTopicList, type TriggerState } from "../../lib/triggers.ts";
 
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
 const HOST = "https://api.example.test";
-const SECRET = "shpss_0123456789abcdef0123456789abcdef";
+const SECRET = "test-shopify-shared-secret";
 
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
