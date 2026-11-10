@@ -111,6 +111,18 @@ for (const { name, t, params, path } of TABLE) {
     }
     assert(err instanceof Error && err.message.includes("2000 or more"));
   });
+
+  test(`${name}: an existing record that is renamed is not a new one`, async () => {
+    const seeded = await t.poll!(
+      input(params),
+      mockConnectedCtx([{ body: { items: [rec(1)] } }]).ctx,
+    );
+    const r = await t.poll!(
+      input(params, seeded.nextState),
+      mockConnectedCtx([{ body: { items: [{ id: 1, name: "renamed" }] } }]).ctx,
+    );
+    assertEquals(r.events, []);
+  });
 }
 
 test("new-coursework: no course chosen → refused before any request", async () => {

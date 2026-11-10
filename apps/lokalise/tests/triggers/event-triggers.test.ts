@@ -130,7 +130,8 @@ const CASES: Case[] = [
     name: "translation-proofread (single)",
     t: translationProofread,
     event: "project.translation.proofread",
-    extra: `"translation" : { "id":84835169, "value":"Hi", "is_proofread": true }`,
+    extra:
+      `"translation" : { "id":84835169, "value":"Hi", "is_proofread": true }, "language":{"id":597, "iso":"en"}, "key":{"id":16307701, "name":"test.title"}`,
     record: { id: 84835169, value: "Hi", is_proofread: true },
     other: "project.translation.updated",
   },
@@ -138,7 +139,8 @@ const CASES: Case[] = [
     name: "translation-proofread (bulk)",
     t: translationProofread,
     event: "project.translations.proofread",
-    extra: `"translations" : [ { "id":1, "is_proofread": false } ]`,
+    extra:
+      `"translations" : [ { "id":1, "is_proofread": false } ], "language":{"id":597, "iso":"en"}, "key":{"id":16307701, "name":"test.title"}`,
     record: [{ id: 1, is_proofread: false }],
     other: "project.translation.updated",
   },

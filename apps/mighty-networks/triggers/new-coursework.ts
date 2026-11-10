@@ -37,7 +37,7 @@ const newCoursework: TriggerDefinition<{ spaceId: number }> = {
       position: 1,
     },
   },
-  minIntervalMs: 300_000,
+  minIntervalMs: 3_600_000,
   poll({ state, params }, ctx) {
     const spaceId = Number(params?.spaceId);
     if (!Number.isInteger(spaceId) || spaceId < 1) {

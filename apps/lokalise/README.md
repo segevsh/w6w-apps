@@ -56,7 +56,7 @@ around that core content, plus **contributors** (who can translate what), **comm
 
 **Trust model.** Lokalise does not sign requests. It sends the webhook's secret in the `X-Secret` header of every delivery; the trigger refuses a delivery whose stored secret is unset, whose header is missing, or that does not match (constant-time compare), before it parses the body. The secret proves the sender knows it; it does not bind the event data, and a captured delivery could be replayed, so keep the callback URL private. Lokalise also publishes the IPs its webhooks come from (listed in the webhook guide) if you want to restrict the source at your edge.
 
-`new-project` has no webhook counterpart (Lokalise sends no project-created event; `project.deleted` is the only project-level one), so it polls `GET /projects` — the projects a token reaches are one bounded page (`limit` up to 5000) and each check diffs it against the last. It reports projects, never edits or removals.
+`new-project` has no webhook counterpart (Lokalise sends no project-created event), so it polls `GET /projects` — the projects a token reaches are one bounded page (`limit` up to 5000) and each check diffs it against the last. It reports projects, never edits or removals.
 
 Not covered as triggers: `language-list-system` (Lokalise's static catalogue of languages), `team-list` (the teams the token's user belongs to: account set-up data) and `webhook-list` (the project's own webhook subscriptions: configuration, not content). The key, translation, comment, contributor, language, file and task lists are delivered by the webhook triggers above.
 

@@ -18,7 +18,7 @@ const newTag: TriggerDefinition = {
     key: "777",
     values: { id: 777, title: "VIP", description: "Top members", color: "#ff8800" },
   },
-  minIntervalMs: 300_000,
+  minIntervalMs: 3_600_000,
   poll({ state }, ctx) {
     return snapshotPoll({
       state,

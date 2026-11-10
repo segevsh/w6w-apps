@@ -24,7 +24,7 @@ const newSpace: TriggerDefinition = {
       updated_at: "2026-11-10T10:30:00Z",
     },
   },
-  minIntervalMs: 300_000,
+  minIntervalMs: 3_600_000,
   poll({ state }, ctx) {
     return snapshotPoll({
       state,

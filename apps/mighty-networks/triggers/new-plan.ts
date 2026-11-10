@@ -25,7 +25,7 @@ const newPlan: TriggerDefinition = {
       type: "subscription",
     },
   },
-  minIntervalMs: 300_000,
+  minIntervalMs: 3_600_000,
   poll({ state }, ctx) {
     return snapshotPoll({
       state,

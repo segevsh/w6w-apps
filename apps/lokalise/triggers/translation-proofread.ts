@@ -8,6 +8,7 @@ const trigger = webhookTrigger({
     "Fires when a translation is marked or unmarked as reviewed in a Lokalise project, including in bulk. The run gets the event, project, branch, user, time and the translation (value, reviewed flag) or list.",
   subscribeTo: ["project.translation.proofread"],
   accept: ["project.translation.proofread", "project.translations.proofread"],
+  recordFrom: ["translation", "translations"],
   sample: {
     event: "project.translation.proofread",
     projectId: "sample-project-id",
