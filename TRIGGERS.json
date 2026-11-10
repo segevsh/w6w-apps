@@ -7467,9 +7467,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless validation and credit-usage API: no changing record feed (https://www.zerobounce.net/docs/)",
+    "verified": "apps/zerobounce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/bigin",
@@ -7497,30 +7497,36 @@
   },
   {
     "path": "apps/zoho/zoho-analytics",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-workspace"
+    ],
+    "pollAction": "workspace-list-owned",
+    "reason": "owned workspaces are an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/analytics/api/v2/metadata-api/owned-workspace.html)",
+    "verified": "apps/zoho/zoho-analytics/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-bookings",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-workspace"
+    ],
+    "pollAction": "workspace-list",
+    "reason": "workspace-list returns the bounded account workspace collection; additions are snapshotted (https://www.zoho.com/bookings/help/api/v1/fetch-workspaces.html)",
+    "verified": "apps/zoho/zoho-bookings/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-calendar",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-calendar"
+    ],
+    "pollAction": "calendar-list",
+    "reason": "calendar-list is an unpaginated account collection (category defaults to all); additions are snapshotted (https://www.zoho.com/calendar/help/api/get-calendar-list.html)",
+    "verified": "apps/zoho/zoho-calendar/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-campaigns",
@@ -7546,12 +7552,14 @@
   },
   {
     "path": "apps/zoho/zoho-creator",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-application"
+    ],
+    "pollAction": "application-list",
+    "reason": "applications metadata is an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/creator/help/api/v2/get-applications.html)",
+    "verified": "apps/zoho/zoho-creator/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-inventory",
@@ -7567,21 +7575,26 @@
   },
   {
     "path": "apps/zoho/zoho-invoice",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/invoice/api/v3/contacts/)",
+    "verified": "apps/zoho/zoho-invoice/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-people",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-record"
+    ],
+    "pollAction": "record-list",
+    "reason": "record-list documents modifiedtime (ms) since-filter with sIndex/limit<=200 paging; since-window poll with resume position and seed floor, formLinkName is a trigger param; no new-record trigger because AddedTime has no time zone (https://www.zoho.com/people/api/bulk-records.html)",
+    "verified": "apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-projects",
@@ -7629,21 +7642,26 @@
   },
   {
     "path": "apps/zoho/zoho-workdrive",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-team-member"
+    ],
+    "pollAction": "team-member-list",
+    "reason": "Get Team Members has no paging parameters, so the roster is one bounded request; additions are snapshotted; team folders not watched because their list pages without a documented cap (https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html)",
+    "verified": "apps/zoho/zoho-workdrive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zohobooks",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/books/api/v3/contacts/)",
+    "verified": "apps/zoho/zohobooks/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zohodesk",
@@ -7669,21 +7687,25 @@
   },
   {
     "path": "apps/zoom",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-recording"
+    ],
+    "pollAction": "recording-get-many",
+    "reason": "recording-get-many takes a documented yyyy-mm-dd from/to UTC window (max one month) with next_page_token paging (docs do not say whether `to` is inclusive; their default window is today to tomorrow, so `to` is tomorrow's UTC date); since-window poll with resume position and seed floor (https://developers.zoom.us/docs/api/meetings/); webhook offering recorded in the webhooks file",
+    "verified": "apps/zoom/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zulip",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "get-messages",
+    "reason": "get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages)",
+    "verified": "apps/zulip/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zuora",

@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 66, manual-webhook: 29, poll: 479, none: 109
+**Totals:** 683 apps — webhook-api: 66, manual-webhook: 29, poll: 489, none: 99
 
 ## webhook-api (66)
 
@@ -115,7 +115,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wiza | list-finished, reveal-finished | apps/wiza/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 
-## poll (479)
+## poll (489)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -589,17 +589,27 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zeplin | list-screens | new-screen | apps/zeplin/README.md Triggers section (verified 2026-11-09) | hand | screens documents limit/offset and sort=created without a direction, so no order is assumed: project screens read in full and snapshot-diffed; webhook upgrade queued (https://docs.zeplin.dev/reference/getprojectscreens.md) |
 | apps/zoho/bigin | contact-list | new-contact, new-or-updated-contact | apps/zoho/bigin/README.md Triggers section (verified 2026-11-09) | hand | sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records |
 | apps/zoho/zoho | contact-list | new-contact, new-or-updated-contact | apps/zoho/zoho/README.md Triggers section (verified 2026-11-09) | hand | sort_by id/Created_Time/Modified_Time with sort_order=desc documented on get-records |
+| apps/zoho/zoho-analytics | workspace-list-owned | new-workspace | apps/zoho/zoho-analytics/README.md Triggers section (verified 2026-11-09) | hand | owned workspaces are an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/analytics/api/v2/metadata-api/owned-workspace.html) |
+| apps/zoho/zoho-bookings | workspace-list | new-workspace | apps/zoho/zoho-bookings/README.md Triggers section (verified 2026-11-09) | hand | workspace-list returns the bounded account workspace collection; additions are snapshotted (https://www.zoho.com/bookings/help/api/v1/fetch-workspaces.html) |
+| apps/zoho/zoho-calendar | calendar-list | new-calendar | apps/zoho/zoho-calendar/README.md Triggers section (verified 2026-11-09) | hand | calendar-list is an unpaginated account collection (category defaults to all); additions are snapshotted (https://www.zoho.com/calendar/help/api/get-calendar-list.html) |
 | apps/zoho/zoho-campaigns | campaign-list-recent | new-campaign | apps/zoho/zoho-campaigns/README.md Triggers section (verified 2026-11-09) | hand | recentcampaigns lists the most recently created campaigns (bounded page of 20, id-deduped by campaign_key) |
 | apps/zoho/zoho-cliq | chat-list | new-chat | apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-09) | hand | chat-list has modified_after/modified_before filters: since-filter poll with seed floor and resumable drain |
+| apps/zoho/zoho-creator | application-list | new-application | apps/zoho/zoho-creator/README.md Triggers section (verified 2026-11-09) | hand | applications metadata is an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/creator/help/api/v2/get-applications.html) |
 | apps/zoho/zoho-inventory | item-list | new-item, new-or-updated-item | apps/zoho/zoho-inventory/README.md Triggers section (verified 2026-11-09) | hand | item-list gained optional sort_column/sort_order; items doc documents sort_column created_time/last_modified_time and sort_order D (https://www.zoho.com/inventory/api/v1/items/); contact-list documents no sort direction and salesorder-list only page/per_page, so they stay without triggers |
+| apps/zoho/zoho-invoice | contact-list | new-contact, new-or-updated-contact | apps/zoho/zoho-invoice/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/invoice/api/v3/contacts/) |
+| apps/zoho/zoho-people | record-list | new-or-updated-record | apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-09) | hand | record-list documents modifiedtime (ms) since-filter with sIndex/limit<=200 paging; since-window poll with resume position and seed floor, formLinkName is a trigger param; no new-record trigger because AddedTime has no time zone (https://www.zoho.com/people/api/bulk-records.html) |
 | apps/zoho/zoho-recruit | candidate-list | new-candidate, new-or-updated-candidate | apps/zoho/zoho-recruit/README.md Triggers section (verified 2026-11-09) | hand | sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records |
 | apps/zoho/zoho-sheet | workbook-list | new-workbook, new-or-updated-workbook | apps/zoho/zoho-sheet/README.md Triggers section (verified 2026-11-09) | hand | workbook.list sort_option recently_created/recently_modified documented |
 | apps/zoho/zoho-sign | request-list | new-request | apps/zoho/zoho-sign/README.md Triggers section (verified 2026-11-09) | hand | page_context sort_column=created_time, sort_order=DESC documented; no modified sort column |
+| apps/zoho/zoho-workdrive | team-member-list | new-team-member | apps/zoho/zoho-workdrive/README.md Triggers section (verified 2026-11-09) | hand | Get Team Members has no paging parameters, so the roster is one bounded request; additions are snapshotted; team folders not watched because their list pages without a documented cap (https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html) |
+| apps/zoho/zohobooks | contact-list | new-contact, new-or-updated-contact | apps/zoho/zohobooks/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/books/api/v3/contacts/) |
 | apps/zoho/zohodesk | contact-list | new-contact | apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-09) | hand | contacts sortBy=-createdTime documented; list items carry no modified stamp |
 | apps/zoho/zohomail | message-list | new-message | apps/zoho/zohomail/README.md Triggers section (verified 2026-11-09) | hand | messages/view sortBy=date, sortorder=false (newest first) documented |
+| apps/zoom | recording-get-many | new-recording | apps/zoom/README.md Triggers section (verified 2026-11-09) | hand | recording-get-many takes a documented yyyy-mm-dd from/to UTC window (max one month) with next_page_token paging (docs do not say whether `to` is inclusive; their default window is today to tomorrow, so `to` is tomorrow's UTC date); since-window poll with resume position and seed floor (https://developers.zoom.us/docs/api/meetings/); webhook offering recorded in the webhooks file |
+| apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (109)
+## none (99)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -700,15 +710,5 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woodpecker | prospect-list | apps/woodpecker/README.md Triggers section (verified 2026-11-09) | hand | prospect-list/prospect-search have sort and diff (changed-since) but the reference is script-rendered and no creation stamp or prospect update field could be confirmed (https://developers.woodpecker.co/) |
 | apps/workday |  | apps/workday/README.md Triggers section (verified 2026-11-09) | hand | collection actions are tenant-specific offset-paginated reports whose vendor docs sit behind the tenant login, so no created/updated filter, sort or bounded size can be cited (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html) |
 | apps/workiz |  | apps/workiz/README.md Triggers section (verified 2026-11-09) | hand | lead-list is ordered and windowed by the scheduled LeadDateTime (start_date until today), not creation, so a lead scheduled outside the window never appears and no created-ordered feed exists (http://developer.workiz.com/api.json) |
-| apps/zerobounce |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-analytics |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-bookings |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-calendar |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-creator |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-invoice |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zoho-people |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/zerobounce |  | apps/zerobounce/README.md Triggers section (verified 2026-11-09) | hand | stateless validation and credit-usage API: no changing record feed (https://www.zerobounce.net/docs/) |
 | apps/zoho/zoho-projects |  | no | hand | issue-list needs a caller-selected portal and project and its sortBy option has no direction; the V3 reference (https://projects.zoho.com/api-docs) is script-rendered and does not expose the issues sort/criteria syntax to verify; project-list/task-list (sortBy DESC(created_time) in lib/params.ts) re-checked, not verifiable against the script-rendered docs |
-| apps/zoho/zoho-workdrive |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoho/zohobooks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zoom |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/zulip |  | no | scan | no newest-first list action found by scan; vendor events not researched |
