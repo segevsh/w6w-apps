@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/flodesk",
-  "version": "0.3.0",
-  "description": "Manage Flodesk subscribers, segments, workflows, custom fields and webhooks via the Flodesk API v1, and trigger workflows on new segments and on subscriber events.",
+  "version": "0.4.0",
+  "description": "Manage Flodesk subscribers, segments, workflows, custom fields and webhooks via the Flodesk API v1, and trigger workflows on new segments, new workflows and on subscriber events (including an any-event trigger).",
   "license": "MIT",
   "author": {
     "name": "w6w"
