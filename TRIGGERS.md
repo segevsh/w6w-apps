@@ -8,11 +8,11 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 66, manual-webhook: 35, poll: 481, none: 100
+**Totals:** 682 apps — webhook-api: 66, manual-webhook: 36, poll: 480, none: 100
 
 ## Depth
 
-depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1623 triggers, 2787 unaccounted list actions in 562 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -446,7 +446,6 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/beeminder | 1 | 3 | 2 |
 | apps/bitrix24 | 1 | 3 | 2 |
 | apps/bloomerang | 1 | 3 | 2 |
-| apps/box | 2 | 2 | 2 |
 | apps/campaignmonitor | 1 | 2 | 2 |
 | apps/canva | 1 | 3 | 2 |
 | apps/circleci | 1 | 3 | 2 |
@@ -466,7 +465,6 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/fullenrich | 0 | 2 | 2 |
 | apps/gcs | 0 | 2 | 2 |
 | apps/giphy | 0 | 2 | 2 |
-| apps/google/google-drive | 1 | 3 | 2 |
 | apps/google/google-maps | 0 | 2 | 2 |
 | apps/gotify | 1 | 3 | 2 |
 | apps/grafana | 1 | 3 | 2 |
@@ -525,7 +523,6 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/deepl | 1 | 2 | 1 |
 | apps/deepseek | 0 | 1 | 1 |
 | apps/documenso | 1 | 1 | 1 |
-| apps/dropbox/dropbox | 1 | 2 | 1 |
 | apps/economic | 1 | 1 | 1 |
 | apps/elastic | 1 | 2 | 1 |
 | apps/expensify | 1 | 2 | 1 |
@@ -596,6 +593,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bannerbear | 11 | 12 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
+| apps/box | 20 | 2 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
 | apps/clickup | 20 | 5 | 0 |
@@ -605,6 +603,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/discord | 5 | 5 | 0 |
 | apps/document360 | 10 | 15 | 0 |
 | apps/drata | 13 | 14 | 0 |
+| apps/dropbox/dropbox | 2 | 2 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
@@ -612,6 +611,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
+| apps/google/google-drive | 5 | 3 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
 | apps/gusto | 15 | 14 | 0 |
 | apps/hibob | 7 | 13 | 0 |
@@ -694,7 +694,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/asana | 9 | any-event, new-comment, new-project, new-task, new-user, project-deleted, project-updated, task-deleted, task-updated | apps/asana/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/bitbucket | 7 | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/trello | 21 | any-event, board-member-added, board-updated, card-created, card-deleted, card-member-added, card-moved, card-updated, check-item-created, check-item-state-updated, checklist-added, comment-added, comment-updated, label-added-to-card, label-created, label-deleted, label-removed-from-card, label-updated, list-created, list-updated, new-card-in-list | apps/atlassian/trello/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
-| apps/box | 2 | activity, file-uploaded | apps/box/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/box | 20 | file-uploaded, file-trashed, file-deleted, file-restored, file-moved, file-copied, file-renamed, folder-created, folder-renamed, folder-moved, folder-copied, folder-trashed, folder-deleted, folder-restored, shared-link-created, shared-link-updated, shared-link-deleted, new-folder-item, new-or-updated-search-result, activity | apps/box/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks registered through the vendor API (one trigger per file/folder/shared-link event, plus Item Activity for the rest), and polls over list-folder-items and search |
 | apps/brevo | 1 | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brex | 1 | event | apps/brex/README.md Triggers section (verified 2026-11-10) | hand | POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param |
 | apps/cal | 3 | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -755,7 +755,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
 | apps/zendesk/zendesk | 12 | new-ticket, ticket-status-changed, ticket-comment-added, ticket-deleted, ticket-priority-changed, ticket-assignee-changed, new-user, user-deleted, user-details-changed, new-organization, organization-deleted, any-event | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed event-subscription webhooks registered through the Webhooks API (X-Zendesk-Webhook-Signature, HMAC-SHA256 over timestamp+body, signing secret read from the API); list actions are covered by the created-event webhooks |
 
-## manual-webhook (35)
+## manual-webhook (36)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -765,6 +765,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/clearout | 3 | email-verifier-bulk-completed, email-finder-bulk-completed, form-guard-email-validated | apps/clearout/README.md Triggers section (verified 2026-11-10) | hand | webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window |
 | apps/cognitoforms | 3 | entry-submitted, entry-updated, entry-deleted | apps/cognitoforms/README.md Triggers section (verified 2026-11-10) | hand | per-form Post JSON Data to a Website endpoints (submit, update, delete) set in the form builder; Cognito documents no signature, so the callback URL is the secret and the README says so (https://www.cognitoforms.com/support/66/data-integration/webhooks) |
 | apps/customerio | 4 | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/dropbox/dropbox | 2 | new-file, files-changed | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual webhook (X-Dropbox-Signature, set up in the App Console) plus a poll over list-folder on one named folder capped at 600 entries |
 | apps/esignatures | 5 | contract-event, contract-sent, contract-signed, signer-signed, signer-declined | apps/esignatures/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp). |
 | apps/formspark | 1 | new-submission | apps/formspark/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook set per form in the dashboard (no webhook API); signing is optional at Formspark so the trigger requires it: Formspark-Signature v1= hex HMAC-SHA256 of '<Formspark-Timestamp>.<raw body>' under the pasted secret, 5-minute window. |
 | apps/highlevel | 4 | contact-created, opportunity-created, appointment-created, inbound-message | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); no poll: contact search has no order or since filter |
@@ -795,7 +796,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/zoom | 22 | new-recording, new-meeting, new-webinar, new-user, meeting-created, meeting-updated, meeting-deleted, meeting-started, meeting-ended, meeting-registration-created, webinar-created, webinar-updated, webinar-deleted, webinar-started, webinar-ended, user-created, user-updated, user-deleted, recording-completed, recording-deleted, recording-trashed, any-event | apps/zoom/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook triggers (Marketplace event subscription, Secret Token) plus polls over recording-get-many (date window), meeting-get-many, webinar-get-many and user-get-many (bounded snapshots); recording.deleted and recording.trashed have named triggers; group.* events are reachable through any-event |
 
-## poll (481)
+## poll (480)
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
@@ -913,7 +914,6 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/donorbox | 1 | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
 | apps/drata | 13 | event-list | new-asset, new-control, new-device, new-event, new-evidence, new-monitoring-test, new-personnel, new-policy, new-risk, new-risk-register, new-user, new-vendor, new-workspace | apps/drata/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=createdAt, sortDir=DESC, documented on each v2 list endpoint) for the main record lists plus the since-filter event poll. |
 | apps/drip | 1 | list-subscribers | new-subscriber | apps/drip/README.md Triggers section (verified 2026-11-09) | hand | list-subscribers takes documented subscribed_after (created after) filter; since-filter poll with id dedupe (https://developer.drip.com/#list-all-subscribers) |
-| apps/dropbox/dropbox | 1 | list-folder | new-file | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-09) | hand | list-folder on one named, non-recursive folder capped at 600 entries (fails loudly above): snapshot, emit added ids (https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder) |
 | apps/dropbox/dropbox-sign | 1 | signature-request-list | new-signature-request | apps/dropbox/dropbox-sign/README.md Triggers section (verified 2026-11-09) | hand | New Signature Request polls signature-request-list with the documented search filter created:[yesterday TO today] (UTC days) and dedupes by signature_request_id; sent/viewed/signed/declined callback events also exist (queued as an upgrade). |
 | apps/dub | 1 | customer-list | new-customer | apps/dub/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/duda | 1 | list-sites | new-site | apps/duda/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-sites |
@@ -966,7 +966,7 @@ depth: 682 apps, 1600 triggers, 2792 unaccounted list actions in 565 apps, n8n-p
 | apps/google/google-business-profile | 1 | list-questions | new-question | apps/google/google-business-profile/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-questions |
 | apps/google/google-calendar | 1 | list-events | event-changed | apps/google/google-calendar/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
 | apps/google/google-contacts | 1 | list-contact-groups | new-contact-group | apps/google/google-contacts/README.md Triggers section (verified 2026-11-09) | hand | Contact groups page of 200 (fits the kit's seen window) is polled; order undocumented. |
-| apps/google/google-drive | 1 | file-list | new-file | apps/google/google-drive/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action file-list |
+| apps/google/google-drive | 5 | file-list | new-file, new-or-updated-file, new-folder, new-or-updated-folder, new-shared-drive | apps/google/google-drive/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over file-list (createdTime/modifiedTime desc) and drive-list; no webhook because Drive push channels carry no data and have no automatic renewal (https://developers.google.com/workspace/drive/api/guides/push) |
 | apps/google/google-forms | 2 | list-forms | new-form, new-or-updated-form | apps/google/google-forms/README.md Triggers section (verified 2026-11-09) | hand | Drive forms are ordered by created or modified time. |
 | apps/google/google-meet | 1 | list-conference-records | new-conference-record | apps/google/google-meet/README.md Triggers section (verified 2026-11-09) | hand | conference records are documented newest-started-first |
 | apps/google/google-sheets | 3 | sheet-read | row-added, row-added-or-updated, row-updated | apps/google/google-sheets/README.md Triggers section (verified 2026-11-09) | hand | poll sheet-read, diff rows against seeded snapshot |
