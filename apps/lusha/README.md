@@ -1,12 +1,24 @@
 # Lusha
 
-Triggers: not shipped — webhook candidate queued for a webhook node: prospect and company signal subscriptions (https://docs.lusha.com).
-
 B2B contact and company data: find people and companies, reveal emails and phone numbers, prospect
 against an ideal customer profile, find lookalikes, read buying signals and subscribe webhooks.
 Built against the **v3** API (`https://api.lusha.com`), verified 2026-10-06 against the OpenAPI
 document at `docs.lusha.com/openapi.json` (`docs.lusha.com/llms.txt` lists it) and live
 unauthenticated probes.
+
+## Triggers
+
+1 webhook trigger (API-registered, HMAC-signed).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `signal-received` — Signal Received | webhook (API-registered, signed) | a signal (promotion, job change, company news ...) for a subscribed contact or company | signal type, entity type and id, subscription id, signal time, credits charged, the signal data |
+
+**Setup.** Give the `entityType` (`contact` or `company`) and up to 25 comma-separated `entityIds`; optionally narrow `signalTypes` (the Signal Type List actions list them). Subscribing registers the callback URL with `POST /api/subscriptions` (one Lusha subscription per id) and keeps the created ids; unsubscribing removes them with `POST /api/subscriptions/delete` (a subscription Lusha reports `NOT_FOUND` counts as deleted). If Lusha creates only some of the subscriptions, the ones it created are removed again and the subscribe fails. Lusha signs with your **account webhook secret**: create it with `POST /api/account/secret/regenerate` (Lusha shows it once; there is no action for it here), and paste it into the trigger's `signingSecret` param. A delivery costs Lusha credits (`creditsCharged` in the payload), each signal once.
+
+**Trust model.** Every delivery carries `X-Lusha-Signature` (hex HMAC-SHA256) and `X-Lusha-Timestamp`. The trigger refuses a delivery whose secret is unset, whose headers are missing, whose timestamp is more than five minutes from now, or whose signature over `timestamp + "." + the exact received body` does not match (constant-time compare), before it parses the body. Lusha documents the signed text as `JSON.stringify(payload)`; the host verifies the received text itself, so a body re-serialised anywhere in between will fail. The signature binds the body, so tampered data is refused; an identical delivery replayed inside the five-minute window is not detected (use the delivery `id` to de-duplicate downstream). Lusha requires an acknowledgement body `{ received: true, timestamp, webhookId }`; the trigger answers with it.
+
+Docs (verified 2026-11-10): https://docs.lusha.com/v2/webhooks/overview.md, https://docs.lusha.com/v2/webhooks/manage-subscriptions.md and https://docs.lusha.com/v2/webhooks/security.md
 
 ## Auth
 
