@@ -81,6 +81,15 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
 import newMembership from "./triggers/new-membership.ts";
+import messageDeleted from "./triggers/message-deleted.ts";
+import membershipUpdated from "./triggers/membership-updated.ts";
+import membershipDeleted from "./triggers/membership-deleted.ts";
+import roomCreated from "./triggers/room-created.ts";
+import roomUpdated from "./triggers/room-updated.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newRoom from "./triggers/new-room.ts";
+import newTeam from "./triggers/new-team.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
 
 export default {
   actions: [
@@ -127,6 +136,18 @@ export default {
     listPeople,
   ],
   auth: [oauth2],
-  triggers: [newMessage, newMembership],
+  triggers: [
+    newMessage,
+    newMembership,
+    messageDeleted,
+    membershipUpdated,
+    membershipDeleted,
+    roomCreated,
+    roomUpdated,
+    anyEvent,
+    newRoom,
+    newTeam,
+    newTeamMember,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
