@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sentry",
-  "version": "0.2.0",
-  "description": "Triage Sentry issues, read events, manage projects, releases and deploys, and trigger workflows on new issues.",
+  "version": "0.3.0",
+  "description": "Triage Sentry issues, read events, manage projects, releases and deploys, and trigger workflows on new issues, releases, deploys, projects, teams, members and organizations.",
   "license": "MIT",
   "author": {
     "name": "w6w"

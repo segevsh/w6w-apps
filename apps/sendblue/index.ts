@@ -47,7 +47,11 @@
  * Connection always uses the primary key pair.
  */
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
 import newMessage from "./triggers/new-message.ts";
+import newSeat from "./triggers/new-seat.ts";
+import newVerification from "./triggers/new-verification.ts";
+import newVerifiedContact from "./triggers/new-verified-contact.ts";
 import apiKeys from "./auth/api-keys.ts";
 
 import messageSend from "./actions/message-send.ts";
@@ -175,7 +179,7 @@ export default {
   ],
   // API Key + Secret only. Sendblue publishes no OAuth surface for third-party
   // integrations — the two-header credential pair is the whole story.
-  triggers: [newMessage],
+  triggers: [newMessage, newContact, newSeat, newVerification, newVerifiedContact],
   auth: [apiKeys],
   healthChecks: [service, quota, lines],
 } satisfies AppDefinition;

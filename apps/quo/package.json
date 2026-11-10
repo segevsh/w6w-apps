@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/quo",
-  "version": "0.2.0",
-  "description": "Send and read texts, manage calls, contacts and tasks, and subscribe to webhooks on the Quo (formerly OpenPhone) business phone system, with polling triggers for new or updated conversations.",
+  "version": "0.3.0",
+  "description": "Send and read texts, manage calls, contacts and tasks, and subscribe to webhooks on the Quo (formerly OpenPhone) business phone system, with polling triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://www.quo.com/docs/mdx/api-reference/introduction"
     ],
-    "longDescription": "Quo (rebranded from OpenPhone in 2026 — same product and API, `openphone.com` now redirects to `quo.com`) is a business phone system: shared numbers, calling, texting, voicemail, contacts and tasks for a whole workspace.\n\nThis app covers Quo's full public REST API v1: phone numbers, sending and listing text messages, listing and reading calls (plus their AI-generated summaries, transcripts, voicemails and recordings), reading and managing contacts and their custom fields, managing the shared inbox (conversations: list and mark done/open/read), a task manager (create, update, complete, reopen, assign, due dates, link to a conversation), workspace users, and the beta webhook API for message/call/call-summary/call-transcript event subscriptions.\n\nAuthentication is a single per-workspace API key sent as a raw `Authorization` header — Quo's own docs are explicit that there is no `Bearer` prefix.\n\nPolling triggers fire a workflow for new or updated conversations.",
+    "longDescription": "Quo (rebranded from OpenPhone in 2026 — same product and API, `openphone.com` now redirects to `quo.com`) is a business phone system: shared numbers, calling, texting, voicemail, contacts and tasks for a whole workspace.\n\nThis app covers Quo's full public REST API v1: phone numbers, sending and listing text messages, listing and reading calls (plus their AI-generated summaries, transcripts, voicemails and recordings), reading and managing contacts and their custom fields, managing the shared inbox (conversations: list and mark done/open/read), a task manager (create, update, complete, reopen, assign, due dates, link to a conversation), workspace users, and the beta webhook API for message/call/call-summary/call-transcript event subscriptions.\n\nAuthentication is a single per-workspace API key sent as a raw `Authorization` header — Quo's own docs are explicit that there is no `Bearer` prefix.\n\nPolling triggers fire a workflow for new or updated conversations, new calls and messages (for a chosen Quo number and participant), new users and new phone numbers.",
     "categories": [
       "communication",
       "crm"

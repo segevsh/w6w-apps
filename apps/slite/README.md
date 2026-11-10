@@ -138,4 +138,10 @@ a new event. There is **no separate `new-note` trigger**: Slite documents no cre
 `km-note-list` takes only review-state/owner/channel/recency filters with no sort, so a pure
 "created" feed is not available from an existing list action.
 
-Vendor documentation: https://developers.slite.com/reference/listnotes (verified 2026-11-09).
+Other list actions are accounted for as follows (verified 2026-11-10):
+
+- `note-search` and `note-children-list` return the same notes as `note-list`, so `new-or-updated-note` delivers them (its `parentNoteId` param limits it to one parent's notes).
+- `user-search` and `group-search` require a non-empty `query` ([search users](https://developers.slite.com/reference/searchusers), [search groups](https://developers.slite.com/reference/searchgroups)), so the whole directory cannot be listed and a trigger would need a guessed search term.
+- `km-note-list`, `km-public-note-list`, `km-inactive-note-list` and `km-empty-note-list` are knowledge-management reports (review state, inactivity, emptiness) with no sort or date order ([example](https://developers.slite.com/reference/listnotesforknowledgemanagement)), not a feed of records.
+
+Vendor documentation: https://developers.slite.com/reference/listnotes (verified 2026-11-10).
