@@ -20,7 +20,7 @@
  * Deliberately absent: Jira Server / Data Center (n8n's `JiraSoftwareServerApi`
  * — a different, self-hosted host the static allowlist cannot cover),
  * attachments (multipart upload, which the sandbox's `ctx.fetch` is not for),
- * and the webhook trigger.
+ * and webhook registration through the API (the webhook triggers are manual-webhook receivers).
  */
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
@@ -48,6 +48,19 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
 import newIssue from "./triggers/new-issue.ts";
+import issueCreatedEvent from "./triggers/issue-created.ts";
+import issueUpdatedEvent from "./triggers/issue-updated.ts";
+import issueDeletedEvent from "./triggers/issue-deleted.ts";
+import commentCreatedEvent from "./triggers/comment-created.ts";
+import commentUpdatedEvent from "./triggers/comment-updated.ts";
+import commentDeletedEvent from "./triggers/comment-deleted.ts";
+import projectCreatedEvent from "./triggers/project-created.ts";
+import projectUpdatedEvent from "./triggers/project-updated.ts";
+import projectDeletedEvent from "./triggers/project-deleted.ts";
+import userCreatedEvent from "./triggers/user-created.ts";
+import userUpdatedEvent from "./triggers/user-updated.ts";
+import userDeletedEvent from "./triggers/user-deleted.ts";
+import anyEventEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -73,5 +86,20 @@ export default {
   ],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota, site],
-  triggers: [newIssue],
+  triggers: [
+    newIssue,
+    issueCreatedEvent,
+    issueUpdatedEvent,
+    issueDeletedEvent,
+    commentCreatedEvent,
+    commentUpdatedEvent,
+    commentDeletedEvent,
+    projectCreatedEvent,
+    projectUpdatedEvent,
+    projectDeletedEvent,
+    userCreatedEvent,
+    userUpdatedEvent,
+    userDeletedEvent,
+    anyEventEvent,
+  ],
 } satisfies AppDefinition;
