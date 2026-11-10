@@ -33,6 +33,10 @@ export default sinceTrigger<{ channelId: string }>({
   // `since` returns everything in one response (no page/per_page), so never ask for a second page.
   more: () => false,
   idOf: (item) => String((item as Post).id ?? ""),
+  tsOf: (item) => {
+    const at = (item as Post).create_at;
+    return typeof at === "number" ? at : undefined;
+  },
   params: [{ key: "channelId", label: "Channel ID", type: "string", required: true }],
   output: [
     { key: "id", type: "string", label: "Post ID" },

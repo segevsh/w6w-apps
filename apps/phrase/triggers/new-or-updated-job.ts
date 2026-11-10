@@ -10,6 +10,10 @@ export default sinceFilterTrigger<Job, { projectId: string }>({
   description: "The run gets each job in the chosen project that was created or updated.",
   params: jobTriggerParams,
   load: jobsSince(jobList as unknown as ActionDefinition),
+  tsOf: (job) => {
+    const ms = Date.parse(String(job.updated_at ?? ""));
+    return Number.isNaN(ms) ? undefined : ms;
+  },
   idOf: (job) => `${job.id ?? ""}:${job.updated_at ?? ""}`,
   output: [
     { key: "id", type: "string", label: "Job ID" },

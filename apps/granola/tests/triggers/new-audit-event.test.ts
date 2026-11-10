@@ -4,8 +4,8 @@ import { mockCtx } from "../_helpers.ts";
 import trigger, { clock } from "../../triggers/new-audit-event.ts";
 
 const params = {};
-const A = { id: "evt-a" };
-const B = { id: "evt-b" };
+const A = { id: "evt-a", occurred_at: "2026-11-09T11:00:00Z" };
+const B = { id: "evt-b", occurred_at: "2026-11-09T12:02:00Z" };
 const ctxFor = (items: unknown[]) => {
   const r = [{ body: { events: items, hasMore: false } }];
   return mockCtx(r);

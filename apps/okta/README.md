@@ -130,3 +130,7 @@ forever.
 
 Researched and endpoint-verified 2026-07-31 against Okta's own developer documentation and the
 n8n `Okta` node. Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+## Trigger floor assumption
+
+The new-user and new-or-updated-user triggers continue a large window with `sortBy`/`sortOrder=desc` on the search endpoint and a `<field> le` filter; this is from Okta's docs and has not been verified against a live org.

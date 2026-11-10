@@ -7,16 +7,14 @@ test("new-lead seeds, emits, retries, and sends the createdFrom since-filter", a
   const realNow = clock.now;
   clock.now = () => Date.parse("2026-11-10T12:00:00.000Z");
   try {
-    const old = { id: "old" }, fresh = { id: "fresh" };
+    const old = { id: "old", createdAt: "2026-11-10T11:00:00Z" };
+    const fresh = { id: "fresh", createdAt: "2026-11-10T12:30:00Z" };
     const input = (state: unknown) => ({ params: { listId: 7 }, state }) as never;
-    const seed = mockCtx([{ body: { items: [old] } }]);
-    const seeded = await trigger.poll!(input({}), seed.ctx);
+    const seeded = await trigger.poll!(input({}), mockCtx([]).ctx);
     assertEquals(seeded.events, []);
     assertEquals(seeded.nextState.seeded, true);
-    const result = await trigger.poll!(
-      input(seeded.nextState),
-      mockCtx([{ body: { items: [fresh, old] } }]).ctx,
-    );
+    const seed = mockCtx([{ body: { items: [fresh, old] } }]);
+    const result = await trigger.poll!(input(seeded.nextState), seed.ctx);
     assertEquals(result.events, [fresh]);
     assertEquals(
       await trigger.poll!(
@@ -55,7 +53,13 @@ test("new-lead persists the cursor and pages the whole window", async () => {
     assertEquals(result.nextState.cursor, Date.parse("2026-11-10T13:00:00.000Z"));
     assertEquals(second.calls.map((c) => jsonBody(c)), [
       { listId: 7, createdFrom: "2026-11-10T11:58:00.000Z", limit: 100, offset: 0 },
-      { listId: 7, createdFrom: "2026-11-10T11:58:00.000Z", limit: 100, offset: 100 },
+      {
+        listId: 7,
+        createdFrom: "2026-11-10T11:58:00.000Z",
+        createdTo: "2026-11-10T13:00:00.000Z",
+        limit: 100,
+        offset: 100,
+      },
     ]);
   } finally {
     clock.now = realNow;

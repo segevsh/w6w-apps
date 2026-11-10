@@ -1,9 +1,13 @@
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import type { ActionDefinition, TriggerDefinition } from "@w6w/types";
 import transcriptionList from "../actions/transcription-list.ts";
 
 /** Re-read this much before the cursor so a record stamped just before the last check is not lost. */
 const OVERLAP_MS = 120_000;
+
+/** The list holds at most 100 jobs a page; five pages bound one check, the rest resumes next check. */
+const PAGE_SIZE = 100;
+const MAX_PAGES = 5;
 
 type Item = Record<string, unknown>;
 
@@ -13,31 +17,39 @@ const trigger: TriggerDefinition = {
   description: "The run gets each pre-recorded transcription job created since the last check.",
   minIntervalMs: 300_000,
 
-  async poll({ state, params }, ctx) {
-    const prev = (state ?? {}) as { cursor?: unknown };
-    const cursor = typeof prev.cursor === "number" ? prev.cursor : undefined;
-    const since = (cursor ?? Date.now()) - OVERLAP_MS;
-    const result = await (transcriptionList as unknown as ActionDefinition).execute(
-      {
-        ...(params as Record<string, unknown>),
-        limit: 100,
-        offset: 0,
-        afterDate: new Date(since).toISOString(),
-      },
-      ctx,
-    );
-    const items = ((result as { items?: unknown[] }).items ?? []) as Item[];
-    const idOf = (i: Item) => String(i.id ?? "");
-    const stampOf = (i: Item): number => Date.parse(String(i.created_at ?? ""));
-    const { events, nextState } = await pollNewItems<Item>({
+  poll({ state, params }, ctx) {
+    return pollWindow<Item, number>({
       state,
-      fetchPage: () => Promise.resolve({ items }),
-      idOf,
+      now: Date.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      seenWindow: 1000,
+      idOf: (i) => String(i.id ?? ""),
+      tsOf: (i) => {
+        const ms = Date.parse(String(i.created_at ?? ""));
+        return Number.isNaN(ms) ? undefined : ms;
+      },
+      async load(since, offset, until) {
+        // Continuation pages are bounded by the window start so arrivals cannot shift the offset.
+        const result = await (transcriptionList as unknown as ActionDefinition).execute(
+          {
+            ...(params as Record<string, unknown>),
+            limit: PAGE_SIZE,
+            offset: offset ?? 0,
+            afterDate: new Date(since).toISOString(),
+            ...(offset === undefined ? {} : { beforeDate: new Date(until).toISOString() }),
+          },
+          ctx,
+        );
+        const r = result as { items?: unknown[]; next?: unknown };
+        const items = (r.items ?? []) as Item[];
+        return {
+          items,
+          next: r.next && items.length >= PAGE_SIZE ? (offset ?? 0) + PAGE_SIZE : undefined,
+        };
+      },
     });
-    // The cursor only moves to a stamp that was actually emitted.
-    const stamps = events.map(stampOf).filter((n) => Number.isFinite(n));
-    const base = cursor ?? Date.now();
-    return { events, nextState: { ...nextState, cursor: Math.max(base, ...stamps) } };
   },
   output: [
     { key: "id", type: "string", label: "Job ID" },

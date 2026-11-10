@@ -1,5 +1,5 @@
 import type { ActionDefinition, HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "./window.ts";
 import contactGetMany from "../actions/contact-get-many.ts";
 import leadGetMany from "../actions/lead-get-many.ts";
 import opportunityGetMany from "../actions/opportunity-get-many.ts";
@@ -11,7 +11,6 @@ export const OVERLAP_SECONDS = 120;
 export const PAGE_SIZE = 500;
 /** Per-check ceiling on pages (2,500 records changed inside one window). */
 export const MAX_PAGES = 5;
-export const MAX_EVENTS = 500;
 /** Room for MAX_EVENTS plus an overlap re-list, so an overlap never re-emits an id. */
 export const SEEN_WINDOW = 3000;
 
@@ -125,15 +124,6 @@ const SPECS: RecordSpec[] = [
   },
 ];
 
-export interface InsightlyPollState {
-  v: 1;
-  kind: "ids";
-  seeded: true;
-  ids: string[];
-  /** Epoch ms of the last check that saw every changed record. */
-  cursor: number;
-}
-
 /** Insightly stamps are UTC `YYYY-MM-DD HH:mm:ss`; returns NaN when unparsable. */
 export function stampMs(v: unknown): number {
   if (typeof v !== "string" || v === "") return NaN;
@@ -145,62 +135,48 @@ function isoSeconds(ms: number): string {
   return new Date(ms).toISOString().replace(/\.\d+Z$/, "Z");
 }
 
-async function check(
+function check(
   spec: RecordSpec,
   mode: "new" | "new-or-updated",
   state: unknown,
   ctx: HookContext,
-): Promise<{ events: Record_[]; nextState: InsightlyPollState }> {
-  const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const since = cursor - OVERLAP_SECONDS * 1000;
-  const idOf = (r: Record_) => {
-    const id = String(r[spec.idField]);
-    return mode === "new" ? id : `${id}:${String(r.DATE_UPDATED_UTC ?? "")}`;
-  };
-  let truncated = false;
-
-  const { events, nextState } = await pollNewItems<Record_>({
+) {
+  const stampField = mode === "new" ? "DATE_CREATED_UTC" : "DATE_UPDATED_UTC";
+  return pollWindow<Record_, number>({
     state,
-    maxPages: 1,
-    maxEvents: MAX_EVENTS,
+    now: clock.now(),
+    overlapMs: OVERLAP_SECONDS * 1000,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE_SIZE,
     seenWindow: SEEN_WINDOW,
-    idOf,
-    // Search order is undocumented, so read every page of the (small) since-window and let the
-    // id dedupe decide; the kit then sees one complete page.
-    async fetchPage() {
-      const items: Record_[] = [];
-      for (let page = 0; page < MAX_PAGES; page++) {
-        const res = await spec.action.execute({
-          updatedAfterUtc: isoSeconds(since),
-          top: PAGE_SIZE,
-          skip: page * PAGE_SIZE,
-        }, ctx) as Record<string, unknown>;
-        const rows = (res[spec.listKey] as Record_[] | undefined) ?? [];
-        items.push(...rows);
-        if (rows.length < PAGE_SIZE) return { items: filter(items) };
-      }
-      truncated = true;
-      return { items: filter(items) };
+    idOf: (r) => {
+      const id = String(r[spec.idField]);
+      return mode === "new" ? id : `${id}:${String(r.DATE_UPDATED_UTC ?? "")}`;
+    },
+    // A new record's own creation stamp; an edit's update stamp (an unparsable one is kept).
+    tsOf: (r) => {
+      const ms = stampMs(r[stampField]);
+      return Number.isNaN(ms) ? undefined : ms;
+    },
+    // Search order is undocumented, so the window is walked by `skip` (a page position that
+    // `pollWindow` persists when the window outgrows one check) and the id dedupe decides.
+    async load(since, skip) {
+      const res = await spec.action.execute({
+        updatedAfterUtc: isoSeconds(since),
+        top: PAGE_SIZE,
+        skip: skip ?? 0,
+      }, ctx) as Record<string, unknown>;
+      const rows = (res[spec.listKey] as Record_[] | undefined) ?? [];
+      return {
+        // An edit to an old record is not "new": keep only records created inside the window.
+        items: mode === "new-or-updated" ? rows : rows.filter((r) => {
+          const created = stampMs(r.DATE_CREATED_UTC);
+          return Number.isNaN(created) || created >= since;
+        }),
+        next: rows.length >= PAGE_SIZE ? (skip ?? 0) + PAGE_SIZE : undefined,
+      };
     },
   });
-
-  function filter(items: Record_[]): Record_[] {
-    if (mode === "new-or-updated") return items;
-    // An edit to an old record is not "new": keep only records created inside the window.
-    return items.filter((r) => {
-      const created = stampMs(r.DATE_CREATED_UTC);
-      return Number.isNaN(created) || created >= since;
-    });
-  }
-
-  const capped = truncated || events.length >= MAX_EVENTS;
-  return {
-    events,
-    // Hold the cursor when the window was not fully read, so the next check re-reads it.
-    nextState: { ...nextState, cursor: capped ? cursor : checkedAt },
-  };
 }
 
 function build(spec: RecordSpec, mode: "new" | "new-or-updated"): TriggerDefinition {

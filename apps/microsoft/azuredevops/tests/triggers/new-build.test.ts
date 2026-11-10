@@ -10,7 +10,15 @@ afterEach(() => {
 const at = (seconds: number) => {
   clock.now = () => seconds * 1000;
 };
-const response = (...ids: number[]) => ({ body: { value: ids.map((id) => ({ id })) } });
+// Run 1 finished before the seed (1_700_000_000 s); later runs finished after it.
+const response = (...ids: number[]) => ({
+  body: {
+    value: ids.map((id) => ({
+      id,
+      finishTime: new Date((id === 1 ? 1_699_999_990 : 1_700_000_030) * 1000).toISOString(),
+    })),
+  },
+});
 const poll = (state: unknown, responses: ReturnType<typeof response>[]) => {
   const result = mockCtx(responses, { display: { organization: "org" } });
   return {

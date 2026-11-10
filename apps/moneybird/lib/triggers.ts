@@ -1,5 +1,4 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import {
   header,
   hmac,
@@ -8,51 +7,64 @@ import {
   timingSafeEqual,
   withinTolerance,
 } from "../../_shared/webhook/mod.ts";
+import { pollWindow } from "./window.ts";
 import salesInvoiceList from "../actions/sales-invoice-list.ts";
 import { MoneybirdClient, resolveAdministrationId } from "./client.ts";
 
 const OVERLAP_MS = 10 * 60 * 1000;
 const PAGE_SIZE = 100;
-const SEEN_WINDOW = 300;
+/** Pages one check reads; a bigger window resumes next check. */
+const MAX_PAGES = 5;
+const SEEN_WINDOW = 1000;
 
 export const clock = { now: (): number => Date.now() };
 
 interface SalesInvoice {
   id: string;
+  created_at?: string;
   updated_at?: string;
   [key: string]: unknown;
 }
 
 /** `created_after` / `updated_after` take an ISO 8601 UTC time and are exclusive. */
-export function afterFilter(field: "created_after" | "updated_after", cursor: number): string {
-  const iso = new Date(cursor - OVERLAP_MS).toISOString().replace(/\.\d{3}Z$/, "Z");
+export function afterFilter(field: "created_after" | "updated_after", sinceMs: number): string {
+  const iso = new Date(sinceMs).toISOString().replace(/\.\d{3}Z$/, "Z");
   return `${field}:${iso}`;
 }
 
-async function check(
+/**
+ * `created_after` / `updated_after` have no upper bound, so a window that holds more than one read
+ * resumes by page number (brief 9.8). An arrival while it drains can only push records to a LATER
+ * page (a re-read, deduped by the seen ids), never skip one.
+ */
+function check(
   field: "created_after" | "updated_after",
   idOf: (invoice: SalesInvoice) => string,
   state: unknown,
   ctx: HookContext,
 ) {
-  const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const { events, nextState } = await pollNewItems<SalesInvoice>({
+  const stampKey = field === "created_after" ? "created_at" : "updated_at";
+  return pollWindow<SalesInvoice, number>({
     state,
-    maxPages: 1,
-    maxEvents: PAGE_SIZE,
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE_SIZE,
     seenWindow: SEEN_WINDOW,
     idOf,
-    async fetchPage() {
+    tsOf: (invoice) => {
+      const ms = Date.parse(String(invoice[stampKey] ?? ""));
+      return Number.isNaN(ms) ? undefined : ms;
+    },
+    async load(since, page) {
       const result = await salesInvoiceList.execute(
-        { filter: afterFilter(field, cursor), page: 1, perPage: PAGE_SIZE },
+        { filter: afterFilter(field, since), page: page ?? 1, perPage: PAGE_SIZE },
         ctx,
       ) as { items?: SalesInvoice[] };
-      return { items: result.items ?? [] };
+      const items = result.items ?? [];
+      return { items, next: items.length >= PAGE_SIZE ? (page ?? 1) + 1 : undefined };
     },
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
 }
 
 export function checkNewSalesInvoice(state: unknown, ctx: HookContext) {

@@ -33,15 +33,9 @@ for (const { t, u, path, id } of rows) {
     test(`${trig.key}: seeds, emits the new record, retries idempotently, requests the literal Search`, async () => {
       clock.now = () => T0;
       const old = rec(id, 1, "2026-11-01 08:00:00", "2026-11-09 09:59:00");
-      const seedCtx = mockInsightlyCtx([{ body: [old] }]);
-      const seeded = await trig.poll!({ ...input, state: {} }, seedCtx.ctx);
+      const seeded = await trig.poll!({ ...input, state: {} }, mockInsightlyCtx([]).ctx);
       assertEquals(seeded.events, []);
       assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
-      assertEquals(
-        seedCtx.calls[0].url,
-        `https://api.na1.insightly.com${path}?updated_after_utc=2026-11-09T09%3A58%3A00Z&top=500&skip=0`,
-      );
-      assertEquals(seedCtx.calls[0].method, "GET");
 
       clock.now = () => T1;
       const fresh = rec(id, 2, "2026-11-09 10:03:00", "2026-11-09 10:03:00");
@@ -50,7 +44,13 @@ for (const { t, u, path, id } of rows) {
           { ...input, state: seeded.nextState },
           mockInsightlyCtx([{ body: [old, fresh] }]).ctx,
         );
-      const first = await run();
+      const checkCtx = mockInsightlyCtx([{ body: [old, fresh] }]);
+      const first = await trig.poll!({ ...input, state: seeded.nextState }, checkCtx.ctx);
+      assertEquals(
+        checkCtx.calls[0].url,
+        `https://api.na1.insightly.com${path}?updated_after_utc=2026-11-09T09%3A58%3A00Z&top=500&skip=0`,
+      );
+      assertEquals(checkCtx.calls[0].method, "GET");
       const retry = await run();
       assertEquals(first.events, [fresh]);
       assertEquals(retry, first);
@@ -86,14 +86,16 @@ for (const { t, u, path, id } of rows) {
 
 test("a full page is followed by skip=500 and every page is read", async () => {
   clock.now = () => T0;
+  const seeded = await contact.poll!({ ...input, state: {} }, mockInsightlyCtx([]).ctx);
+  clock.now = () => T1;
   const full = Array.from(
     { length: 500 },
-    (_, i) => rec("CONTACT_ID", i + 1, "2026-11-09 09:59:00", "2026-11-09 09:59:00"),
+    (_, i) => rec("CONTACT_ID", i + 1, "2026-11-09 10:01:00", "2026-11-09 10:01:00"),
   );
-  const extra = rec("CONTACT_ID", 900, "2026-11-09 09:59:30", "2026-11-09 09:59:30");
+  const extra = rec("CONTACT_ID", 900, "2026-11-09 10:02:00", "2026-11-09 10:02:00");
   const { ctx, calls } = mockInsightlyCtx([{ body: full }, { body: [extra] }]);
-  const seeded = await contact.poll!({ ...input, state: {} }, ctx);
+  const out = await contact.poll!({ ...input, state: seeded.nextState }, ctx);
   assertEquals(calls.length, 2);
   assertEquals(new URL(calls[1].url).searchParams.get("skip"), "500");
-  assertEquals((seeded.nextState as { ids: string[] }).ids.length, 501);
+  assertEquals(out.events.length, 501);
 });

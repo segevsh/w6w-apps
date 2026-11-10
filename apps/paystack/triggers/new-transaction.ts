@@ -34,8 +34,8 @@ const trigger: TriggerDefinition = {
     return await checkSince<Item>({
       state,
       ctx,
-      list: async (from, page) =>
-        ((await transactionList.execute({ perPage: PAGE_SIZE, page, from }, ctx)) as {
+      list: async (from, page, to) =>
+        ((await transactionList.execute({ perPage: PAGE_SIZE, page, from, to }, ctx)) as {
           items?: unknown[];
         }).items ?? [],
       idOf: (item) => String(item.id),

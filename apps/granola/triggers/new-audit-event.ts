@@ -1,5 +1,5 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import auditEventList from "../actions/audit-event-list.ts";
 
 /** Look-back before the previous check, so an event collected late is still seen. */
@@ -7,12 +7,13 @@ export const OVERLAP_MS = 600_000;
 /** `page_size` maximum in the vendor's OpenAPI document. */
 const PAGE_SIZE = 30;
 const MAX_PAGES = 10;
-const MAX_EVENTS = MAX_PAGES * PAGE_SIZE;
 /** At least MAX_EVENTS plus an overlap's worth, so a re-listed id is never evicted. */
-const SEEN_WINDOW = 2 * MAX_EVENTS;
+const SEEN_WINDOW = 2 * MAX_PAGES * PAGE_SIZE;
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
+
+type Evt = { id?: unknown; occurred_at?: unknown };
 
 interface Page {
   events?: unknown[];
@@ -30,37 +31,31 @@ const trigger: TriggerDefinition = {
   ],
   sample: { id: "event-1", action: "workspace.member_added" },
   minIntervalMs: 300_000,
-  async poll({ state }, ctx) {
-    const checkedAt = clock.now();
-    const prior = (state ?? {}) as { cursor?: unknown };
-    const since = typeof prior.cursor === "number" ? prior.cursor : checkedAt;
-    const occurredAfter = new Date(since - OVERLAP_MS).toISOString();
-    let complete = true;
-    const { events, nextState } = await pollNewItems<unknown>({
+  poll({ state }, ctx) {
+    return pollWindow<Evt, string>({
       state,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
       seenWindow: SEEN_WINDOW,
-      maxEvents: MAX_EVENTS,
-      idOf: (e) => String((e as { id?: unknown }).id ?? ""),
-      // The log is oldest-first, so every page of the window is read and handed to the kit as
-      // one newest-first page; the id dedupe does the rest.
-      async fetchPage() {
-        const all: unknown[] = [];
-        let cursor: string | undefined;
-        for (let page = 0; page < MAX_PAGES; page++) {
-          const res = await auditEventList.execute(
-            { occurredAfter, pageSize: PAGE_SIZE, cursor },
-            ctx,
-          ) as Page;
-          all.push(...(res.events ?? []));
-          if (!res.hasMore || !res.cursor) return { items: all.reverse() };
-          cursor = res.cursor;
-        }
-        complete = false;
-        return { items: all.reverse() };
+      idOf: (e) => String(e.id ?? ""),
+      // `occurred_at` is the field `occurred_after` filters on; an event without one is kept.
+      tsOf: (e) => {
+        const ms = Date.parse(String(e.occurred_at ?? ""));
+        return Number.isNaN(ms) ? undefined : ms;
+      },
+      async load(since, cursor) {
+        const res = await auditEventList.execute(
+          { occurredAfter: new Date(since).toISOString(), pageSize: PAGE_SIZE, cursor },
+          ctx,
+        ) as Page;
+        return {
+          items: (res.events ?? []) as Evt[],
+          next: res.hasMore && res.cursor ? res.cursor : undefined,
+        };
       },
     });
-    // An unread tail keeps the window where it was, so the next check resumes from it.
-    return { events, nextState: { ...nextState, cursor: complete ? checkedAt : since } };
   },
 };
 

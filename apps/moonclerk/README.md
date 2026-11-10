@@ -68,3 +68,7 @@ carries `nextOffset` to pass to the next call (MoonClerk returns no total).
 - **No quota signal.** Throttling (HTTP 429) is documented with no limit, header or usage endpoint.
 - **Not live-tested.** No vendor credentials were available; response shapes follow the reference
   and the tests mock `ctx.fetch`.
+
+## Trigger floor assumption
+
+The new-customer trigger floors on `checkout.date`, a field name not verified against the live API; an unparseable or missing stamp is kept.

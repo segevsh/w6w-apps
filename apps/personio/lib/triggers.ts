@@ -31,7 +31,11 @@ export interface SinceSpec<T, P> {
   idOf(item: T): string;
   /** Drop items the filter returns but this trigger must not emit (e.g. edited, not created). */
   keep?(item: T, from: string): boolean;
+  /** Creation/update time (ms) the filter compares; drives the seed floor and the cap cursor. */
+  tsOf?(item: T): number | undefined;
 }
+
+const MAX_EVENTS = 500;
 
 export function sinceFilterTrigger<T, P = Record<string, unknown>>(
   spec: SinceSpec<T, P>,
@@ -48,12 +52,16 @@ export function sinceFilterTrigger<T, P = Record<string, unknown>>(
       const now = clock.now();
       const prior = state as { cursor?: unknown } | null;
       const cursor = typeof prior?.cursor === "number" ? prior.cursor : now;
+      // Brief 9.9: records stamped before the first check are never events.
+      const floor = typeof (prior as { floor?: unknown } | null)?.floor === "number"
+        ? (prior as { floor: number }).floor
+        : now;
       const from = new Date(cursor - OVERLAP_MS).toISOString();
       let truncated = false;
       const { events, nextState } = await pollNewItems<T>({
         state,
         maxPages: 1,
-        maxEvents: 500,
+        maxEvents: MAX_EVENTS,
         seenWindow: 1000,
         idOf: spec.idOf,
         async fetchPage() {
@@ -66,11 +74,26 @@ export function sinceFilterTrigger<T, P = Record<string, unknown>>(
             if (page === undefined) break;
             if (n === MAX_PAGES - 1) truncated = true;
           }
-          return { items: spec.keep ? items.filter((i) => spec.keep!(i, from)) : items };
+          const kept = items.filter((i) => {
+            if (spec.keep && !spec.keep(i, from)) return false;
+            const ts = spec.tsOf?.(i);
+            return ts === undefined || ts >= floor;
+          });
+          // Newest first, so the kit's cap drops the NEWEST when more than MAX_EVENTS match.
+          if (spec.tsOf) kept.sort((a, b) => (spec.tsOf!(b) ?? 0) - (spec.tsOf!(a) ?? 0));
+          return { items: kept };
         },
       });
-      // A truncated read keeps the old cursor so the unread tail is re-read (ids dedupe).
-      return { events, nextState: { ...nextState, cursor: truncated ? cursor : now } };
+      // A truncated read keeps the old cursor so the unread tail is re-read (ids dedupe). The
+      // vendor answers the whole window in one request; if it holds more than MAX_EVENTS the kit
+      // emits the oldest MAX_EVENTS, and the cursor then stops at the newest one emitted (brief 9.8).
+      const lastTs = spec.tsOf && events.length >= MAX_EVENTS
+        ? spec.tsOf(events[events.length - 1])
+        : undefined;
+      return {
+        events,
+        nextState: { ...nextState, cursor: lastTs ?? (truncated ? cursor : now), floor },
+      };
     },
   };
 }

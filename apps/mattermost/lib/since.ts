@@ -27,6 +27,8 @@ export interface SinceState {
   seeded: true;
   ids: string[];
   cursor: number;
+  /** Epoch ms of the first check; records created before it are never events. */
+  floor: number;
 }
 
 export interface SinceSpec<P> {
@@ -46,6 +48,8 @@ export interface SinceSpec<P> {
   /** Whether another page follows; default: this page was full. */
   more?(result: unknown, got: unknown[]): boolean;
   idOf(item: unknown): string;
+  /** Creation time (ms) of a record; drives the seed floor and the truncation cursor. */
+  tsOf?(item: unknown): number | undefined;
   params?: Param[];
   output: OutputField[];
   sample: unknown;
@@ -76,6 +80,11 @@ export function sinceTrigger<P>(spec: SinceSpec<P>): TriggerDefinition<P> {
       const checkedAt = clock.now();
       const prior = state as { cursor?: unknown } | null;
       const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
+      // Brief 9.9: the first check floors at `now`; a record created before it is never an event.
+      const floor = typeof (prior as { floor?: unknown } | null)?.floor === "number"
+        ? (prior as { floor: number }).floor
+        : checkedAt;
+      const stamp = spec.tsOf;
       const { events, nextState } = await pollNewItems<unknown>({
         state,
         maxPages: 1,
@@ -96,7 +105,10 @@ export function sinceTrigger<P>(spec: SinceSpec<P>): TriggerDefinition<P> {
               }),
               ctx,
             );
-            const got = spec.items(result, cursor - OVERLAP_MS);
+            const got = spec.items(result, cursor - OVERLAP_MS).filter((item) => {
+              const ts = stamp?.(item);
+              return ts === undefined || ts >= floor;
+            });
             items.push(...got);
             if (!(spec.more ? spec.more(result, got) : got.length >= PAGE_SIZE)) break;
             last = result;
@@ -104,7 +116,16 @@ export function sinceTrigger<P>(spec: SinceSpec<P>): TriggerDefinition<P> {
           return { items };
         },
       });
-      return { events, nextState: { ...nextState, cursor: checkedAt } as SinceState };
+      // Brief 9.8: a vendor that answers the whole window in one response can hold more than
+      // MAX_EVENTS. The kit emits the OLDEST MAX_EVENTS, so then the cursor stops at the newest
+      // emitted record (not `now`) and the next check continues from there.
+      const lastTs = stamp && events.length >= MAX_EVENTS
+        ? stamp(events[events.length - 1])
+        : undefined;
+      return {
+        events,
+        nextState: { ...nextState, cursor: lastTs ?? checkedAt, floor } as SinceState,
+      };
     },
   };
 }

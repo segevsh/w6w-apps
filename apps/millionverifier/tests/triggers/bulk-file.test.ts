@@ -12,13 +12,19 @@ afterEach(() => {
 const at = (seconds: number) => {
   clock.now = () => seconds * 1000;
 };
-const file = (id: number, updatedAt = "2026-11-09 10:00:00") => ({
+const file = (
+  id: number,
+  updatedAt = "2026-11-09 10:00:00",
+  createdate = "2026-11-09 09:00:00",
+) => ({
   file_id: id,
   file_name: `f${id}.csv`,
   status: "finished",
-  createdate: "2026-11-09 09:00:00",
+  createdate,
   updated_at: updatedAt,
 });
+// Stamp of a file that existed before the first check (the 1_700_000_000 s seed).
+const OLD = "2023-01-01 00:00:00";
 const response = (...files: ReturnType<typeof file>[]) => ({
   body: { files, total: files.length },
 });
@@ -48,7 +54,7 @@ for (
     at(1_700_000_000);
     const seed = await poll({}, [response(file(1))]).out;
     at(1_700_000_060);
-    const value = await poll(seed.nextState, [response(file(2), file(1))]).out;
+    const value = await poll(seed.nextState, [response(file(2), file(1, OLD, OLD))]).out;
     assertEquals(value.events.map((e) => (e as { fileId: string }).fileId), ["2"]);
     assertEquals((value.nextState as { cursor: number }).cursor, 1_700_000_060_000);
   });
@@ -57,7 +63,7 @@ for (
     at(1_700_000_000);
     const seed = await poll({}, [response(file(1))]).out;
     at(1_700_000_060);
-    const run = () => poll(seed.nextState, [response(file(2), file(1))]).out;
+    const run = () => poll(seed.nextState, [response(file(2), file(1, OLD, OLD))]).out;
     assertEquals(await run(), await run());
   });
 
@@ -99,10 +105,10 @@ test("new-or-updated-bulk-file emits a known file again when its updated_at chan
 
 test("new-bulk-file does not re-emit a known file whose updated_at changes", async () => {
   at(1_700_000_000);
-  const result = mockCtx([response(file(1, "t1"))]);
+  const result = mockCtx([response(file(1, "t1", "2023-01-01 00:00:00"))]);
   const seed = await created.poll!({ params: {}, state: {}, subscriptionId: "s" }, result.ctx);
   at(1_700_000_060);
-  const next = mockCtx([response(file(1, "t2"))]);
+  const next = mockCtx([response(file(1, "t2", "2023-01-01 00:00:00"))]);
   const value = await created.poll!(
     { params: {}, state: seed.nextState, subscriptionId: "s" },
     next.ctx,

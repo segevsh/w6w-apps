@@ -5,16 +5,18 @@ import type {
   Param,
   TriggerDefinition,
 } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "./window.ts";
 
 /**
  * Brief 9.1(b) since-filter poll: every check calls the wrapped list action with the vendor's
- * created/updated-after filter set to `cursor - overlap`, then de-duplicates by id. The state
- * keeps the cursor beside the seen ids; the first check records the cursor and emits nothing.
+ * created/updated-after filter set to `cursor - overlap`, then de-duplicates by id. The first
+ * check reads nothing and floors at `now` (brief 9.9); a window of more than MAX_PAGES pages
+ * resumes by page cursor next check (brief 9.8).
  */
 export const clock = { now: (): number => Date.now() };
 const OVERLAP_MS = 600_000;
 const MAX_PAGES = 5;
+const PAGE_SIZE = 100;
 
 export interface SinceSpec<T, P> {
   key: string;
@@ -31,6 +33,8 @@ export interface SinceSpec<T, P> {
   idOf(item: T): string;
   /** Drop items the filter returns but this trigger must not emit (e.g. edited, not created). */
   keep?(item: T, from: string): boolean;
+  /** Creation/update time (ms) the filter compares; drives the seed floor (brief 9.9). */
+  tsOf(item: T): number | undefined;
 }
 
 export function sinceFilterTrigger<T, P = Record<string, unknown>>(
@@ -44,33 +48,27 @@ export function sinceFilterTrigger<T, P = Record<string, unknown>>(
     output: spec.output,
     sample: spec.sample,
     minIntervalMs: 300_000,
-    async poll({ params, state }, ctx) {
-      const now = clock.now();
-      const prior = state as { cursor?: unknown } | null;
-      const cursor = typeof prior?.cursor === "number" ? prior.cursor : now;
-      const from = new Date(cursor - OVERLAP_MS).toISOString();
-      let truncated = false;
-      const { events, nextState } = await pollNewItems<T>({
+    poll({ params, state }, ctx) {
+      return pollWindow<T, string>({
         state,
-        maxPages: 1,
-        maxEvents: 500,
+        now: clock.now(),
+        overlapMs: OVERLAP_MS,
+        maxPages: MAX_PAGES,
+        pageSize: PAGE_SIZE,
         seenWindow: 1000,
         idOf: spec.idOf,
-        async fetchPage() {
-          const items: T[] = [];
-          let page: string | undefined;
-          for (let n = 0; n < MAX_PAGES; n++) {
-            const res = await spec.load({ from, params, page }, ctx);
-            items.push(...res.items);
-            page = res.next;
-            if (page === undefined) break;
-            if (n === MAX_PAGES - 1) truncated = true;
-          }
-          return { items: spec.keep ? items.filter((i) => spec.keep!(i, from)) : items };
+        tsOf: spec.tsOf,
+        // No upper bound on the filter: an arrival while the window drains can only push records
+        // to a LATER page (a re-read, deduped by the seen ids), never skip one.
+        async load(since, page) {
+          const from = new Date(since).toISOString();
+          const res = await spec.load({ from, params, page }, ctx);
+          return {
+            items: spec.keep ? res.items.filter((i) => spec.keep!(i, from)) : res.items,
+            next: res.next,
+          };
         },
       });
-      // A truncated read keeps the old cursor so the unread tail is re-read (ids dedupe).
-      return { events, nextState: { ...nextState, cursor: truncated ? cursor : now } };
     },
   };
 }
@@ -94,4 +92,10 @@ export function notesSince(action: ActionDefinition, filter: "createdFrom" | "up
     };
     return { items: res.items ?? [], next: res.nextPageCursor };
   };
+}
+
+/** Epoch ms of an ISO stamp; undefined when absent or unparseable (such an item is kept). */
+export function stampMs(stamp: unknown): number | undefined {
+  const t = typeof stamp === "string" ? Date.parse(stamp) : NaN;
+  return Number.isNaN(t) ? undefined : t;
 }

@@ -217,3 +217,7 @@ Unit tests mock `HookContext` (`ctx.fetch`, no-op `ctx.log`) via
 [`tests/_helpers.ts`](tests/_helpers.ts) — no network access, no real credential. The auth
 `sign` hook is tested directly, and the wire-body classification is tested against both of
 HeyReach's 401 bodies. Run with `deno task test` from this directory.
+
+## Trigger floor assumption
+
+The new-lead trigger floors on the lead's `createdAt` (assumed field); a lead with no parseable timestamp is kept.

@@ -1,6 +1,6 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
-import userList from "../actions/user-list.ts";
+import { OktaClient } from "./client.ts";
+import { pollWindow } from "./window.ts";
 
 /**
  * Okta documents `search` as "sourced from an eventually consistent datasource", so a user can be
@@ -8,45 +8,62 @@ import userList from "../actions/user-list.ts";
  */
 const OVERLAP_MS = 30 * 60 * 1000;
 const PAGE_SIZE = 100;
-const SEEN_WINDOW = 400;
+/** Pages one check reads; a bigger window resumes next check. */
+const MAX_PAGES = 5;
+const SEEN_WINDOW = 1000;
 
 export const clock = { now: (): number => Date.now() };
 
 interface OktaUser {
   id: string;
+  created?: string;
   lastUpdated?: string;
   [key: string]: unknown;
 }
 
 /** `created gt "<ISO>"` / `lastUpdated gt "<ISO>"` — the SCIM form Okta documents for `search`. */
-export function sinceSearch(field: "created" | "lastUpdated", cursor: number): string {
-  return `${field} gt "${new Date(cursor - OVERLAP_MS).toISOString()}"`;
+export function sinceSearch(field: "created" | "lastUpdated", sinceMs: number): string {
+  return `${field} gt "${new Date(sinceMs).toISOString()}"`;
 }
 
-async function check(
+/**
+ * Newest-first through `search` + `sortBy`/`sortOrder=desc`, so a window that holds more than one
+ * page resumes by the oldest user's stamp (`field le "<stamp>"`), never by an offset (brief 9.8).
+ */
+function check(
   field: "created" | "lastUpdated",
   idOf: (user: OktaUser) => string,
   state: unknown,
   ctx: HookContext,
 ) {
-  const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const { events, nextState } = await pollNewItems<OktaUser>({
+  const stamp = (user: OktaUser): number | undefined => {
+    const ms = Date.parse(String(user[field] ?? ""));
+    return Number.isNaN(ms) ? undefined : ms;
+  };
+  return pollWindow<OktaUser, string>({
     state,
-    maxPages: 1,
-    maxEvents: PAGE_SIZE,
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE_SIZE,
     seenWindow: SEEN_WINDOW,
     idOf,
-    async fetchPage() {
-      const users = await userList.execute(
-        { search: sinceSearch(field, cursor), limit: PAGE_SIZE },
-        ctx,
-      ) as OktaUser[] | undefined;
-      return { items: Array.isArray(users) ? users : [] };
+    tsOf: stamp,
+    async load(since, upTo) {
+      const search = upTo === undefined
+        ? sinceSearch(field, since)
+        : `${sinceSearch(field, since)} and ${field} le "${upTo}"`;
+      const users = await new OktaClient(ctx).request<OktaUser[] | undefined>("/users", {
+        query: { search, limit: PAGE_SIZE, sortBy: field, sortOrder: "desc" },
+      });
+      const items = Array.isArray(users) ? users : [];
+      const oldest = items.length >= PAGE_SIZE ? stamp(items[items.length - 1]) : undefined;
+      return {
+        items,
+        next: oldest === undefined ? undefined : new Date(oldest).toISOString(),
+      };
     },
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
 }
 
 export function checkNewUser(state: unknown, ctx: HookContext) {
