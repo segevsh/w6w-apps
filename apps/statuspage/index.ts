@@ -79,6 +79,8 @@ import subscriberList from "./actions/subscriber-list.ts";
 import metricDataAdd from "./actions/metric-data-add.ts";
 import pageList from "./actions/page-list.ts";
 
+import newSubscriber from "./triggers/new-subscriber.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -101,6 +103,7 @@ export default {
     subscriberList,
     pageList,
   ],
+  triggers: [newSubscriber],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
