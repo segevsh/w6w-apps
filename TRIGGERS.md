@@ -8,30 +8,27 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 77, manual-webhook: 23, poll: 482, none: 101
+**Totals:** 683 apps — webhook-api: 74, manual-webhook: 25, poll: 482, none: 102
 
-## webhook-api (77)
+## webhook-api (74)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
 | apps/activecampaign | new-contact | apps/activecampaign/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/acuityscheduling | appointment-canceled, appointment-rescheduled, appointment-scheduled | apps/acuityscheduling/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/adyen | AUTHORISATION, CANCELLATION, CAPTURE, REFUND | apps/adyen/README.md Triggers section (verified 2026-11-10) | hand | webhook candidate queued for a webhook node: payment notifications; the only list actions are a per-shopper stored-payment-method lookup and a donation-campaign configuration lookup, not record feeds (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods) |
 | apps/affinity | new-list-entry | apps/affinity/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/airparser | parsed-document | apps/airparser/README.md Triggers section (verified 2026-11-10) | hand | webhook candidate queued for a webhook node: parsed document delivery (airparser-signature HMAC, per-webhook signing secret); document-list has no documented order/response shape for polling |
 | apps/asana | new-task, task-updated | apps/asana/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/bitbucket | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/trello | card-created, card-moved, card-updated, comment-added | apps/atlassian/trello/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/box | activity, file-uploaded | apps/box/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brevo | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/brex | card.created, user.created | no | hand | webhook candidate queued for a webhook node: card.created, user.created |
+| apps/brex | event | apps/brex/README.md Triggers section (verified 2026-11-10) | hand | POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param |
 | apps/cal | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/calendly | invitee-canceled, invitee-created | apps/calendly/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/clickup | task-comment-posted, task-created, task-deleted, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/cloudconvert | job.created, job.finished, job.failed | no | hand | webhook candidate queued for a webhook node: job.created, job.finished, job.failed |
+| apps/cloudconvert | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
 | apps/copper | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/dropcontact | enrichment completed | apps/dropcontact/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: asynchronous enrichment completion; the API has no list of account records to poll. |
 | apps/esignatures | contract events | apps/esignatures/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: contract lifecycle events signed with X-Signature-SHA256; the vendor docs tell integrators not to poll (blocked requests) and templates/collaborators have no created filter. |
 | apps/eventbrite | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated | no | hand | shipped: webhook registered through the vendor API |
 | apps/exa | monitor events | apps/exa/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: monitor delivery; list-websets documents only cursor paging and a search filter (no order or created filter) and Websets are created only by the caller's own calls. |
@@ -92,12 +89,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (23)
+## manual-webhook (25)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
-| apps/clearout | bulk verification completed | no | hand | webhook candidate queued for a webhook node: email_verifier.bulk.completed, email_finder.bulk.completed (also instant and form_guard events); signed with x-co-webhook-signature (https://docs.clearout.io/developers/webhooks) |
-| apps/cognitoforms | entry submitted | no | hand | webhook candidate queued for a webhook node: entry submitted |
+| apps/adyen | payment-authorisation, payment-capture, payment-cancellation, payment-refund | apps/adyen/README.md Triggers section (verified 2026-11-10) | hand | Standard webhook created in the Customer Area (no registration API in this app); each notification item verified with Adyen's HMAC-SHA256 field signature (additionalData.hmacSignature, hex key, 8 ':'-joined fields; no timestamp) |
+| apps/airparser | document-parsed | apps/airparser/README.md Triggers section (verified 2026-11-10) | hand | dashboard-created webhook (Integrations, Webhooks); airparser-signature base64 HMAC-SHA256 of the raw body under the per-webhook Signing Secret (no timestamp) |
+| apps/clearout | email-verifier-bulk-completed, email-finder-bulk-completed, form-guard-email-validated | apps/clearout/README.md Triggers section (verified 2026-11-10) | hand | webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window |
+| apps/cognitoforms | entry-submitted, entry-updated, entry-deleted | apps/cognitoforms/README.md Triggers section (verified 2026-11-10) | hand | per-form Post JSON Data to a Website endpoints (submit, update, delete) set in the form builder; Cognito documents no signature, so the callback URL is the secret and the README says so (https://www.cognitoforms.com/support/66/data-integration/webhooks) |
 | apps/customerio | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/formspark | submission.created | apps/formspark/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission.created |
 | apps/goto-webinar | registrant, attendee, webinar | apps/goto-webinar/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: registrant, attendee, webinar events (https://developer.goto.com/GoToWebinarV2/); webinar-list filters scheduled time (fromTime/toTime), not creation or update time, and registrants/attendees are per-webinar |
@@ -607,7 +606,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (101)
+## none (102)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -624,7 +623,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/crunchbase |  | apps/crunchbase/README.md Triggers section (verified 2026-11-09) | hand | search actions take a caller query plus optional order, but a newest-first created_at/updated_at feed could not be verified: Crunchbase's field/search reference is JS-rendered and its OpenAPI was not retrievable 2026-11-09 (https://data.crunchbase.com/docs/using-the-api) |
 | apps/deepseek |  | apps/deepseek/README.md Triggers section (verified 2026-11-09) | hand | stateless chat/FIM completion API plus a static model list: no user records that change (https://api-docs.deepseek.com/api/list-models) |
 | apps/demio |  | no | hand | event-list returns only active events ordered by next session with no created-at order or since filter; participants-list needs a session id; vendor docs unreachable 2026-11-09 (https://developers.demio.com/) |
-| apps/edenai |  | apps/edenai/README.md Triggers section (verified 2026-11-09) | hand | async-job and file lists hold only the caller's own submitted jobs/uploads with no documented order or since filter; completion callbacks are a per-request webhook_receiver (signed, recorded in webhooks file), not an account subscription. |
+| apps/dropcontact |  | apps/dropcontact/README.md Triggers section (verified 2026-11-10) | hand | the webhook (per-request custom_callback_url or the one account default) only delivers results of an enrichment batch the caller submitted (enrich_api_result job-completion callback, no account event stream) and the docs describe no signature or secret (https://developer.dropcontact.com/en/webhooks/) |
+| apps/edenai |  | apps/edenai/README.md Triggers section (verified 2026-11-10) | hand | the webhook is a per-request webhook_receiver completion callback (async_job_completed) for a job the caller starts, not an account subscription, signed with an RSA key from Eden AI support over a canonical re-serialisation of the payload (https://www.edenai.co/docs/v3/expert-models/webhooks.md) |
 | apps/enrichlayer | company-employees | apps/enrichlayer/README.md Triggers section (verified 2026-11-09) | hand | each poll needs a per-company or per-school URL and spends enrichment credits; no account-wide record feed (https://enrichlayer.com/docs) |
 | apps/formidableforms |  | apps/formidableforms/README.md Triggers section (verified 2026-11-09) | hand | entries list documents no sort token, created-since semantics or page size (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/) |
 | apps/fortnox |  | apps/fortnox/README.md Triggers section (verified 2026-11-09) | hand | customer-list orders only by customer number or name and its lastmodified filter cannot separate new from edited customers (https://developer.fortnox.se/documentation/resources/customers/) |

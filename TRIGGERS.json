@@ -104,15 +104,15 @@
   },
   {
     "path": "apps/adyen",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "AUTHORISATION",
-      "CANCELLATION",
-      "CAPTURE",
-      "REFUND"
+      "payment-authorisation",
+      "payment-capture",
+      "payment-cancellation",
+      "payment-refund"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: payment notifications; the only list actions are a per-shopper stored-payment-method lookup and a donation-campaign configuration lookup, not record feeds (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods)",
+    "reason": "Standard webhook created in the Customer Area (no registration API in this app); each notification item verified with Adyen's HMAC-SHA256 field signature (additionalData.hmacSignature, hex key, 8 ':'-joined fields; no timestamp)",
     "verified": "apps/adyen/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
@@ -184,12 +184,12 @@
   },
   {
     "path": "apps/airparser",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "parsed-document"
+      "document-parsed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: parsed document delivery (airparser-signature HMAC, per-webhook signing secret); document-list has no documented order/response shape for polling",
+    "reason": "dashboard-created webhook (Integrations, Webhooks); airparser-signature base64 HMAC-SHA256 of the raw body under the per-webhook Signing Secret (no timestamp)",
     "verified": "apps/airparser/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
@@ -805,12 +805,11 @@
     "path": "apps/brex",
     "mechanism": "webhook-api",
     "candidates": [
-      "card.created",
-      "user.created"
+      "event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: card.created, user.created",
-    "verified": false,
+    "reason": "POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param",
+    "verified": "apps/brex/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1028,11 +1027,13 @@
     "path": "apps/clearout",
     "mechanism": "manual-webhook",
     "candidates": [
-      "bulk verification completed"
+      "email-verifier-bulk-completed",
+      "email-finder-bulk-completed",
+      "form-guard-email-validated"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: email_verifier.bulk.completed, email_finder.bulk.completed (also instant and form_guard events); signed with x-co-webhook-signature (https://docs.clearout.io/developers/webhooks)",
-    "verified": false,
+    "reason": "webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window",
+    "verified": "apps/clearout/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1172,13 +1173,13 @@
     "path": "apps/cloudconvert",
     "mechanism": "webhook-api",
     "candidates": [
-      "job.created",
-      "job.finished",
-      "job.failed"
+      "job-finished",
+      "job-failed",
+      "job-created"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: job.created, job.finished, job.failed",
-    "verified": false,
+    "reason": "POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp)",
+    "verified": "apps/cloudconvert/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1229,11 +1230,13 @@
     "path": "apps/cognitoforms",
     "mechanism": "manual-webhook",
     "candidates": [
-      "entry submitted"
+      "entry-submitted",
+      "entry-updated",
+      "entry-deleted"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: entry submitted",
-    "verified": false,
+    "reason": "per-form Post JSON Data to a Website endpoints (submit, update, delete) set in the form builder; Cognito documents no signature, so the callback URL is the secret and the README says so (https://www.cognitoforms.com/support/66/data-integration/webhooks)",
+    "verified": "apps/cognitoforms/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1697,13 +1700,11 @@
   },
   {
     "path": "apps/dropcontact",
-    "mechanism": "webhook-api",
-    "candidates": [
-      "enrichment completed"
-    ],
+    "mechanism": "none",
+    "candidates": [],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: asynchronous enrichment completion; the API has no list of account records to poll.",
-    "verified": "apps/dropcontact/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the webhook (per-request custom_callback_url or the one account default) only delivers results of an enrichment batch the caller submitted (enrich_api_result job-completion callback, no account event stream) and the docs describe no signature or secret (https://developer.dropcontact.com/en/webhooks/)",
+    "verified": "apps/dropcontact/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1789,8 +1790,8 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "async-job and file lists hold only the caller's own submitted jobs/uploads with no documented order or since filter; completion callbacks are a per-request webhook_receiver (signed, recorded in webhooks file), not an account subscription.",
-    "verified": "apps/edenai/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the webhook is a per-request webhook_receiver completion callback (async_job_completed) for a job the caller starts, not an account subscription, signed with an RSA key from Eden AI support over a canonical re-serialisation of the payload (https://www.edenai.co/docs/v3/expert-models/webhooks.md)",
+    "verified": "apps/edenai/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
