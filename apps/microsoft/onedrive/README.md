@@ -7,6 +7,8 @@ Eighteen actions covering the drive/driveItem surface: drives, listing, reading,
 searching, change tracking, folder creation, simple upload, copy, move, rename,
 delete, sharing links and permissions.
 
+- **Triggers** — 8 (poll)
+
 Every endpoint below was verified against the Microsoft Graph reference page for
 that operation, not inferred from a sibling app. Where the reference and this App
 disagree with something you have read elsewhere, the reference link is in the
@@ -350,11 +352,64 @@ posture never binds.
 
 ## Triggers
 
-| Trigger | Poll source | Behaviour |
-| ------- | ----------- | --------- |
-| File Changed | `GET /me/drive/root/delta` | Seeds a Graph delta link using `token=latest`, then emits one bounded delta page and saves its replacement cursor. |
+Eight poll triggers, all built on this App's own actions (same Graph client, same
+endpoints, same OAuth connection as the action — no extra consent). Checked
+against the Microsoft Graph reference (verified 2026-11-10).
 
-This trigger wraps the same request as **List Changes**, following the Microsoft Graph [driveItem delta](https://learn.microsoft.com/en-us/graph/api/driveitem-delta?view=graph-rest-1.0) protocol (checked 2026-11-09). It accepts Graph delta pages up to the action's 999-item page limit, including resumed delta links that Graph returns without a `$top` parameter.
+| Trigger | Mechanism | Wraps | What the run gets |
+| ------- | --------- | ----- | ----------------- |
+| File Changed (`file-changed`) | poll, delta cursor | **List Changes** — `GET …/root/delta` | Every item Graph reports as changed (created, edited, renamed, moved or deleted), one delta page per check. |
+| New File (`new-file`) | poll, delta cursor | **List Changes** | A file created since the trigger was switched on. Optional **Folder ID** keeps only files directly inside that folder. |
+| New Folder (`new-folder`) | poll, delta cursor | **List Changes** | A folder created since the trigger was switched on; optional **Folder ID** as above. |
+| File Updated (`file-updated`) | poll, delta cursor | **List Changes** | A file that already existed and was modified, renamed or moved; optional **Folder ID**. |
+| Folder Updated (`folder-updated`) | poll, delta cursor | **List Changes** | A folder that already existed and was modified, renamed or moved; optional **Folder ID**. |
+| Item Deleted (`item-deleted`) | poll, delta cursor | **List Changes** | The id (and name, when Graph still reports it) of a deleted file or folder. |
+| New Permission (`new-permission`) | poll, bounded snapshot | **List Permissions** — `GET …/items/{id}/permissions` | A sharing permission (link, invite or inherited grant) newly added to the **Item ID** you pick. |
+| New Drive (`new-drive`) | poll, bounded snapshot | **List Drives** — `GET /me/drives` | A drive (a OneDrive or SharePoint document library) the signed-in user can newly reach. |
+
+Setup: pick the connection; for a drive other than your own set **Drive ID**
+(from List Drives). Nothing is registered at Microsoft, so there is nothing to
+clean up when a trigger is switched off. Checks run at most every 5 minutes.
+
+How "created" and "updated" are told apart. Graph's [delta](https://learn.microsoft.com/en-us/graph/api/driveitem-delta)
+returns each changed item's latest state once per round, not an event. The
+`token=latest` seed records the instant it ran; an item whose `createdDateTime`
+is at or after the start of the previous complete round (never earlier than that
+seed instant, less 60 seconds of clock skew after the first round) is *created*
+and is emitted once; any other non-deleted item is *updated*; an item with the
+`deleted` facet is *deleted*. Nothing that existed before the trigger was switched
+on is ever reported as new, and a modification landing in the same check as the
+creation is reported only as the creation. The delta cursor expires with Graph's
+`410 Gone`; the trigger then starts a fresh cursor and reports nothing for the gap.
+
+Trust model: these triggers only read, through your connection; no inbound
+request exists to verify.
+
+Scope notes, each from the Microsoft docs:
+
+- The delta feed is the root-scoped `GET …/root/delta` request that **List Changes**
+  and File Changed already make, so these triggers need no new endpoint or consent.
+  **Folder ID** filters items by their `parentReference.id` (direct children only)
+  instead of starting a per-folder delta.
+  <https://learn.microsoft.com/en-us/graph/api/driveitem-delta>
+- A drive's **List Children** and **Search** actions return the same record type
+  (driveItems) that New File / New Folder deliver. `$orderby` on children only
+  documents `name`, `size` and `lastModifiedDateTime`, and for OneDrive for
+  Business and SharePoint only `name` and `url`, so neither is a newest-first feed.
+  <https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/optional-query-parameters>
+- **Not covered:** *List Shared With Me* — Microsoft marks `drive/sharedWithMe`
+  deprecated and says it stops returning data after November 2026, so a trigger
+  on it would go silent (<https://learn.microsoft.com/en-us/graph/api/drive-sharedwithme>).
+- **Webhooks not shipped.** Graph change notifications for a drive
+  (`POST /subscriptions` on `/me/drive/root`) carry no item data — only "something
+  under this root changed" — support only the `updated` change type on a drive
+  root, expire after at most 42,300 minutes (under 30 days), and the trigger
+  lifecycle has no renewal hook, so a subscription would stop silently. Delta
+  polling above delivers the actual records instead.
+  <https://learn.microsoft.com/en-us/graph/api/resources/subscription>,
+  <https://learn.microsoft.com/en-us/graph/api/subscription-post-subscriptions>,
+  <https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/using-webhooks>
+  (verified 2026-11-10).
 
 ## Not implemented
 
@@ -368,9 +423,8 @@ Left out deliberately, each with a reason:
   egress to per-tenant storage hosts.
 - **Polling a copy to completion** — same reason; the monitor URL is on a
   per-tenant SharePoint host. The URL is returned instead.
-- **Triggers / webhooks** (Graph change notifications) — a separate subsystem
-  needing a publicly reachable notification URL and subscription lifecycle. List
-  Changes covers polled change tracking today.
+- **Webhook triggers** (Graph change notifications) — see the Triggers section for
+  why the delta polls ship instead.
 - **Versions, thumbnails, checkin/checkout, recycle-bin restore, `follow`,
   `preview`, `analytics`** — real endpoints, simply outside the drive/file surface
   this App was scoped to.
