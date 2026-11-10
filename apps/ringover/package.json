@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ringover",
   "version": "0.3.0",
-  "description": "Query calls, contacts, users, groups, numbers, SMS conversations and tags, place callbacks and send SMS, through the Ringover cloud telephony public API. Polling trigger: New Call. Poll triggers also cover contacts, conversations, groups, users and tags.",
+  "description": "Query calls, contacts, users, groups, numbers, SMS conversations and tags, place callbacks and send SMS, through the Ringover cloud telephony public API. Polling trigger: New Call.",
   "license": "MIT",
   "author": {
     "name": "w6w"

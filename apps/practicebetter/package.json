@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/practicebetter",
   "version": "0.3.0",
-  "description": "Run a health and wellness practice on Practice Better: client records, sessions, packages, invoices, tags, reminders and webhook subscriptions, with record triggers. Poll triggers also cover invoices, sessions, tags, reminders, package instances, services and package definitions.",
+  "description": "Run a health and wellness practice on Practice Better: client records, sessions, packages, invoices, tags, reminders and webhook subscriptions, with record triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

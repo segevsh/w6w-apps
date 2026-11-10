@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lemonsqueezy",
   "version": "0.3.0",
-  "description": "Sell software and digital products through Lemon Squeezy — catalog, customers, orders and refunds, subscriptions, discounts, license keys, checkouts and webhooks. Includes a new order poll trigger. Poll triggers cover orders, checkouts, customers, subscriptions, discounts, license keys, prices, products, variants and stores.",
+  "description": "Sell software and digital products through Lemon Squeezy — catalog, customers, orders and refunds, subscriptions, discounts, license keys, checkouts and webhooks. Includes a new order poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
