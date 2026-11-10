@@ -116,3 +116,20 @@ test("new-or-updated-price-list-record: a window of maxPages + 1 pages drains ac
     clock.now = realNow;
   }
 });
+
+test("new-or-updated-price-list-record: a record older than the requested floor is dropped even when the seen ids are gone", async () => {
+  try {
+    const seeded = await seed();
+    at(T0 + 300_000);
+    const early = rec(T0 + 60_000);
+    const r1 = await run(seeded.nextState, [page([early])]);
+    assertEquals(r1.events, [early]);
+    // A coarse vendor filter re-serves it; the seen window has rolled over (ids emptied).
+    at(T0 + 900_000);
+    const forgotten = { ...(r1.nextState as Record<string, unknown>), ids: [] };
+    const r2 = await run(forgotten, [page([early])]);
+    assertEquals(r2.events, []);
+  } finally {
+    clock.now = realNow;
+  }
+});
