@@ -57,6 +57,12 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCampaign from "./triggers/new-campaign.ts";
+import newCatalog from "./triggers/new-catalog.ts";
+import newJourney from "./triggers/new-journey.ts";
+import newList from "./triggers/new-list.ts";
+import newOrUpdatedJourney from "./triggers/new-or-updated-journey.ts";
+import newOrUpdatedTemplate from "./triggers/new-or-updated-template.ts";
+import newTemplate from "./triggers/new-template.ts";
 
 export default {
   actions: [
@@ -116,6 +122,14 @@ export default {
     bulkUpdateSubscriptions,
   ],
   auth: [apiKey],
-  triggers: [newCampaign],
+  triggers: [
+    newCampaign,
+    newTemplate,
+    newOrUpdatedTemplate,
+    newJourney,
+    newOrUpdatedJourney,
+    newList,
+    newCatalog,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
