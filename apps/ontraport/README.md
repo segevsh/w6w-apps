@@ -1,13 +1,12 @@
 # Ontraport
 
-Triggers: not shipped — collection actions expose caller-selected sort fields, but the vendor does not document a creation-time sort field or a bounded collection suitable for a new-record poll (https://api.ontraport.com/doc/).
-
 CRM and marketing automation: contacts, tasks, tags, campaigns (automations), sequences,
 transactions, orders and purchases, on the **Ontraport API v1**.
 
 - **Categories** — crm, marketing
 - **Auth methods** — api-key (custom: `Api-Key` + `Api-Appid` headers)
 - **Actions** — 31
+- **Triggers** — 4 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.ontraport.com` (the `service` check adds `ontraport.statuspage.io`
   to its own hook allowlist, never to the app's)
@@ -101,6 +100,21 @@ live). There is no vendor error *code* to key off, only this fixed sentence, so 
 (`isAuthFailureBody` in `lib/client.ts`) rather than by the bare HTTP status — which is also
 this pack's own hard rule for exactly this reason: a 401 can mean several different things on
 other APIs, and here it means only one thing, stated only in prose.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` | poll | `contact-list` (`GET /1/Contacts`, `sort=date`, `sortDir=desc`, `range=50`) | Each newly created contact. |
+| `new-or-updated-contact` | poll | `contact-list` (`sort=dlm`, `sortDir=desc`, `range=50`) | Each contact that is created or modified; an edit is a new event. |
+| `new-purchase` | poll | `purchase-list` (`GET /1/Purchases`, `sort=date`, `sortDir=desc`, `range=50`) | Each newly recorded purchase. |
+| `new-or-updated-order` | poll | `order-list` (`GET /1/Orders`, `sort=dlm`, `sortDir=desc`, `range=50`) | Each order that is created or modified; an edit is a new event. |
+
+The poll seeds on its first check without emitting existing records, then emits only ids not seen before (for the `new-or-updated-*` keys the id is `id:dlm`, so an edit to a record emits again). Ontraport documents `date` (Date Added) and `dlm` (Date Modified) as timestamp fields, `sort` + `sortDir` (`asc`/`desc`) and a maximum `range` of 50 on collection requests. `task-list` is not wrapped: the task object documents `date_assigned`, but the reference does not say that `sort` accepts it. Ontraport also offers a webhook subscription API (`POST /1/Webhook/subscribe`, events such as *Object is created*, *Tag is added*, *Form is submitted*); no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://api.ontraport.com/doc/ (contact, purchase, order and task objects, collection query parameters, Webhooks)
 
 ## Auth
 

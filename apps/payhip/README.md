@@ -1,6 +1,6 @@
 # Payhip
 
-Triggers: not shipped — the Public API actions only verify and manage a supplied license key; it has no list feed of changing records (https://help.payhip.com/article/317-public-api).
+Triggers: not shipped — the Public API only verifies and manages a supplied license key and has no list feed; Payhip webhooks (paid, refunded, subscription.created, subscription.deleted) are queued for a webhook node (https://help.payhip.com/article/115-webhooks).
 
 Verify, enable, disable and count uses of Payhip **software license keys**.
 

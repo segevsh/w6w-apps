@@ -1,13 +1,12 @@
 # Paperform
 
-Triggers: not shipped — form submissions are paginated but the documented list endpoint provides no creation-order or since filter; webhook candidate queued for form submissions (https://paperform.readme.io/reference/getting-started-1).
-
 Manage Paperform forms, fields, submissions and webhooks over the **Paperform API v1**
 (`api.paperform.co/v1`).
 
 - **Categories** — forms
 - **Auth methods** — api-key
 - **Actions** — 25
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `request-rate`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.paperform.co` (the `service` check adds `paperform.statuspage.io`
   to its own hook allowlist, never to the app's)
@@ -94,6 +93,21 @@ endpoint in this API uses a plain, unhyphenated key (`forms`, `submissions`, `we
 `field`, `space`). `actions/list-form-partial-submissions.ts` and its four siblings document this
 inline; the test suite pins it by also asserting that an underscore-keyed body (the "expected"
 spelling) yields no results.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-submission` | poll | `list-form-submissions` (`GET /v1/forms/{slug}/submissions`, `sort=DESC`, `limit=20`) | Each new completed submission of the chosen form. |
+| `new-form` | poll | `list-forms` (`GET /v1/forms`, `sort=DESC`, `limit=20`) | Each newly created form. |
+
+Both list endpoints document results "sorted by created_at" with the direction defaulting to `DESC`; the triggers pass `sort=DESC` explicitly, seed without emitting, then emit ids not seen before. `new-submission` takes the form's slug or id as a parameter. Paperform also offers per-form webhooks for submissions (`POST /v1/forms/{slug}/webhooks`); no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://paperform.readme.io/reference/listformsubmissions
+- https://paperform.readme.io/reference/listforms
+- https://paperform.readme.io/reference/createformwebhook
 
 ## Auth
 

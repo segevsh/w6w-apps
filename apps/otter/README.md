@@ -83,7 +83,7 @@ Notes worth knowing before wiring a workflow:
 | `new-conversation` | poll | `conversation-list` (`GET /conversations`, most recent first) | Each newly created Otter conversation. |
 
 The poll seeds without emitting existing conversations, then deduplicates their stable `id` values.
-Otter documents the conversation list as most recent first. Vendor API and webhook documentation:
+Otter documents the conversation list as most recent first. The trigger requests `limit=20`, the documented maximum for that endpoint. Vendor API and webhook documentation:
 https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API (verified 2026-11-09).
 
 ## Health check

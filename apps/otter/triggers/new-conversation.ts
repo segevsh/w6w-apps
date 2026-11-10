@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Conversation",
   description: "The run gets each newly created Otter conversation.",
   action: conversationList,
-  input: () => ({ limit: 100 }),
+  input: () => ({ limit: 20 }),
   items: (result) => (result as { data?: unknown[] }).data ?? [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   output: [

@@ -43,6 +43,11 @@ import addCustomActivity from "./actions/add-custom-activity.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAccount from "./triggers/new-account.ts";
+import newPerson from "./triggers/new-person.ts";
+import newDeal from "./triggers/new-deal.ts";
+import newCase from "./triggers/new-case.ts";
+import newInvoice from "./triggers/new-invoice.ts";
 
 /**
  * Outseta — all-in-one membership, billing, CRM, email and support for SaaS.
@@ -107,4 +112,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newAccount, newPerson, newDeal, newCase, newInvoice],
 } satisfies AppDefinition;

@@ -1,13 +1,12 @@
 # PhantomBuster
 
-Triggers: not shipped — container-list is scoped to an agent and lacks a documented creation-order or since filter, so it cannot safely serve as a general new-run feed (https://hub.phantombuster.com/reference).
-
 Launch and monitor PhantomBuster **Phantoms** (agents), read the containers and result data they
 produce, and check organization resource headroom, on the **PhantomBuster API v2**.
 
 - **Categories** — marketing, crm, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.phantombuster.com` (the `service` check adds
   `status.phantombuster.com` to its own hook allowlist, never to the app's)
@@ -145,6 +144,19 @@ The credential-liveness probe (`auth/api-key.ts`) and the `quota` check delibera
 same endpoint, `GET /orgs/fetch-resources`: it needs a credential, is reachable without any special
 scope, and returns nothing secret — the same reasoning this pack's Apify app applies to
 `/v2/users/me/limits`.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-agent` | poll | `agent-list` (`GET /api/v2/agents/fetch-all`, the whole agent list) | Each agent (phantom) newly created in the organization (additions only). |
+
+`agents/fetch-all` returns every agent of the organization in one response and has no ordering or date filter, so the trigger snapshots the list and emits ids not seen before (renames and removals are ignored). PhantomBuster plans meter agents as slots (the action's `withAgentSlotsFactor` option), so the list is small. `container-list` is not wrapped: it filters only by `beforeEndedAt`, which cannot select runs newer than a cursor. PhantomBuster also lets each agent call a webhook when a run ends (configured per agent, secret carried in the URL); no webhook trigger is shipped yet.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://hub.phantombuster.com/reference/get_agents-fetch-all
+- https://hub.phantombuster.com/docs/using-webhooks
 
 ## Auth
 

@@ -1,17 +1,30 @@
 # Plivo
 
-Triggers: not shipped — list-messages exposes time filters but no documented newest-first sort control (https://www.plivo.com/docs/messaging/api/messages.md).
-
 Send SMS/MMS, place and manage voice calls, search and manage phone numbers, and read account
 details via Plivo.
 
 - **Categories** — communication
 - **Auth methods** — basic (Auth ID + Auth Token)
 - **Actions** — 21
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.plivo.com`
 - **Website** — https://www.plivo.com
 - **API docs** — https://www.plivo.com/docs (every page has a `.md` twin, e.g.
   `https://www.plivo.com/docs/messaging/api/messages.md`; index at `/docs/llms.txt`)
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` | poll | `list-messages` (`GET /Message/`, `message_time__gt` = cursor, `limit=20`) | Each new inbound or outbound message. |
+| `new-call` | poll | `list-calls` (`GET /Call/`, `end_time__gte` = cursor, `limit=20`) | Each newly completed call (CDR). |
+
+Both lists take a documented time filter (`message_time__gt`; `end_time__gt/gte/lt/lte`) and page by `limit` (max 20) and `offset`, without a documented sort argument, so the triggers use the since-filter shape: the first check records the newest record time and emits nothing; later checks filter from that time minus a 2-minute overlap and dedupe by `message_uuid` / `call_uuid`. Plivo stamps records with a UTC offset but documents the filter as a bare `yyyy-MM-dd HH:mm:ss`; the trigger sends the earlier of the wall-clock and UTC readings so the filter can only over-fetch, never skip. `new-call` lists completed calls only; Plivo searches the last 7 days when no end-time filter is given and at most 90 days back.
+
+Vendor documentation (verified 2026-11-09):
+
+- https://www.plivo.com/docs/messaging/api/messages (List all messages)
+- https://www.plivo.com/docs/voice/api/calls (List all calls)
 
 ## Auth
 

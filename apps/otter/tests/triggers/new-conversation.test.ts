@@ -13,7 +13,7 @@ test("new-conversation: seeds, emits unseen items, retries idempotently, and req
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
   assertEquals(seed.calls[0].method, "GET");
-  assertEquals(seed.calls[0].url, "https://api.otter.ai/v1/conversations?limit=100");
+  assertEquals(seed.calls[0].url, "https://api.otter.ai/v1/conversations?limit=20");
 
   const page = [item("b"), item("a")];
   const first = await trigger.poll!({ ...input, state: seeded.nextState }, ctx(page).ctx);
