@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/powerbi",
-  "version": "0.1.0",
-  "description": "List, refresh and export Power BI workspaces, reports and datasets through the Power BI REST API.",
+  "version": "0.2.0",
+  "description": "List, refresh, poll refresh history and export Power BI workspaces, reports and datasets through the Power BI REST API.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.powerbi.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

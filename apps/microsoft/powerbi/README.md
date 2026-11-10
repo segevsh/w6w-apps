@@ -1,7 +1,5 @@
 # Microsoft Power BI
 
-Triggers: not shipped — dashboard, dataset, report and workspace lists are inventory resources without a documented newest-first order, since filter, or bounded collection guarantee (https://learn.microsoft.com/en-us/rest/api/power-bi/).
-
 List, refresh and export Power BI workspaces, reports and datasets through the **Power BI REST
 API** (`api.powerbi.com`) — a separate surface from Microsoft Graph, with its own Azure AD
 resource and its own error contract.
@@ -13,6 +11,19 @@ resource and its own error contract.
   OAuth)
 - **Website** — https://powerbi.microsoft.com
 - **API docs** — https://learn.microsoft.com/en-us/rest/api/power-bi/ (TOC fetched 2026-08-30)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-refresh` — New Dataset Refresh | poll | `list-refresh-history` | Each refresh of one dataset that started since the previous check |
+| `new-or-updated-refresh` — New or Updated Dataset Refresh | poll | `list-refresh-history` | Each refresh that started or changed status (for example in progress to Completed or Failed) |
+
+The refresh history is a small bounded collection: "There are always between 20–60 available refresh
+history entries for each dataset", each with a stable `requestId` and a `status`. One request
+(`$top=60`) returns the whole collection, so the triggers de-duplicate on `requestId`
+(`requestId:status` for the updated trigger). [Get Refresh History](https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history)
+verified 2026-11-09.
 
 ## This is NOT Microsoft Graph
 

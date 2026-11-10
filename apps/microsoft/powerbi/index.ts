@@ -28,6 +28,8 @@ import listDashboards from "./actions/list-dashboards.ts";
 import listDashboardTiles from "./actions/list-dashboard-tiles.ts";
 
 import service from "./health/service.ts";
+import newRefresh from "./triggers/new-refresh.ts";
+import newOrUpdatedRefresh from "./triggers/new-or-updated-refresh.ts";
 import quota from "./health/quota.ts";
 
 export default {
@@ -52,5 +54,6 @@ export default {
     listDashboardTiles,
   ],
   auth: [oauth2],
+  triggers: [newRefresh, newOrUpdatedRefresh],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
