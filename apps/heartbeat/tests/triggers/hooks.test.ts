@@ -97,8 +97,8 @@ const call = (body: unknown, method = "POST", rawBody?: string) => ({
   subscriptionId: "sub_1",
 });
 
-test("app declares the eight webhook triggers with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), [
+test("app declares the eight original webhook triggers first, with output and sample, no poll", () => {
+  assertEquals(app.triggers.map((t) => t.key).slice(0, 8), [
     "user-joined",
     "user-updated",
     "thread-created",
