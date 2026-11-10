@@ -7,6 +7,7 @@ interface Input extends DeskListInput {
   channel?: string;
   assignee?: string;
   include?: string;
+  sortBy?: string;
 }
 
 const ticketList: ActionDefinition<Input, DeskListEnvelope<Record<string, unknown>>> = {
@@ -51,6 +52,12 @@ const ticketList: ActionDefinition<Input, DeskListEnvelope<Record<string, unknow
       config: { valueFormat: "csv" },
       hint: "Comma-separated: contacts, products, assignee, departments, team, isRead.",
     },
+    {
+      key: "sortBy",
+      label: "Sort by",
+      type: "string",
+      hint: "dueDate, recentThread, createdTime or ticketNumber. Prefix with - for descending.",
+    },
     ...pageParams,
   ],
   output: [{ key: "data", type: "array", label: "Tickets" }],
@@ -61,6 +68,7 @@ const ticketList: ActionDefinition<Input, DeskListEnvelope<Record<string, unknow
       channel: input.channel,
       assignee: input.assignee,
       include: input.include,
+      sortBy: input.sortBy,
     });
   },
 };
