@@ -78,6 +78,23 @@ import formSubmissionGet from "./actions/form-submission-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrder from "./triggers/new-order.ts";
+import newOrderItem from "./triggers/new-order-item.ts";
+import newPurchase from "./triggers/new-purchase.ts";
+import newOrUpdatedPurchase from "./triggers/new-or-updated-purchase.ts";
+import newFormSubmission from "./triggers/new-form-submission.ts";
+import newContactNote from "./triggers/new-contact-note.ts";
+import newOrUpdatedContactNote from "./triggers/new-or-updated-contact-note.ts";
+import newOffer from "./triggers/new-offer.ts";
+import newProduct from "./triggers/new-product.ts";
+import newCourse from "./triggers/new-course.ts";
+import newForm from "./triggers/new-form.ts";
+import newContactTag from "./triggers/new-contact-tag.ts";
+import newContactOffer from "./triggers/new-contact-offer.ts";
+import newOfferProduct from "./triggers/new-offer-product.ts";
+import newTransaction from "./triggers/new-transaction.ts";
+import newPayout from "./triggers/new-payout.ts";
 
 /**
  * Kajabi — creator commerce: courses, memberships and digital products.
@@ -154,6 +171,25 @@ export default {
     formSubmissionGet,
   ],
   auth: [clientCredentials],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newCustomer,
+    newOrder,
+    newOrderItem,
+    newPurchase,
+    newOrUpdatedPurchase,
+    newFormSubmission,
+    newContactNote,
+    newOrUpdatedContactNote,
+    newOffer,
+    newProduct,
+    newCourse,
+    newForm,
+    newContactTag,
+    newContactOffer,
+    newOfferProduct,
+    newTransaction,
+    newPayout,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

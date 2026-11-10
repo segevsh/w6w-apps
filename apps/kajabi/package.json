@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/kajabi",
-  "version": "0.2.0",
-  "description": "Manage contacts, tags, offers, products, orders, purchases and forms on a Kajabi site via the Kajabi Public API v1. Includes a new contact poll trigger.",
+  "version": "0.3.0",
+  "description": "Manage contacts, tags, offers, products, orders, purchases and forms on a Kajabi site via the Kajabi Public API v1. Includes 17 poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://help.kajabi.com/api-reference",
       "https://www.postman.com/kajabi-apis/kajabi-public-api-v1/overview"
     ],
-    "longDescription": "Kajabi is a creator-commerce platform for courses, memberships and other digital products, and this app lets a workflow manage the contact and commerce side of a Kajabi site. Create, update and look up contacts, tag and untag them, grant or revoke access to an offer, and browse the courses and products those offers unlock.\n\nMoney questions go through customers, orders, purchases and transactions: list a customer's orders and their line items, check payout history for sites on Kajabi Payments, and reactivate, deactivate or fully cancel a purchase's subscription. Submit a form on a contact's behalf to trigger the same automations — email sequences, tags, offer grants — that a live signup on a landing page would fire, or use plain contact creation for a bulk import that should stay quiet.\n\nDiscovery actions round it out: list a site's custom fields, tags and forms, and read a form's own submissions, so a workflow can work with the exact vocabulary a given Kajabi site actually uses.\n\nA new contact poll trigger starts workflows from the existing contact-list action.",
+    "longDescription": "Kajabi is a creator-commerce platform for courses, memberships and other digital products, and this app lets a workflow manage the contact and commerce side of a Kajabi site. Create, update and look up contacts, tag and untag them, grant or revoke access to an offer, and browse the courses and products those offers unlock.\n\nMoney questions go through customers, orders, purchases and transactions: list a customer's orders and their line items, check payout history for sites on Kajabi Payments, and reactivate, deactivate or fully cancel a purchase's subscription. Submit a form on a contact's behalf to trigger the same automations — email sequences, tags, offer grants — that a live signup on a landing page would fire, or use plain contact creation for a bulk import that should stay quiet.\n\nDiscovery actions round it out: list a site's custom fields, tags and forms, and read a form's own submissions, so a workflow can work with the exact vocabulary a given Kajabi site actually uses.\n\nPoll triggers start workflows from the existing list actions: new contacts, customers, orders, order items, purchases (new or updated), form submissions, contact notes, transactions, offers, products, courses and forms, plus tags and offers newly attached to a chosen contact and products added to a chosen offer.",
     "categories": [
       "commerce",
       "crm",
