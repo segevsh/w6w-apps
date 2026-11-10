@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 67, manual-webhook: 32, poll: 486, none: 98
+**Totals:** 683 apps — webhook-api: 67, manual-webhook: 30, poll: 486, none: 100
 
 ## webhook-api (67)
 
@@ -69,12 +69,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/savvycal | event.created, event.rescheduled, event.canceled | apps/savvycal/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: event.created, event.rescheduled, event.canceled and more; event-list orders by scheduled time and link-list is cursor-paged with no stated cap |
 | apps/shopify | customer-created, event, order-cancelled, order-created, order-fulfilled, order-paid, order-updated, product-created, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/signnow | document.create, document.update, document.complete | apps/signnow/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document.* and user.document.* events, X-SignNow-Signature HMAC; folder-tree read has no documented created/updated order or bounded snapshot |
-| apps/signwell | document_completed, document_created, document_signed, document_declined | apps/signwell/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: document_* and template_* events registered via POST /webhooks; bulk-send-list documents only page/limit/user_email/api_application_id, no sort order and no since filter (https://developers.signwell.com/openapi/resources-and-endpoints.json), and no document-list action exists |
+| apps/signwell | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
 | apps/stripe | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/surveymonkey | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/terraform | run notification (completed/errored/needs-attention) | apps/terraform/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: run notification configurations (HMAC-SHA512 X-TFE-Notification-Signature); GET /workspaces/:id/runs documents page and filter[status\|operation\|source] only, no sort order or since filter (https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run#list-runs-in-a-workspace) |
-| apps/thrivecart | purchase, subscription | apps/thrivecart/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: ThriveCart purchase/subscription events; product, bump, upsell and downsell lists are catalogs with no order or since filter (https://apidocs.thrivecart.com/) |
+| apps/terraform | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
+| apps/thrivecart | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret |
 | apps/toggl | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | new-response | apps/typeform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webex | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -82,7 +82,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (32)
+## manual-webhook (30)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -111,13 +111,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/phantombuster | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/strava | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
-| apps/tiktok-lead-generation | lead.generated | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: lead-generation events; the existing lead retrievals (get-lead by id, download-page-leads as an async export task) have no documented order or since filter (https://business-api.tiktok.com/portal/docs) |
-| apps/tldv | MeetingReady, TranscriptReady | apps/tldv/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list from/to filters the meeting's own date, not when its recording became ready, and no order is documented (https://doc.tldv.io/) |
+| apps/tldv | meeting-ready, transcript-ready | apps/tldv/README.md Triggers section (verified 2026-11-10) | hand | webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret |
 | apps/todoist | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
-| apps/vero | email events (sent, delivered, opened, clicked, bounced, unsubscribed) | apps/vero/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: email-event and customer-update webhooks; the API is write-only so there is no list action to poll (https://help.getvero.com/vero-1/integrations/setting-up-webhooks) |
+| apps/vero | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
-| apps/wiza | list-finished, reveal-finished | apps/wiza/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 
 ## poll (486)
 
@@ -610,7 +608,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (98)
+## none (100)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -704,9 +702,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tickettailor | issued-ticket-list | apps/tickettailor/README.md Triggers: not shipped line (verified 2026-11-09) | hand | issued-ticket-list has cursor paging only, no documented sort or created-after filter (https://developers.tickettailor.com/) |
 | apps/tidio | ticket-list | apps/tidio/README.md Triggers: not shipped line (verified 2026-11-09) | hand | GET /tickets takes only a cursor, no documented sort or filter (https://developers.tidio.com/reference/get_tickets.md) |
 | apps/tidycal |  | apps/tidycal/README.md Triggers section (verified 2026-11-09) | hand | booking-list filters by starts_at/ends_at (the booking's own time, not its creation) and contact-list takes only a page number, neither documents a sort order or created-since filter (https://tidycal.com/developer/docs/) |
+| apps/tiktok-lead-generation | lead.generated | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | TikTok's subscription API covers leads (Create a subscription) but its docs render client-side, so the lead event names, delivery format and verification scheme cannot be read from the vendor (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3); paged lead retrievals have no verified order or since filter |
 | apps/twilio/segment |  | apps/twilio/segment/README.md Triggers section (verified 2026-11-09) | hand | the HTTP Tracking API actions (identify, track, page, group, alias, batch) are write-only ingestion calls with no list endpoint for emitted events (https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/) |
 | apps/upstash |  | apps/upstash/README.md Triggers section (verified 2026-11-09) | hand | Upstash Redis REST commands run against caller-chosen keys and collections: no account record list with stable ids and no created/updated filter or sort (https://upstash.com/docs/redis/features/restapi) |
 | apps/webscrapingai | serp-search | apps/webscrapingai/README.md Triggers section (verified 2026-11-09) | hand | serp-search is a query-driven search result, not a persistent record feed (https://docs.webscraping.ai/web-scraping-api/serp-api/) |
+| apps/wiza |  | apps/wiza/README.md Triggers section (verified 2026-11-10) | hand | Wiza's only webhook is a per-job completion callback (callback_url on create-list, create-prospect-list, start-individual-reveal, or the account default URL) for jobs the caller starts via the API, not a subscribable account event stream (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 | apps/woodpecker | prospect-list | apps/woodpecker/README.md Triggers section (verified 2026-11-09) | hand | prospect-list/prospect-search have sort and diff (changed-since) but the reference is script-rendered and no creation stamp or prospect update field could be confirmed (https://developers.woodpecker.co/) |
 | apps/workday |  | apps/workday/README.md Triggers section (verified 2026-11-09) | hand | collection actions are tenant-specific offset-paginated reports whose vendor docs sit behind the tenant login, so no created/updated filter, sort or bounded size can be cited (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html) |
 | apps/workiz |  | apps/workiz/README.md Triggers section (verified 2026-11-09) | hand | lead-list is ordered and windowed by the scheduled LeadDateTime (start_date until today), not creation, so a lead scheduled outside the window never appears and no created-ordered feed exists (http://developer.workiz.com/api.json) |

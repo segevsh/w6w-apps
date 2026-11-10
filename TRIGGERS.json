@@ -6163,14 +6163,13 @@
     "path": "apps/signwell",
     "mechanism": "webhook-api",
     "candidates": [
-      "document_completed",
-      "document_created",
-      "document_signed",
-      "document_declined"
+      "document-completed",
+      "document-signed",
+      "document-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: document_* and template_* events registered via POST /webhooks; bulk-send-list documents only page/limit/user_email/api_application_id, no sort order and no since filter (https://developers.signwell.com/openapi/resources-and-endpoints.json), and no document-list action exists",
-    "verified": "apps/signwell/README.md Triggers section (verified 2026-11-09)",
+    "reason": "API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash",
+    "verified": "apps/signwell/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6678,11 +6677,14 @@
     "path": "apps/terraform",
     "mechanism": "webhook-api",
     "candidates": [
-      "run notification (completed/errored/needs-attention)"
+      "run-completed",
+      "run-errored",
+      "run-needs-attention",
+      "run-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: run notification configurations (HMAC-SHA512 X-TFE-Notification-Signature); GET /workspaces/:id/runs documents page and filter[status|operation|source] only, no sort order or since filter (https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run#list-runs-in-a-workspace)",
-    "verified": "apps/terraform/README.md Triggers section (verified 2026-11-09)",
+    "reason": "API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected)",
+    "verified": "apps/terraform/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6724,12 +6726,14 @@
     "path": "apps/thrivecart",
     "mechanism": "webhook-api",
     "candidates": [
-      "purchase",
-      "subscription"
+      "new-purchase",
+      "subscription-payment",
+      "subscription-cancelled",
+      "thrivecart-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: ThriveCart purchase/subscription events; product, bump, upsell and downsell lists are catalogs with no order or since filter (https://apidocs.thrivecart.com/)",
-    "verified": "apps/thrivecart/README.md Triggers section (verified 2026-11-09)",
+    "reason": "API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret",
+    "verified": "apps/thrivecart/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6776,13 +6780,13 @@
   },
   {
     "path": "apps/tiktok-lead-generation",
-    "mechanism": "manual-webhook",
+    "mechanism": "none",
     "candidates": [
       "lead.generated"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: lead-generation events; the existing lead retrievals (get-lead by id, download-page-leads as an async export task) have no documented order or since filter (https://business-api.tiktok.com/portal/docs)",
-    "verified": "apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-09)",
+    "reason": "TikTok's subscription API covers leads (Create a subscription) but its docs render client-side, so the lead event names, delivery format and verification scheme cannot be read from the vendor (https://business-api.tiktok.com/portal/docs/create-a-subscription/v1.3); paged lead retrievals have no verified order or since filter",
+    "verified": "apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6800,12 +6804,12 @@
     "path": "apps/tldv",
     "mechanism": "manual-webhook",
     "candidates": [
-      "MeetingReady",
-      "TranscriptReady"
+      "meeting-ready",
+      "transcript-ready"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: MeetingReady and TranscriptReady; meeting-list from/to filters the meeting's own date, not when its recording became ready, and no order is documented (https://doc.tldv.io/)",
-    "verified": "apps/tldv/README.md Triggers section (verified 2026-11-09)",
+    "reason": "webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret",
+    "verified": "apps/tldv/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -7069,11 +7073,11 @@
     "path": "apps/vero",
     "mechanism": "manual-webhook",
     "candidates": [
-      "email events (sent, delivered, opened, clicked, bounced, unsubscribed)"
+      "vero-event"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: email-event and customer-update webhooks; the API is write-only so there is no list action to poll (https://help.getvero.com/vero-1/integrations/setting-up-webhooks)",
-    "verified": "apps/vero/README.md Triggers section (verified 2026-11-09)",
+    "reason": "webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry",
+    "verified": "apps/vero/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -7274,14 +7278,11 @@
   },
   {
     "path": "apps/wiza",
-    "mechanism": "manual-webhook",
-    "candidates": [
-      "list-finished",
-      "reveal-finished"
-    ],
+    "mechanism": "none",
+    "candidates": [],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml)",
-    "verified": "apps/wiza/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Wiza's only webhook is a per-job completion callback (callback_url on create-list, create-prospect-list, start-individual-reveal, or the account default URL) for jobs the caller starts via the API, not a subscribable account event stream (https://docs.wiza.co/swagger/v1/openapi.yaml)",
+    "verified": "apps/wiza/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
