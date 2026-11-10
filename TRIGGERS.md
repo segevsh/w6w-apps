@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -24,10 +24,7 @@ depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-p
 | apps/acculynx | 2 | 15 | 14 |
 | apps/document360 | 2 | 15 | 14 |
 | apps/fortnox | 0 | 14 | 14 |
-| apps/missive | 1 | 15 | 14 |
-| apps/mollie | 1 | 15 | 14 |
 | apps/copper | 7 | 13 | 13 |
-| apps/drata | 1 | 14 | 13 |
 | apps/tapfiliate | 1 | 14 | 13 |
 | apps/apollo | 2 | 13 | 12 |
 | apps/attio | 1 | 13 | 12 |
@@ -621,6 +618,7 @@ depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-p
 | apps/customerio | 4 | 0 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/discord | 5 | 5 | 0 |
+| apps/drata | 13 | 14 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
@@ -646,6 +644,8 @@ depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-p
 | apps/linkupapi | 7 | 20 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
+| apps/missive | 10 | 15 | 0 |
+| apps/mollie | 9 | 15 | 0 |
 | apps/notion | 42 | 30 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
 | apps/onesignal | 1 | 0 | 0 |
@@ -909,7 +909,7 @@ depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-p
 | apps/docuseal | 1 | submitter-list | new-completed-submitter | apps/docuseal/README.md Triggers section (verified 2026-11-09) | hand | submitter-list takes documented completed_after filter; since-filter poll with id dedupe; submission-list has no date filter or documented order (https://www.docuseal.com/docs/api) |
 | apps/docusign | 2 | envelope-list | new-envelope, new-or-updated-envelope | apps/docusign/README.md Triggers section (verified 2026-11-09) | hand | order_by=created\|status_changed with order=desc and a 30-day from_date |
 | apps/donorbox | 1 | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
-| apps/drata | 1 | event-list | new-event | apps/drata/README.md Triggers section (verified 2026-11-09) | hand | event-list takes createdAtStartDate; since-filter poll with id dedupe (https://developers.drata.com/openapi/reference/v2/overview/) |
+| apps/drata | 13 | event-list | new-asset, new-control, new-device, new-event, new-evidence, new-monitoring-test, new-personnel, new-policy, new-risk, new-risk-register, new-user, new-vendor, new-workspace | apps/drata/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=createdAt, sortDir=DESC, documented on each v2 list endpoint) for the main record lists plus the since-filter event poll. |
 | apps/drip | 1 | list-subscribers | new-subscriber | apps/drip/README.md Triggers section (verified 2026-11-09) | hand | list-subscribers takes documented subscribed_after (created after) filter; since-filter poll with id dedupe (https://developer.drip.com/#list-all-subscribers) |
 | apps/dropbox/dropbox | 1 | list-folder | new-file | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-09) | hand | list-folder on one named, non-recursive folder capped at 600 entries (fails loudly above): snapshot, emit added ids (https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder) |
 | apps/dropbox/dropbox-sign | 1 | signature-request-list | new-signature-request | apps/dropbox/dropbox-sign/README.md Triggers section (verified 2026-11-09) | hand | New Signature Request polls signature-request-list with the documented search filter created:[yesterday TO today] (UTC days) and dedupes by signature_request_id; sent/viewed/signed/declined callback events also exist (queued as an upgrade). |
@@ -1069,11 +1069,11 @@ depth: 682 apps, 1385 triggers, 3048 unaccounted list actions in 589 apps, n8n-p
 | apps/microsoft/teams | 1 | list-channel-messages | new-channel-message | apps/microsoft/teams/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-channel-messages |
 | apps/millionverifier | 2 | bulk-list-files | new-bulk-file, new-or-updated-bulk-file | apps/millionverifier/README.md Triggers section (verified 2026-11-09) | hand | bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/) |
 | apps/miro | 1 | board-list | new-board | apps/miro/README.md Triggers section (verified 2026-11-09) | hand | board-list sort=last_created with required teamId (Miro honours sort only within a team or project). |
-| apps/missive | 1 | contact-list | new-or-updated-contact | apps/missive/README.md Triggers section (verified 2026-11-09) | hand | Contacts are requested with last_modified ordering and update stamp ids. |
+| apps/missive | 10 | conversation-list | new-comment, new-contact-group, new-conversation, new-draft, new-message, new-or-updated-contact, new-or-updated-conversation, new-or-updated-task, new-post, new-task | apps/missive/README.md Triggers section (verified 2026-11-10) | hand | Newest-first conversation and task activity polls (omitting `until`), per-conversation comment/draft/message/post feeds, new-or-updated siblings for conversations/tasks/contacts; remaining administrative lists have no documented safe order or since filter. |
 | apps/mixmax | 1 | unsubscribe-list | new-unsubscribe | no | hand | shipped poll trigger(s) over list action unsubscribe-list |
 | apps/mixpanel | 1 | cohort-list | new-cohort | apps/mixpanel/README.md Triggers section (verified 2026-11-09) | hand | Saved cohorts are a small bounded collection; pollSnapshot emits a cohort when its id first appears. |
 | apps/moco | 1 | contact-list | new-or-updated-contact | apps/moco/README.md Triggers section (verified 2026-11-09) | hand | contact-list updated_after set to cursor minus 2 min overlap, id includes updated_at (shape b). |
-| apps/mollie | 1 | customer-list | new-customer | apps/mollie/README.md Triggers section (verified 2026-11-09) | hand | Customers are requested in descending order. |
+| apps/mollie | 9 | chargeback-list | new-chargeback, new-customer, new-customer-payment, new-mandate, new-payment, new-payment-link, new-refund, new-subscription, new-subscription-all | apps/mollie/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=desc where documented; payment links and account-wide subscriptions throw if a page is not newest-first by createdAt) for payments, customers, chargebacks, refunds, payment links and account-wide subscriptions; selected-customer feeds for payments, mandates and subscriptions. |
 | apps/moneybird | 3 | sales-invoice-list | new-sales-invoice, new-or-updated-sales-invoice, new-contact | apps/moneybird/README.md Triggers section (verified 2026-11-10) | hand | sales-invoice-list polls (created_after/updated_after, round 2 P-batch) plus new-contact as a signed API-registered webhook (contact_created; Moneybird-Signature HMAC-SHA256 over t.body, 5 min window) because contact-list has no filter (https://developer.moneybird.com/webhooks/verifying-signatures) |
 | apps/mongodb-atlas | 1 | event-list | new-event | apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09) | hand | event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented. |
 | apps/moonclerk | 1 | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |

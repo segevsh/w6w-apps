@@ -2137,12 +2137,27 @@
     "path": "apps/drata",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-asset",
+      "new-control",
+      "new-device",
+      "new-event",
+      "new-evidence",
+      "new-monitoring-test",
+      "new-personnel",
+      "new-policy",
+      "new-risk",
+      "new-risk-register",
+      "new-user",
+      "new-vendor",
+      "new-workspace"
     ],
     "pollAction": "event-list",
-    "reason": "event-list takes createdAtStartDate; since-filter poll with id dedupe (https://developers.drata.com/openapi/reference/v2/overview/)",
-    "verified": "apps/drata/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Newest-first polls (sort=createdAt, sortDir=DESC, documented on each v2 list endpoint) for the main record lists plus the since-filter event poll.",
+    "verified": "apps/drata/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "monitoring-test-failures-list": "state report of resources currently failing one test; resource ids recur when a resource fails again, so no stable new-record feed (https://developers.drata.com/openapi/reference/v2/tag/Monitoring-Tests/)"
+    }
   },
   {
     "path": "apps/drip",
@@ -5353,12 +5368,30 @@
     "path": "apps/missive",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-contact"
+      "new-comment",
+      "new-contact-group",
+      "new-conversation",
+      "new-draft",
+      "new-message",
+      "new-or-updated-contact",
+      "new-or-updated-conversation",
+      "new-or-updated-task",
+      "new-post",
+      "new-task"
     ],
-    "pollAction": "contact-list",
-    "reason": "Contacts are requested with last_modified ordering and update stamp ids.",
-    "verified": "apps/missive/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "conversation-list",
+    "reason": "Newest-first conversation and task activity polls (omitting `until`), per-conversation comment/draft/message/post feeds, new-or-updated siblings for conversations/tasks/contacts; remaining administrative lists have no documented safe order or since filter.",
+    "verified": "apps/missive/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-book-list": "unbounded offset-only administrative list with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "organization-list": "unbounded offset-only administrative list with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "response-list": "unbounded offset-only canned-response catalog with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "shared-label-list": "unbounded offset-only administrative label list with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "team-list": "unbounded offset-only administrative team list with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "user-list": "unbounded offset-only administrative user list with no documented order or since filter (https://missiveapp.com/docs/developers/rest-api/endpoints)",
+      "message-list": "lookup of messages by RFC Message-ID, not a feed; per-conversation messages are delivered by new-message (https://missiveapp.com/docs/developers/rest-api/endpoints)"
+    }
   },
   {
     "path": "apps/mistral",
@@ -5406,12 +5439,30 @@
     "path": "apps/mollie",
     "mechanism": "poll",
     "candidates": [
-      "new-customer"
+      "new-chargeback",
+      "new-customer",
+      "new-customer-payment",
+      "new-mandate",
+      "new-payment",
+      "new-payment-link",
+      "new-refund",
+      "new-subscription",
+      "new-subscription-all"
     ],
-    "pollAction": "customer-list",
-    "reason": "Customers are requested in descending order.",
-    "verified": "apps/mollie/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "chargeback-list",
+    "reason": "Newest-first polls (sort=desc where documented; payment links and account-wide subscriptions throw if a page is not newest-first by createdAt) for payments, customers, chargebacks, refunds, payment links and account-wide subscriptions; selected-customer feeds for payments, mandates and subscriptions.",
+    "verified": "apps/mollie/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "payment-chargeback-list": "new-chargeback",
+      "payment-refund-list": "new-refund",
+      "subscription-payment-list": "new-customer-payment"
+    },
+    "skipped": {
+      "method-list": "reference catalog of enabled payment methods (https://docs.mollie.com/reference/methods/list-methods)",
+      "method-list-all": "reference catalog of available payment methods (https://docs.mollie.com/reference/methods/list-methods)",
+      "profile-list": "website profile configuration, not a record feed users build on (https://docs.mollie.com/reference/list-profiles)"
+    }
   },
   {
     "path": "apps/monday",
