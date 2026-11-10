@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1736 triggers, 2642 unaccounted list actions in 544 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -136,7 +136,6 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/maileroo | 1 | 8 | 7 |
 | apps/metabase | 0 | 7 | 7 |
 | apps/microsoft/azuredevops | 3 | 8 | 7 |
-| apps/microsoft/teams | 1 | 8 | 7 |
 | apps/mongodb-atlas | 1 | 8 | 7 |
 | apps/newrelic | 0 | 7 | 7 |
 | apps/raindrop | 2 | 9 | 7 |
@@ -330,7 +329,6 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/linkedin/linkedin-ads | 1 | 5 | 4 |
 | apps/luma | 1 | 5 | 4 |
 | apps/mailjet | 1 | 5 | 4 |
-| apps/microsoft/outlook | 1 | 5 | 4 |
 | apps/microsoft/sharepoint | 1 | 5 | 4 |
 | apps/moco | 1 | 5 | 4 |
 | apps/monday | 2 | 4 | 4 |
@@ -388,7 +386,6 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/firestore | 1 | 4 | 3 |
 | apps/folk | 1 | 4 | 3 |
 | apps/formstack-documents | 1 | 4 | 3 |
-| apps/google/gmail | 1 | 4 | 3 |
 | apps/google/google-contacts | 1 | 4 | 3 |
 | apps/google/google-vertex-ai | 0 | 3 | 3 |
 | apps/google/googlesearchconsole | 0 | 3 | 3 |
@@ -604,6 +601,7 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
+| apps/google/gmail | 4 | 4 | 0 |
 | apps/google/google-calendar | 7 | 2 | 0 |
 | apps/google/google-drive | 5 | 3 | 0 |
 | apps/google/google-forms | 3 | 2 | 0 |
@@ -632,6 +630,8 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/loyverse | 2 | 0 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
 | apps/meistertask | 12 | 12 | 0 |
+| apps/microsoft/outlook | 4 | 5 | 0 |
+| apps/microsoft/teams | 8 | 8 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/missive | 10 | 15 | 0 |
 | apps/mollie | 9 | 15 | 0 |
@@ -962,7 +962,7 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/glide | 1 | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
 | apps/gocardless | 1 | list-customers | new-customer | apps/gocardless/README.md Triggers section (verified 2026-11-09) | hand | Newest-created customer page is polled. |
 | apps/google/bigquery | 1 | job-list | new-job-list | apps/google/bigquery/README.md Triggers section (verified 2026-11-09) | hand | Existing jobs list is polled. |
-| apps/google/gmail | 1 | get-many-messages | new-email | apps/google/gmail/README.md Triggers section (verified 2026-11-09) | hand | gmail users.messages.list with q=after:<epoch>; H-1 |
+| apps/google/gmail | 4 | get-many-messages | new-email, new-or-updated-thread, new-label, new-draft | apps/google/gmail/README.md Triggers section (verified 2026-11-10) | hand | polls over get-many-messages (since-filter), get-many-threads (since-filter), get-many-labels and get-many-drafts (snapshots); no webhook: users.watch needs a Cloud Pub/Sub topic and stops after 7 days without a renewal call (https://developers.google.com/workspace/gmail/api/guides/push) |
 | apps/google/google-business-profile | 1 | list-questions | new-question | apps/google/google-business-profile/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-questions |
 | apps/google/google-calendar | 7 | list-events | event-changed, new-event, event-updated, event-cancelled, event-started, event-ended, new-calendar | apps/google/google-calendar/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over list-events (sync feed for created/updated/cancelled, timeMin/timeMax window for started/ended) and list-calendars (snapshot); push channels carry no event data and expire (https://developers.google.com/workspace/calendar/api/guides/push); new-event is created-only on a best-effort basis: a sync-feed item shows the latest state, so an event edited again after creation (more than 2 s) reads as updated and is reported by event-updated, not new-event (n8n eventCreated is therefore approximated) |
 | apps/google/google-contacts | 1 | list-contact-groups | new-contact-group | apps/google/google-contacts/README.md Triggers section (verified 2026-11-09) | hand | Contact groups page of 200 (fits the kit's seen window) is polled; order undocumented. |
@@ -1064,10 +1064,10 @@ depth: 682 apps, 1723 triggers, 2656 unaccounted list actions in 547 apps, n8n-p
 | apps/microsoft/microsoft-entra-id | 1 | list-deleted-items | new-deleted-item | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09) | hand | Deleted items are requested by deletedDateTime descending. |
 | apps/microsoft/onedrive | 1 | list-changes | file-changed | no | hand | shipped poll trigger(s) over list action list-changes |
 | apps/microsoft/onenote | 1 | list-pages | new-or-updated-page | apps/microsoft/onenote/README.md Triggers section (verified 2026-11-09) | hand | Page feed is documented as last-modified descending; update stamp is part of id. |
-| apps/microsoft/outlook | 1 | list-messages | new-email | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
+| apps/microsoft/outlook | 4 | list-messages | new-email, new-event, new-calendar, new-mail-folder | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-10) | hand | polls over list-messages and list-events (newest first) and list-calendars and list-mail-folders (snapshots); no webhook: Graph subscriptions expire in under 7 days and need renewal (https://learn.microsoft.com/en-us/graph/change-notifications-overview) |
 | apps/microsoft/powerbi | 2 | list-refresh-history | new-refresh, new-or-updated-refresh | apps/microsoft/powerbi/README.md Triggers section (verified 2026-11-09) | hand | refresh history is a bounded collection (20-60 entries per dataset) with stable requestId (https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history) |
 | apps/microsoft/sharepoint | 1 | list-items | new-list-item | no | hand | shipped poll trigger(s) over list action list-items |
-| apps/microsoft/teams | 1 | list-channel-messages | new-channel-message | apps/microsoft/teams/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-channel-messages |
+| apps/microsoft/teams | 8 | list-channel-messages | new-channel-message, new-team, new-channel, new-team-member, new-channel-member, new-chat, new-chat-message, new-or-updated-chat-message | apps/microsoft/teams/README.md Triggers section (verified 2026-11-10) | hand | polls over list-channel-messages, list-chat-messages (newest first), list-chats and snapshots of list-teams, list-channels and the two member lists; no webhook: Teams subscriptions expire in 3 days and need renewal (https://learn.microsoft.com/en-us/graph/api/resources/subscription) |
 | apps/millionverifier | 2 | bulk-list-files | new-bulk-file, new-or-updated-bulk-file | apps/millionverifier/README.md Triggers section (verified 2026-11-09) | hand | bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/) |
 | apps/miro | 1 | board-list | new-board | apps/miro/README.md Triggers section (verified 2026-11-09) | hand | board-list sort=last_created with required teamId (Miro honours sort only within a team or project). |
 | apps/missive | 10 | conversation-list | new-comment, new-contact-group, new-conversation, new-draft, new-message, new-or-updated-contact, new-or-updated-conversation, new-or-updated-task, new-post, new-task | apps/missive/README.md Triggers section (verified 2026-11-10) | hand | Newest-first conversation and task activity polls (omitting `until`), per-conversation comment/draft/message/post feeds, new-or-updated siblings for conversations/tasks/contacts; remaining administrative lists have no documented safe order or since filter. |

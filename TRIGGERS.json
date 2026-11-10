@@ -3584,12 +3584,18 @@
     "path": "apps/google/gmail",
     "mechanism": "poll",
     "candidates": [
-      "new-email"
+      "new-email",
+      "new-or-updated-thread",
+      "new-label",
+      "new-draft"
     ],
     "pollAction": "get-many-messages",
-    "reason": "gmail users.messages.list with q=after:<epoch>; H-1",
-    "verified": "apps/google/gmail/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "polls over get-many-messages (since-filter), get-many-threads (since-filter), get-many-labels and get-many-drafts (snapshots); no webhook: users.watch needs a Cloud Pub/Sub topic and stops after 7 days without a renewal call (https://developers.google.com/workspace/gmail/api/guides/push)",
+    "verified": "apps/google/gmail/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "n8n": {
+      "messageReceived": "new-email"
+    }
   },
   {
     "path": "apps/google/google-admin",
@@ -5848,12 +5854,21 @@
     "path": "apps/microsoft/outlook",
     "mechanism": "poll",
     "candidates": [
-      "new-email"
+      "new-email",
+      "new-event",
+      "new-calendar",
+      "new-mail-folder"
     ],
     "pollAction": "list-messages",
-    "reason": "shipped poll trigger(s) over list action list-messages",
-    "verified": "apps/microsoft/outlook/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "polls over list-messages and list-events (newest first) and list-calendars and list-mail-folders (snapshots); no webhook: Graph subscriptions expire in under 7 days and need renewal (https://learn.microsoft.com/en-us/graph/change-notifications-overview)",
+    "verified": "apps/microsoft/outlook/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-calendar-view": "new-event"
+    },
+    "n8n": {
+      "messageReceived": "new-email"
+    }
   },
   {
     "path": "apps/microsoft/powerbi",
@@ -5882,12 +5897,29 @@
     "path": "apps/microsoft/teams",
     "mechanism": "poll",
     "candidates": [
-      "new-channel-message"
+      "new-channel-message",
+      "new-team",
+      "new-channel",
+      "new-team-member",
+      "new-channel-member",
+      "new-chat",
+      "new-chat-message",
+      "new-or-updated-chat-message"
     ],
     "pollAction": "list-channel-messages",
-    "reason": "shipped poll trigger(s) over list action list-channel-messages",
-    "verified": "apps/microsoft/teams/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "polls over list-channel-messages, list-chat-messages (newest first), list-chats and snapshots of list-teams, list-channels and the two member lists; no webhook: Teams subscriptions expire in 3 days and need renewal (https://learn.microsoft.com/en-us/graph/api/resources/subscription)",
+    "verified": "apps/microsoft/teams/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-message-replies": "per-parent list of one channel message's replies: the message id does not exist until the message is posted, so a user has nothing to pick when setting a trigger up"
+    },
+    "n8n": {
+      "newChannel": "new-channel",
+      "newChannelMessage": "new-channel-message",
+      "newChat": "new-chat",
+      "newChatMessage": "new-chat-message",
+      "newTeamMember": "new-team-member"
+    }
   },
   {
     "path": "apps/mighty-networks",
