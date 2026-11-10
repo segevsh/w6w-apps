@@ -68,6 +68,21 @@ describe("paging", () => {
   });
 });
 
+describe("edits", () => {
+  test("new-reader does not fire for a record edited in place", async () => {
+    const input = { params: {}, subscriptionId: "s" };
+    const seeded = await newReader.poll!(
+      { ...input, state: {} },
+      mockCtx([{ body: listEnvelope([{ id: "r-1", email: "a@example.test" }]) }]).ctx,
+    );
+    const out = await newReader.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([{ body: listEnvelope([{ id: "r-1", email: "b@example.test" }]) }]).ctx,
+    );
+    assertEquals(out.events, []);
+  });
+});
+
 describe("trees: nested nodes are rows", () => {
   const input = { params: {}, subscriptionId: "s" };
 

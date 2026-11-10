@@ -148,7 +148,7 @@ export function boundedListSnapshot(
       }
       const { events, nextState } = await pollSnapshot({
         state,
-        emit: { added: true },
+        emit: { added: true, updated: false },
         rows: flattenTree(items, spec.childrenKey).map((item) => ({
           key: String(item.id ?? ""),
           values: item,
