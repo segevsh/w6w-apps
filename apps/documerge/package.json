@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/documerge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Generate documents from DocuMerge templates and routes, manage their fields and delivery methods, and run its PDF tools from a workflow, and trigger workflows on new document.",
   "license": "MIT",
   "author": {
