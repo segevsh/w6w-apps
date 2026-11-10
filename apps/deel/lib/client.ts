@@ -178,4 +178,31 @@ export class DeelClient {
     }
     return Number.isFinite(wantTotal) ? items.slice(0, wantTotal) : items;
   }
+
+  /**
+   * Follow the **`cursor`** pagination of `GET /webhooks` and `GET /legal-entities`
+   * (Deel's OpenAPI: query `cursor`, next cursor in `page.cursor` or, for webhooks,
+   * top-level `cursor`). Used by the snapshot triggers; the list actions keep
+   * `requestAllCursor`. A cursor that repeats fails loudly instead of looping.
+   */
+  async requestAllNamedCursor<T = unknown>(
+    path: string,
+    options: RequestOptions = {},
+  ): Promise<T[]> {
+    const items: T[] = [];
+    const seen = new Set<string>();
+    let cursor: string | undefined;
+    while (true) {
+      const page = await this.request<
+        { data?: T[]; cursor?: string; page?: { cursor?: string } }
+      >(path, { ...options, query: { ...options.query, limit: 100, cursor } });
+      const chunk = page?.data ?? [];
+      items.push(...chunk);
+      cursor = page?.page?.cursor ?? page?.cursor;
+      if (!cursor || chunk.length === 0) break;
+      if (seen.has(cursor)) throw new Error(`Deel ${path}: cursor "${cursor}" repeated`);
+      seen.add(cursor);
+    }
+    return items;
+  }
 }

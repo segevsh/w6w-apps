@@ -17,8 +17,11 @@
 
 `contract-list` passes Deel's `order_direction` through; the trigger asks for `desc` and reads the first 100 contracts. Deel's reference lists `order_direction` but does not state the sort key, so the creation order is assumed from the descending default sort.
 
-The seven snapshot triggers run their list action with `returnAll` (100 rows a page, following Deel's
-`after_cursor` / `offset`), diff ids with the poll kit and emit the added ones; the first check records
+The seven snapshot triggers read the whole collection 100 rows a page (the list action with
+`returnAll`, except `new-timesheet` and `new-invoice-adjustment`, which page with `limit` + `offset`
+and `page.total_rows`, and `new-webhook` and `new-legal-entity`, which page with the `cursor` query
+parameter and the next cursor from the response's `cursor` / `page.cursor`, as Deel's OpenAPI
+documents; a repeated cursor throws), diff ids with the poll kit and emit the added ones; the first check records
 the ids and emits nothing, and a collection of more than 5000 rows fails the check with an error naming
 the cap. `new-timesheet` and `new-invoice-adjustment` watch a status set (default `pending`, which
 holds only the items awaiting review) so the collection stays small; a blank `statuses` watches every

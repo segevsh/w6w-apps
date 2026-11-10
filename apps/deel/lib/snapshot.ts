@@ -16,7 +16,12 @@ export interface SnapshotSpec<P> {
   sample: unknown;
   /** The app's own list action; the poll runs the SAME request through its `execute`. */
   // deno-lint-ignore no-explicit-any
-  action: ActionDefinition<any>;
+  action?: ActionDefinition<any>;
+  /**
+   * Reads the whole collection with the paging the vendor documents, for endpoints whose list
+   * action pages differently (the action stays untouched). Takes precedence over `action`.
+   */
+  list?(params: P, ctx: HookContext): Promise<unknown>;
   /** The action's input; `returnAll` is forced on so the whole collection is read. */
   input?(params: P): Record<string, unknown>;
   /** When set, a changed stamp (e.g. `updated_at`) re-emits the record: the new-or-updated shape. */
@@ -41,8 +46,10 @@ export function snapshotList<P = Record<string, unknown>>(
     sample: spec.sample,
     minIntervalMs: 300_000,
     async poll({ state, params }, ctx: HookContext) {
-      const input = { ...(spec.input?.(params) ?? {}), returnAll: true };
-      const res = await spec.action.execute(input, ctx) as unknown;
+      const res = spec.list ? await spec.list(params, ctx) : await spec.action!.execute(
+        { ...(spec.input?.(params) ?? {}), returnAll: true },
+        ctx,
+      ) as unknown;
       // The list actions return the rows array itself (they page through Deel's cursor/offset).
       const items = (Array.isArray(res) ? res : []) as Array<Record<string, unknown>>;
       const byId = new Map<string, Record<string, unknown>>();

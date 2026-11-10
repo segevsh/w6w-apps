@@ -14,6 +14,9 @@ const rec = (id: string) => ({ id, status: "pending" });
 const cursorPage = (items: unknown[], cursor?: string) => ({
   body: { data: items, page: cursor ? { cursor } : {} },
 });
+const topCursorPage = (items: unknown[], cursor?: string) => ({
+  body: cursor ? { data: items, cursor } : { data: items },
+});
 const offsetPage = (items: unknown[], total: number) => ({
   body: { data: items, page: { total_rows: total } },
 });
@@ -39,7 +42,7 @@ const cases = [
     t: newWebhook,
     params: {},
     url: `${R}/webhooks?limit=100`,
-    page: (items: unknown[]) => cursorPage(items),
+    page: (items: unknown[]) => topCursorPage(items),
   },
   {
     name: "new-contract-milestone",
@@ -59,15 +62,15 @@ const cases = [
     name: "new-timesheet",
     t: newTimesheet,
     params: { statuses: "pending" },
-    url: `${R}/timesheets?statuses=pending&limit=100`,
-    page: (items: unknown[]) => cursorPage(items),
+    url: `${R}/timesheets?statuses=pending&limit=100&offset=0`,
+    page: (items: unknown[]) => offsetPage(items, items.length),
   },
   {
     name: "new-invoice-adjustment",
     t: newInvoiceAdjustment,
     params: { statuses: "pending" },
-    url: `${R}/invoice-adjustments?statuses=pending&limit=100`,
-    page: (items: unknown[]) => cursorPage(items),
+    url: `${R}/invoice-adjustments?statuses=pending&limit=100&offset=0`,
+    page: (items: unknown[]) => offsetPage(items, items.length),
   },
 ];
 
@@ -102,40 +105,99 @@ for (const c of cases) {
   });
 }
 
+const rows = (from: number, n: number) => Array.from({ length: n }, (_, i) => rec(`r${from + i}`));
+const run = (
+  t: { poll?: (...a: never[]) => unknown },
+  params: unknown,
+  state: unknown,
+  m: unknown,
+) =>
+  // deno-lint-ignore no-explicit-any
+  (t as any).poll({ params, subscriptionId: "s", state }, (m as any).ctx);
+
 describe("defaults and paging", () => {
   test("a timesheet trigger with no statuses param watches pending only", async () => {
-    const m = mockCtx([cursorPage([rec("1")])]);
+    const m = mockCtx([offsetPage([rec("1")], 1)]);
     await newTimesheet.poll!({ params: {}, subscriptionId: "s", state: {} }, m.ctx);
-    assertEquals(m.calls[0].url, `${R}/timesheets?statuses=pending&limit=100`);
+    assertEquals(m.calls[0].url, `${R}/timesheets?statuses=pending&limit=100&offset=0`);
   });
 
   test("a blank statuses param watches every status", async () => {
-    const m = mockCtx([cursorPage([rec("1")])]);
+    const m = mockCtx([offsetPage([rec("1")], 1)]);
     await newInvoiceAdjustment.poll!(
       { params: { statuses: "" }, subscriptionId: "s", state: {} },
       m.ctx,
     );
-    assertEquals(m.calls[0].url, `${R}/invoice-adjustments?limit=100`);
+    assertEquals(m.calls[0].url, `${R}/invoice-adjustments?limit=100&offset=0`);
   });
 
-  test("follows the cursor to the second page (literal after_cursor) before diffing", async () => {
-    const m = mockCtx([cursorPage([rec("1")], "cur-1"), cursorPage([rec("2")])]);
-    const out = await newWebhook.poll!({ params: {}, subscriptionId: "s", state: {} }, m.ctx);
-    assertEquals(out.events, []);
-    assertEquals(m.calls.map((c) => c.url), [
-      `${R}/webhooks?limit=100`,
-      `${R}/webhooks?limit=100&after_cursor=cur-1`,
-    ]);
-    const later = await newWebhook.poll!(
-      { params: {}, subscriptionId: "s", state: out.nextState },
-      mockCtx([cursorPage([rec("1")], "cur-1"), cursorPage([rec("2"), rec("3")])]).ctx,
-    );
-    assertEquals(later.events, [rec("3")]);
-  });
+  // Vendor shape: 250 rows, 100 a page, offset + total_rows (no cursor).
+  for (
+    const [name, t, path] of [
+      ["new-timesheet", newTimesheet, "timesheets"],
+      ["new-invoice-adjustment", newInvoiceAdjustment, "invoice-adjustments"],
+    ] as const
+  ) {
+    test(`${name} reads all 250 rows over offset=0,100,200 and emits the row past page one`, async () => {
+      const pages = () => [
+        offsetPage(rows(0, 100), 250),
+        offsetPage(rows(100, 100), 250),
+        offsetPage(rows(200, 50), 250),
+      ];
+      const m = mockCtx(pages());
+      const seeded = await run(t, {}, {}, m) as { events: unknown[]; nextState: unknown };
+      assertEquals(seeded.events, []);
+      assertEquals(m.calls.map((c) => c.url), [
+        `${R}/${path}?statuses=pending&limit=100&offset=0`,
+        `${R}/${path}?statuses=pending&limit=100&offset=100`,
+        `${R}/${path}?statuses=pending&limit=100&offset=200`,
+      ]);
+      const more = [...pages().slice(0, 2), offsetPage([...rows(200, 50), rec("new")], 251)];
+      const later = await run(t, {}, seeded.nextState, mockCtx(more)) as { events: unknown[] };
+      assertEquals(later.events, [rec("new")]);
+    });
+  }
+
+  // Vendor shape: `cursor` query param; next cursor in page.cursor (legal entities)
+  // or top level (webhooks).
+  for (
+    const [name, t, path, mk] of [
+      ["new-webhook", newWebhook, "webhooks", topCursorPage],
+      ["new-legal-entity", newLegalEntity, "legal-entities", cursorPage],
+    ] as const
+  ) {
+    test(`${name} follows the vendor cursor across 250 rows`, async () => {
+      const pages = (last: unknown[]) => [
+        mk(rows(0, 100), "cur-1"),
+        mk(rows(100, 100), "cur-2"),
+        mk(last),
+      ];
+      const m = mockCtx(pages(rows(200, 50)));
+      const seeded = await run(t, {}, {}, m) as { events: unknown[]; nextState: unknown };
+      assertEquals(seeded.events, []);
+      assertEquals(m.calls.map((c) => c.url), [
+        `${R}/${path}?limit=100`,
+        `${R}/${path}?limit=100&cursor=cur-1`,
+        `${R}/${path}?limit=100&cursor=cur-2`,
+      ]);
+      const later = await run(
+        t,
+        {},
+        seeded.nextState,
+        mockCtx(pages([...rows(200, 50), rec("new")])),
+      );
+      assertEquals((later as { events: unknown[] }).events, [rec("new")]);
+    });
+
+    test(`${name} fails loudly on a repeated cursor instead of looping`, async () => {
+      const m = mockCtx([mk(rows(0, 100), "cur-1"), mk(rows(100, 100), "cur-1")]);
+      await assertRejects(() => run(t, {}, {}, m) as Promise<unknown>, Error, "repeated");
+    });
+  }
 
   test("refuses more than 5000 rows instead of truncating", async () => {
     const pages = Array.from({ length: 51 }, (_, p) =>
-      cursorPage(
+      topCursorPage(
         Array.from({ length: 100 }, (_, i) => rec(`r${p * 100 + i}`)),
         p < 50 ? `cur-${p}` : undefined,
       ));

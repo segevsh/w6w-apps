@@ -1,11 +1,12 @@
 import { snapshotList } from "../lib/snapshot.ts";
-import webhookList from "../actions/webhook-list.ts";
+import { DeelClient } from "../lib/client.ts";
 
 export default snapshotList({
   key: "new-webhook",
   title: "New Webhook",
   description: "The run gets each newly registered webhook.",
-  action: webhookList,
+  // Vendor pager: query `cursor` (the list action sends `after_cursor`).
+  list: (_p, ctx) => new DeelClient(ctx).requestAllNamedCursor("/webhooks"),
   output: [
     { key: "id", type: "string", label: "Webhook ID" },
     { key: "url", type: "string", label: "URL" },

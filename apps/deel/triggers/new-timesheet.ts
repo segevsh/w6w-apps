@@ -1,5 +1,5 @@
 import { snapshotList } from "../lib/snapshot.ts";
-import timesheetList from "../actions/timesheet-list.ts";
+import { csv, DeelClient } from "../lib/client.ts";
 
 export default snapshotList<{ statuses?: string }>({
   key: "new-timesheet",
@@ -14,8 +14,11 @@ export default snapshotList<{ statuses?: string }>({
     hint:
       "Comma-separated statuses to watch (blank = every status, which can exceed the 5000-row cap).",
   }],
-  action: timesheetList,
-  input: (p) => ({ statuses: p.statuses ?? "pending" }),
+  // Vendor pager: `limit` + `offset` with `page.total_rows` (the list action sends `after_cursor`).
+  list: (p, ctx) =>
+    new DeelClient(ctx).requestAllOffset("/timesheets", {
+      query: { statuses: csv(p.statuses ?? "pending") },
+    }),
   output: [
     { key: "id", type: "string", label: "Timesheet ID" },
     { key: "status", type: "string", label: "Status" },
