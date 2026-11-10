@@ -1,6 +1,6 @@
 # Wiza
 
-Triggers: not shipped — the only list-shaped actions read one caller-selected list (`get-list`, `get-list-contacts`); the OpenAPI document has no list index (`/api/lists` is POST create only) and no created/updated filter, so there is no feed to poll (https://docs.wiza.co/swagger/v1/openapi.yaml; list/reveal completion webhooks (`callback_url`, `x-auth-key` header) are a queued webhook candidate, verified 2026-11-09).
+Triggers: not shipped — Wiza's only webhook is a per-job completion callback (`callback_url` on create-list, create-prospect-list and start-individual-reveal, or the account's default webhook URL) for lists and reveals the caller starts through the API, not a subscribable account event stream, and the list-shaped actions read one caller-selected list (https://docs.wiza.co/swagger/v1/openapi.yaml, checked 2026-11-10)
 
 Reveal contacts, enrich lists and companies, search Wiza's prospect and company databases, resolve
 filter values and read the credit balance, over the **Wiza API**.
