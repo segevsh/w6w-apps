@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 398, none: 210
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 394, none: 214
 
 ## webhook-api (58)
 
@@ -95,7 +95,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (398)
+## poll (394)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -355,24 +355,20 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/particle | device-list | new-device | apps/particle/README.md Triggers section (verified 2026-11-09) | hand | snapshot diff over GET /v1/devices (unpaged account list sorted by last_handshake_at, not claim time) |
 | apps/pdfmonkey | list-documents | new-document, new-or-updated-document | apps/pdfmonkey/README.md Triggers section (verified 2026-11-09) | hand | since-filter: q[updated_since]=cursor-120s with id dedupe (no documented sort order); new-document ignores cards whose created_at is older than the since window; page-2 loss mode disclosed in README |
 | apps/pennylane | list-customer-invoices | new-customer-invoice | apps/pennylane/README.md Triggers section (verified 2026-11-09) | hand | sort documented, default -id; trigger sorts -id explicitly |
-| apps/perplexity | web-search | new-web-search | no | scan | list action web-search has pagination and order/since params |
-| apps/personio | list-employees | new-employees | no | scan | list action list-employees has pagination and order/since params |
+| apps/perplexity | list-models | new-model | apps/perplexity/README.md Triggers section (verified 2026-11-09) | hand | Snapshots the short vendor-wide Agent API model catalog (GET /v1/models, one request) and emits additions only; web-search is an ad-hoc ranked search, not a record feed (https://docs.perplexity.ai/api-reference/models-get) |
+| apps/personio | list-employees | new-employee, new-or-updated-employee | apps/personio/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-employees updatedSince = cursor-10min, id dedupe; new-employee keeps created_at in window (https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml) |
 | apps/perspective | contact-list | new-contact | apps/perspective/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
-| apps/phrase | job-list | new-job-list | no | scan | list action job-list has pagination and order/since params |
-| apps/pinecone | record-search | new-record-search | no | scan | list action record-search has pagination and order/since params |
-| apps/pinterest | pin-search | new-pin-search | no | scan | list action pin-search has pagination and order/since params |
-| apps/placid | template-list | new-template-list | no | scan | list action template-list has pagination and order/since params |
-| apps/plaid | institution-list | new-institution-list | no | scan | list action institution-list has pagination and order/since params |
-| apps/planningcenter | list-event-instances | new-event-instances | no | scan | list action list-event-instances has pagination and order/since params |
-| apps/podio | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
+| apps/phrase | job-list | new-job, new-or-updated-job | apps/phrase/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll with a declared projectId param: job-list updatedSince = cursor-10min, id dedupe (https://developers.phrase.com/en/api/strings/jobs/list-jobs) |
+| apps/pinecone | index-list | new-index, new-backup | apps/pinecone/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshots (<=200 indexes, <=1000 backups per project per https://docs.pinecone.io/reference/api/database-limits/object-limits), additions only; namespace-list unbounded, model-list is a vendor catalog, record-list is lexicographic id enumeration |
+| apps/placid | template-list | new-template, new-or-updated-template | apps/placid/README.md Triggers section (verified 2026-11-09) | hand | Polls created and updated template sort orders. |
+| apps/planningcenter | list-event-instances | new-event-instance, new-or-updated-event-instance | apps/planningcenter/README.md Triggers section (verified 2026-11-09) | hand | list-event-instances order=-created_at / -updated_at (orderable per https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) |
+| apps/podio | task-list | new-task | apps/podio/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by created_on descending. |
 | apps/podium | conversation-list | new-conversation | apps/podium/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action conversation-list |
 | apps/postgres | query | new-row | no | hand | shipped poll trigger(s) over list action query |
 | apps/postmark | list-outbound-messages | new-outbound-message | apps/postmark/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-outbound-messages |
-| apps/printavo | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/printful | order-list | new-order-list | no | scan | list action order-list has pagination and order/since params |
-| apps/processstreet | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/procore | submittal-list | new-submittal-list | no | scan | list action submittal-list has pagination and order/since params |
-| apps/productboard | member-activity-list | new-member-activity-list | no | scan | list action member-activity-list has pagination and order/since params |
+| apps/printavo | task-list | new-task | apps/printavo/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by CREATED_AT descending. |
+| apps/processstreet | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
+| apps/productboard | note-list | new-note, new-or-updated-note | apps/productboard/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: note-list createdFrom / updatedFrom = cursor-10min, id dedupe (https://developer.productboard.com/reference/listnotes) |
 | apps/productive | deal-list | new-deal-list | no | scan | list action deal-list has pagination and order/since params |
 | apps/pushbullet | chat-list | new-chat-list | no | scan | list action chat-list has pagination and order/since params |
 | apps/pushover | sounds-list | new-sounds-list | no | scan | list action sounds-list has pagination and order/since params |
@@ -498,7 +494,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (210)
+## none (214)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -630,13 +626,17 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/pendo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/peopledatalabs |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/phantombuster |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/pinterest | new-pin | apps/pinterest/README.md Triggers section (verified 2026-11-09) | hand | pin-list/pin-search (GET /v5/pins) document no sort order and no date filter, and boards/ad accounts are not documented as bounded (https://developers.pinterest.com/docs/api/v5/pins-list/) |
 | apps/pipefy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/plaid | new-institution | apps/plaid/README.md Triggers section (verified 2026-11-09) | hand | institution-list (POST /institutions/get) pages the supported-institution catalog at count<=500 with no sort order or created filter: neither newest-first nor a bounded <=5000 snapshot (https://plaid.com/docs/api/institutions/) |
 | apps/plaud |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/plivo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/postbin |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/posthog |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/practicebetter |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/printful | new-order | apps/printful/README.md Triggers section (verified 2026-11-09) | hand | order-list (GET /orders) takes only status/offset/limit; the v1 reference states no sort order and no created-after filter (https://developers.printful.com/docs/) |
 | apps/printnode |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/procore | new-submittal | apps/procore/README.md Triggers section (verified 2026-11-09) | hand | submittal-list needs a per-project id and a descending sort whose syntax is only published in a JS-rendered reference that could not be verified (https://developers.procore.com/reference/rest/submittals) |
 | apps/prospeo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/pylon |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/qdrant |  | no | scan | no newest-first list action found by scan; vendor events not researched |

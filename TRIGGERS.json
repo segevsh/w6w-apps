@@ -4826,23 +4826,24 @@
     "path": "apps/perplexity",
     "mechanism": "poll",
     "candidates": [
-      "new-web-search"
+      "new-model"
     ],
-    "pollAction": "web-search",
-    "reason": "list action web-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-models",
+    "reason": "Snapshots the short vendor-wide Agent API model catalog (GET /v1/models, one request) and emits additions only; web-search is an ad-hoc ranked search, not a record feed (https://docs.perplexity.ai/api-reference/models-get)",
+    "verified": "apps/perplexity/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/personio",
     "mechanism": "poll",
     "candidates": [
-      "new-employees"
+      "new-employee",
+      "new-or-updated-employee"
     ],
     "pollAction": "list-employees",
-    "reason": "list action list-employees has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Since-filter poll: list-employees updatedSince = cursor-10min, id dedupe; new-employee keeps created_at in window (https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml)",
+    "verified": "apps/personio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/perspective",
@@ -4868,34 +4869,36 @@
     "path": "apps/phrase",
     "mechanism": "poll",
     "candidates": [
-      "new-job-list"
+      "new-job",
+      "new-or-updated-job"
     ],
     "pollAction": "job-list",
-    "reason": "list action job-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Since-filter poll with a declared projectId param: job-list updatedSince = cursor-10min, id dedupe (https://developers.phrase.com/en/api/strings/jobs/list-jobs)",
+    "verified": "apps/phrase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pinecone",
     "mechanism": "poll",
     "candidates": [
-      "new-record-search"
+      "new-index",
+      "new-backup"
     ],
-    "pollAction": "record-search",
-    "reason": "list action record-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "index-list",
+    "reason": "Bounded snapshots (<=200 indexes, <=1000 backups per project per https://docs.pinecone.io/reference/api/database-limits/object-limits), additions only; namespace-list unbounded, model-list is a vendor catalog, record-list is lexicographic id enumeration",
+    "verified": "apps/pinecone/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pinterest",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-pin-search"
+      "new-pin"
     ],
-    "pollAction": "pin-search",
-    "reason": "list action pin-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "pin-list/pin-search (GET /v5/pins) document no sort order and no date filter, and boards/ad accounts are not documented as bounded (https://developers.pinterest.com/docs/api/v5/pins-list/)",
+    "verified": "apps/pinterest/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pipedrive",
@@ -4921,34 +4924,36 @@
     "path": "apps/placid",
     "mechanism": "poll",
     "candidates": [
-      "new-template-list"
+      "new-template",
+      "new-or-updated-template"
     ],
     "pollAction": "template-list",
-    "reason": "list action template-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Polls created and updated template sort orders.",
+    "verified": "apps/placid/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/plaid",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-institution-list"
+      "new-institution"
     ],
-    "pollAction": "institution-list",
-    "reason": "list action institution-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "institution-list (POST /institutions/get) pages the supported-institution catalog at count<=500 with no sort order or created filter: neither newest-first nor a bounded <=5000 snapshot (https://plaid.com/docs/api/institutions/)",
+    "verified": "apps/plaid/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/planningcenter",
     "mechanism": "poll",
     "candidates": [
-      "new-event-instances"
+      "new-event-instance",
+      "new-or-updated-event-instance"
     ],
     "pollAction": "list-event-instances",
-    "reason": "list action list-event-instances has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-event-instances order=-created_at / -updated_at (orderable per https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance)",
+    "verified": "apps/planningcenter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/plaud",
@@ -4972,12 +4977,12 @@
     "path": "apps/podio",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Polls tasks sorted by created_on descending.",
+    "verified": "apps/podio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/podium",
@@ -5043,23 +5048,23 @@
     "path": "apps/printavo",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-task"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "task-list",
+    "reason": "Polls tasks sorted by CREATED_AT descending.",
+    "verified": "apps/printavo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/printful",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-order-list"
+      "new-order"
     ],
-    "pollAction": "order-list",
-    "reason": "list action order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "order-list (GET /orders) takes only status/offset/limit; the v1 reference states no sort order and no created-after filter (https://developers.printful.com/docs/)",
+    "verified": "apps/printful/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/printnode",
@@ -5074,34 +5079,35 @@
     "path": "apps/processstreet",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-workflow-run"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "workflow-run-list",
+    "reason": "Polls the documented newest-created workflow run list.",
+    "verified": "apps/processstreet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/procore",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-submittal-list"
+      "new-submittal"
     ],
-    "pollAction": "submittal-list",
-    "reason": "list action submittal-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "submittal-list needs a per-project id and a descending sort whose syntax is only published in a JS-rendered reference that could not be verified (https://developers.procore.com/reference/rest/submittals)",
+    "verified": "apps/procore/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/productboard",
     "mechanism": "poll",
     "candidates": [
-      "new-member-activity-list"
+      "new-note",
+      "new-or-updated-note"
     ],
-    "pollAction": "member-activity-list",
-    "reason": "list action member-activity-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "note-list",
+    "reason": "Since-filter poll: note-list createdFrom / updatedFrom = cursor-10min, id dedupe (https://developer.productboard.com/reference/listnotes)",
+    "verified": "apps/productboard/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/productive",
