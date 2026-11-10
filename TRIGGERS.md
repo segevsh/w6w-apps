@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -36,14 +36,8 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/respondio | 0 | 8 | 8 |
 | apps/thanksio | 0 | 8 | 8 |
 | apps/tidycal | 0 | 8 | 8 |
-| apps/chatwork | 1 | 8 | 7 |
-| apps/dialpad | 1 | 8 | 7 |
-| apps/eztexting | 1 | 8 | 7 |
-| apps/float | 2 | 8 | 7 |
-| apps/freeagent | 2 | 8 | 7 |
 | apps/google/google-ads | 0 | 7 | 7 |
 | apps/google/looker | 0 | 7 | 7 |
-| apps/hostaway | 1 | 8 | 7 |
 | apps/lob | 1 | 8 | 7 |
 | apps/loop-returns | 1 | 8 | 7 |
 | apps/maileroo | 1 | 8 | 7 |
@@ -505,6 +499,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/calendly | 9 | 4 | 0 |
 | apps/campaignmonitor | 3 | 2 | 0 |
 | apps/canny | 9 | 10 | 0 |
+| apps/chatwork | 8 | 8 | 0 |
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
@@ -519,6 +514,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/dbtcloud | 11 | 12 | 0 |
 | apps/deel | 8 | 12 | 0 |
 | apps/deepgram | 6 | 9 | 0 |
+| apps/dialpad | 6 | 8 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/digistore24 | 5 | 9 | 0 |
 | apps/discord | 5 | 5 | 0 |
@@ -530,11 +526,14 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/erpnext | 2 | 1 | 0 |
 | apps/eventbrite | 27 | 23 | 0 |
 | apps/everhour | 10 | 23 | 0 |
+| apps/eztexting | 5 | 8 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
 | apps/findymail | 5 | 12 | 0 |
 | apps/fivetran | 18 | 8 | 0 |
+| apps/float | 12 | 8 | 0 |
 | apps/flodesk | 6 | 7 | 0 |
 | apps/followupboss | 10 | 11 | 0 |
+| apps/freeagent | 12 | 8 | 0 |
 | apps/front | 7 | 13 | 0 |
 | apps/gitea | 9 | 10 | 0 |
 | apps/github | 15 | 3 | 0 |
@@ -554,6 +553,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/hibob | 7 | 13 | 0 |
 | apps/highlevel | 22 | 9 | 0 |
 | apps/hospitable | 9 | 12 | 0 |
+| apps/hostaway | 4 | 8 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/hubstaff | 7 | 9 | 0 |
@@ -867,7 +867,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/capsulecrm | 2 | opportunity-list | new-opportunity, new-or-updated-opportunity | apps/capsulecrm/README.md Triggers section (verified 2026-11-09) | hand | since (changed-since) filter, no documented order: cursor window + id dedupe |
 | apps/certifier | 2 | credential-search | new-credential, new-or-updated-credential | apps/certifier/README.md Triggers section (verified 2026-11-09) | hand | credential-search sorted createdAt/updatedAt desc |
 | apps/chargebee | 1 | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
-| apps/chatwork | 1 | room-message-list | new-message | apps/chatwork/README.md Triggers section (verified 2026-11-09) | hand | force=1 returns the latest 100 messages, re-sorted by send_time desc |
+| apps/chatwork | 8 | room-message-list | new-contact, new-contact-request, new-message, new-my-task, new-room, new-room-file, new-room-member, new-room-task | apps/chatwork/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over every list action: messages, chats, contacts, contact requests, members, tasks, files |
 | apps/checkly | 7 | check-result-list | new-check-result, new-check-alert, new-check, new-or-updated-check, new-check-group, new-alert-channel, new-maintenance-window | apps/checkly/README.md Triggers section (verified 2026-11-10) | hand | Check results and alerts by documented from= since filter (alerts floor-guarded); checks, groups, alert channels and maintenance windows are bounded snapshots, no sort or created-since filter (https://api.checklyhq.com/openapi.json). |
 | apps/circle | 9 | event-list | new-event, new-post, new-or-updated-post, new-comment, new-member-tag, new-space, new-space-group, new-event-attendee, new-space-member | apps/circle/README.md Triggers section (verified 2026-11-10) | hand | newest-first via documented sort/default order (events, posts sort=latest/latest_updated, comments, member tags sort=newest); bounded snapshots for spaces, space groups, one event's RSVPs, one space's members |
 | apps/circleci | 1 | pipeline-list | new-pipeline | apps/circleci/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id |
@@ -897,7 +897,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/deepl | 1 | glossary-list | new-glossary | apps/deepl/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/glossaries returns every glossary in one unpaginated response: bounded snapshot, emit added ids (https://developers.deepl.com/api-reference/glossaries) |
 | apps/deputy | 2 | employee-search | new-employee, new-or-updated-employee | apps/deputy/README.md Triggers section (verified 2026-11-09) | hand | QUERY sort Id desc / Modified desc |
 | apps/devin | 2 | session-list | new-session, new-or-updated-session | apps/devin/README.md Triggers section (verified 2026-11-09) | hand | since-filter created_after / updated_after (no sort), dedupe by session_id |
-| apps/dialpad | 1 | call-list | new-call | apps/dialpad/README.md Triggers section (verified 2026-11-09) | hand | call-list is documented reverse-chronological by call start time |
+| apps/dialpad | 6 | call-list | new-call, new-call-router, new-contact, new-office, new-room, new-user | apps/dialpad/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over calls (newest-first) and snapshots of offices, users, contacts, rooms and call routers |
 | apps/dice | 3 | orders-list | new-order, new-return, new-ticket-transfer | apps/dice/README.md Triggers section (verified 2026-11-09) | hand | orders-list/returns-list/ticket-transfers-list each take a documented on-or-after filter (purchasedAfter/returnedAfter/transferredAfter); since-filter poll with id dedupe (https://partners-endpoint.dice.fm/graphql/docs/index.html) |
 | apps/diffbot | 1 | crawl-get | new-crawl-job | apps/diffbot/README.md Triggers section (verified 2026-11-09) | hand | crawl-get with no name lists every crawl/bulk job on the token: small bounded snapshot keyed by job name (https://docs.diffbot.com/reference/) |
 | apps/digistore24 | 5 | list-purchases | new-purchase, new-transaction, new-product, new-voucher, new-delivery | apps/digistore24/README.md Triggers section (verified 2026-11-10) | hand | list-purchases and list-transactions newest-first (sort_by=date, sort_order=desc; vendor default is asc); products, vouchers, deliveries are unpaged and snapshotted (https://digistore24.com/api/docs/index.html) |
@@ -930,7 +930,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/erpnext | 2 | list-documents | new-document, new-or-updated-document | apps/erpnext/README.md Triggers section (verified 2026-11-09) | hand | list-documents order_by creation desc / modified desc over a user-chosen DocType |
 | apps/everhour | 10 | project-list | new-client, new-invoice, new-project, new-task, new-section, new-expense, new-user, new-assignment, new-time-record, new-timecard | apps/everhour/README.md Triggers section (verified 2026-11-10) | hand | Bounded snapshot polls over every record list Everhour offers (lists are bare arrays with no order or since filter, https://developers.everhour.com/pagination.md); time records and timecards diff a look-back window of work dates. Webhooks are queued separately. |
 | apps/expensify | 1 | list-policies | new-policy | apps/expensify/README.md Triggers section (verified 2026-11-09) | hand | New Policy diffs the unpaginated get/policyList job (pollSnapshot, added only); export-reports is an export job with no created-since cursor and the Integration Server documents no webhooks. |
-| apps/eztexting | 1 | contact-list | new-contact | apps/eztexting/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1) |
+| apps/eztexting | 5 | contact-list | new-contact, new-contact-group, new-keyword, new-media-file, new-message | apps/eztexting/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over contacts, messages, media files (newest-first) and snapshots of contact groups and keywords |
 | apps/fareharbor | 6 | booking-list-by-create-date | new-agent, new-booking, new-company, new-item, new-or-updated-item, new-user | apps/fareharbor/README.md Triggers section (verified 2026-11-10) | hand | New Booking polls the create-date booking feed; items, users, agents and companies are snapshot-diffed through their list actions. |
 | apps/fathom | 1 | meeting-get-many | new-meeting | apps/fathom/README.md Triggers section (verified 2026-11-09) | hand | meeting-get-many lists meetings newest first, no sort arg |
 | apps/feedly | 1 | articles-collect | new-article | apps/feedly/README.md Triggers section (verified 2026-11-09) | hand | New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade. |
@@ -940,13 +940,13 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/fireberry | 1 | query-records | new-record | apps/fireberry/README.md Triggers section (verified 2026-11-09) | hand | New Record runs the v3 query for a chosen object ordered by createdon desc (documented orderBy) and dedupes by _id; the developer docs describe no webhooks. |
 | apps/fireflies | 1 | transcript-search | new-transcript | apps/fireflies/README.md Triggers section (verified 2026-11-09) | hand | New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade. |
 | apps/firestore | 1 | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
-| apps/float | 2 | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
+| apps/float | 12 | allocation-list | new-allocation, new-client, new-logged-time, new-milestone, new-or-updated-allocation, new-or-updated-logged-time, new-or-updated-person, new-or-updated-project, new-or-updated-timeoff, new-person, new-project, new-timeoff | apps/float/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over allocations, people, projects, logged time, time off (newest-first, with new-or-updated siblings) and snapshots of clients and milestones |
 | apps/folk | 1 | list-groups | new-group | apps/folk/README.md Triggers section (verified 2026-11-09) | hand | unpaginated group collection is snapshotted for additions |
 | apps/followupboss | 10 | search-people | new-person, new-or-updated-person, new-deal, new-task, new-lead-event, new-appointment, new-user, new-pipeline, new-smart-list, new-action-plan | apps/followupboss/README.md Triggers section (verified 2026-11-10) | hand | people sort -created/-updated; deals, tasks, events, appointments, users default to reverse id order (https://docs.followupboss.com/reference/pagination); bounded snapshots for pipelines, smart lists, action plans |
 | apps/formbricks | 1 | survey-list | new-survey | apps/formbricks/README.md Triggers section (verified 2026-11-09) | hand | workspace survey collection is snapshotted for additions |
 | apps/formsite | 1 | result-list | new-result | apps/formsite/README.md Triggers section (verified 2026-11-09) | hand | result-list with sort_direction=desc on the documented default result_id sort |
 | apps/formstack-documents | 1 | document-list | new-document | apps/formstack-documents/README.md Triggers section (verified 2026-11-09) | hand | unpaginated document template collection is snapshotted for additions |
-| apps/freeagent | 2 | contact-list | new-contact, new-or-updated-contact | apps/freeagent/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=-created_at / -updated_at; identity is the contact url |
+| apps/freeagent | 12 | contact-list | new-bank-transaction, new-contact, new-expense, new-invoice, new-or-updated-contact, new-or-updated-invoice, new-or-updated-project, new-or-updated-task, new-project, new-task, new-timeslip, new-user | apps/freeagent/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over contacts, invoices, projects, tasks (newest-first, with new-or-updated siblings), users (snapshot) and since-filter triggers over timeslips, expenses and bank transactions |
 | apps/freshbooks | 1 | invoice-list | new-or-updated-invoice | apps/freshbooks/README.md Triggers section (verified 2026-11-09) | hand | polls invoice-list with documented search[updated_min] (day granularity) and dedupes on id+updated (https://www.freshbooks.com/api/invoices) |
 | apps/freshworks/freshdesk | 2 | ticket-get-many | new-ticket, new-or-updated-ticket | apps/freshworks/freshdesk/README.md Triggers section (verified 2026-11-09) | hand | ticket-get-many order_by created_at/updated_at order_type=desc |
 | apps/freshworks/freshsales | 2 | contact-get-many | new-contact, new-or-updated-contact | apps/freshworks/freshsales/README.md Triggers section (verified 2026-11-09) | hand | contact-get-many on a saved view, sort created_at/updated_at sort_type=desc |
@@ -989,7 +989,7 @@ depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-p
 | apps/hibob | 7 | tasks-list | new-attendance-entry, new-employee, new-employment-history-entry, new-lifecycle-history-entry, new-or-updated-employee, new-task, new-work-history-entry | apps/hibob/README.md Triggers section (verified 2026-11-10) | hand | New Task snapshots the open-task endpoint; employees, employee tables and attendance are snapshot-diffed through their existing read/search actions. |
 | apps/honeybook | 1 | project-list | new-project | no | hand | shipped poll trigger(s) over list action project-list |
 | apps/hospitable | 9 | reservation-list | new-reservation, new-property, new-payout, new-teammate, new-property-image, new-property-review, new-reservation-message, new-task, new-or-updated-inquiry | apps/hospitable/README.md Triggers section (verified 2026-11-10) | hand | Reservations can be requested newest booked first; inquiries use the last_message_at filter; properties, payouts, teammates, tasks, reviews, images and messages are compared as bounded lists. |
-| apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
+| apps/hostaway | 4 | list-reservations | new-conversation-message, new-listing, new-reservation, new-review | apps/hostaway/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over reservations and reviews (newest-first) and snapshots of listings and one conversation's messages |
 | apps/hotmart | 1 | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
 | apps/housecallpro | 14 | customer-list | new-customer, new-employee, new-estimate, new-or-updated-estimate, new-estimate-option-line-item, new-event, new-or-updated-event, new-invoice, new-job-appointment, new-job-invoice, new-job-line-item, new-job, new-or-updated-job, new-lead | apps/housecallpro/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover operational records; the listed static or derived lists are intentionally skipped. |
 | apps/hubstaff | 7 | project-list | new-project, new-client, new-member, new-task, new-team, new-organization, new-timesheet | apps/hubstaff/README.md Triggers section (verified 2026-11-10) | hand | no list endpoint documents a sort or created-after filter, so each trigger walks every page (page_start_id cursor, 100 per page) and snapshots ids (https://api.hubstaff.com/v2/docs) |

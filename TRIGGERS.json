@@ -1919,11 +1919,18 @@
     "path": "apps/chatwork",
     "mechanism": "poll",
     "candidates": [
-      "new-message"
+      "new-contact",
+      "new-contact-request",
+      "new-message",
+      "new-my-task",
+      "new-room",
+      "new-room-file",
+      "new-room-member",
+      "new-room-task"
     ],
     "pollAction": "room-message-list",
-    "reason": "force=1 returns the latest 100 messages, re-sorted by send_time desc",
-    "verified": "apps/chatwork/README.md Triggers section (verified 2026-11-09)",
+    "reason": "poll triggers over every list action: messages, chats, contacts, contact requests, members, tasks, files",
+    "verified": "apps/chatwork/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2728,12 +2735,21 @@
     "path": "apps/dialpad",
     "mechanism": "poll",
     "candidates": [
-      "new-call"
+      "new-call",
+      "new-call-router",
+      "new-contact",
+      "new-office",
+      "new-room",
+      "new-user"
     ],
     "pollAction": "call-list",
-    "reason": "call-list is documented reverse-chronological by call start time",
-    "verified": "apps/dialpad/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over calls (newest-first) and snapshots of offices, users, contacts, rooms and call routers",
+    "verified": "apps/dialpad/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhooks-list": "admin: the account's own webhook registrations, integration configuration rather than business records",
+      "call-event-subscription-list": "admin: the account's own call-event subscriptions, integration configuration rather than business records"
+    }
   },
   {
     "path": "apps/dice",
@@ -3362,12 +3378,23 @@
     "path": "apps/eztexting",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-contact-group",
+      "new-keyword",
+      "new-media-file",
+      "new-message"
     ],
     "pollAction": "contact-list",
-    "reason": "contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1)",
-    "verified": "apps/eztexting/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over contacts, messages, media files (newest-first) and snapshots of contact groups and keywords",
+    "verified": "apps/eztexting/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "conversation-message-list": "new-message"
+    },
+    "skipped": {
+      "conversation-list": "a stable key exists (the userNumber+contactNumber pair) but GET /v1/conversations has no created stamp or documented sort field (https://developers.eztexting.com/reference/list_3-1); skipped because new-message delivers the first message of every new conversation",
+      "webhook-list": "admin: the account's own webhook subscriptions, integration configuration rather than business records"
+    }
   },
   {
     "path": "apps/fareharbor",
@@ -3585,12 +3612,25 @@
     "mechanism": "poll",
     "candidates": [
       "new-allocation",
-      "new-or-updated-allocation"
+      "new-client",
+      "new-logged-time",
+      "new-milestone",
+      "new-or-updated-allocation",
+      "new-or-updated-logged-time",
+      "new-or-updated-person",
+      "new-or-updated-project",
+      "new-or-updated-timeoff",
+      "new-person",
+      "new-project",
+      "new-timeoff"
     ],
     "pollAction": "allocation-list",
-    "reason": "allocation-list sort=-created / -modified (a - prefix sorts descending)",
-    "verified": "apps/float/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over allocations, people, projects, logged time, time off (newest-first, with new-or-updated siblings) and snapshots of clients and milestones",
+    "verified": "apps/float/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "status-list": "no sort argument or created filter on GET /v3/status and an unbounded dated history (https://developer.float.com/paths/statuses.yaml)"
+    }
   },
   {
     "path": "apps/flodesk",
@@ -3735,12 +3775,22 @@
     "path": "apps/freeagent",
     "mechanism": "poll",
     "candidates": [
+      "new-bank-transaction",
       "new-contact",
-      "new-or-updated-contact"
+      "new-expense",
+      "new-invoice",
+      "new-or-updated-contact",
+      "new-or-updated-invoice",
+      "new-or-updated-project",
+      "new-or-updated-task",
+      "new-project",
+      "new-task",
+      "new-timeslip",
+      "new-user"
     ],
     "pollAction": "contact-list",
-    "reason": "contact-list sort=-created_at / -updated_at; identity is the contact url",
-    "verified": "apps/freeagent/README.md Triggers section (verified 2026-11-09)",
+    "reason": "poll triggers over contacts, invoices, projects, tasks (newest-first, with new-or-updated siblings), users (snapshot) and since-filter triggers over timeslips, expenses and bank transactions",
+    "verified": "apps/freeagent/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5130,12 +5180,21 @@
     "path": "apps/hostaway",
     "mechanism": "poll",
     "candidates": [
-      "new-reservation"
+      "new-conversation-message",
+      "new-listing",
+      "new-reservation",
+      "new-review"
     ],
     "pollAction": "list-reservations",
-    "reason": "shipped poll trigger(s) over list action list-reservations",
-    "verified": false,
-    "source": "hand"
+    "reason": "poll triggers over reservations and reviews (newest-first) and snapshots of listings and one conversation's messages",
+    "verified": "apps/hostaway/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-amenities": "reference/static data: the amenity ids and names Hostaway accepts on a listing",
+      "list-property-types": "reference/static data: the property type ids and names Hostaway accepts on a listing",
+      "list-conversations": "GET /v1/conversations takes only limit, offset and reservationId (no sort or date filter) and holds one conversation per reservation, so it is unbounded (https://api.hostaway.com/documentation)",
+      "list-tasks": "GET /v1/tasks takes only limit, offset and start/end windows (no sort or created filter) and its history is unbounded (https://api.hostaway.com/documentation)"
+    }
   },
   {
     "path": "apps/hotmart",
