@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/bitbucket",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Read repositories, workspaces and manage webhooks on Bitbucket Cloud, and start workflows on pushes, pull requests and issues.",
   "license": "MIT",
   "author": {

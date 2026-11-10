@@ -60,6 +60,7 @@ const basic: AuthDefinition = {
   fields: [
     {
       key: "username",
+      credentialRole: "username",
       label: "Username",
       type: "string",
       required: true,
@@ -67,6 +68,7 @@ const basic: AuthDefinition = {
     },
     {
       key: "password",
+      credentialRole: "password",
       label: "App password",
       type: "secret",
       required: true,
