@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, toList } from "../lib/client.ts";
-import { expandParam, pageParams } from "../lib/params.ts";
+import { expandParam, pageParams, sortParams } from "../lib/params.ts";
 
 /**
  * `GET /workspaces` — List the account's workspaces (the container every control, test and evidence item lives in).
@@ -11,6 +11,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -24,6 +26,7 @@ const action: ActionDefinition<Input> = {
   params: [
     expandParam(["frameworks", "personnelScope"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Workspaces" },
@@ -44,6 +47,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },
