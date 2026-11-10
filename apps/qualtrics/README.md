@@ -260,4 +260,4 @@ Endpoint verification and status surfaces move; if a probe starts failing for
 everyone at once, re-check against the 400-vs-404 method above before assuming
 the app is wrong.
 
-Triggers: not shipped — survey and directory lists may paginate but the existing actions provide no bounded collection contract or documented creation ordering (https://api.qualtrics.com/)
+Triggers: not shipped — Qualtrics event subscriptions (webhooks) exist, but their signing scheme and registration contract cannot be established: every sub-page of the vendor docs (https://api.qualtrics.com/) returns a generic 404 to a plain HTTP client (client-rendered docs site, re-checked 2026-11-10) and no other vendor page documents them, so no verification is invented (https://api.qualtrics.com/)

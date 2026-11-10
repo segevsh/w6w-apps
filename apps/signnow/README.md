@@ -1,7 +1,5 @@
 # SignNow
 
-Triggers: not shipped — the existing folder-tree read has no documented created/updated order or bounded snapshot contract; document and user.document event webhooks (HMAC-signable) are queued for a webhook node (https://docs.signnow.com/docs/signnow/webhooks, checked 2026-11-09)
-
 Send documents out for signature, track and cancel invites, download signed PDFs, work from
 templates, manage folders, and subscribe a webhook to document/user events, against **SignNow's
 REST API**.
@@ -13,6 +11,20 @@ REST API**.
 > eval accounts) — a connect-time choice, not an environment toggle on one account
 
 ---
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `document-created` — Document Created | webhook (API-registered, signed) | `user.document.create` | event, timestamp, document id and name, user id, full content |
+| `document-completed` — Document Completed | webhook (API-registered, signed) | `user.document.complete` | the same |
+| `invite-signed` — Invite Signed | webhook (API-registered, signed) | `user.document.fieldinvite.signed` | the same |
+
+**Setup.** Nothing to paste. Subscribing reads the connected user's id (`GET /user`) and registers the callback URL with `POST /v2/event-subscriptions` as a **user-level** event (`entity_id` = that user id, so it covers every document the user owns), with a fresh random `secret_key`; the subscription id and the key are kept in the subscription's state. Unsubscribing deletes it with `DELETE /v2/event-subscriptions/{id}` (a subscription SignNow no longer has counts as deleted). The callback host must be publicly reachable, and the API plan must include webhooks. SignNow unsubscribes a callback URL that keeps failing, so a subscription can go quiet; recreate it. Other SignNow events (`user.document.fieldinvite.*`, `user.document_group.*`, document-level `document.*`) are not wired.
+
+**Trust model.** SignNow lets the caller choose the HMAC secret, so the host does and never accepts an unsigned callback. Each callback carries `X-SignNow-Signature`, the hex HMAC-SHA256 of the raw request body under that key. The trigger recomputes it over the exact bytes received and compares in constant time before parsing; an unset key, a missing header or a body the host did not keep is refused. The signature scheme has **no timestamp**, so a captured callback can be replayed unchanged (SignNow also retries and resends callbacks over a long window, so freshness is not enforced); `timestamp` plus `event` and the document id is SignNow's own suggested de-duplication key. The payload's `access_token` is masked by SignNow and is not passed to the run.
+
+Docs (verified 2026-11-10): https://docs.signnow.com/docs/signnow/webhooks, https://docs.signnow.com/docs/manage-event-subscriptions/operations/create-event-subscription-2.md and https://docs.signnow.com/docs/manage-event-subscriptions/operations/delete-v2-event-subscriptions-subscription-id.md
 
 ## The thing to get right first: two hosts, and the spec's own `host` is the wrong one
 

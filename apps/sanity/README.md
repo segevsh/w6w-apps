@@ -1,7 +1,5 @@
 # Sanity
 
-Triggers: not shipped — document-query runs caller-supplied GROQ (no fixed feed), and dataset-list / project-list are small account-configuration lists with no row cap stated in the cited reference, so no bounded snapshot is claimed; document mutations are a webhook candidate queued for a webhook node (https://www.sanity.io/docs/webhooks, checked 2026-11-09)
-
 Query and mutate a Sanity Content Lake from a workflow — GROQ queries,
 transactional document mutations, publishing, revision history and dataset
 management.
@@ -9,6 +7,7 @@ management.
 - **Categories** — cms, databases, developer-tools
 - **Auth methods** — token
 - **Actions** — 11
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `api.sanity.io`, `*.api.sanity.io`, `*.apicdn.sanity.io`
 - **Website** — https://www.sanity.io
 - **API docs** — https://www.sanity.io/docs/http-reference
@@ -17,6 +16,20 @@ Paths and behaviour come from Sanity's own reference documentation
 (`http-reference/mutation`, `content-lake/api-cdn`,
 `content-lake/mutation-patterns`, read 2026-08-18); the host layout was verified
 against the live API the same day.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `document-created` — Document Created | webhook (API-registered, signed) | document webhook, `create` | document, id and type, dataset, project, transaction, idempotency key |
+| `document-updated` — Document Updated | webhook (API-registered, signed) | document webhook, `update` | the same |
+| `document-deleted` — Document Deleted | webhook (API-registered, signed) | document webhook, `delete` (also fired by unpublishing) | the same |
+
+**Setup.** Optional params: `dataset` (empty = the connection's dataset, `*` = every dataset), a GROQ `filter` (what goes between `*[` and `]`) and `includeDrafts`. Subscribing creates a GROQ-powered *document* webhook with `POST /hooks/projects/{projectId}` (name `w6w-<subscription id>`, `rule.on` = the one operation, a fresh random `secret`), and keeps its id and the secret in the subscription's state; unsubscribing deletes it with `DELETE /hooks/projects/{projectId}/{id}` (a webhook Sanity no longer has counts as deleted). **The connection's token must hold the project's webhooks grants** (`sanity.project.webhooks` read, create and delete), and the project's plan must have a free webhook slot; Sanity refuses a private or unresolvable callback host. Drafts are ignored unless `includeDrafts` is on, and then almost every Studio keystroke is an update. The webhook's projection is left empty, so the run gets the whole document after the change.
+
+**Trust model.** Sanity signs with the secret the host registered. Each delivery carries `sanity-webhook-signature: t=<unix ms>,v1=<base64url HMAC-SHA256 of "<t>.<raw body>">` (Stripe-style). The trigger recomputes it over the exact bytes received, compares in constant time, and rejects a timestamp more than five minutes from now, all before parsing. An unset secret, a missing or malformed header or a body the host did not keep is refused. The `sanity-*` headers (operation, document id, transaction) are not covered by the signature and only fill descriptive fields. Sanity delivers at least once: de-duplicate on `idempotencyKey`.
+
+Docs (verified 2026-11-10): https://www.sanity.io/docs/webhooks, https://www.sanity.io/docs/http-reference/webhooks and the vendor's verifier https://github.com/sanity-io/webhook-toolkit/blob/main/src/signature.ts
 
 ## Setup
 

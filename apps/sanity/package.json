@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/sanity",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Query and mutate a Sanity Content Lake — GROQ queries, transactional document mutations, publishing, revision history and dataset management.",
   "license": "MIT",
   "author": {
@@ -42,7 +42,12 @@
         "*.apicdn.sanity.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,10 +1,22 @@
 # SavvyCal
 
-Triggers: not shipped — event-list orders by scheduled time rather than creation or modification, and link-list is cursor-paged (`after` / `before`) with no stated cap, so it is not one bounded request; event lifecycle webhooks (event.created, event.rescheduled, event.canceled and more) are queued for a webhook node (https://docs.savvycal.com/developers/webhooks, checked 2026-11-09)
-
 Scheduling links: list, create, update, duplicate, toggle and delete links; read open time slots;
 book and cancel events; manage webhooks; read SavvyCal workflows. App id `io.w6w.savvycal`, API
 `https://api.savvycal.com/v1` (the "SavvyCal Meetings" API).
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `event-created` — Event Created | webhook (API-registered, signed) | `event.created` | event id, summary, start/end, duration, scheduling link, organizer, attendees, full event |
+| `event-canceled` — Event Canceled | webhook (API-registered, signed) | `event.canceled` | the same, with the cancel reason |
+| `event-rescheduled` — Event Rescheduled | webhook (API-registered, signed) | `event.rescheduled` | the same, with the new times and the reschedule reason |
+
+**Setup.** Nothing to paste. Subscribing registers the callback URL with `POST /v1/webhooks` and keeps the webhook `id` and the signing `secret` SavvyCal returns in the subscription's state; unsubscribing deletes it with `DELETE /v1/webhooks/{id}` (a webhook SavvyCal no longer has counts as deleted). Each trigger registers its own SavvyCal webhook (SavvyCal webhooks are per URL, not per event type), so a delivery of another type arriving at a trigger is acknowledged and dropped. The connected token needs permission to manage webhooks.
+
+**Trust model.** Every delivery carries `x-savvycal-signature: sha256=<hex HMAC-SHA256 of the raw request body>` under the webhook's own secret. The trigger recomputes it over the exact bytes received and compares in constant time before it parses anything; an unset secret, a missing header or a body the host did not keep is refused. SavvyCal puts **no timestamp** in the signature, so a captured delivery can be replayed unchanged; the delivery `id` (`payload_...`) is exposed as `deliveryId` for de-duplication. Other SavvyCal event types (`event.approved`, `event.checkout.*`, `event.attendee.*`, `poll.response.*`, ...) are not wired.
+
+Docs (verified 2026-11-10): https://docs.savvycal.com/developers/webhooks, https://docs.savvycal.com/developers/v1/api/schemas/webhook.md and https://docs.savvycal.com/developers/v1/api/schemas/createwebhookrequest.md
 
 ## Source of truth
 
