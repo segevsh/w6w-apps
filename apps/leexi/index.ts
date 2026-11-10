@@ -1,6 +1,13 @@
 import type { AppDefinition } from "@w6w/types";
 import basic from "./auth/basic.ts";
+import newCall from "./triggers/new-call.ts";
+import newClientCompany from "./triggers/new-client-company.ts";
+import newClientTeam from "./triggers/new-client-team.ts";
+import newClientUser from "./triggers/new-client-user.ts";
 import newMeetingEvent from "./triggers/new-meeting-event.ts";
+import newOrUpdatedCall from "./triggers/new-or-updated-call.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUser from "./triggers/new-user.ts";
 
 import userList from "./actions/user-list.ts";
 import userGet from "./actions/user-get.ts";
@@ -103,6 +110,15 @@ export default {
     clientUserDeactivate,
   ],
   auth: [basic],
-  triggers: [newMeetingEvent],
+  triggers: [
+    newMeetingEvent,
+    newCall,
+    newOrUpdatedCall,
+    newUser,
+    newTeam,
+    newClientCompany,
+    newClientTeam,
+    newClientUser,
+  ],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;
