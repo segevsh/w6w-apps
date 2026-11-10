@@ -5194,12 +5194,12 @@
     "path": "apps/productive",
     "mechanism": "poll",
     "candidates": [
-      "new-deal-list"
+      "new-deal"
     ],
     "pollAction": "deal-list",
-    "reason": "list action deal-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll: deal-list sorted -created_at (newest first); no honest update stamp (only -last_activity_at)",
+    "verified": "apps/productive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/prospeo",
@@ -5214,23 +5214,22 @@
     "path": "apps/pushbullet",
     "mechanism": "poll",
     "candidates": [
-      "new-chat-list"
+      "new-chat",
+      "new-or-updated-chat"
     ],
     "pollAction": "chat-list",
-    "reason": "list action chat-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "chat-list is modified-first (docs.pushbullet.com): new-or-updated-chat reads it; new-chat is a snapshot diff, added only",
+    "verified": "apps/pushbullet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pushover",
-    "mechanism": "poll",
-    "candidates": [
-      "new-sounds-list"
-    ],
-    "pollAction": "sounds-list",
-    "reason": "list action sounds-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "none: only 4 calls (message-send, user-validate, sounds-list, limits-get); no record-list action (https://pushover.net/api)",
+    "verified": "apps/pushover/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pylon",
@@ -5272,23 +5271,24 @@
     "path": "apps/quickbase",
     "mechanism": "poll",
     "candidates": [
-      "new-tables"
+      "new-table"
     ],
     "pollAction": "list-tables",
-    "reason": "list action list-tables has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll snapshot: list-tables returns the bounded whole set as one array; added only",
+    "verified": "apps/quickbase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/quickbooks",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer",
+      "new-or-updated-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll: customer-list ORDERBY MetaData.CreateTime / LastUpdatedTime DESC (Intuit page not curl-able; not live-verified)",
+    "verified": "apps/quickbooks/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/quickchart",
@@ -5312,34 +5312,36 @@
     "path": "apps/raindrop",
     "mechanism": "poll",
     "candidates": [
-      "new-collection-list"
+      "new-bookmark",
+      "new-collection"
     ],
-    "pollAction": "collection-list",
-    "reason": "list action collection-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "raindrop-search",
+    "reason": "poll: raindrop-search sort=-created (documented default newest first); new-collection is a snapshot diff of collection-list",
+    "verified": "apps/raindrop/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/raisely",
     "mechanism": "poll",
     "candidates": [
-      "new-campaign-list"
+      "new-campaign",
+      "new-or-updated-campaign"
     ],
     "pollAction": "campaign-list",
-    "reason": "list action campaign-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll: campaign-list sort=createdAt|updatedAt order=desc (documented sort/order params)",
+    "verified": "apps/raisely/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/razorpay",
     "mechanism": "poll",
     "candidates": [
-      "new-order-list"
+      "new-order"
     ],
     "pollAction": "order-list",
-    "reason": "list action order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll since-filter: order-list from=<last check-120s> with skip paging; no sort arg documented, no update stamp",
+    "verified": "apps/razorpay/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/rdstation",
@@ -5365,12 +5367,12 @@
     "path": "apps/readwise",
     "mechanism": "poll",
     "candidates": [
-      "new-book-list"
+      "new-or-updated-book"
     ],
     "pollAction": "book-list",
-    "reason": "list action book-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll since-filter: book-list updated__gt; no creation filter so no pure new-book",
+    "verified": "apps/readwise/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recallai",
@@ -5385,34 +5387,33 @@
     "path": "apps/recharge",
     "mechanism": "poll",
     "candidates": [
-      "new-order-list"
+      "new-order",
+      "new-or-updated-order"
     ],
     "pollAction": "order-list",
-    "reason": "list action order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll since-filter: order-list created_at_min / updated_at_min with cursor paging",
+    "verified": "apps/recharge/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recruit-crm",
-    "mechanism": "poll",
-    "candidates": [
-      "new-job-list"
-    ],
-    "pollAction": "job-list",
-    "reason": "list action job-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "none: GET /v1/jobs sort_by/sort_order undocumented values and no created/updated-since filter (https://api.recruitcrm.io/docs)",
+    "verified": "apps/recruit-crm/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recruitee",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-candidate"
     ],
-    "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "candidate-list",
+    "reason": "poll since-filter: candidate-list created_after (documented); no updated filter",
+    "verified": "apps/recruitee/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/recruiterflow",
@@ -5427,12 +5428,13 @@
     "path": "apps/recurly",
     "mechanism": "poll",
     "candidates": [
-      "new-invoices"
+      "new-invoice",
+      "new-or-updated-invoice"
     ],
     "pollAction": "list-invoices",
-    "reason": "list action list-invoices has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "poll: list-invoices sort=created_at|updated_at order=desc page 1 (OpenAPI list_invoices)",
+    "verified": "apps/recurly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/reddit",
@@ -5458,12 +5460,12 @@
     "path": "apps/refiner",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-survey"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "form-list",
+    "reason": "poll snapshot: form-list is a bounded name-ordered set (one page of 1000); contact-list order_by has no documented direction",
+    "verified": "apps/refiner/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/regfox",

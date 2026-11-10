@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 62, manual-webhook: 18, poll: 417, none: 186
+**Totals:** 683 apps — webhook-api: 62, manual-webhook: 18, poll: 415, none: 188
 
 ## webhook-api (62)
 
@@ -100,7 +100,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (417)
+## poll (415)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -397,22 +397,20 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/printavo | task-list | new-task | apps/printavo/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by CREATED_AT descending. |
 | apps/processstreet | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
 | apps/productboard | note-list | new-note, new-or-updated-note | apps/productboard/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: note-list createdFrom / updatedFrom = cursor-10min, id dedupe (https://developer.productboard.com/reference/listnotes) |
-| apps/productive | deal-list | new-deal-list | no | scan | list action deal-list has pagination and order/since params |
-| apps/pushbullet | chat-list | new-chat-list | no | scan | list action chat-list has pagination and order/since params |
-| apps/pushover | sounds-list | new-sounds-list | no | scan | list action sounds-list has pagination and order/since params |
-| apps/quickbase | list-tables | new-tables | no | scan | list action list-tables has pagination and order/since params |
-| apps/quickbooks | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
-| apps/raindrop | collection-list | new-collection-list | no | scan | list action collection-list has pagination and order/since params |
-| apps/raisely | campaign-list | new-campaign-list | no | scan | list action campaign-list has pagination and order/since params |
-| apps/razorpay | order-list | new-order-list | no | scan | list action order-list has pagination and order/since params |
+| apps/productive | deal-list | new-deal | apps/productive/README.md Triggers section (verified 2026-11-09) | hand | poll: deal-list sorted -created_at (newest first); no honest update stamp (only -last_activity_at) |
+| apps/pushbullet | chat-list | new-chat, new-or-updated-chat | apps/pushbullet/README.md Triggers section (verified 2026-11-09) | hand | chat-list is modified-first (docs.pushbullet.com): new-or-updated-chat reads it; new-chat is a snapshot diff, added only |
+| apps/quickbase | list-tables | new-table | apps/quickbase/README.md Triggers section (verified 2026-11-09) | hand | poll snapshot: list-tables returns the bounded whole set as one array; added only |
+| apps/quickbooks | customer-list | new-customer, new-or-updated-customer | apps/quickbooks/README.md Triggers section (verified 2026-11-09) | hand | poll: customer-list ORDERBY MetaData.CreateTime / LastUpdatedTime DESC (Intuit page not curl-able; not live-verified) |
+| apps/raindrop | raindrop-search | new-bookmark, new-collection | apps/raindrop/README.md Triggers section (verified 2026-11-09) | hand | poll: raindrop-search sort=-created (documented default newest first); new-collection is a snapshot diff of collection-list |
+| apps/raisely | campaign-list | new-campaign, new-or-updated-campaign | apps/raisely/README.md Triggers section (verified 2026-11-09) | hand | poll: campaign-list sort=createdAt\|updatedAt order=desc (documented sort/order params) |
+| apps/razorpay | order-list | new-order | apps/razorpay/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: order-list from=<last check-120s> with skip paging; no sort arg documented, no update stamp |
 | apps/rdstation | list-contacts | new-contact | apps/rdstation/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
-| apps/readwise | book-list | new-book-list | no | scan | list action book-list has pagination and order/since params |
-| apps/recharge | order-list | new-order-list | no | scan | list action order-list has pagination and order/since params |
-| apps/recruit-crm | job-list | new-job-list | no | scan | list action job-list has pagination and order/since params |
-| apps/recruitee | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
-| apps/recurly | list-invoices | new-invoices | no | scan | list action list-invoices has pagination and order/since params |
+| apps/readwise | book-list | new-or-updated-book | apps/readwise/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: book-list updated__gt; no creation filter so no pure new-book |
+| apps/recharge | order-list | new-order, new-or-updated-order | apps/recharge/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: order-list created_at_min / updated_at_min with cursor paging |
+| apps/recruitee | candidate-list | new-candidate | apps/recruitee/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: candidate-list created_after (documented); no updated filter |
+| apps/recurly | list-invoices | new-invoice, new-or-updated-invoice | apps/recurly/README.md Triggers section (verified 2026-11-09) | hand | poll: list-invoices sort=created_at\|updated_at order=desc page 1 (OpenAPI list_invoices) |
 | apps/reddit | post-list | new-post | apps/reddit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-list |
-| apps/refiner | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/refiner | form-list | new-survey | apps/refiner/README.md Triggers section (verified 2026-11-09) | hand | poll snapshot: form-list is a bounded name-ordered set (one page of 1000); contact-list order_by has no documented direction |
 | apps/regfox | form-list | new-form-list | no | scan | list action form-list has pagination and order/since params |
 | apps/relevanceai | agent-list | new-agent-list | no | scan | list action agent-list has pagination and order/since params |
 | apps/replicate | prediction-list | new-prediction-list | no | scan | list action prediction-list has pagination and order/since params |
@@ -522,7 +520,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (186)
+## none (188)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -638,6 +636,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/printnode |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/procore | new-submittal | apps/procore/README.md Triggers section (verified 2026-11-09) | hand | submittal-list needs a per-project id and a descending sort whose syntax is only published in a JS-rendered reference that could not be verified (https://developers.procore.com/reference/rest/submittals) |
 | apps/prospeo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/pushover |  | apps/pushover/README.md Triggers section (verified 2026-11-09) | hand | none: only 4 calls (message-send, user-validate, sounds-list, limits-get); no record-list action (https://pushover.net/api) |
 | apps/pylon |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/qdrant |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/quaderno |  | no | scan | no newest-first list action found by scan; vendor events not researched |
@@ -646,6 +645,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/quo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/read-ai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/recallai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/recruit-crm |  | apps/recruit-crm/README.md Triggers section (verified 2026-11-09) | hand | none: GET /v1/jobs sort_by/sort_order undocumented values and no created/updated-since filter (https://api.recruitcrm.io/docs) |
 | apps/recruiterflow |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/redtail-crm |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/rendex |  | no | scan | no newest-first list action found by scan; vendor events not researched |
