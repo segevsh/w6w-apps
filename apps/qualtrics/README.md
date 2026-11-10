@@ -259,3 +259,5 @@ deno task test
 Endpoint verification and status surfaces move; if a probe starts failing for
 everyone at once, re-check against the 400-vs-404 method above before assuming
 the app is wrong.
+
+Triggers: not shipped — survey and directory lists may paginate but the existing actions provide no bounded collection contract or documented creation ordering (https://api.qualtrics.com/)

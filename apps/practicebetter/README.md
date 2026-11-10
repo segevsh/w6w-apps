@@ -116,6 +116,8 @@ envelope:
 { "count": 128, "hasMore": true, "items": [] }
 ```
 
+Triggers: not shipped — client-record modification filters exist but the action response exposes no documented stable timestamp/id pair for a safe since cursor (https://api-docs.practicebetter.io/swagger.json)
+
 `pageParams`, `pageOutput`, `pageQuery` and `Page<T>` in [`lib/client.ts`](lib/client.ts) declare
 that shape once, so the nine list actions cannot drift apart, and list actions return the envelope
 **verbatim** rather than unwrapping `items` — `count` and `hasMore` are how a workflow decides

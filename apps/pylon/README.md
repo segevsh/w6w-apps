@@ -60,3 +60,5 @@ groups, AI response, followers, external-issue link, voice calls, redact/delete 
 reply, custom fields and custom objects, email, knowledge base, macros, tasks and projects, ticket
 forms, training data, surveys, feature requests, call recordings, attachments, audit logs, user
 roles, user update, team create/update, and the activities, files and highlights endpoints.
+
+Triggers: not shipped — account, contact and issue lists are cursor feeds with no documented newest-first order or updated-since filter in the existing actions (https://docs.usepylon.com/pylon-docs/developer/api)

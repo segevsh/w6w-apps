@@ -226,3 +226,5 @@ promise the header exists, so a future removal shouldn't fail a target outright.
 (`https://cdn.quo.com/favicon/android-chrome-512x512.png`, 512×512, 4,886 bytes), sourced from the
 `<link rel="icon">` tags on `quo.com`'s own HTML — the current vendor mark, not the legacy
 OpenPhone one.
+
+Triggers: not shipped — call and message lists require a phone number and participant scope, and no existing list action documents a global created-order feed (https://www.quo.com/docs/mdx/api-reference/introduction)

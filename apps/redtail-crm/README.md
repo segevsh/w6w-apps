@@ -219,3 +219,5 @@ Tests call every hook directly with a mocked `HookContext` (`tests/_helpers.ts`:
 unexpected request fails rather than hanging. `UNAUTHORIZED_401`, `FORBIDDEN_403` and
 `NO_CONTENT_204` in that file are the live/collection-measured responses reused everywhere those
 failure and success modes are asserted.
+
+Triggers: not shipped — contact, activity and opportunity list actions paginate without a documented creation order or changed-since filter (https://documenter.getpostman.com/view/7873823/SVzxXyzn)

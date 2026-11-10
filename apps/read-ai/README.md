@@ -65,3 +65,11 @@ shape, so it is not used.
 
 `assets/icon.svg` embeds the vendor's real 256x256 PNG logomark (from read.ai's `<link rel=icon>`)
 verbatim as base64 — no SVG original is published. Format with `deno task fmt`, never bare `deno fmt`.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-meeting` | poll | `list-meetings` | Each newly available meeting report |
+
+`GET /v1/meetings` is newest first and capped at ten rows. Vendor API reference: https://www.read.ai (verified 2026-11-09).

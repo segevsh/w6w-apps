@@ -73,3 +73,5 @@ metadata, transcript update, recording update), realtime endpoints, output media
 video output, pin participant, Desktop SDK uploads, Calendar V1 (calendar users and meetings),
 Google Meet bot login groups and logins, Meeting Direct Connect, Zoom OAuth apps and credentials,
 and fetching the pre-signed download URLs themselves.
+
+Triggers: not shipped — webhook status events are preferred by the vendor and existing bot/calendar lists have no documented newest-first order (https://docs.recall.ai/reference)

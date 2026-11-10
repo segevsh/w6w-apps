@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/qdrant",
-  "version": "0.1.0",
-  "description": "Work a Qdrant vector database — create collections, upsert points, query by vector with filters, scroll and count, and manage aliases, indexes and snapshots.",
+  "version": "0.2.0",
+  "description": "Work a Qdrant vector database — create collections, upsert points, query by vector with filters, scroll and count, manage aliases, indexes and snapshots, and trigger workflows for new collections.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
