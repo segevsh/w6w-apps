@@ -1,19 +1,32 @@
 # Gusto
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 15 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | `new-event` — New Event | poll | `event-list` | Each new account event |
+| `new-employee` — New Employee | poll | `employee-list` | Each employee added to the company |
+| `new-or-updated-employee` — New or Updated Employee | poll | `employee-list` | Each employee that is new or whose record changed |
+| `new-contractor` — New Contractor | poll | `contractor-list` | Each contractor added |
+| `new-or-updated-contractor` — New or Updated Contractor | poll | `contractor-list` | Each contractor that is new or changed |
+| `new-payroll` — New Payroll | poll | `payroll-list` | Each draft or processed payroll entering the pay-period window |
+| `new-or-updated-payroll` — New or Updated Payroll | poll | `payroll-list` | Each payroll that is new or changed (a draft being processed) |
+| `new-time-off-request` — New Time Off Request | poll | `time-off-request-list` | Each time off request entering the look-back window |
+| `new-or-updated-time-off-request` — New or Updated Time Off Request | poll | `time-off-request-list` | Each request that is new or changed (pending to approved) |
+| `new-contractor-payment` — New Contractor Payment | poll | `contractor-payment-list` | Each contractor payment in the look-back window |
+| `new-or-updated-contractor-payment` — New or Updated Contractor Payment | poll | `contractor-payment-list` | Each payment that is new or changed (status) |
+| `new-department` — New Department | poll | `department-list` | Each department created |
+| `new-employee-home-address` — New Employee Home Address | poll | `employee-home-address-list` | Each home address record added for the chosen employee |
+| `new-garnishment` — New Garnishment | poll | `garnishment-list` | Each garnishment added for the chosen employee |
+| `new-job-compensation` — New Job Compensation | poll | `job-compensation-list` | Each compensation record added to the chosen job |
 
-Gusto's Events API (https://docs.gusto.com/app-integrations/docs/events, verified 2026-11-10) takes `sort_order` (`asc` or `desc` chronological) and returns up to 30 days of events; the trigger sends `sort_order=desc` through `event-list`, so page 1 is the newest events.
+Gusto's Events API (https://docs.gusto.com/app-integrations/docs/events, verified 2026-11-10) takes `sort_order` (`asc` or `desc` chronological) and returns up to 30 days of events; `new-event` sends `sort_order=desc` through `event-list`, so page 1 is the newest events.
 
-Not covered: roster, payroll, payment, leave and per-person history endpoints are paged or
-date-scoped reads without a documented newest-first or created/updated-since cursor; organization
-and schedule endpoints are configuration. Polling any of those as a “new” feed would be unsafe.
-Source: https://docs.gusto.com/app-integrations (verified 2026-11-10).
+Gusto's list endpoints document no created/updated cursor and no newest-first order (https://docs.gusto.com/app-integrations/reference, field lists checked against Gusto's generated client `Gusto/gusto-python-client`, verified 2026-11-10), so every other trigger re-reads the whole collection or a rolling date window through the existing list action and diffs it with the shared snapshot kit: the first check records the collection and emits nothing, `new-…` fires for an id not seen before, and `new-or-updated-…` also fires when the record's content changes (an employee/contractor/department `version`, a payroll `processed` flip, a time-off or contractor-payment `status`). Windowed triggers (`new-payroll`, `new-time-off-request`, `new-contractor-payment`) take a `lookbackDays` param; payrolls use pay-period dates (`start_date`/`end_date`, `processing_statuses=processed,unprocessed`), time off uses `start_date`, contractor payments use `start_date`/`end_date` ending today. A collection over 5000 rows fails the check loudly. Per-parent triggers need the employee or job id.
+
+Not covered: `company-admin-list`, `company-location-list` (company access and tax-location configuration), `pay-period-list`, `pay-schedule-list` (pay-calendar and schedule definitions: reference data).
 
 Read and update a Gusto payroll account from a workflow — employees,
 contractors, compensation, payrolls, pay schedules, time off and departments.
