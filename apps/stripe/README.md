@@ -5,7 +5,7 @@ Manage Stripe customers, payments, refunds, invoices, subscriptions, catalogue a
 - **Categories** — commerce, finance
 - **Auth methods** — api-key
 - **Actions** — 25
-- **Triggers** — 10 (webhook)
+- **Triggers** — 29 (webhook)
 - **Egress allowlist** — `api.stripe.com`
 - **Website** — https://stripe.com
 - **API docs** — https://docs.stripe.com/api
@@ -27,7 +27,26 @@ Stripe no longer has counts as deleted). Nothing to configure by hand.
 | `subscription-canceled` | webhook | `customer.subscription.deleted` | the event and the final Subscription |
 | `checkout-completed` | webhook | `checkout.session.completed` | the event and the Checkout Session |
 | `customer-created` | webhook | `customer.created` | the event and the Customer |
-| `event` | webhook | any event types you list (or `*`) | the event and its `data.object` |
+| `customer-updated` | webhook | `customer.updated` | the event and the Customer after the change, and previousAttributes holds the old values of what changed |
+| `customer-deleted` | webhook | `customer.deleted` | the event and the deleted Customer |
+| `subscription-updated` | webhook | `customer.subscription.updated` | the event and the Subscription after the change, and previousAttributes holds the old values |
+| `invoice-created` | webhook | `invoice.created` | the event and the Invoice |
+| `invoice-finalized` | webhook | `invoice.finalized` | the event and the Invoice |
+| `invoice-voided` | webhook | `invoice.voided` | the event and the Invoice |
+| `payment-intent-created` | webhook | `payment_intent.created` | the event and the PaymentIntent |
+| `payment-intent-canceled` | webhook | `payment_intent.canceled` | the event and the PaymentIntent with its cancellation reason |
+| `charge-succeeded` | webhook | `charge.succeeded` | the event and the Charge |
+| `charge-failed` | webhook | `charge.failed` | the event and the Charge with its failure code and message |
+| `refund-created` | webhook | `refund.created` | the event and the Refund |
+| `refund-updated` | webhook | `refund.updated` | the event and the Refund |
+| `product-created` | webhook | `product.created` | the event and the Product |
+| `product-updated` | webhook | `product.updated` | the event and the Product after the change, and previousAttributes holds the old values |
+| `product-deleted` | webhook | `product.deleted` | the event and the deleted Product |
+| `price-created` | webhook | `price.created` | the event and the Price |
+| `price-updated` | webhook | `price.updated` | the event and the Price after the change, and previousAttributes holds the old values |
+| `price-deleted` | webhook | `price.deleted` | the event and the deleted Price |
+| `checkout-expired` | webhook | `checkout.session.expired` | the event and the Checkout Session |
+| `event` | webhook | **Any event** — the event types you list (or `*`) | the event and its `data.object` |
 
 Every trigger's event has `id`, `type`, `created`, `livemode`, `account`, `apiVersion`,
 `requestId`, `object` (Stripe's `data.object`) and `previousAttributes` (`data.previous_attributes`
@@ -43,7 +62,12 @@ minutes of now (Stripe's documented tolerance). A delivery with no signature, a 
 stale or future timestamp, or a subscription with no stored secret is refused and no run starts;
 no unsigned path exists. Stripe's fake `v0` test scheme is ignored.
 
-Sources, verified 2026-11-09:
+Not covered by a named trigger: every other event in Stripe's catalog (payouts, disputes, Connect, Issuing, Terminal, Tax, Billing meters and the rest of the 246 types listed) is reachable through the `event` trigger. `customer-search` is a query, not a feed: new customers arrive through `customer-created`.
+
+Stripe checks an endpoint's event types when it is created, so an event type the pinned API version (2024-06-20) does not offer fails the subscribe with Stripe's own message.
+
+Sources, verified 2026-11-10:
+[event types](https://docs.stripe.com/api/events/types),
 [webhook signatures](https://docs.stripe.com/webhooks#verify-manually),
 [create a webhook endpoint](https://docs.stripe.com/api/webhook_endpoints/create),
 [delete a webhook endpoint](https://docs.stripe.com/api/webhook_endpoints/delete).
