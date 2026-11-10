@@ -662,12 +662,56 @@
       "pull-request-declined",
       "pull-request-merged",
       "pull-request-updated",
-      "push"
+      "push",
+      "any-event",
+      "issue-updated",
+      "issue-comment-created",
+      "pull-request-approved",
+      "pull-request-changes-requested",
+      "repo-fork",
+      "repo-updated",
+      "commit-status-created",
+      "commit-status-updated",
+      "new-repository",
+      "new-or-updated-repository",
+      "new-workspace"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-repositories",
+    "reason": "shipped: signed repository webhooks registered through the vendor API (X-Hub-Signature, per-subscription secret) for the main PR/issue/push/build-status events plus an Any-event trigger over all 24 documented keys; polls for new and updated repositories (sort=-created_on / -updated_on) and new workspaces.",
+    "verified": "apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-repository-hooks": "admin output: the registry of webhook subscriptions (this app's own triggers manage theirs), https://developer.atlassian.com/cloud/bitbucket/rest/api-group-webhooks/",
+      "list-workspace-hooks": "admin output: the registry of workspace webhook subscriptions, https://developer.atlassian.com/cloud/bitbucket/rest/api-group-webhooks/",
+      "list-repository-events": "reference data: the static catalog of subscribable repository event names (GET /hook_events/repository)",
+      "list-workspace-events": "reference data: the static catalog of subscribable workspace event names (GET /hook_events/workspace)"
+    },
+    "events": {
+      "repo:push": "push",
+      "repo:fork": "repo-fork",
+      "repo:updated": "repo-updated",
+      "repo:commit_comment_created": "any",
+      "repo:commit_status_created": "commit-status-created",
+      "repo:commit_status_updated": "commit-status-updated",
+      "issue:created": "issue-created",
+      "issue:updated": "issue-updated",
+      "issue:comment_created": "issue-comment-created",
+      "pullrequest:created": "pull-request-created",
+      "pullrequest:updated": "pull-request-updated",
+      "pullrequest:approved": "pull-request-approved",
+      "pullrequest:unapproved": "any",
+      "pullrequest:fulfilled": "pull-request-merged",
+      "pullrequest:rejected": "pull-request-declined",
+      "pullrequest:comment_created": "pull-request-comment",
+      "pullrequest:comment_updated": "any",
+      "pullrequest:comment_deleted": "any",
+      "pullrequest:comment_resolved": "any",
+      "pullrequest:comment_reopened": "any",
+      "pullrequest:changes_request_created": "pull-request-changes-requested",
+      "pullrequest:changes_request_removed": "any",
+      "pullrequest:push": "any",
+      "pipeline:span_created": "any"
+    }
   },
   {
     "path": "apps/atlassian/confluence",
@@ -1640,12 +1684,29 @@
     "path": "apps/brex",
     "mechanism": "webhook-api",
     "candidates": [
-      "event"
+      "event",
+      "user-updated",
+      "new-user",
+      "new-card",
+      "new-department",
+      "new-location",
+      "new-title",
+      "new-legal-entity"
     ],
-    "pollAction": null,
-    "reason": "POST /v1/webhooks registers the callback and GET /v1/webhooks/secrets supplies the signing secrets at subscribe time; Webhook-Id/Timestamp/Signature (v1 base64 HMAC-SHA256 of id.timestamp.rawBody) verified within 5 minutes; Brex allows one endpoint per client, so one trigger with an eventTypes param",
+    "pollAction": "user-list",
+    "reason": "signed webhook registered with POST /v1/webhooks (Webhook-Id/Timestamp/Signature v1 HMAC-SHA256, 5 minute window; Brex allows one endpoint per client, so one Any-event trigger `event` with an eventTypes filter plus `user-updated`); every list endpoint (users, cards, departments, locations, titles, legal entities) has no sort or since filter, so each has a whole-collection snapshot poll.",
     "verified": "apps/brex/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "events": {
+      "REFERRAL_CREATED": "any",
+      "REFERRAL_ACTIVATED": "any",
+      "REFERRAL_APPLICATION_STATUS_CHANGED": "any",
+      "TRANSFER_PROCESSED": "any",
+      "TRANSFER_FAILED": "any",
+      "USER_UPDATED": "user-updated",
+      "EXPENSE_PAYMENT_UPDATED": "any",
+      "ACCOUNTING_RECORD_READY_FOR_EXPORT": "any"
+    }
   },
   {
     "path": "apps/browseai",
@@ -3538,12 +3599,28 @@
       "new-segment",
       "new-subscriber",
       "subscriber-unsubscribed",
-      "subscriber-added-to-segment"
+      "subscriber-added-to-segment",
+      "any-event",
+      "new-workflow"
     ],
     "pollAction": "list-segments",
-    "reason": "shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment; no updated or complaint event exists). Flodesk publishes no signature, so the README says the callback URL is the secret; the earlier New Segment poll (list-segments) is kept.",
+    "reason": "shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment) plus an Any-event trigger; Flodesk publishes no signature, so the README says the callback URL is the secret; polls for new segments and new workflows.",
     "verified": "apps/flodesk/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "list-subscribers": "new-subscriber"
+    },
+    "skipped": {
+      "list-custom-fields": "reference data: custom field definitions",
+      "list-all-custom-fields": "reference data: custom field definitions",
+      "list-segment-colors": "reference data: the static palette of segment colours",
+      "list-webhooks": "admin output: the registry of this account's webhook subscriptions (this app's own triggers manage theirs)"
+    },
+    "events": {
+      "subscriber.created": "new-subscriber",
+      "subscriber.unsubscribed": "subscriber-unsubscribed",
+      "subscriber.added_to_segment": "subscriber-added-to-segment"
+    }
   },
   {
     "path": "apps/folk",
@@ -6460,12 +6537,57 @@
       "campaign-sent",
       "new-subscriber",
       "subscriber-unsubscribed",
-      "subscriber-updated"
+      "subscriber-updated",
+      "any-event",
+      "subscriber-added-to-group",
+      "subscriber-removed-from-group",
+      "subscriber-bounced",
+      "subscriber-spam-reported",
+      "subscriber-automation-triggered",
+      "subscriber-automation-completed",
+      "new-group",
+      "new-segment",
+      "new-campaign"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/mailerlite/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-groups",
+    "reason": "shipped: signed webhooks (Signature = hex HMAC-SHA256 of the raw body) registered through the vendor API for the subscriber, group, automation, bounce, spam and campaign.sent events plus an Any-event trigger over all 14 published events (batched ones included); polls for new groups (sort=-created_at), segments and campaigns.",
+    "verified": "apps/mailerlite/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-subscribers": "new-subscriber",
+      "list-group-subscribers": "subscriber-added-to-group"
+    },
+    "skipped": {
+      "list-fields": "reference data: custom field definitions"
+    },
+    "events": {
+      "subscriber.created": "new-subscriber",
+      "subscriber.updated": "subscriber-updated",
+      "subscriber.unsubscribed": "subscriber-unsubscribed",
+      "subscriber.added_to_group": "subscriber-added-to-group",
+      "subscriber.removed_from_group": "subscriber-removed-from-group",
+      "subscriber.bounced": "subscriber-bounced",
+      "subscriber.automation_triggered": "subscriber-automation-triggered",
+      "subscriber.automation_completed": "subscriber-automation-completed",
+      "subscriber.spam_reported": "subscriber-spam-reported",
+      "subscriber.deleted": "any",
+      "subscriber.active": "any",
+      "campaign.sent": "campaign-sent",
+      "campaign.click": "any",
+      "campaign.open": "any"
+    },
+    "n8n": {
+      "campaign.sent": "campaign-sent",
+      "subscriber.added_to_group": "subscriber-added-to-group",
+      "subscriber.automation_completed": "subscriber-automation-completed",
+      "subscriber.automation_triggered": "subscriber-automation-triggered",
+      "subscriber.bounced": "subscriber-bounced",
+      "subscriber.created": "new-subscriber",
+      "subscriber.removed_from_group": "subscriber-removed-from-group",
+      "subscriber.spam_reported": "subscriber-spam-reported",
+      "subscriber.unsubscribed": "subscriber-unsubscribed",
+      "subscriber.updated": "subscriber-updated"
+    }
   },
   {
     "path": "apps/maileroo",
