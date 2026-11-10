@@ -103,6 +103,15 @@ import checkoutCreate from "./actions/checkout-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrder from "./triggers/new-order.ts";
+import newCheckout from "./triggers/new-checkout.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newDiscount from "./triggers/new-discount.ts";
+import newLicenseKey from "./triggers/new-license-key.ts";
+import newPrice from "./triggers/new-price.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newProduct from "./triggers/new-product.ts";
+import newVariant from "./triggers/new-variant.ts";
+import newStore from "./triggers/new-store.ts";
 
 export default {
   actions: [
@@ -155,6 +164,17 @@ export default {
   ],
   // API key only. Lemon Squeezy has no OAuth2 surface for third-party apps.
   auth: [apiKey],
-  triggers: [newOrder],
+  triggers: [
+    newOrder,
+    newCheckout,
+    newCustomer,
+    newDiscount,
+    newLicenseKey,
+    newPrice,
+    newSubscription,
+    newProduct,
+    newVariant,
+    newStore,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

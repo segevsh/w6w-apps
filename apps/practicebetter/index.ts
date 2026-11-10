@@ -76,6 +76,13 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newClientRecord from "./triggers/new-client-record.ts";
 import newOrUpdatedClientRecord from "./triggers/new-or-updated-client-record.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newSession from "./triggers/new-session.ts";
+import newTag from "./triggers/new-tag.ts";
+import newReminder from "./triggers/new-reminder.ts";
+import newPackageInstance from "./triggers/new-package-instance.ts";
+import newService from "./triggers/new-service.ts";
+import newPackage from "./triggers/new-package.ts";
 
 export default {
   actions: [
@@ -119,5 +126,15 @@ export default {
   // other credential shape.
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newClientRecord, newOrUpdatedClientRecord],
+  triggers: [
+    newClientRecord,
+    newOrUpdatedClientRecord,
+    newInvoice,
+    newSession,
+    newTag,
+    newReminder,
+    newPackageInstance,
+    newService,
+    newPackage,
+  ],
 } satisfies AppDefinition;

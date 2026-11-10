@@ -1,5 +1,5 @@
 import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { type IdsState, pollNewItems } from "../../_shared/poll/mod.ts";
+import { type IdsState, pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
@@ -128,6 +128,68 @@ export function sinceTrigger(spec: {
             ? { ...base, cursor, resume: { checkedAt, input: pending } }
             : { ...base, cursor: checkedAt }) as SinceState,
       };
+    },
+  };
+}
+
+/** Page size the document allows (`limit` 1-100) and the most pages one snapshot check reads. */
+export const SNAPSHOT_PAGE = 100;
+export const SNAPSHOT_MAX_PAGES = 5;
+
+/**
+ * A bounded-collection poll over an EXISTING list action (services and package definitions are a
+ * practice's own small catalogue, ordered by rank, not by creation): every check reads the whole
+ * collection through the SAME `action.execute(...)` (`limit=100`, following `skip` while `hasMore`,
+ * at most 5 pages) and diffs the ids with `pollSnapshot` (added only). The first check records what
+ * exists and emits nothing. Events are the raw items.
+ */
+export function snapshotTrigger(spec: {
+  key: string;
+  title: string;
+  description: string;
+  action: ActionDefinition;
+  output: OutputField[];
+  sample: unknown;
+}): TriggerDefinition {
+  if (spec.action.type !== "read" && spec.action.type !== "search") {
+    throw new Error(`snapshotTrigger(${spec.key}): action ${spec.action.key} is not a list action`);
+  }
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state }, ctx) {
+      const rows: Array<{ key: string; values: unknown }> = [];
+      let more = false;
+      for (let page = 0; page < SNAPSHOT_MAX_PAGES; page++) {
+        const result = await spec.action.execute(
+          page === 0
+            ? { limit: SNAPSHOT_PAGE }
+            : { limit: SNAPSHOT_PAGE, skip: page * SNAPSHOT_PAGE },
+          ctx,
+        ) as { items?: unknown[]; hasMore?: boolean };
+        for (const item of result.items ?? []) {
+          rows.push({ key: String((item as { id?: unknown }).id), values: item });
+        }
+        more = result.hasMore === true;
+        if (!more) break;
+      }
+      if (more) {
+        throw new Error(
+          `${spec.key}: the collection holds more than ${
+            SNAPSHOT_MAX_PAGES * SNAPSHOT_PAGE
+          } records`,
+        );
+      }
+      const { events, nextState } = await pollSnapshot({
+        state,
+        rows,
+        emit: { added: true, updated: false },
+      });
+      return { events: events.map((e) => e.values), nextState };
     },
   };
 }
