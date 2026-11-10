@@ -2,7 +2,29 @@
 
 ## Triggers
 
-- **New Deal** (`new-deal`) polls the newest-first `deal-list` action every five minutes.
+- **Triggers** — 9 (poll)
+
+Poll triggers built on the app's existing list actions (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-deal` — New Deal | poll | `deal-list` | Each newly recorded deal. |
+| `new-call` — New Call | poll | `call-list` | Each call newly booked (`orderColumn=createdAt&orderBy=desc`, every time window). |
+| `new-or-updated-call` — New or Updated Call | poll | `call-list` | Each call booked or changed (`orderColumn=updatedAt`), once per change. |
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact (`orderColumn=createdAt&orderBy=desc`). |
+| `new-transaction` — New Transaction | poll | `transaction-list` | Each newly recorded payment transaction (`sort=desc`, by `createdAt`). |
+| `new-product` — New Product | poll | `product-list` | Each newly created product (`orderColumn=createdAt&orderBy=desc`). |
+| `new-or-updated-product` — New or Updated Product | poll | `product-list` | Each product created or edited (`orderColumn=updatedAt`), once per edit. |
+| `new-event` — New Event | poll | `event-list` | Each newly created event type (`latestFirst=true`, ordered by `createdAt`). |
+| `new-user` — New User | poll | `user-list` | Each user newly added to the account; the user list is small and read whole, compared check to check. |
+
+The newest-first feeds read one page of 100 per check. There is no edited-contact or edited-transaction trigger: the documented contact object has no update stamp and the transaction list sorts by `createdAt` only.
+
+Not covered, by reason: field and stage definitions (reference data) — `field-list`, `field-list-all`, `contact-stage-list`; availability calendars rather than records — `event-dates-list`, `user-availability-list`; `contact-note-list` (the notes of ONE contact; `GET /v1/contacts/notes` documents no order and no since filter).
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own API key makes the request.
+
+Vendor docs: <https://developer.iclosed.io> and the OpenAPI file <https://api-docs-iclosed.redocly.app/_bundle/openapi/v1/openapi.yaml> (verified 2026-11-10).
 
 Sales-call scheduling and CRM for closers, over the iClosed public API v1
 (`https://public.api.iclosed.io/v1`). 36 actions, API-key auth, three health checks.

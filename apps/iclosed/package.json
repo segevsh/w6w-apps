@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/iclosed",
-  "version": "0.1.0",
-  "description": "Manage iClosed sales-call scheduling: contacts, booked calls, deals, products, transactions and custom fields.",
+  "version": "0.2.0",
+  "description": "Manage iClosed sales-call scheduling: contacts, booked calls, deals, products, transactions and custom fields. Poll triggers fire on new deals, calls, contacts, transactions, products, events and users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
