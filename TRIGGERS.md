@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 403, none: 205
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 401, none: 207
 
 ## webhook-api (58)
 
@@ -95,7 +95,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (403)
+## poll (401)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -311,30 +311,28 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mattermost | posts-for-channel | new-post | apps/mattermost/README.md Triggers section (verified 2026-11-09) | hand | since=cursor-120s ms (vendor: all posts modified since, ordered by create time, <=1000, no paging); read order.map(id=>posts[id]), create_at filter drops edits |
 | apps/meilisearch | task-list | new-task | apps/meilisearch/README.md Triggers section (verified 2026-11-09) | hand | vendor: tasks returned in descending uid order by default (https://www.meilisearch.com/docs/reference/api/tasks/list-tasks); search/document-list/index-list unused |
 | apps/meistertask | checklist-item-list | new-checklist-item | apps/meistertask/README.md Triggers section (verified 2026-11-09) | hand | sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page |
-| apps/mem | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
+| apps/mem | task-list | new-task, new-or-updated-task | apps/mem/README.md Triggers section (verified 2026-11-09) | hand | task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI. |
 | apps/memberstack | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
-| apps/mercury | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
-| apps/meta/instagram-for-business | list-media | new-media | no | scan | list action list-media has pagination and order/since params |
-| apps/metabase | search | new-record | no | scan | list action search has pagination and order/since params |
+| apps/mercury | customer-list | new-customer | apps/mercury/README.md Triggers section (verified 2026-11-09) | hand | Customers requested in descending order. |
+| apps/meta/instagram-for-business | list-media | new-media | apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-09) | hand | Media edge is documented as most recent first. |
 | apps/microsoft/azuredevops | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
-| apps/microsoft/excel | list-workbooks | new-workbooks | no | scan | list action list-workbooks has pagination and order/since params |
-| apps/microsoft/microsoft-entra-id | list-deleted-items | new-deleted-items | no | scan | list action list-deleted-items has pagination and order/since params |
-| apps/microsoft/microsoft-todo | list-task-changes | new-task-changes | no | scan | list action list-task-changes has pagination and order/since params |
+| apps/microsoft/excel | list-workbooks | new-workbook, new-or-updated-workbook | apps/microsoft/excel/README.md Triggers section (verified 2026-11-09) | hand | list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp). |
+| apps/microsoft/microsoft-entra-id | list-deleted-items | new-deleted-item | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09) | hand | Deleted items are requested by deletedDateTime descending. |
 | apps/microsoft/onedrive | list-changes | file-changed | no | hand | shipped poll trigger(s) over list action list-changes |
-| apps/microsoft/onenote | list-notebooks | new-notebooks | no | scan | list action list-notebooks has pagination and order/since params |
+| apps/microsoft/onenote | list-pages | new-or-updated-page | apps/microsoft/onenote/README.md Triggers section (verified 2026-11-09) | hand | Page feed is documented as last-modified descending; update stamp is part of id. |
 | apps/microsoft/outlook | list-messages | new-email | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
 | apps/microsoft/powerbi | list-refresh-history | new-refresh, new-or-updated-refresh | apps/microsoft/powerbi/README.md Triggers section (verified 2026-11-09) | hand | refresh history is a bounded collection (20-60 entries per dataset) with stable requestId (https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history) |
 | apps/microsoft/sharepoint | list-items | new-list-item | no | hand | shipped poll trigger(s) over list action list-items |
 | apps/microsoft/teams | list-channel-messages | new-channel-message | apps/microsoft/teams/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-channel-messages |
 | apps/millionverifier | bulk-list-files | new-bulk-file, new-or-updated-bulk-file | apps/millionverifier/README.md Triggers section (verified 2026-11-09) | hand | bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/) |
-| apps/miro | board-list | new-board-list | no | scan | list action board-list has pagination and order/since params |
-| apps/missive | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/miro | board-list | new-board | apps/miro/README.md Triggers section (verified 2026-11-09) | hand | board-list sort=last_created with required teamId (Miro honours sort only within a team or project). |
+| apps/missive | contact-list | new-or-updated-contact | apps/missive/README.md Triggers section (verified 2026-11-09) | hand | Contacts are requested with last_modified ordering and update stamp ids. |
 | apps/mixmax | unsubscribe-list | new-unsubscribe | no | hand | shipped poll trigger(s) over list action unsubscribe-list |
-| apps/mixpanel | activity-list | new-activity-list | no | scan | list action activity-list has pagination and order/since params |
-| apps/moco | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/mollie | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
+| apps/mixpanel | cohort-list | new-cohort | apps/mixpanel/README.md Triggers section (verified 2026-11-09) | hand | Saved cohorts are a small bounded collection; pollSnapshot emits a cohort when its id first appears. |
+| apps/moco | contact-list | new-or-updated-contact | apps/moco/README.md Triggers section (verified 2026-11-09) | hand | contact-list updated_after set to cursor minus 2 min overlap, id includes updated_at (shape b). |
+| apps/mollie | customer-list | new-customer | apps/mollie/README.md Triggers section (verified 2026-11-09) | hand | Customers are requested in descending order. |
 | apps/moneybird | sales-invoice-list | new-sales-invoice, new-or-updated-sales-invoice | apps/moneybird/README.md Triggers section (verified 2026-11-10) | hand | sales-invoice-list passes the documented created_after/updated_after filters (exclusive, UTC) with a 10-minute overlap and id dedupe (https://developer.moneybird.com/api/sales_invoices); contact-list has no filter param so contacts stay webhook-only |
-| apps/mongodb-atlas | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/mongodb-atlas | event-list | new-event | apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09) | hand | event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented. |
 | apps/moonclerk | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
 | apps/mural | mural-list | new-mural-list | no | scan | list action mural-list has pagination and order/since params |
 | apps/mux | asset-list | new-asset-list | no | scan | list action asset-list has pagination and order/since params |
@@ -503,7 +501,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (205)
+## none (207)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -607,7 +605,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mailcheck |  | no | hand | email-validation API lists batch-operation jobs, not durable created records |
 | apps/meta/facebook-conversions |  | no | hand | dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists |
 | apps/meta/facebook-custom-audiences |  | no | hand | custom-audience lists are cursor paged without documented newest-first ordering, a since filter, or bounded collection guarantee |
+| apps/metabase | new-record | apps/metabase/README.md Triggers section (verified 2026-11-09) | hand | collection-items sorts by last_edited_at but the item payload documents no edit timestamp to key an edit on; other list/search actions have no created-time order or since filter (https://www.metabase.com/docs/latest/api/collection). |
 | apps/metricool |  | no | hand | scheduled-post listing requires a caller-supplied date range and lacks a documented newest-first or since-cursor contract |
+| apps/microsoft/microsoft-todo | new-task | apps/microsoft/microsoft-todo/README.md Triggers section (verified 2026-11-09) | hand | Graph docs name no sort or created-since parameter list-tasks is documented to honour, and list-task-changes is delta-ordered (https://learn.microsoft.com/en-us/graph/api/todotasklist-list-tasks?view=graph-rest-1.0). |
 | apps/mistral |  | apps/mistral/README.md Triggers section (verified 2026-11-09) | hand | stateless AI inference API; its model list is a capability catalog, not a changing user-record feed |
 | apps/motion |  | apps/motion/README.md Triggers section (verified 2026-11-09) | hand | task and project actions use opaque cursors with no documented creation-time order or since filter |
 | apps/msg91 |  | apps/msg91/README.md Triggers section (verified 2026-11-09) | hand | no fetchable MSG91 webhook documentation found (docs.msg91.com/reference/webhooks 404); existing lists are templates, numbers, analytics and windowed delivery logs, not a stable new-record collection |

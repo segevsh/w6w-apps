@@ -3877,12 +3877,13 @@
     "path": "apps/mem",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-task",
+      "new-or-updated-task"
     ],
     "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI.",
+    "verified": "apps/mem/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/memberstack",
@@ -3899,12 +3900,12 @@
     "path": "apps/mercury",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customers requested in descending order.",
+    "verified": "apps/mercury/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/messagebird",
@@ -3979,9 +3980,9 @@
       "new-media"
     ],
     "pollAction": "list-media",
-    "reason": "list action list-media has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Media edge is documented as most recent first.",
+    "verified": "apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/meta/whatsapp",
@@ -3997,14 +3998,14 @@
   },
   {
     "path": "apps/metabase",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
       "new-record"
     ],
-    "pollAction": "search",
-    "reason": "list action search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "collection-items sorts by last_edited_at but the item payload documents no edit timestamp to key an edit on; other list/search actions have no created-time order or since filter (https://www.metabase.com/docs/latest/api/collection).",
+    "verified": "apps/metabase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/metricool",
@@ -4044,34 +4045,35 @@
     "path": "apps/microsoft/excel",
     "mechanism": "poll",
     "candidates": [
-      "new-workbooks"
+      "new-workbook",
+      "new-or-updated-workbook"
     ],
     "pollAction": "list-workbooks",
-    "reason": "list action list-workbooks has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp).",
+    "verified": "apps/microsoft/excel/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/microsoft-entra-id",
     "mechanism": "poll",
     "candidates": [
-      "new-deleted-items"
+      "new-deleted-item"
     ],
     "pollAction": "list-deleted-items",
-    "reason": "list action list-deleted-items has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Deleted items are requested by deletedDateTime descending.",
+    "verified": "apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/microsoft-todo",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-task-changes"
+      "new-task"
     ],
-    "pollAction": "list-task-changes",
-    "reason": "list action list-task-changes has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "Graph docs name no sort or created-since parameter list-tasks is documented to honour, and list-task-changes is delta-ordered (https://learn.microsoft.com/en-us/graph/api/todotasklist-list-tasks?view=graph-rest-1.0).",
+    "verified": "apps/microsoft/microsoft-todo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/onedrive",
@@ -4088,12 +4090,12 @@
     "path": "apps/microsoft/onenote",
     "mechanism": "poll",
     "candidates": [
-      "new-notebooks"
+      "new-or-updated-page"
     ],
-    "pollAction": "list-notebooks",
-    "reason": "list action list-notebooks has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-pages",
+    "reason": "Page feed is documented as last-modified descending; update stamp is part of id.",
+    "verified": "apps/microsoft/onenote/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/outlook",
@@ -4180,23 +4182,23 @@
     "path": "apps/miro",
     "mechanism": "poll",
     "candidates": [
-      "new-board-list"
+      "new-board"
     ],
     "pollAction": "board-list",
-    "reason": "list action board-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "board-list sort=last_created with required teamId (Miro honours sort only within a team or project).",
+    "verified": "apps/miro/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/missive",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Contacts are requested with last_modified ordering and update stamp ids.",
+    "verified": "apps/missive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mistral",
@@ -4222,34 +4224,34 @@
     "path": "apps/mixpanel",
     "mechanism": "poll",
     "candidates": [
-      "new-activity-list"
+      "new-cohort"
     ],
-    "pollAction": "activity-list",
-    "reason": "list action activity-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "cohort-list",
+    "reason": "Saved cohorts are a small bounded collection; pollSnapshot emits a cohort when its id first appears.",
+    "verified": "apps/mixpanel/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/moco",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list updated_after set to cursor minus 2 min overlap, id includes updated_at (shape b).",
+    "verified": "apps/moco/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mollie",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customers are requested in descending order.",
+    "verified": "apps/mollie/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/monday",
@@ -4279,12 +4281,12 @@
     "path": "apps/mongodb-atlas",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented.",
+    "verified": "apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/moonclerk",
