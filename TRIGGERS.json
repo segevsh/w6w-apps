@@ -4312,13 +4312,13 @@
   },
   {
     "path": "apps/mindee",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "inference.processed"
+      "inference processed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: processed inference jobs; existing actions have no account record list suitable for a new-record poll",
-    "verified": "apps/mindee/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the only webhook is a per-job completion callback (the endpoint id is passed on each enqueue call, so it fires for any upload naming the endpoint, from any client) and the docs name an X-Signature HMAC header without stating its algorithm (https://docs.mindee.com/integrations/webhooks)",
+    "verified": "apps/mindee/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4400,12 +4400,12 @@
     "path": "apps/monday",
     "mechanism": "webhook-api",
     "candidates": [
-      "create_pulse",
-      "change_column_value"
+      "item-created",
+      "column-value-changed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: board and item events; existing board/item lists have no documented newest-first order or creation-since filter",
-    "verified": "apps/monday/README.md Triggers section (verified 2026-11-09)",
+    "reason": "create_webhook GraphQL mutation with challenge handshake; ordinary monday webhooks are unsigned (JWT only for integration-app tokens), so the callback URL is the secret (https://developer.monday.com/api-reference/docs/webhooks)",
+    "verified": "apps/monday/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4413,10 +4413,11 @@
     "mechanism": "poll",
     "candidates": [
       "new-sales-invoice",
-      "new-or-updated-sales-invoice"
+      "new-or-updated-sales-invoice",
+      "new-contact"
     ],
     "pollAction": "sales-invoice-list",
-    "reason": "sales-invoice-list passes the documented created_after/updated_after filters (exclusive, UTC) with a 10-minute overlap and id dedupe (https://developer.moneybird.com/api/sales_invoices); contact-list has no filter param so contacts stay webhook-only",
+    "reason": "sales-invoice-list polls (created_after/updated_after, round 2 P-batch) plus new-contact as a signed API-registered webhook (contact_created; Moneybird-Signature HMAC-SHA256 over t.body, 5 min window) because contact-list has no filter (https://developer.moneybird.com/webhooks/verifying-signatures)",
     "verified": "apps/moneybird/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
@@ -4474,13 +4475,13 @@
   },
   {
     "path": "apps/murf",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "dubbing_job.completed"
+      "DUB_JOB"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: dubbing-job completion callbacks; voice and project lists lack documented new-record ordering or a since filter",
-    "verified": "apps/murf/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the only webhook is a completion callback for a dubbing job the caller starts (webhook URL and HMAC secret are supplied in each create-job request), not an account event stream; voice and project lists lack new-record ordering or a since filter (https://murf.ai/api/docs/capabilities/dubbing/webhooks)",
+    "verified": "apps/murf/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4530,13 +4531,15 @@
   },
   {
     "path": "apps/neverbounce",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "job.completed"
+      "job_parsing_finished",
+      "job_failed",
+      "job_deleted"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: bulk-job completion callback; job search has no documented newest-first order",
-    "verified": "apps/neverbounce/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the only callbacks are per-job events for a bulk job the caller creates (callback_url set in the job-create request), unsigned; job search has no documented newest-first order (https://developers.neverbounce.com/reference/job-callbacks)",
+    "verified": "apps/neverbounce/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4762,13 +4765,13 @@
   },
   {
     "path": "apps/opusclip",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "project.created"
+      "project created"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: project-creation notifications (X-Opus-Signature HMAC-SHA256); clip-list needs a project/collection and has no order or since filter, collection-list and brand-template-list expose no size bound for a snapshot.",
-    "verified": "apps/opusclip/README.md Triggers section (verified 2026-11-09)",
+    "reason": "the only webhook is a conclusionActions WEBHOOK on the create-project request, a completion callback for a project the caller starts, not an account event stream; clip-list needs a selected project and has no creation-order or since filter (https://help.opus.pro/api-reference/webhook)",
+    "verified": "apps/opusclip/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -4893,26 +4896,26 @@
     "path": "apps/patreon",
     "mechanism": "webhook-api",
     "candidates": [
-      "members:pledge:create",
-      "posts:publish"
+      "new-pledge",
+      "post-published"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: member and post events (HMAC-MD5 X-Patreon-Signature); members/posts feeds document no order or filter and list-campaigns returns the creator's one or few campaigns.",
-    "verified": "apps/patreon/README.md Triggers section (verified 2026-11-09)",
+    "reason": "POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks)",
+    "verified": "apps/patreon/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
     "path": "apps/payhip",
     "mechanism": "manual-webhook",
     "candidates": [
-      "paid",
-      "refunded",
-      "subscription.created",
-      "subscription.deleted"
+      "new-sale",
+      "sale-refunded",
+      "new-subscription",
+      "subscription-cancelled"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: paid, refunded, subscription.created and subscription.deleted (help.payhip.com/article/115-webhooks); the Public API only verifies and manages a supplied license key, so no list action exists.",
-    "verified": "apps/payhip/README.md Triggers section (verified 2026-11-09)",
+    "reason": "webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks)",
+    "verified": "apps/payhip/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
