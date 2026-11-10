@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mailgun",
-  "version": "0.2.0",
-  "description": "Send transactional email and manage domains, mailing lists and suppressions via Mailgun",
+  "version": "0.3.0",
+  "description": "Send transactional email and manage domains, lists and suppressions via Mailgun, plus a trigger for delivered, opened, clicked, failed, complained and unsubscribed events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://documentation.mailgun.com/"
     ],
-    "longDescription": "Mailgun sends transactional email at scale, and this app covers the two things a workflow does with it most: sending a message — plain or with attachments — and managing the mailing lists, bounces, complaints and unsubscribes that come with running an email program responsibly.\n\nSending works with Mailgun's real domain structure rather than assuming a single sender: because one account often owns several verified domains, the domain is a parameter on each send and lookup rather than fixed once at connect time, so a workflow can send from whichever verified domain fits the message. Reading recent send events, per-domain statistics, and validating an address before ever sending to it round out the set, giving a workflow the same visibility Mailgun's own dashboard offers.\n\nBecause Mailgun operates two entirely separate deployments for its US and EU customers, the correct region for an account is set once alongside the credential, so every action reaches the right one automatically. Suppression list management — bounces, complaints and unsubscribes — is included specifically so a workflow can keep a mailing list honest rather than repeatedly sending to addresses that have already opted out or bounced.",
+    "longDescription": "Mailgun sends transactional email at scale, and this app covers the two things a workflow does with it most: sending a message — plain or with attachments — and managing the mailing lists, bounces, complaints and unsubscribes that come with running an email program responsibly.\n\nSending works with Mailgun's real domain structure rather than assuming a single sender: because one account often owns several verified domains, the domain is a parameter on each send and lookup rather than fixed once at connect time, so a workflow can send from whichever verified domain fits the message. Reading recent send events, per-domain statistics, and validating an address before ever sending to it round out the set, giving a workflow the same visibility Mailgun's own dashboard offers.\n\nBecause Mailgun operates two entirely separate deployments for its US and EU customers, the correct region for an account is set once alongside the credential, so every action reaches the right one automatically. Suppression list management — bounces, complaints and unsubscribes — is included specifically so a workflow can keep a mailing list honest rather than repeatedly sending to addresses that have already opted out or bounced.\n\nA trigger starts a workflow on delivered, opened, clicked, failed, complained and unsubscribed events (registered through the Webhooks API).",
     "categories": [
       "email",
       "communication"
@@ -34,7 +34,12 @@
         "api.eu.mailgun.net"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
