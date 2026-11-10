@@ -561,3 +561,5 @@ checking for a 200.
 - **Statuspage API reference** — https://metastatuspage.com/api — the component-status and
   page-indicator vocabularies this app maps
 - **Icon provenance** — https://github.com/n8n-io/n8n/blob/master/packages/nodes-base/nodes/Metabase/metabase.svg
+
+Triggers: not shipped — existing list/search actions have neither a created-time order nor a created-since filter (https://www.metabase.com/docs/latest/api-documentation).
