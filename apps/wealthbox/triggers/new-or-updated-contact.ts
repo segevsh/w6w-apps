@@ -1,6 +1,6 @@
 import { walkTrigger } from "../lib/walk.ts";
 import listContacts from "../actions/list-contacts.ts";
-import { PAGE, parseWealthboxStamp, windowRequest } from "../lib/since.ts";
+import { PAGE, wealthboxStampEnd, windowRequest } from "../lib/since.ts";
 
 type Contact = { id?: unknown; updated_at?: unknown };
 
@@ -21,7 +21,7 @@ export default walkTrigger({
     const x = i as Contact;
     return `${String(x.id ?? "")}:${String(x.updated_at ?? "")}`;
   },
-  stampOf: (i) => parseWealthboxStamp((i as Contact).updated_at),
+  stampOf: (i) => wealthboxStampEnd((i as Contact).updated_at),
   output: [
     { key: "id", type: "number", label: "Contact ID" },
     { key: "name", type: "string", label: "Name" },

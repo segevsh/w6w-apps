@@ -28,6 +28,8 @@ export interface WalkState {
   floor: number;
   /** Next page request while a window longer than MAX_PAGES pages is being drained. */
   resume?: Record<string, unknown>;
+  /** Epoch ms of the check that began the drain in `resume`; the cursor lands here when it ends. */
+  windowStart?: number;
   /** Vendor position (last id / event id) when the vendor pages by position, not by time. */
   mark?: unknown;
 }
@@ -69,7 +71,8 @@ function valid(s: unknown): s is WalkState {
  * order. The first check stores `floor = now` and reads nothing. Later checks re-ask from
  * `cursor - OVERLAP_MS`, drop records created before `floor`, dedupe by id, and when the window
  * holds more than MAX_PAGES pages store the next request in `resume` and hold the cursor until the
- * window is drained.
+ * window is drained, then set it to the tick that began the drain (`windowStart`), so a record
+ * created while the drain ran is re-read by the next check instead of skipped.
  */
 export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
   if (spec.action.type !== "read" && spec.action.type !== "search") {
@@ -99,6 +102,9 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
         };
         return { events: [], nextState: seed };
       }
+      // A drain that spans checks began at `windowStart`; records created after that moment may
+      // not have been in the pages read, so the cursor must return there, not jump to `now`.
+      const windowStart = state.resume ? (state.windowStart ?? state.cursor) : now;
       const seen = new Set(state.ids);
       const events: unknown[] = [];
       const read: unknown[] = [];
@@ -136,9 +142,9 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
         kind: "ids",
         seeded: true,
         ids: [...seen].slice(-SEEN_WINDOW),
-        cursor: truncated ? state.cursor : now,
+        cursor: truncated ? state.cursor : windowStart,
         floor: state.floor,
-        ...(truncated && req ? { resume: req } : {}),
+        ...(truncated && req ? { resume: req, windowStart } : {}),
         ...(spec.markOf ? { mark: spec.markOf(state.mark, read) } : {}),
       };
       return { events, nextState };

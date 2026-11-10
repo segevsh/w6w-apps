@@ -10,6 +10,16 @@ export function parseWealthboxStamp(value: unknown): number | undefined {
     offset * 60_000;
 }
 
+/**
+ * Latest instant a printed stamp can stand for: the API prints minutes, so a record created
+ * 5 s after a mid-minute seed prints as the seed's own minute. Comparing this against the seed
+ * floor keeps it; the previous minute still sorts before the floor.
+ */
+export function wealthboxStampEnd(value: unknown): number | undefined {
+  const t = parseWealthboxStamp(value);
+  return t === undefined ? undefined : t + 59_999;
+}
+
 /** The same format in UTC, floored to the minute (never later than `ms`). */
 export function formatWealthboxStamp(ms: number): string {
   const d = new Date(Math.floor(ms / 60_000) * 60_000);

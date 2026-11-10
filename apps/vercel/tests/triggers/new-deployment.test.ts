@@ -68,7 +68,7 @@ test("new-deployment: a window of MAX_PAGES + 1 full pages is drained across che
     assertEquals(q(c2.calls[0].url).until, String(pages[MAX_PAGES - 1][99].created));
     const ids = [...r1.events, ...r2.events].map((e) => (e as { uid: string }).uid);
     assertEquals(new Set(ids).size, (MAX_PAGES + 1) * 100);
-    assertEquals((r2.nextState as { cursor: number }).cursor, NOW + 600_000);
+    assertEquals((r2.nextState as { cursor: number }).cursor, NOW);
   } finally {
     clock.now = () => NOW;
   }
@@ -92,4 +92,36 @@ test("new-deployment: deployments from before the seed never flood a later check
     mockCtx([body([dep("fresh")])]).ctx,
   );
   assertEquals(r3.events, [dep("fresh")]);
+});
+
+test("new-deployment: a deployment created while a drain spans checks is read by a later check", async () => {
+  const s = await seed();
+  const pages = Array.from(
+    { length: MAX_PAGES + 1 },
+    (_, p) => full(`p${p}-`, AFTER + 1_000_000 - p * 100),
+  );
+  const next = (p: number) => pages[p][99].created;
+  const r1 = await trigger.poll!(
+    { ...input, state: s.nextState },
+    mockCtx(pages.slice(0, MAX_PAGES).map((pg, p) => body(pg, next(p)))).ctx,
+  );
+  // Persisted state is JSON: round-trip it between checks.
+  const persisted = (st: unknown) => JSON.parse(JSON.stringify(st));
+  // Created 5 minutes after the drain began, before the completing check; the drain's pages never held it.
+  const mid = dep("mid", NOW + 300_000);
+  clock.now = () => NOW + 600_000;
+  try {
+    const r2 = await trigger.poll!(
+      { ...input, state: persisted(r1.nextState) },
+      mockCtx([body(pages[MAX_PAGES], next(MAX_PAGES)), body([])]).ctx,
+    );
+    assertEquals((r2.nextState as { cursor: number }).cursor, NOW);
+    clock.now = () => NOW + 1_200_000;
+    const c3 = mockCtx([body([mid])]);
+    const r3 = await trigger.poll!({ ...input, state: persisted(r2.nextState) }, c3.ctx);
+    assertEquals(q(c3.calls[0].url).since, String(NOW - 120_000));
+    assertEquals(r3.events, [mid]);
+  } finally {
+    clock.now = () => NOW;
+  }
 });

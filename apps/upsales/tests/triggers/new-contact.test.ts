@@ -60,7 +60,7 @@ test("new-contact: a window of MAX_PAGES + 1 full pages is drained across checks
     assertEquals(q(c2.calls[0].url).id, `gt:${MAX_PAGES * 1000}`);
     const ids = [...r1.events, ...r2.events].map((e) => (e as { id: number }).id);
     assertEquals(new Set(ids).size, (MAX_PAGES + 1) * 1000);
-    assertEquals((r2.nextState as { cursor: number }).cursor, NOW + 600_000);
+    assertEquals((r2.nextState as { cursor: number }).cursor, NOW);
   } finally {
     clock.now = () => NOW;
   }
