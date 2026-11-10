@@ -5,7 +5,7 @@ Manage Webflow sites, CMS collections and items, products, and orders via the We
 - **Categories** — cms
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
-- **Triggers** — 4 (webhook)
+- **Triggers** — 18 (15 webhook, 3 poll)
 - **Egress allowlist** — `api.webflow.com`
 - **Website** — https://webflow.com
 - **API docs** — https://developers.webflow.com/
@@ -48,12 +48,26 @@ Two credential types, both signing with `Authorization: Bearer <token>`:
 
 ## Triggers
 
-| Trigger                   | Mechanism | Vendor event               | What the run gets                                      |
-| ------------------------- | --------- | -------------------------- | ------------------------------------------------------ |
-| `form-submission`         | webhook   | `form_submission`          | the form name, submitted fields and submission time    |
-| `collection-item-created` | webhook   | `collection_item_created`  | the new CMS item, its collection and field data        |
-| `collection-item-changed` | webhook   | `collection_item_changed`  | the updated CMS item and its field data                |
-| `new-order`               | webhook   | `ecomm_new_order`          | the order, its status and the customer details         |
+| Trigger | Mechanism | Vendor event / wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `form-submission` | webhook | `form_submission` | the form name, submitted fields and submission time |
+| `collection-item-created` | webhook | `collection_item_created` | the new CMS item, its collection and field data |
+| `collection-item-changed` | webhook | `collection_item_changed` | the updated CMS item and its field data |
+| `collection-item-deleted` | webhook | `collection_item_deleted` | the deleted CMS item, its collection and site |
+| `collection-item-published` | webhook | `collection_item_published` | the CMS item that went live, with its field data |
+| `collection-item-unpublished` | webhook | `collection_item_unpublished` | the CMS item taken off the live site |
+| `new-order` | webhook | `ecomm_new_order` | the order, its status and the customer details |
+| `order-changed` | webhook | `ecomm_order_changed` | the changed order, its new status and comment |
+| `inventory-changed` | webhook | `ecomm_inventory_changed` | the new stock quantity and inventory type |
+| `site-publish` | webhook | `site_publish` | the published domains, who published and when |
+| `page-created` | webhook | `page_created` | the new page's id, title and path |
+| `page-metadata-updated` | webhook | `page_metadata_updated` | the page whose metadata or settings changed |
+| `page-deleted` | webhook | `page_deleted` | the deleted page's id, title and path |
+| `comment-created` | webhook | `comment_created` | the comment text, author and mentioned users |
+| `any-event` | webhook | any of the 17 event types you list (default: the 14 non-branch ones) | the event name, site/collection/item ids and the full payload |
+| `new-collection` | poll | `list-collections` (`GET /sites/{site_id}/collections`) | each CMS collection newly created on the site (additions only) |
+| `new-site` | poll | `list-sites` (`GET /sites`) | each site the connection newly gains access to (additions only) |
+| `new-product` | poll | `list-products` (`GET /sites/{site_id}/products`, walked page by page) | each product newly added to the Ecommerce site, with its SKUs (stores up to 5000 products) |
 
 **Setup.** Set *Site ID*; optionally a *Collection ID* (CMS triggers) or *Form name* (form trigger)
 to narrow it. The trigger registers the webhook itself (`POST /sites/{site_id}/webhooks`) and
@@ -64,12 +78,27 @@ paste it as *OAuth app client secret*; registration fails (and the webhook is de
 neither is available. Webhooks made in the Webflow dashboard do not carry the signature headers
 and cannot be used here.
 
+**Any event.** Webflow has no "all events" subscription, so `any-event` creates one site webhook per
+event type in *Events* (comma-separated; blank = the 14 documented types, `branch_*` only when you
+name them) and undoes all of them if one fails. Each webhook keeps its own signing key; a delivery
+is accepted when it verifies against one of them and its event type is one you registered.
+
+**List actions.** `list-items` is covered by `collection-item-created`, `collection-item-changed` and
+`collection-item-published` and `list-orders` by `new-order` / `order-changed` (the webhooks fire for exactly
+those records, no dashboard set-up). `list-products` has no sort or created filter, so `new-product` walks every
+page and snapshots the ids; above 5000 products the check fails with an error naming the cap.
+
 **Trust model.** Every delivery must carry `x-webflow-signature`, the hex HMAC-SHA256 of
 `<x-webflow-timestamp>:<raw request body>` under that secret, and a timestamp within five minutes
 of now. Anything else is refused and starts no run. Webflow disables a webhook after repeated
 failed deliveries; delete and re-add the trigger to register a new one.
 
-Docs: <https://developers.webflow.com/data/docs/working-with-webhooks>, verified 2026-11-09.
+Docs (verified 2026-11-10):
+<https://developers.webflow.com/data/docs/working-with-webhooks> (event list, signature scheme),
+<https://developers.webflow.com/data/reference/webhooks/create> (the 17 `triggerType` values),
+<https://developers.webflow.com/data/reference/cms/collections/list>,
+<https://developers.webflow.com/data/reference/sites/list> and
+<https://developers.webflow.com/data/reference/ecommerce/products/list> (the polled lists).
 
 ## Health check
 
