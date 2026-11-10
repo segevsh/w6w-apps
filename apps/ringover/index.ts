@@ -1,5 +1,10 @@
 import type { AppDefinition } from "@w6w/types";
 import newCall from "./triggers/new-call.ts";
+import newContact from "./triggers/new-contact.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newGroup from "./triggers/new-group.ts";
+import newUser from "./triggers/new-user.ts";
+import newTag from "./triggers/new-tag.ts";
 import blacklistList from "./actions/blacklist-list.ts";
 import callGet from "./actions/call-get.ts";
 import callList from "./actions/call-list.ts";
@@ -68,7 +73,7 @@ export default {
     userList,
     userPresenceGet,
   ],
-  triggers: [newCall],
+  triggers: [newCall, newContact, newConversation, newGroup, newUser, newTag],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;
