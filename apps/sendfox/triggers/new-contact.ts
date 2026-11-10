@@ -13,9 +13,18 @@ interface Resume {
 }
 interface State {
   cursor?: string;
+  /** Creation instants before this (ms) predate the seed and are never emitted. */
+  floor?: number;
   resume?: Resume;
 }
 export const clock = { now: (): number => Date.now() };
+
+/** True when the item's own timestamp is before the floor; an unparseable stamp keeps the item. */
+const beforeFloor = (item: unknown, floor: number | undefined, field: string) => {
+  if (floor === undefined) return false;
+  const t = Date.parse(String((item as Record<string, unknown>)[field] ?? ""));
+  return Number.isFinite(t) && t < floor;
+};
 
 const isoAt = (ms: number) => new Date(ms).toISOString();
 
@@ -26,6 +35,7 @@ async function check(state: unknown, ctx: HookContext) {
   const resume = seeded && s.resume && typeof s.resume.since === "string" ? s.resume : undefined;
   const since = resume?.since ??
     isoAt((seeded ? Date.parse(s.cursor!) : nowMs) - OVERLAP_MS);
+  const floor = typeof s.floor === "number" ? s.floor : seeded ? undefined : nowMs;
   const startedAt = resume?.startedAt ?? isoAt(nowMs);
   const pageNo = resume?.page ?? 1;
   let more = false;
@@ -41,22 +51,28 @@ async function check(state: unknown, ctx: HookContext) {
         perPage: PAGE_SIZE,
         ...(pageNo > 1 ? { page: pageNo } : {}),
       }, ctx) as { data?: unknown[]; total?: number };
-      const items = page.data ?? [];
+      const all = page.data ?? [];
+      const items = all.filter((i) => !beforeFloor(i, floor, "created_at"));
       more = typeof page.total === "number"
         ? pageNo * PAGE_SIZE < page.total
-        : items.length >= PAGE_SIZE;
+        : all.length >= PAGE_SIZE;
       return { items };
     },
   });
   if (!seeded) {
-    return { events: [], nextState: { ...result.nextState, cursor: startedAt } };
+    return { events: [], nextState: { ...result.nextState, cursor: startedAt, floor } };
   }
   // Cursor moves only once the window is drained; until then resume at the next page.
   return {
     events: result.events,
     nextState: more
-      ? { ...result.nextState, cursor: s.cursor, resume: { since, page: pageNo + 1, startedAt } }
-      : { ...result.nextState, cursor: startedAt },
+      ? {
+        ...result.nextState,
+        cursor: s.cursor,
+        floor,
+        resume: { since, page: pageNo + 1, startedAt },
+      }
+      : { ...result.nextState, cursor: startedAt, floor },
   };
 }
 

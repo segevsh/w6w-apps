@@ -13,9 +13,18 @@ interface Resume {
 }
 interface State {
   cursor?: string;
+  /** Creation instants before this (ms) predate the seed and are never emitted. */
+  floor?: number;
   resume?: Resume;
 }
 export const clock = { now: (): number => Date.now() };
+
+/** True when the item's own timestamp is before the floor; an unparseable stamp keeps the item. */
+const beforeFloor = (item: unknown, floor: number | undefined, field: string) => {
+  if (floor === undefined) return false;
+  const t = Date.parse(String((item as Record<string, unknown>)[field] ?? ""));
+  return Number.isFinite(t) && t < floor;
+};
 
 const isoAt = (ms: number) => new Date(ms).toISOString();
 
@@ -26,6 +35,7 @@ async function check(state: unknown, ctx: HookContext) {
   const resume = seeded && s.resume && typeof s.resume.since === "string" ? s.resume : undefined;
   const since = resume?.since ??
     isoAt((seeded ? Date.parse(s.cursor!) : nowMs) - OVERLAP_MS);
+  const floor = typeof s.floor === "number" ? s.floor : seeded ? undefined : nowMs;
   const startedAt = resume?.startedAt ?? isoAt(nowMs);
   let more: string | undefined;
   const result = await pollNewItems<unknown>({
@@ -41,18 +51,18 @@ async function check(state: unknown, ctx: HookContext) {
         ...(resume ? { offset: Number(resume.offset) } : {}),
       }, ctx) as { data?: unknown[]; nextOffset?: string | null };
       more = page.nextOffset ?? undefined;
-      return { items: page.data ?? [] };
+      return { items: (page.data ?? []).filter((i) => !beforeFloor(i, floor, "order_date")) };
     },
   });
   if (!seeded) {
-    return { events: [], nextState: { ...result.nextState, cursor: startedAt } };
+    return { events: [], nextState: { ...result.nextState, cursor: startedAt, floor } };
   }
   // Cursor moves only once the window is drained; until then resume where this check stopped.
   return {
     events: result.events,
     nextState: more !== undefined
-      ? { ...result.nextState, cursor: s.cursor, resume: { since, offset: more, startedAt } }
-      : { ...result.nextState, cursor: startedAt },
+      ? { ...result.nextState, cursor: s.cursor, floor, resume: { since, offset: more, startedAt } }
+      : { ...result.nextState, cursor: startedAt, floor },
   };
 }
 

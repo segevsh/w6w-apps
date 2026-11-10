@@ -13,6 +13,8 @@ interface Resume {
 }
 interface State {
   cursor?: string;
+  /** Creation instants before this (ms) predate the seed and are never emitted. */
+  floor?: number;
   resume?: Resume;
 }
 export const clock = { now: (): number => Date.now() };
@@ -20,6 +22,13 @@ export const clock = { now: (): number => Date.now() };
 /** The vendor accepts `2006-01-02T15:04:05Z`. */
 const stamp = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
 type FormPage = { forms?: unknown[]; hasMore?: boolean; startingAfter?: number };
+/** True when the item's own timestamp is before the floor; an unparseable stamp keeps the item. */
+const beforeFloor = (item: unknown, floor: number | undefined, field: string) => {
+  if (floor === undefined) return false;
+  const t = Date.parse(String((item as Record<string, unknown>)[field] ?? ""));
+  return Number.isFinite(t) && t < floor;
+};
+
 const idOf = (item: unknown) => {
   const form = item as { id?: unknown; dateUpdated?: unknown };
   return `${form.id ?? ""}:${form.dateUpdated ?? ""}`;
@@ -31,6 +40,7 @@ async function check(state: unknown, ctx: HookContext) {
   const seeded = typeof s.cursor === "string";
   const resume = seeded && s.resume && typeof s.resume.since === "string" ? s.resume : undefined;
   const since = resume?.since ?? stamp((seeded ? Date.parse(s.cursor!) : nowMs) - OVERLAP_MS);
+  const floor = typeof s.floor === "number" ? s.floor : seeded ? undefined : nowMs;
   const startedAt = resume?.startedAt ?? new Date(nowMs).toISOString();
   let next: number | undefined;
   const result = await pollNewItems<unknown>({
@@ -48,18 +58,27 @@ async function check(state: unknown, ctx: HookContext) {
       }, ctx) as FormPage;
       if (page.hasMore && typeof page.startingAfter === "number") next = page.startingAfter;
       // The kit expects newest-first pages and emits oldest-first; this page is ascending.
-      return { items: [...(page.forms ?? [])].reverse() };
+      return {
+        items: [...(page.forms ?? [])].reverse().filter((i) =>
+          !beforeFloor(i, floor, "dateUpdated")
+        ),
+      };
     },
   });
   if (!seeded) {
-    return { events: [], nextState: { ...result.nextState, cursor: startedAt } };
+    return { events: [], nextState: { ...result.nextState, cursor: startedAt, floor } };
   }
   // Cursor moves only once the window is drained; until then resume after the last form read.
   return {
     events: result.events,
     nextState: next !== undefined
-      ? { ...result.nextState, cursor: s.cursor, resume: { since, startingAfter: next, startedAt } }
-      : { ...result.nextState, cursor: startedAt },
+      ? {
+        ...result.nextState,
+        cursor: s.cursor,
+        floor,
+        resume: { since, startingAfter: next, startedAt },
+      }
+      : { ...result.nextState, cursor: startedAt, floor },
   };
 }
 

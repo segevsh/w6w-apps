@@ -68,3 +68,30 @@ test("new-or-updated-form drains a window of more pages than one check reads, ea
   assertEquals(cur(c3.r.nextState), "2026-11-09T00:05:00.000Z");
   assertEquals((c3.r.nextState as { resume?: unknown }).resume, undefined);
 });
+
+test("new-or-updated-form never emits a form updated before the seed, however many pages the window holds", async () => {
+  const old = (id: number) => item(id, "2026-11-08T23:59:00Z");
+  clock.now = () => T0;
+  const seeded = await poll({}, { data: [old(1)] });
+  assertEquals(seeded.r.events, []);
+  clock.now = () => T0 + 300_000;
+  const c1 = await poll(seeded.r.nextState, {
+    data: [old(2), old(3)],
+    hasMore: true,
+    startingAfter: 3,
+  });
+  clock.now = () => T0 + 600_000;
+  const c2 = await poll(c1.r.nextState, {
+    data: [old(4), old(5)],
+    hasMore: true,
+    startingAfter: 5,
+  });
+  assertEquals(c1.r.events, []);
+  assertEquals(c2.r.events, []);
+  clock.now = () => T0 + 900_000;
+  const c3 = await poll(c2.r.nextState, {
+    data: [old(6), item(99, "2026-11-09T00:06:00Z")],
+    hasMore: false,
+  });
+  assertEquals(keys(c3.r), ["99:2026-11-09T00:06:00Z"]);
+});

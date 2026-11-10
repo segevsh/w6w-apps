@@ -72,3 +72,24 @@ test("new-order drains a window of more pages than one check reads, each order o
   assertEquals(cur(c3.r.nextState), "2026-11-09T00:05:00.000Z");
   assertEquals((c3.r.nextState as { resume?: unknown }).resume, undefined);
 });
+
+test("new-order never emits an order created before the seed, however many pages the window holds", async () => {
+  const old = (id: number) => ({ id, order_date: "2026-11-08T23:59:00Z" });
+  const pageOf = (items: unknown[], nextOffset?: number) => ({
+    ...page([], nextOffset),
+    data: items,
+  });
+  clock.now = () => T0;
+  const seeded = await poll({}, [{ body: pageOf([old(1)]) }]);
+  assertEquals(seeded.r.events, []);
+  clock.now = () => T0 + 300_000;
+  const c1 = await poll(seeded.r.nextState, [{ body: pageOf([old(2), old(3), old(4)], 3) }]);
+  clock.now = () => T0 + 600_000;
+  const c2 = await poll(c1.r.nextState, [{ body: pageOf([old(5), old(6), old(7)], 6) }]);
+  assertEquals(c1.r.events, []);
+  assertEquals(c2.r.events, []);
+  clock.now = () => T0 + 900_000;
+  const fresh = { id: 99, order_date: "2026-11-09T00:06:00Z" };
+  const c3 = await poll(c2.r.nextState, [{ body: pageOf([fresh, old(8)]) }]);
+  assertEquals(c3.r.events, [fresh]);
+});

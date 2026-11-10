@@ -58,3 +58,25 @@ test("new-contact drains a window of more pages than one check reads, each conta
   assertEquals(cur(c3.r.nextState), "2026-11-09T00:05:00.000Z");
   assertEquals((c3.r.nextState as { resume?: unknown }).resume, undefined);
 });
+
+test("new-contact never emits a contact created before the seed, however many pages the window holds", async () => {
+  const old = (id: number) => ({ id, created_at: "2026-11-08T23:59:00Z" });
+  const full = (from: number, last_page: number) => ({
+    ...page([]),
+    data: Array.from({ length: 100 }, (_, i) => old(from + i)),
+    total: last_page * 100,
+  });
+  clock.now = () => T0;
+  const seeded = await poll({}, page([old(1)]));
+  assertEquals(seeded.r.events, []);
+  clock.now = () => T0 + 300_000;
+  const c1 = await poll(seeded.r.nextState, full(10, 4));
+  clock.now = () => T0 + 600_000;
+  const c2 = await poll(c1.r.nextState, full(200, 4));
+  assertEquals(c1.r.events, []);
+  assertEquals(c2.r.events, []);
+  clock.now = () => T0 + 900_000;
+  const fresh = { id: 999, created_at: "2026-11-09T00:06:00Z" };
+  const c3 = await poll(c2.r.nextState, { ...page([]), data: [fresh, old(500)], total: 400 });
+  assertEquals(ids(c3.r), [999]);
+});
