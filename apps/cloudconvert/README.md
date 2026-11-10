@@ -7,7 +7,6 @@ Convert, compress and manipulate files through CloudConvert's job/task pipeline,
 - **Auth methods** — api-token
 - **Actions** — 18
 - **Triggers** — 3 (webhook)
-- **Triggers** — 3 (webhook)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.cloudconvert.com`, `sync.api.cloudconvert.com` (the `service` check
   adds `status.cloudconvert.com` to its own hook allowlist, never to the app's)
@@ -122,22 +121,6 @@ against that budget either. The response (a job list) carries no secret — a jo
 `afterConnect` calls `GET /v2/users/me` (needs `user.read`, which a task-only key will not have)
 to publish the account's `email`/`username` for the connection label, and fails silently if that
 scope is absent — `test` has already established the key works for whatever it is scoped to.
-
-## Triggers
-
-| Trigger | Mechanism | Vendor event | The run gets |
-|---|---|---|---|
-| `job-finished` — Job Finished | webhook (API-registered, signed) | `job.finished` | job id, tag, status, timestamps and tasks (with the export tasks' file URLs), plus the full job |
-| `job-failed` — Job Failed | webhook (API-registered, signed) | `job.failed` | the same, for a job that failed |
-| `job-created` — Job Created | webhook (API-registered, signed) | `job.created` | the same, as the job starts |
-
-**Setup.** Nothing to paste. Subscribing runs `POST /v2/webhooks` with the callback URL and the trigger's one event, and keeps the webhook id and the `signing_secret` CloudConvert returns in the subscription's state; unsubscribing runs `DELETE /v2/webhooks/{id}` (a webhook already gone, 404 or 410, counts as deleted). The connection's API key needs the `webhook.write` scope (the same scope `webhook-create` and `webhook-delete` need).
-
-**Trust model.** CloudConvert sends `CloudConvert-Signature`, the hex HMAC-SHA256 of the full request body under the webhook's signing secret. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. The signature carries no timestamp, so a captured delivery can be replayed. The webhook is account-wide: it reports every job on the account, including ones started outside this workflow, so match on `tag` or `jobId` when only some jobs matter. A delivery for a different event than the trigger registered is acknowledged without a run.
-
-No poll trigger: `job-list` is not documented as newest-first and has no since filter, and a webhook reports finished and failed jobs as they happen.
-
-Docs (verified 2026-11-10): https://cloudconvert.com/docs/api-reference/webhooks
 
 ## Triggers
 
