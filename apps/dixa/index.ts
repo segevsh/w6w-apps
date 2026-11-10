@@ -32,6 +32,12 @@ import tagList from "./actions/tag-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newAgent from "./triggers/new-agent.ts";
+import newQueue from "./triggers/new-queue.ts";
+import newTag from "./triggers/new-tag.ts";
+import newConversationMessage from "./triggers/new-conversation-message.ts";
+import newConversationNote from "./triggers/new-conversation-note.ts";
+import newConversationTag from "./triggers/new-conversation-tag.ts";
+import newEndUserConversation from "./triggers/new-end-user-conversation.ts";
 
 /**
  * Dixa — customer-service conversations, end users, agents, tags and queues, over the v1 REST API
@@ -71,7 +77,15 @@ export default {
     tagCreate,
     tagList,
   ],
-  triggers: [newAgent],
+  triggers: [
+    newAgent,
+    newQueue,
+    newTag,
+    newConversationMessage,
+    newConversationNote,
+    newConversationTag,
+    newEndUserConversation,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
