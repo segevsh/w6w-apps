@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/brex",
   "version": "0.3.0",
-  "description": "Manage Brex users, locations, departments, titles, cards, legal entities and company over the Team API, plus signed webhook triggers for Brex events and polls for new users, cards, departments, locations, titles and legal entities.",
+  "description": "Manage Brex users, locations, departments, titles, cards and legal entities over the Team API; triggers on Brex webhook events and on new users, cards and directory records.",
   "license": "MIT",
   "author": {
     "name": "w6w"

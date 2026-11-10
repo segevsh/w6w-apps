@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bitbucket",
   "version": "0.4.0",
-  "description": "Read repositories, workspaces and manage webhooks on Bitbucket Cloud, and start workflows on any repository event (pushes, pull requests, issues, build statuses) and on new repositories and workspaces.",
+  "description": "Read repositories, workspaces and manage webhooks on Bitbucket Cloud; triggers on any repository event and on new repositories and workspaces.",
   "license": "MIT",
   "author": {
     "name": "w6w"
