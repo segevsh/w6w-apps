@@ -1,5 +1,4 @@
 import type { AppDefinition } from "@w6w/types";
-import newPurchase from "./triggers/new-purchase.ts";
 import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -45,7 +44,6 @@ import tagList from "./actions/tag-list.ts";
  * declares one security scheme, `X-API-Key`.
  */
 export default {
-  triggers: [newPurchase],
   actions: [
     contactAutomationStart,
     contactAutomationStop,
