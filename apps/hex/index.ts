@@ -19,6 +19,7 @@ import dataConnectionGet from "./actions/data-connection-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -43,4 +44,5 @@ export default {
   // API token only: Hex documents a single `http`/`bearer` security scheme.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newUser],
 } satisfies AppDefinition;

@@ -67,6 +67,7 @@ import trackedTimeReportGet from "./actions/tracked-time-report-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newActivity from "./triggers/new-activity.ts";
 
 export default {
   actions: [
@@ -107,4 +108,5 @@ export default {
   // API surface — a client_credentials grant is the whole authentication story.
   auth: [clientCredentials],
   healthChecks: [service, quota],
+  triggers: [newActivity],
 } satisfies AppDefinition;

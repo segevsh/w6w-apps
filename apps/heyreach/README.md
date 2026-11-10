@@ -1,5 +1,15 @@
 # HeyReach
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-lead` — New Lead | poll | `list-get-leads` | Each new lead added to the selected list |
+
+HeyReach documents this list endpoint at https://api-docs.heyreach.io/ (verified 2026-11-09).
+
 Run **HeyReach** LinkedIn outreach from a workflow: leads, lead/company lists, campaigns and
 their sequences, sender LinkedIn accounts, inbox conversations, workspace statistics, webhooks,
 and the blacklist that keeps leads out of every campaign.

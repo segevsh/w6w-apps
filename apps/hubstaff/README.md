@@ -1,5 +1,15 @@
 # Hubstaff
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-project` — New Project | poll | `project-list` | Each new project |
+
+Hubstaff documents organization projects at https://developer.hubstaff.com/docs/api/v2/ (verified 2026-11-09).
+
 Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that
 make up a **Hubstaff** organization (time tracking and workforce management), and write back
 manual time entries, tasks, and timesheet approval status.

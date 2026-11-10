@@ -1,5 +1,16 @@
 # Ironclad
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-record` — New Record | poll | `record-list` | Each new contract record |
+| `new-or-updated-record` — New or Updated Record | poll | `record-list` | Each newly created or updated contract record |
+
+Ironclad documents repository records at https://developer.ironcladapp.com/reference (verified 2026-11-09).
+
 Contract lifecycle management for w6w: launch and track workflows, read and edit the contract
 repository (records), manage legal entities, and register webhooks, over the Ironclad Public API v1
 (`https://{host}/public/api/v1`).

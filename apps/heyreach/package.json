@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/heyreach",
-  "version": "0.1.0",
-  "description": "Run HeyReach LinkedIn outreach from a workflow: campaigns, lead lists, leads, senders, inbox and blacklist.",
+  "version": "0.2.0",
+  "description": "Run HeyReach LinkedIn outreach from a workflow: campaigns, lead lists, leads, senders, inbox and blacklist, with new-lead triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.heyreach.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

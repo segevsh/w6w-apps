@@ -1,5 +1,15 @@
 # Hotmart
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-product` — New Product | poll | `product-list` | Each new product |
+
+Hotmart documents products at https://developers.hotmart.com/docs/en/v1/product/product-list/ (verified 2026-11-09).
+
 Sell and manage online courses and digital products through Hotmart: sales, subscriptions,
 products and checkout coupons, over Hotmart's **Public API**.
 

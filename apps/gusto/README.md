@@ -1,5 +1,15 @@
 # Gusto
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-event` — New Event | poll | `event-list` | Each new account event |
+
+Gusto's Events API is the source for this feed: https://docs.gusto.com/app-integrations/docs/events (verified 2026-11-09).
+
 Read and update a Gusto payroll account from a workflow — employees,
 contractors, compensation, payrolls, pay schedules, time off and departments.
 

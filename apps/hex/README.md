@@ -1,5 +1,15 @@
 # Hex
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-user` — New User | poll | `user-list` | Each new workspace user |
+
+Hex documents workspace users at https://learn.hex.tech/docs/api/api-reference/users (verified 2026-11-09).
+
 Run published Hex projects from a workflow, poll or cancel the runs, and read the workspace's
 projects, users, groups, collections and data connections.
 

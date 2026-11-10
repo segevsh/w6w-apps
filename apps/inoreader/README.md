@@ -1,5 +1,15 @@
 # Inoreader
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-article` — New Article | poll | `stream-contents` | Each new article in the selected stream |
+
+Inoreader documents stream contents at https://www.inoreader.com/developers/ (verified 2026-11-09).
+
 Read and manage an Inoreader account from a workflow: subscriptions, folders and tags, unread
 counts, article streams and item ids, read/starred state.
 
