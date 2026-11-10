@@ -5,6 +5,7 @@ Manage Flodesk subscribers, segments, workflows, custom fields and webhooks via 
 - **Categories** — marketing, email
 - **Auth methods** — api-key (HTTP Basic), oauth2
 - **Actions** — 22
+- **Triggers** — 4 (1 poll, 3 webhook)
 - **Health checks** — quota (implemented), service (declared `unavailable`)
 - **Egress allowlist** — `api.flodesk.com`
 
@@ -306,13 +307,34 @@ deno task fmt
 
 ## Triggers
 
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-segment` — New Segment | Poll | `list-segments` | Each segment newly created in the account |
+| trigger — title | mechanism | vendor event or wrapped action | what the run gets |
+|---|---|---|---|
+| `new-segment` — New Segment | poll | `list-segments` | each segment newly created in the account |
+| `new-subscriber` — New Subscriber | webhook (API-registered, unsigned) | `subscriber.created` | the event time, the subscriber's id and email and the full subscriber record |
+| `subscriber-unsubscribed` — Subscriber Unsubscribed | webhook (API-registered, unsigned) | `subscriber.unsubscribed` | the same |
+| `subscriber-added-to-segment` — Subscriber Added to Segment | webhook (API-registered, unsigned) | `subscriber.added_to_segment` | the same, plus the segment |
+
+### New Segment (poll)
 
 Segments are a small account-configuration collection. Each check reads them through `list-segments`
 (`per_page` 100, at most five pages; a larger account fails the check with an error naming the cap),
 diffs them against the previous check and emits only additions. The first check only records what
-exists. Subscribers have no created-since filter or documented order, so there is no New Subscriber
-poll; Flodesk's `subscriber.created` webhooks are a separate, not yet shipped path. Source:
-[Flodesk API reference](https://developers.flodesk.com/) (verified 2026-11-09).
+exists. Subscribers have no created-since filter or documented order, so New Subscriber is a webhook,
+not a poll.
+
+### Webhook triggers
+
+Flodesk publishes exactly three webhook events (`subscriber.created`, `subscriber.added_to_segment`,
+`subscriber.unsubscribed`); there is no subscriber-updated or complaint event.
+
+**Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks` with a name, the host's callback URL
+(`post_url`) and the one event; the webhook id is kept in the subscription's state. Unsubscribing runs
+`DELETE /v1/webhooks/{id}` (a webhook already gone counts as deleted).
+
+**Trust model — the callback URL is the secret.** Flodesk's webhook schema has no signing secret and
+no signature header, so a delivery cannot be verified and none is invented here. The host's
+per-subscription callback URL (it carries the subscription's id, the host's capability token) is the
+only credential: anyone who learns it can post events to it, so do not share or log it. A delivery is accepted only if it is a `POST` whose body is a Flodesk
+subscriber event of the trigger's own kind; anything else is refused or acknowledged without a run.
+
+Docs (verified 2026-11-10): https://developers.flodesk.com/ (Webhook and Webhook Events sections)
