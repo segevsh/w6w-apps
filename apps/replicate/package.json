@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/replicate",
-  "version": "0.2.0",
-  "description": "Run models on Replicate, poll or wait for their output, manage deployments and trainings, and trigger workflows on new predictions.",
+  "version": "0.3.0",
+  "description": "Run models on Replicate, poll or wait for their output, manage deployments and trainings, and trigger workflows on new predictions, trainings, deployments, public models and model versions.",
   "license": "MIT",
   "author": {
     "name": "w6w"

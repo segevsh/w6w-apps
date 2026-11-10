@@ -16,7 +16,25 @@ const action: ActionDefinition = {
   resource: "model",
   title: "List models",
   description: "All public models. Search is usually the better question.",
-  params: [...LIST_PARAMS],
+  params: [
+    {
+      key: "sortBy",
+      label: "Sort By",
+      type: "string",
+      default: "",
+      advanced: true,
+      hint: "`model_created_at` or `latest_version_created_at` (Replicate's default).",
+    },
+    {
+      key: "sortDirection",
+      label: "Sort Direction",
+      type: "string",
+      default: "",
+      advanced: true,
+      hint: "`asc` or `desc` (Replicate's default).",
+    },
+    ...LIST_PARAMS,
+  ],
 
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
@@ -30,7 +48,12 @@ const action: ActionDefinition = {
       ctx.log("info", "listing Replicate models", { limit });
     }
 
-    return await new ReplicateClient(ctx).requestAll("/models", {}, returnAll ? Infinity : limit);
+    const query = { sort_by: p.sortBy, sort_direction: p.sortDirection };
+    return await new ReplicateClient(ctx).requestAll(
+      "/models",
+      { query },
+      returnAll ? Infinity : limit,
+    );
   },
 };
 
