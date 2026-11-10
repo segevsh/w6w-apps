@@ -25,12 +25,25 @@ import listReports from "./actions/list-reports.ts";
 
 import newSheet from "./triggers/new-sheet.ts";
 import newOrUpdatedSheet from "./triggers/new-or-updated-sheet.ts";
+import newReport from "./triggers/new-report.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
+import newUser from "./triggers/new-user.ts";
+import newColumn from "./triggers/new-column.ts";
+import newContainerItem from "./triggers/new-container-item.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
-  triggers: [newSheet, newOrUpdatedSheet],
+  triggers: [
+    newSheet,
+    newOrUpdatedSheet,
+    newReport,
+    newWorkspace,
+    newUser,
+    newColumn,
+    newContainerItem,
+  ],
   actions: [
     // Sheet — the container everything else hangs off
     listSheets,

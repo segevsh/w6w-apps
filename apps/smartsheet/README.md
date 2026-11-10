@@ -4,7 +4,7 @@ Read and write Smartsheet sheets, rows, cells and columns; list workspaces, fold
 reports, on the **Smartsheet API 2.0**.
 
 - **Categories** — spreadsheets, productivity
-- **Triggers** — 2 (poll)
+- **Triggers** — 7 (poll)
 - **Auth methods** — access-token
 - **Actions** — 16
 - **Egress allowlist** — `api.smartsheet.com`
@@ -375,6 +375,11 @@ mind if a probe starts failing for everyone at once.
 |---|---|---|---|
 | `new-sheet` — New Sheet | poll | `list-sheets` | Each sheet newly created where the connected user has access. |
 | `new-or-updated-sheet` — New or Updated Sheet | poll | `list-sheets` | Each sheet that is created or modified (an edit is a new event). |
+| `new-report` — New Report | poll (snapshot) | `list-reports` | Each report that newly becomes accessible to the connected user. |
+| `new-workspace` — New Workspace | poll (snapshot) | `list-workspaces` | Each workspace that newly becomes accessible. |
+| `new-user` — New User | poll (snapshot) | `list-users` | Each user newly added to the organization account (System Admin rights give the full list). |
+| `new-column` — New Column | poll (snapshot) | `list-columns` | Each column newly added to the selected sheet (`sheetId` param). |
+| `new-container-item` — New Item in Workspace or Folder | poll (snapshot) | `list-container-children` | Each sheet, report, dashboard, folder or template newly added to the selected workspace or folder (`container`, `containerId` params). |
 
 `GET /sheets` documents `modifiedSince` ("response only includes the objects that are modified on or
 after the date and time specified") and no sort, so both are **since-filter** polls: each check calls
@@ -385,10 +390,16 @@ falls inside the window; `new-or-updated-sheet` keys each event on `id:modifiedA
 reads nothing: it records the cursor and a floor (the time it ran), and a sheet stamped before the
 floor is never emitted.
 
-The other list actions were considered and are not triggers: `list-container-children` (a scoped,
-token-paged hierarchy with no creation order or filter), `list-reports` (has `modifiedSince`, but a
-report is a saved view, not a record worth a "new" event here), `list-workspaces` and `list-users`
-(small administrative collections; `list-users` also needs System Admin rights).
+The five new triggers are **snapshots** (added rows only): reports, workspaces, users, one sheet's columns and
+one container's children are each read whole (up to 10 pages of 100, through the action's own
+`page`/`pageSize` or `maxItems`/`lastKey`; a larger collection is refused with an error, not truncated). A
+container item is keyed by `resourceType` plus `id`. `GET /reports` returns only id, name, access level,
+permalink and the summary flag -- no created or modified stamp -- so there is no "new or updated report"
+twin.
+
+Not triggers: `search` and `search-sheet` are free-text searches (a required query string over an index the
+action itself notes lags recent writes), not a record feed; the records they find are delivered by
+`new-sheet`, `new-or-updated-sheet`, `new-report` and `new-container-item`.
 
 Vendor documentation: https://developers.smartsheet.com/api/smartsheet/openapi (the OpenAPI document
-at https://developers.smartsheet.com/_spec/api/smartsheet/openapi.yaml, `list-sheets`) (verified 2026-11-09).
+at https://developers.smartsheet.com/_spec/api/smartsheet/openapi.yaml, `list-sheets`) (verified 2026-11-10).
