@@ -19,3 +19,12 @@ test("new-user snapshots the user directory, emits additions only, retries idemp
   assertEquals(first.events.map((e) => (e as { key: string }).key), ["u2"]);
   assertEquals(await run(), first);
 });
+
+test("new-user does not re-fire when a seen user changes", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx(["u1"]).ctx);
+  const changed = mockCtx([
+    { body: [{ uuid: "u1", active: "false", role: { name: "Admin" } }] },
+  ]);
+  const r = await trigger.poll!({ ...input, state: seeded.nextState }, changed.ctx);
+  assertEquals(r.events, []);
+});

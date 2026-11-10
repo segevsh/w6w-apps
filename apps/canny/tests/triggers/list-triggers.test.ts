@@ -215,4 +215,12 @@ describe("new-board", () => {
     assertEquals(first.events.map((e) => (e as { key: string }).key), ["b"]);
     assertEquals(await run(), first);
   });
+
+  test("a seen board whose field changes (postCount) emits nothing", async () => {
+    const board = (postCount: number) =>
+      mockCtx([{ status: 200, body: { boards: [{ id: "a", name: "a", postCount }] } }]);
+    const seeded = await trigger.poll!({ ...input, state: {} }, board(1).ctx);
+    const r = await trigger.poll!({ ...input, state: seeded.nextState }, board(2).ctx);
+    assertEquals(r.events, []);
+  });
 });

@@ -31,7 +31,7 @@ const trigger: TriggerDefinition = {
     return await pollSnapshot({
       state,
       maxRows: 5000,
-      emit: { added: true },
+      emit: { added: true, updated: false },
       rows: (page.results ?? []).map((row) => ({
         key: String((row as { uuid?: unknown }).uuid ?? ""),
         values: row,

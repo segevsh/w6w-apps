@@ -11,7 +11,9 @@ const cases = [
     trigger: newList,
     params: { accountId: "1" },
     url: "https://api.aweber.com/1.0/accounts/1/lists?ws.size=100",
-    body: (ids: number[]) => ({ entries: ids.map((id) => ({ id, name: `list-${id}` })) }),
+    body: (ids: number[], tag = "") => ({
+      entries: ids.map((id) => ({ id, name: `list-${id}${tag}` })),
+    }),
     seed: [10],
     next: [10, 20],
     added: "20",
@@ -21,7 +23,9 @@ const cases = [
     trigger: newSegment,
     params: { accountId: "1", listId: "2" },
     url: "https://api.aweber.com/1.0/accounts/1/lists/2/segments?ws.size=100",
-    body: (ids: number[]) => ({ entries: ids.map((id) => ({ id, name: `segment-${id}` })) }),
+    body: (ids: number[], tag = "") => ({
+      entries: ids.map((id) => ({ id, name: `segment-${id}${tag}` })),
+    }),
     seed: [5],
     next: [5, 6],
     added: "6",
@@ -31,7 +35,7 @@ const cases = [
     trigger: newTag,
     params: { accountId: "1", listId: "2" },
     url: "https://api.aweber.com/1.0/accounts/1/lists/2/tags",
-    body: (ids: number[]) => ids.map((id) => `tag-${id}`),
+    body: (ids: number[], _tag = "") => ids.map((id) => `tag-${id}`),
     seed: [1],
     next: [1, 2],
     added: "tag-2",
@@ -57,6 +61,23 @@ for (const c of cases) {
       assertEquals((first.events[0] as { change: string }).change, "added");
       assertEquals(await run(), first);
     });
+
+    // new-tag rows are bare strings: a different string is a different key, so there is no field to change.
+    test(
+      "a seen row whose field changes emits nothing",
+      { skip: c.name === "new-tag" },
+      async () => {
+        const seeded = await c.trigger.poll!(
+          { ...input, state: {} },
+          mockCtx([{ body: c.body(c.seed) }]).ctx,
+        );
+        const r = await c.trigger.poll!(
+          { ...input, state: seeded.nextState },
+          mockCtx([{ body: c.body(c.seed, "renamed") }]).ctx,
+        );
+        assertEquals(r.events, []);
+      },
+    );
 
     test("sends the list action's literal request", async () => {
       const seed = mockCtx([{ body: c.body(c.seed) }]);

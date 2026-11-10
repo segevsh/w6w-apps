@@ -37,7 +37,7 @@ export function snapshotTrigger(spec: {
       return await pollSnapshot({
         state,
         maxRows: 5000,
-        emit: { added: true },
+        emit: { added: true, updated: false },
         rows: spec.rows(result).map((row) => ({ key: spec.keyOf(row), values: row })),
       });
     },
@@ -79,7 +79,7 @@ export async function pollSentBroadcasts(
   return await pollSnapshot({
     state,
     maxRows: 5000,
-    emit: { added: true },
+    emit: { added: true, updated: false },
     rows: rows.map((row) => {
       const r = row as { broadcast_id?: unknown; id?: unknown };
       return { key: String(r.broadcast_id ?? r.id ?? ""), values: row };

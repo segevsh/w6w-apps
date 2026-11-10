@@ -39,4 +39,21 @@ describe("new-broadcast", () => {
     const r = await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
     assertEquals(r.events.map((e) => (e as { key: string }).key), ["102"]);
   });
+
+  test("a sent broadcast whose stats change emits nothing", async () => {
+    const withStats = (opens: number) => ({
+      body: { entries: [{ broadcast_id: 10, total_opens: opens }], total_size: 1 },
+    });
+    const seeded = await trigger.poll!({ ...input, state: {} }, mockCtx([withStats(1)]).ctx);
+    const r = await trigger.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([withStats(9)]).ctx,
+    );
+    assertEquals(r.events, []);
+  });
+
+  test("requires the listId param", () => {
+    const listId = (trigger.params ?? []).find((p) => p.key === "listId");
+    assertEquals(listId?.required, true);
+  });
 });

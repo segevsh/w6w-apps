@@ -39,7 +39,7 @@ const trigger: TriggerDefinition = {
     return await pollSnapshot({
       state,
       maxRows: 5000,
-      emit: { added: true },
+      emit: { added: true, updated: false },
       rows: itemsAt("boards")(result).map((board) => ({ key: idOf(board), values: board })),
     });
   },

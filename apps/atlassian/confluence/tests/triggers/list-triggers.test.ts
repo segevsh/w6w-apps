@@ -110,5 +110,17 @@ for (const c of snapshots) {
       assertEquals(first.events.map((e) => (e as { key: string }).key), ["b"]);
       assertEquals(await run(), first);
     });
+
+    test("a seen row whose field changes emits nothing", async () => {
+      const seeded = await c.trigger.poll!(
+        { ...input, state: {} },
+        ctx([{ id: "a", name: "one" }]).ctx,
+      );
+      const r = await c.trigger.poll!(
+        { ...input, state: seeded.nextState },
+        ctx([{ id: "a", name: "two" }]).ctx,
+      );
+      assertEquals(r.events, []);
+    });
   });
 }

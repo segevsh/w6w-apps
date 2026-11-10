@@ -82,7 +82,7 @@ export function snapshotRows(spec: {
       return await pollSnapshot({
         state,
         maxRows: 5000,
-        emit: { added: true },
+        emit: { added: true, updated: false },
         rows: rows(result).map((row) => ({ key: idOf(row), values: row })),
       });
     },
