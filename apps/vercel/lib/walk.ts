@@ -31,10 +31,12 @@ export interface WalkState {
   /** Epoch ms of the check that began the drain in `resume`; the cursor lands here when it ends. */
   windowStart?: number;
   /**
-   * Ids created within OVERLAP_MS of `windowStart`, carried through a drain and the check that
-   * completes it: the next check re-reads that span, so they must outlive the SEEN_WINDOW cap.
+   * `[id, creation ms]` of every emitted record the NEXT check can re-read, i.e. created at or after
+   * that check's window start (`cursor - OVERLAP_MS`). They outlive the SEEN_WINDOW cap and are
+   * carried across every check, truncated or not: a re-listed span longer than MAX_PAGES pages is a
+   * new drain that must still recognise all of them. Entries older than the window are pruned.
    */
-  recent?: string[];
+  recent?: Array<[string, number]>;
   /** Vendor position (last id / event id) when the vendor pages by position, not by time. */
   mark?: unknown;
 }
@@ -111,8 +113,12 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
       // not have been in the pages read, so the cursor must return there, not jump to `now`.
       const windowStart = state.resume ? (state.windowStart ?? state.cursor) : now;
       const seen = new Set(state.ids);
-      const recent = new Set(state.resume ? (state.recent ?? []) : []);
-      const recentFrom = windowStart - OVERLAP_MS;
+      const recent = new Map<string, number>();
+      for (const e of state.recent ?? []) {
+        // Tolerate the older bare-id form: treat it as created at the cursor.
+        if (typeof e === "string") recent.set(e, state.cursor);
+        else if (Array.isArray(e) && typeof e[0] === "string") recent.set(e[0], Number(e[1]));
+      }
       const events: unknown[] = [];
       const read: unknown[] = [];
       let req: Record<string, unknown> | undefined = state.resume ?? spec.first({
@@ -137,7 +143,7 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
           const stamp = spec.stampOf?.(item);
           if (stamp !== undefined && stamp < state.floor) continue;
           const id = spec.idOf(item);
-          if (id && stamp !== undefined && stamp >= recentFrom) recent.add(id);
+          if (id && stamp !== undefined) recent.set(id, stamp);
           if (id && !seen.has(id)) {
             seen.add(id);
             events.push(item);
@@ -145,17 +151,27 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
         }
         req = spec.next(req, result, got);
       }
-      // Keep a drain's overlap span out of the eviction: the next check re-lists it.
-      const keep = truncated || state.resume ? recent : new Set<string>();
+      // Keep out of the eviction whatever the next check re-lists: records created at or after
+      // its window start. A truncated check leaves the cursor where it was, so that span is the
+      // old cursor's, and it can be a whole backlog (the drain continues through it).
+      const cursor = truncated ? state.cursor : windowStart;
+      const keep = new Set<string>();
+      const keepEntries: Array<[string, number]> = [];
+      for (const [id, stamp] of recent) {
+        if (stamp >= cursor - OVERLAP_MS) {
+          keep.add(id);
+          keepEntries.push([id, stamp]);
+        }
+      }
       const nextState: WalkState = {
         v: 1,
         kind: "ids",
         seeded: true,
         ids: [...[...seen].filter((id) => !keep.has(id)).slice(-SEEN_WINDOW), ...keep],
-        cursor: truncated ? state.cursor : windowStart,
+        cursor,
         floor: state.floor,
         ...(truncated && req ? { resume: req, windowStart } : {}),
-        ...(keep.size ? { recent: [...keep] } : {}),
+        ...(keepEntries.length ? { recent: keepEntries } : {}),
         ...(spec.markOf ? { mark: spec.markOf(state.mark, read) } : {}),
       };
       return { events, nextState };

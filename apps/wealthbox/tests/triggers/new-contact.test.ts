@@ -153,3 +153,72 @@ test("new-contact: a row written seconds after a mid-minute seed is emitted, the
     clock.now = () => NOW;
   }
 });
+
+test("new-contact: a 2000-contact import (one minute stamp) just before the first check emits each once", async () => {
+  type R = { id: number; created: number };
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fmt = (ms: number) => { // printed as the API does: minute precision, UTC-5
+    const d = new Date(ms - 300 * 60_000);
+    const h = d.getUTCHours();
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
+      `${pad(h % 12 === 0 ? 12 : h % 12)}:${pad(d.getUTCMinutes())} ${h < 12 ? "AM" : "PM"} -0500`;
+  };
+  const parse = (s: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{1,2}):(\d{2}) ([AP]M) ([+-])(\d{2})(\d{2})$/.exec(s)!;
+    const hour = (Number(m[4]) % 12) + (m[6] === "PM" ? 12 : 0);
+    const off = (m[7] === "-" ? -1 : 1) * (Number(m[8]) * 60 + Number(m[9]));
+    return Date.UTC(+m[1], +m[2] - 1, +m[3], hour, +m[5]) - off * 60_000;
+  };
+  const T0 = Date.parse("2026-11-09T17:00:30.000Z");
+  const db: R[] = [];
+  const vendor = (u: URL) => {
+    let rows = [...db].sort((a, b) => a.created - b.created || a.id - b.id);
+    const us = u.searchParams.get("updated_since");
+    if (us) {
+      const since = parse(us);
+      rows = rows.filter((r) => Math.floor(r.created / 60_000) * 60_000 >= since);
+    }
+    const pp = Number(u.searchParams.get("per_page") ?? 25);
+    const pg = Number(u.searchParams.get("page") ?? 1);
+    return new Response(
+      JSON.stringify({
+        contacts: rows.slice((pg - 1) * pp, pg * pp).map((r) => ({
+          id: r.id,
+          created_at: fmt(r.created),
+          updated_at: fmt(r.created),
+        })),
+      }),
+      { headers: { "content-type": "application/json" } },
+    );
+  };
+  const run = async (tick: number, state: unknown) => {
+    clock.now = () => tick;
+    const m = mockCtx([]);
+    // deno-lint-ignore no-explicit-any
+    (m.ctx as any).fetch = (inp: any) =>
+      Promise.resolve(vendor(new URL(typeof inp === "string" ? inp : inp.url ?? String(inp))));
+    const r = await trigger.poll!({ ...input, state }, m.ctx);
+    return {
+      events: r.events as { id: number }[],
+      state: JSON.parse(JSON.stringify(r.nextState)),
+    };
+  };
+  try {
+    let s = (await run(T0, {})).state;
+    // 2000 contacts created within 20 s (one printed minute), first check 40 s after the last.
+    const N = 2000;
+    for (let i = 1; i <= N; i++) db.push({ id: i, created: T0 + 1000 + i * 10 });
+    const seen = new Map<number, number>();
+    let t = T0 + 1000 + N * 10 + 40_000;
+    for (let k = 0; k < 14; k++) {
+      const r = await run(t, s);
+      s = r.state;
+      for (const e of r.events) seen.set(e.id, (seen.get(e.id) ?? 0) + 1);
+      t += 300_000;
+    }
+    assertEquals([...seen].filter(([, n]) => n > 1), []);
+    assertEquals(seen.size, N);
+  } finally {
+    clock.now = () => NOW;
+  }
+});

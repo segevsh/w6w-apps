@@ -183,3 +183,58 @@ test("new-deployment: a drain longer than SEEN_WINDOW emits none twice and loses
     clock.now = () => NOW;
   }
 });
+
+test("new-deployment: a 2000-deployment import just before the first check emits each once (burst inside the overlap)", async () => {
+  type R = { id: number; created: number };
+  const T0 = Date.parse("2026-11-09T17:00:30.000Z");
+  const db: R[] = [];
+  const vendor = (u: URL) => {
+    let rows = [...db].sort((a, b) => b.created - a.created || b.id - a.id);
+    const since = u.searchParams.get("since"), until = u.searchParams.get("until");
+    if (since) rows = rows.filter((r) => r.created > Number(since));
+    if (until) rows = rows.filter((r) => r.created < Number(until));
+    const lim = Number(u.searchParams.get("limit") ?? 20);
+    const pg = rows.slice(0, lim);
+    return new Response(
+      JSON.stringify({
+        deployments: pg.map((r) => ({ uid: "d" + r.id, created: r.created })),
+        pagination: {
+          count: pg.length,
+          next: rows.length > lim ? pg[pg.length - 1].created : null,
+        },
+      }),
+      { headers: { "content-type": "application/json" } },
+    );
+  };
+  const run = async (tick: number, state: unknown) => {
+    clock.now = () => tick;
+    const m = mockCtx([]);
+    // deno-lint-ignore no-explicit-any
+    (m.ctx as any).fetch = (inp: any) =>
+      Promise.resolve(vendor(new URL(typeof inp === "string" ? inp : inp.url ?? String(inp))));
+    const r = await trigger.poll!({ ...input, state }, m.ctx);
+    return {
+      events: r.events as { uid: string }[],
+      state: JSON.parse(JSON.stringify(r.nextState)),
+    };
+  };
+  try {
+    let s = (await run(T0, {})).state;
+    // 2000 records created within 20 s, the first check 40 s after the last of them: the whole
+    // import lies inside the two-minute overlap of the check that follows the drain.
+    const N = 2000;
+    for (let i = 1; i <= N; i++) db.push({ id: i, created: T0 + 1000 + i * 10 });
+    const seen = new Map<string, number>();
+    let t = T0 + 1000 + N * 10 + 40_000;
+    for (let k = 0; k < 14; k++) {
+      const r = await run(t, s);
+      s = r.state;
+      for (const e of r.events) seen.set(e.uid, (seen.get(e.uid) ?? 0) + 1);
+      t += 300_000;
+    }
+    assertEquals([...seen].filter(([, n]) => n > 1), []);
+    assertEquals(seen.size, N);
+  } finally {
+    clock.now = () => NOW;
+  }
+});
