@@ -77,6 +77,15 @@ const cases: Case[] = [
     requests: [get("/activity", { campaignIdentifier: "q4-outbound", limit: "50", offset: "0" })],
   },
   {
+    name: "new-activity (contactId filter)",
+    trigger: newActivity,
+    params: { contactId: 48213377 },
+    respond: data,
+    old: { activityId: "a1", occurredAt: "2026-11-10T08:00:00Z" },
+    fresh: { activityId: "a2", occurredAt: "2026-11-10T09:00:00Z" },
+    requests: [get("/activity", { contactId: "48213377", limit: "50", offset: "0" })],
+  },
+  {
     name: "new-or-updated-activity",
     trigger: newOrUpdatedActivity,
     params: {},

@@ -5,7 +5,7 @@ webhooks** from a workflow, over the REST Management API (`api.bigcommerce.com`)
 
 38 actions, one auth method, five declared health checks.
 
-- **Triggers** — 5 (poll)
+- **Triggers** — 9 (poll)
 
 ## Sources
 
@@ -13,8 +13,7 @@ Everything in this app was verified on **2026-08-11** against, in order of autho
 
 1. **BigCommerce's own machine-readable OpenAPI 3.1 documents** — the primary source. The vendor
    publishes **78 distinct** specification documents, one per API family, at
-   `https://docs.bigcommerce.com/openapi/<name>.json`, indexed at
-   `https://docs.bigcommerce.com/docs/rest-catalog/openapi.json`. Twenty of them cover this app's
+   `https://docs.bigcommerce.com/openapi/<name>.json`. Twenty of them cover this app's
    surface; `admin-catalog-products.json` alone is 457,109 bytes. Every path, verb, query
    parameter, request-body field, required-field list and enum here is copied from them.
 2. **The prose reference and guides** at `https://docs.bigcommerce.com/developer` — for the things
@@ -272,16 +271,33 @@ Every `perform` action declares `idempotent` explicitly, and honestly:
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-order` — New Order | Poll | `order-list` | Each newly created order |
-| `new-product` — New Product | Poll | `product-list`, `date_modified` descending | Each newly seen product |
-| `new-or-updated-product` — New or Updated Product | Poll | `product-list`, `date_modified` descending | Each product whose modification time changes |
-| `new-customer` — New Customer | Poll | `customer-list`, `date_created` descending | Each newly created customer |
-| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list`, `date_modified` descending | Each customer whose modification time changes |
+|  — New Order | Poll |  | Each newly created order |
+|  — New Product | Poll | , uid=1000(node) gid=1000(node) groups=1000(node),983(docker),998(nvm),999(npm) descending | Each newly created product |
+|  — New or Updated Product | Poll | ,  descending | Each product whose modification time changes |
+|  — New Customer | Poll | ,  descending | Each newly created customer |
+|  — New or Updated Customer | Poll | ,  descending | Each customer whose modification time changes |
+|  — New Price List | Poll (snapshot) | , all pages | Each price list first seen |
+|  — New or Updated Price List | Poll (snapshot) | , all pages | Each price list first seen or whose values change |
+|  — New Brand | Poll (snapshot) | , all pages | Each brand first seen |
+|  — New Inventory Location | Poll (snapshot) | , all pages | Each inventory location first seen |
 
-Polled newest-first through their listed actions; the first check records what exists without firing,
-later checks emit only unseen items. The catalog and customer sort tokens are from BigCommerce's
-[Catalog OpenAPI index](https://docs.bigcommerce.com/docs/rest-catalog/openapi.json). Source:
-[vendor docs](https://developer.bigcommerce.com/docs/rest-management/orders) (verified 2026-11-10).
+Order, product and customer triggers poll newest-first through their listed actions; the first check
+records what exists without firing, later checks emit only unseen items.  sorts by uid=1000(node) gid=1000(node) groups=1000(node),983(docker),998(nvm),999(npm)
+because the vendor says "Since ID increments when new products are added, you can use the ID value to
+sort by product create date" — a bulk edit of other products cannot push a new one off the page, as a
+ sort would. The snapshot triggers read the whole (small, bounded) collection, up to
+5000 rows, and diff per-row hashes. Sources, opened 2026-11-10:
+[products](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/products/get-products) ( enum, ),
+[customers](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/customers/v3/get-customers) ( enum),
+[price lists](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/get-price-lists),
+[brands](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/brands/get-brands),
+[inventory locations](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/inventory/locations/get-locations).
+
+Not covered, by reason: **per-parent lists** (, ,
+, ,  need an order, customer or
+price list a user picks first); **reference or administration output** (,
+); **no usable date filter or creation order** (, ,
+, ).
 
 ## Health checks
 

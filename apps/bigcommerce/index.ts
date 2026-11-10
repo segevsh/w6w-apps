@@ -126,6 +126,10 @@ import newProduct from "./triggers/new-product.ts";
 import newOrUpdatedProduct from "./triggers/new-or-updated-product.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newPriceList from "./triggers/new-price-list.ts";
+import newOrUpdatedPriceList from "./triggers/new-or-updated-price-list.ts";
+import newBrand from "./triggers/new-brand.ts";
+import newInventoryLocation from "./triggers/new-inventory-location.ts";
 
 export default {
   actions: [
@@ -183,5 +187,15 @@ export default {
   // second `oauth2` method here would authenticate differently.
   auth: [accessToken],
   healthChecks: [service, api, quota, store, planLimits],
-  triggers: [newOrder, newProduct, newOrUpdatedProduct, newCustomer, newOrUpdatedCustomer],
+  triggers: [
+    newOrder,
+    newProduct,
+    newOrUpdatedProduct,
+    newCustomer,
+    newOrUpdatedCustomer,
+    newPriceList,
+    newOrUpdatedPriceList,
+    newBrand,
+    newInventoryLocation,
+  ],
 } satisfies AppDefinition;

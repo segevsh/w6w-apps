@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Product",
   description: "The run gets each product first seen in the store catalog.",
   action: productList,
-  input: () => ({ sort: "date_modified", direction: "desc", limit: 100, page: 1 }),
+  input: () => ({ sort: "id", direction: "desc", limit: 100, page: 1 }),
   items: (result) => (result as { data?: unknown[] }).data ?? [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   output: [
