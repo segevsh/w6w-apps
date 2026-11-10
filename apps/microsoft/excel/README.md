@@ -412,3 +412,7 @@ The icon is n8n's `nodes-base` Microsoft Excel mark, copied **verbatim** — byt
 
 Researched and endpoint-verified 2026-08-03. Status surfaces move; if the `service` check ever
 becomes possible, the Graph `serviceHealth` API is the one to revisit.
+
+## Triggers
+
+- **New Workbook** wraps `list-workbooks` with `createdDateTime desc`. [Microsoft Graph driveItem search](https://learn.microsoft.com/en-us/graph/api/driveitem-search), verified 2026-11-09.

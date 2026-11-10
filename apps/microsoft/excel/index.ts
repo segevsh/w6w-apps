@@ -29,6 +29,7 @@ import getChartImage from "./actions/get-chart-image.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newWorkbook from "./triggers/new-workbook.ts";
 
 export default {
   actions: [
@@ -49,6 +50,7 @@ export default {
     addTableRows,
     getChartImage,
   ],
+  triggers: [newWorkbook],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
