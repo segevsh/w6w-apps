@@ -191,3 +191,21 @@ test("new-customer: a second full page is read and compared", async () => {
   );
   assertEquals(next.events, [{ id: "c101" }]);
 });
+
+// 5000-row snapshot cap: 50 full pages and then an empty one is allowed, a 51st page with rows is not.
+test("new-customer: 5000 rows exactly compare; a 5001st row is refused", async () => {
+  const full = (n: number) => ({
+    body: collection(Array.from({ length: 100 }, (_, i) => ({ id: `c${n}-${i}` }))),
+  });
+  const exact = mockCtx([...Array.from({ length: 50 }, (_, n) => full(n)), {
+    body: collection([]),
+  }]);
+  const ok = await newCustomer.poll!({ ...input, state: {} }, exact.ctx);
+  assertEquals(ok.events, []);
+  assertEquals(exact.calls.length, 51);
+  const over = mockCtx([
+    ...Array.from({ length: 50 }, (_, n) => full(n)),
+    { body: collection([{ id: "extra" }]) },
+  ]);
+  await assertRejects(() => newCustomer.poll!({ ...input, state: {} }, over.ctx));
+});

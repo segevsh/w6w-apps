@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import nodeAssert from "node:assert/strict";
-import { assertEquals } from "../_assert.ts";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import newPayout from "../../triggers/new-payout.ts";
 import newProperty from "../../triggers/new-property.ts";
@@ -148,13 +148,22 @@ test("new-or-updated-inquiry: seed, then only an inquiry stamped after the floor
   );
 });
 
-test("new-or-updated-inquiry: an edited inquiry (new last_message_at) is a new event", async () => {
-  const base = { v: 1, kind: "ids", seeded: true, ids: ["i1:2999-01-01T00:00:00Z"], floor: 1000 };
-  const r = await inquiry.poll!(
-    { params: iparams, state: { ...base, cursor: Date.now() } },
-    mockCtx([{ body: { data: [inq("i1", "2999-06-01T00:00:00Z")] } }]).ctx,
+test("new-or-updated-inquiry: an edited inquiry (new last_message_at) fires again, once", async () => {
+  // Driven through real state: the stamp in the id is what makes the edit a new event.
+  const t1 = "2999-01-01T00:00:00Z";
+  const t2 = "2999-06-01T00:00:00Z";
+  const seeded = await inquiry.poll!(
+    { params: iparams, state: {} },
+    mockCtx([{ body: { data: [] } }]).ctx,
   );
-  assertEquals(r.events, [inq("i1", "2999-06-01T00:00:00Z")]);
+  const poll = (state: unknown, at: string) =>
+    inquiry.poll!({ params: iparams, state }, mockCtx([{ body: { data: [inq("i1", at)] } }]).ctx);
+  const one = await poll(seeded.nextState, t1);
+  assertEquals(one.events, [inq("i1", t1)]);
+  const edited = await poll(one.nextState, t2);
+  assertEquals(edited.events, [inq("i1", t2)]);
+  const repeat = await poll(edited.nextState, t2);
+  assertEquals(repeat.events, []);
 });
 
 test("new-or-updated-inquiry: the request carries the property and the since filter literally", async () => {
@@ -167,7 +176,7 @@ test("new-or-updated-inquiry: the request carries the property and the since fil
   assertEquals(pathOf(m.calls[0].url), "/v2/inquiries");
   const q = new URL(m.calls[0].url).searchParams;
   assertEquals(q.getAll("properties[]"), ["prop-1", "prop-2"]);
-  assertEquals(q.get("last_message_at"), "2026-11-10T09:58:00.000Z");
+  assertEquals(q.get("last_message_at"), "2026-11-10 09:58:00");
   assertEquals(q.get("page"), "1");
   assertEquals(q.get("per_page"), "100");
 });
@@ -186,7 +195,7 @@ test("new-or-updated-inquiry: a window of 6 pages is drained over two checks, no
   const two = await inquiry.poll!({ params: iparams, state: one.nextState }, second.ctx);
   assertEquals(two.events.length, 50);
   assertEquals(second.calls.map((x) => queryOf(x.url)["page"]), ["6"]);
-  assertEquals(queryOf(second.calls[0].url)["last_message_at"], "2026-11-10T09:58:00.000Z");
+  assertEquals(queryOf(second.calls[0].url)["last_message_at"], "2026-11-10 09:58:00");
   const ids = [...one.events, ...two.events].map((e) => (e as { id: string }).id);
   assertEquals(new Set(ids).size, 550);
   assertEquals((two.nextState as { resume?: unknown }).resume, undefined);
@@ -215,4 +224,21 @@ test("new-or-updated-inquiry: records from before the seed never fire, however m
     mockCtx([{ body: { data: [inq("fresh", "2999-01-01T00:00:00Z")] } }]).ctx,
   );
   assertEquals(c.events, [inq("fresh", "2999-01-01T00:00:00Z")]);
+});
+
+// 5000-row snapshot cap: 50 full pages and then an empty one is allowed, a 51st page with rows is not.
+test("new-property: 5000 rows exactly compare; a 5001st row is refused", async () => {
+  const full = (n: number) => ({
+    body: { data: Array.from({ length: 100 }, (_, i) => ({ id: `p${n}-${i}` })) },
+  });
+  const input = { params: {}, subscriptionId: "sub-1" };
+  const exact = mockCtx([...Array.from({ length: 50 }, (_, n) => full(n)), { body: { data: [] } }]);
+  const ok = await newProperty.poll!({ ...input, state: {} }, exact.ctx);
+  assertEquals(ok.events, []);
+  assertEquals(exact.calls.length, 51);
+  const over = mockCtx([
+    ...Array.from({ length: 50 }, (_, n) => full(n)),
+    { body: { data: [{ id: "extra" }] } },
+  ]);
+  await assertRejects(() => newProperty.poll!({ ...input, state: {} }, over.ctx));
 });

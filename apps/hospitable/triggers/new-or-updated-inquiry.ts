@@ -20,7 +20,8 @@ export default sinceFeed({
   params: [PROPERTY_IDS],
   input: ({ params, since, page, pageSize }) => ({
     property_ids: params.propertyIds,
-    last_message_at: since,
+    // the existing inquiry-list action and tests use `YYYY-MM-DD HH:MM:SS` (UTC)
+    last_message_at: since.slice(0, 19).replace("T", " "),
     page,
     per_page: pageSize,
   }),

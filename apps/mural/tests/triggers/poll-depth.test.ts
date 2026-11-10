@@ -103,3 +103,17 @@ test("new-room: every page of the list is read, following the next token", async
   );
   assertEquals(next.events, [{ id: "r3" }]);
 });
+
+// Page cap: 50 pages are compared when the 50th has no next token, a 50th page that still has one is refused.
+test("new-room: 50 pages compare; a next token after the 50th page is refused", async () => {
+  const input = { params: { workspaceId: "ws1" }, subscriptionId: "sub-1" };
+  const pages = (lastNext: boolean) =>
+    Array.from({ length: 50 }, (_, n) => ({
+      body: { value: [{ id: `r${n}` }], ...(n < 49 || lastNext ? { next: `tok-${n + 1}` } : {}) },
+    }));
+  const exact = mockCtx(pages(false));
+  const ok = await newRoom.poll!({ ...input, state: {} }, exact.ctx);
+  assertEquals(ok.events, []);
+  assertEquals(exact.calls.length, 50);
+  await assertRejects(() => newRoom.poll!({ ...input, state: {} }, mockCtx(pages(true)).ctx));
+});

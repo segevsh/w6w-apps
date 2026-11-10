@@ -63,12 +63,16 @@ export function boundedList(spec: {
         if (param.required) requiredParam(p, param.key, param.label);
       }
       const all: Item[] = [];
-      for (let page = 1; page <= (spec.paged ? SNAPSHOT_PAGES : 1); page++) {
+      const read = async (page: number) => {
         const input = { ...spec.input?.(p), ...(spec.paged ? { page, per_page: PAGE_SIZE } : {}) };
-        const got = rows(await spec.action.execute(input as never, ctx));
+        return rows(await spec.action.execute(input as never, ctx));
+      };
+      for (let page = 1; page <= (spec.paged ? SNAPSHOT_PAGES : 1); page++) {
+        const got = await read(page);
         all.push(...got);
         if (!spec.paged || got.length < PAGE_SIZE) break;
-        if (page === SNAPSHOT_PAGES) {
+        // 5000 rows exactly is fine: only a non-empty page after the last allowed one is too many.
+        if (page === SNAPSHOT_PAGES && (await read(page + 1)).length > 0) {
           throw new Error(
             `${spec.title} cannot compare more than ${SNAPSHOT_PAGES * PAGE_SIZE} rows.`,
           );

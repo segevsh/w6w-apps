@@ -314,11 +314,11 @@ app's health check needs (`worstHealthState`).
 | `new-subtask` — New Subtask | Poll | `subtask-list` | each subtask newly added to the chosen task (`sort=-id`) |
 | `new-checklist` — New Checklist | Poll | `checklist-list` | each checklist newly added to the chosen task (`sort=-id`) |
 | `new-label` — New Label | Poll | `label-list` | each label newly created in the chosen project (whole list compared) |
-| `new-project-person` — New Project Person | Poll | `project-person-list` | each person newly added to the chosen project (whole list compared; also delivers `project-members-list`'s members) |
+| `new-project-person` — New Project Person | Poll | `project-person-list` | each person newly added to the chosen project (whole list compared) |
 | `new-person` — New Person | Poll | `person-list` | each person who newly shares a project with the user (whole list compared) |
 | `new-task-label` — New Task Label | Poll | `task-label-list` | each label newly attached to the chosen task (whole list compared) |
 
-Not covered: `project-members-list` (the same members `new-project-person` delivers; the rights/membership detail is a read, not a feed).
+Not covered: `project-members-list` (it returns project rights plus group and team memberships, which `new-project-person`'s persons do not carry; a membership detail read, not a feed).
 
 Per-parent triggers take the parent id as a required parameter. Every new trigger's first check records what exists without firing. Source: https://developers.meistertask.com/reference/sorting and https://developers.meistertask.com/reference/pagination (descending `-` sort prefix, `items`/`page`), verified 2026-11-10.
 
