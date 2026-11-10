@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 404, none: 204
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 403, none: 205
 
 ## webhook-api (58)
 
@@ -95,7 +95,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (404)
+## poll (403)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -292,26 +292,25 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/linkedin/linkedin | list-posts-by-author | new-post, new-or-updated-post | apps/linkedin/linkedin/README.md Triggers section (verified 2026-11-09) | hand | list-posts-by-author sortBy=CREATED / LAST_MODIFIED (https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api) |
 | apps/linkedin/linkedin-ads | ad-account-list | new-ad-account | apps/linkedin/linkedin-ads/README.md Triggers section (verified 2026-11-09) | hand | ad-account-list read as a bounded whole-collection snapshot via pageToken (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts) |
 | apps/linkupapi | job-candidates-list | new-candidate | no | hand | shipped poll trigger(s) over list action job-candidates-list |
-| apps/littlegreenlight | constituent-search | new-constituent-search | no | scan | list action constituent-search has pagination and order/since params |
-| apps/livestorm | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
-| apps/lodgify | list-bookings | new-bookings | no | scan | list action list-bookings has pagination and order/since params |
-| apps/lofty | lead-activity-list | new-lead-activity-list | no | scan | list action lead-activity-list has pagination and order/since params |
+| apps/littlegreenlight | constituent-search | new-constituent, new-or-updated-constituent | apps/littlegreenlight/README.md Triggers section (verified 2026-11-09) | hand | constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key) |
+| apps/livestorm | event-list | new-event, new-or-updated-event | apps/livestorm/README.md Triggers section (verified 2026-11-09) | hand | since-filter poll: filter[created_since]/[updated_since]=cursor-120s over event-list, page[number] 0-indexed, id dedupe |
+| apps/lofty | lead-list | new-lead | apps/lofty/README.md Triggers section (verified 2026-11-09) | hand | lead-list sort=CreateTime desc=true limit 100; id leadId (vendor reference is client-rendered, sort value rests on the action's documented list) |
 | apps/loop-returns | order-list | new-order | no | hand | shipped poll trigger(s) over list action order-list |
-| apps/loops | transactional-list | new-transactional-list | no | scan | list action transactional-list has pagination and order/since params |
-| apps/loyverse | receipt-list | new-receipt-list | no | scan | list action receipt-list has pagination and order/since params |
-| apps/luma | calendar-events-list | new-calendar-events-list | no | scan | list action calendar-events-list has pagination and order/since params |
+| apps/loops | transactional-list | new-transactional | apps/loops/README.md Triggers section (verified 2026-11-09) | hand | vendor: list transactional emails 'most recently created first' (https://loops.so/docs/api-reference/list-transactional-emails) |
+| apps/loyverse | receipt-list | new-receipt, new-or-updated-receipt | apps/loyverse/README.md Triggers section (verified 2026-11-09) | hand | new-receipt: receipt-list newest first per the action; updated: updated_at_min=cursor-120s following the vendor cursor, ids id:updated_at |
+| apps/luma | calendar-events-list | new-calendar-event | apps/luma/README.md Triggers section (verified 2026-11-09) | hand | sortDirection=desc on the only vendor sort column start_at; ordered by START time, documented limit (https://docs.luma.com/reference/get_v1-calendars-events-list) |
 | apps/mailchimp/mailchimp | list-members | new-member | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-members |
 | apps/maileroo | list-domains | new-domain | no | hand | shipped poll trigger(s) over list action list-domains |
-| apps/mailersend | list-sender-identities | new-sender-identities | no | scan | list action list-sender-identities has pagination and order/since params |
+| apps/mailersend | list-sender-identities | new-sender-identity | apps/mailersend/README.md Triggers section (verified 2026-11-09) | hand | order_by=created_at&order=desc (vendor default asc) per developers.mailersend.com sender-identity page |
 | apps/mailjet | list-messages | new-message | apps/mailjet/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
-| apps/maintainx | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/manus | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
-| apps/manychat | list-flows | new-flows | no | scan | list action list-flows has pagination and order/since params |
+| apps/maintainx | workorder-list | new-work-order, new-or-updated-work-order | apps/maintainx/README.md Triggers section (verified 2026-11-09) | hand | GET /workorders explicit sort=-createdAt / -updatedAt per vendor OpenAPI; user-list dropped (no documented order) |
+| apps/manus | task-list | new-task | apps/manus/README.md Triggers section (verified 2026-11-09) | hand | order=desc is newest first by creation time (https://open.manus.ai/docs/v2/task.list) |
+| apps/manychat | list-flows | new-flow | apps/manychat/README.md Triggers section (verified 2026-11-09) | hand | getFlows returns the Page's whole flow set in one call: pollSnapshot, added only |
 | apps/mastodon | notification-list | new-notification | apps/mastodon/README.md Triggers section (verified 2026-11-09) | hand | notification-list is newest-first and supports forward paging with min_id |
 | apps/matrix | get-messages | new-room-message | apps/matrix/README.md Triggers section (verified 2026-11-09) | hand | get-messages supports backwards (newest-first) room timeline paging; trigger keeps only m.room.message events (https://spec.matrix.org/latest/client-server-api/) |
-| apps/mattermost | post-search | new-post-search | no | scan | list action post-search has pagination and order/since params |
-| apps/meilisearch | document-list | new-document-list | no | scan | list action document-list has pagination and order/since params |
-| apps/meistertask | checklist-item-list | new-checklist-item-list | no | scan | list action checklist-item-list has pagination and order/since params |
+| apps/mattermost | posts-for-channel | new-post | apps/mattermost/README.md Triggers section (verified 2026-11-09) | hand | since=cursor-120s ms (vendor: all posts modified since, ordered by create time, <=1000, no paging); read order.map(id=>posts[id]), create_at filter drops edits |
+| apps/meilisearch | task-list | new-task | apps/meilisearch/README.md Triggers section (verified 2026-11-09) | hand | vendor: tasks returned in descending uid order by default (https://www.meilisearch.com/docs/reference/api/tasks/list-tasks); search/document-list/index-list unused |
+| apps/meistertask | checklist-item-list | new-checklist-item | apps/meistertask/README.md Triggers section (verified 2026-11-09) | hand | sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page |
 | apps/mem | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
 | apps/memberstack | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
 | apps/mercury | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
@@ -504,7 +503,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (204)
+## none (205)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -604,6 +603,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/litellm |  | no | hand | no actions: a model-provider connection used only by the host's model layer |
 | apps/livechat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/lob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/lodgify |  | no | hand | list-bookings has no sort order and no created-since filter, only updatedSince with no documented booking stamp to tell new from edited; vendor docs 403 to curl so default order unverifiable (https://docs.lodgify.com/reference/list-bookings) |
 | apps/mailcheck |  | no | hand | email-validation API lists batch-operation jobs, not durable created records |
 | apps/meta/facebook-conversions |  | no | hand | dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists |
 | apps/meta/facebook-custom-audiences |  | no | hand | custom-audience lists are cursor paged without documented newest-first ordering, a since filter, or bounded collection guarantee |
