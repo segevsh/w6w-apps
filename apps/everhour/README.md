@@ -199,3 +199,5 @@ strings like `ev:123` / `as:456` (the colon stays literal in a path).
 `deno task test` — every action has its own file under `tests/actions/` asserting verb, path,
 query, JSON body, the version header, absence of a credential header, the output shape and an
 error path; plus `tests/index.test.ts`, `tests/lib/`, `tests/auth/` and `tests/health/`.
+
+Triggers: not shipped — time-record filters are calendar-date reporting ranges rather than a documented creation cursor, and configured webhooks are queued separately (https://jsapi.apiary.io/apis/everhour.apib).

@@ -230,3 +230,5 @@ so failures surface the status and the whole envelope rather than a summary.
 The two 401 shapes are told apart at connect time, because they have different
 fixes: *"Unauthorized user. No credentials supplied."* means the header never
 arrived, and *"Unauthorized api key"* means it did and was wrong.
+
+Triggers: not shipped — the signature-request list search accepts a `created:` expression but the API does not document a stable order or a bounded result set; webhook events are queued separately (https://developers.hellosign.com/guides/events/overview/).

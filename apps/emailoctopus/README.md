@@ -340,3 +340,12 @@ deno task test       # 122 unit tests, mocked HookContext, no network
 Researched and endpoint-verified against EmailOctopus's live v2 OpenAPI document and the live API on
 2026-08-11. Status surfaces move: if `service` starts failing for everyone at once, re-check whether
 incident.io still serves the Statuspage v2 shape before touching anything else.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact in one list |
+
+Polled through the documented `created_at.gte` filter with a two-minute overlap and ID dedupe. Source:
+[EmailOctopus v2 API documentation](https://emailoctopus.com/api-documentation/v2) (verified 2026-11-09).

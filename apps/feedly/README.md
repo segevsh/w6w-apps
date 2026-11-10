@@ -213,3 +213,5 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 92 unit tests across every action, the auth method, both health checks, the shared client, and the
 entry module — all against a mocked `HookContext` (fake `ctx.fetch`, no-op `ctx.log`), no real Feedly
 account or network access required.
+
+Triggers: not shipped — folders, boards, and AI feeds are configuration lists without a documented bounded collection limit; Feedly webhook subscriptions are queued separately (https://developers.feedly.com/reference/webhooks).

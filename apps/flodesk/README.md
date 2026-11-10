@@ -212,6 +212,8 @@ Flodesk publishes real rate-limit response headers, so this is a live reading ra
 constant:
 
 ```
+
+Triggers: not shipped — subscribers paginate without a documented created/updated-since filter or newest-first order; `subscriber.created` webhooks are queued separately (https://developers.flodesk.com/webhooks).
 X-Fd-RateLimit-Limit: 100
 X-Fd-RateLimit-Remaining: 68
 ```

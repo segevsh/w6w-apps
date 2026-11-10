@@ -70,3 +70,5 @@ Plus the derived `auth:api-key` check from the connection test.
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+Triggers: not shipped — enrichment is an asynchronous submitted-job API with no list of account records; the configured default webhook is queued separately (https://developer.dropcontact.com/).

@@ -70,3 +70,5 @@ measured live without a key.
 (5,920 bytes) is actually a 270x270 RGBA PNG, embedded unmodified as a base64 `<image>` (verified by
 decoding it back and comparing md5 `b64a23a96eb09e7823dea2481513781b`). `/favicon.svg` and
 `/apple-touch-icon.png` answer an HTML shell, not an image. Nothing was redrawn.
+
+Triggers: not shipped — contacts, campaigns, templates, lists, and suppressions paginate by offset but the v4 reference does not document a created/updated-since filter or newest-first order (https://elasticemail.com/api/redoc-spec/api-v4).

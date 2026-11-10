@@ -94,3 +94,5 @@ Notes:
 `deno task test` — 102 tests: every action (request path, query, body, vendor-error surfacing, path
 guards), the entry module, auth `sign`/`test`, the client, and the three health checks, all against
 a mocked `HookContext`.
+
+Triggers: not shipped — bookings-by-create-date takes one calendar day, not a timestamp cursor, so it cannot safely cover the day boundary without a vendor ordering guarantee; support-configured booking webhooks are queued separately (https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home).

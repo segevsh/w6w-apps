@@ -266,3 +266,5 @@ Tests call every hook directly with a mocked `HookContext` (`tests/_helpers.ts`:
 `ctx.fetch`, a recording no-op `ctx.log`). An unqueued fetch throws, so a test that makes an
 unexpected request fails rather than hanging. `AUTH_FAILED_500` in that file is the live-measured
 bad-credential response, reused everywhere the "500 is not an outage" behaviour is asserted.
+
+Triggers: not shipped — transcript search's date range is meeting-date search rather than a documented creation cursor or order; no webhook subscription endpoint is published in the GraphQL reference (https://docs.fireflies.ai/).

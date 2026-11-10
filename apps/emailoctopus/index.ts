@@ -35,6 +35,7 @@ import startAutomation from "./actions/start-automation.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 /**
  * EmailOctopus — one action per operation in the v2 OpenAPI document, which
@@ -79,4 +80,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

@@ -145,3 +145,5 @@ Researched and endpoint-verified 2026-09-01 against `https://exa.ai/docs/exa-spe
 (Exa's own OpenAPI 3.1 document, 42 paths) and live probes of `api.exa.ai` and
 `status.exa.ai`. Status/quota surfaces move; re-verify before wiring either health
 check further if a richer machine-readable option shows up later.
+
+Triggers: not shipped — Webset lists are paginated workspace-search results with no documented creation cursor; monitor/webhook delivery is queued separately (https://docs.exa.ai/).

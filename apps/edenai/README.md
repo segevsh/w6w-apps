@@ -76,3 +76,5 @@ Files and discovery: `file-list`, `file-delete` (by ids only), `features-list`, 
 - Anthropic-messages passthrough
 - Decisions, collections and the Management API
 - The EU host `api.eu.edenai.run` (single allowlisted host kept deliberately)
+
+Triggers: not shipped — async-job and file lists expose request artifacts, not a documented ordered or since-filtered account event feed (https://docs.edenai.co/).

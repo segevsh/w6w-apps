@@ -100,3 +100,5 @@ The split of work:
   pass (it proves the Integration Server answered).
 - **quota** — declared absence (`informational`): limits are documented but no header or endpoint
   exposes headroom.
+
+Triggers: not shipped — policy and domain-card listings are account configuration reads with no documented created/updated-since filter or bounded collection guarantee (https://integrations.expensify.com/Integration-Server/doc/).

@@ -162,3 +162,5 @@ work.
 `assets/icon.svg` is Dust's own favicon mark, fetched from `docs.dust.tt`'s own asset host
 (`mintcdn.com/dust/.../branding/favicon.svg`) — a distinctive seven-piece colored square, not a
 generic placeholder.
+
+Triggers: not shipped — agent, space, and data-source lists are workspace configuration collections without a documented created/updated-since filter or bounded collection guarantee (https://docs.dust.tt/).

@@ -78,3 +78,5 @@ was available, so no authenticated response has been observed.
   pass. A bodiless 401 is only `degraded`, since it could come from any intermediary.
 - **quota** — declared absence (`severity: informational`): the vendor documents ceilings but no
   headers or consumption endpoint.
+
+Triggers: not shipped — record-list has no sort or since filter, while query-records needs caller-selected object fields and does not provide a general creation cursor (https://developers.fireberry.com/reference).

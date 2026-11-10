@@ -93,3 +93,5 @@ No quota check: the API exposes no usage or rate-limit headers in its reference.
 `deno task test` runs 80 tests: the entry module, the auth method, the health check, and each of
 the 24 actions against a mocked `HookContext` (fake `ctx.fetch`, no-op `ctx.log`).
 Gate: `deno task fmt && deno task validate && deno task check && deno task lint && deno task test`.
+
+Triggers: not shipped — templates and collaborators have no documented created/updated-since list filter; contract webhooks are queued separately (https://esignatures.com/docs/api).

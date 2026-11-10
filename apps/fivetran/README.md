@@ -234,3 +234,5 @@ says a sync is already running — Fivetran declines a re-sync rather than
 queueing it. A `429` reports the `Retry-After`, the limit from the header, and
 the trial-versus-paid difference that usually caused it. A `401` names the three
 kinds of key, since they reach different things.
+
+Triggers: not shipped — connection pages are cursor-paginated operational inventory with no documented created/updated-since filter or bounded collection limit (https://fivetran.com/docs/rest-api/api-reference/connections/list-connections).
