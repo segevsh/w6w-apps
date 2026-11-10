@@ -78,6 +78,12 @@ import providersList from "./actions/providers-list.ts";
 import offeringTypesList from "./actions/offering-types-list.ts";
 
 import newInvoice from "./triggers/new-invoice.ts";
+import newVenue from "./triggers/new-venue.ts";
+import newInstructor from "./triggers/new-instructor.ts";
+import newStaffMember from "./triggers/new-staff-member.ts";
+import newCourse from "./triggers/new-course.ts";
+import newMembershipPlan from "./triggers/new-membership-plan.ts";
+import newOfferingType from "./triggers/new-offering-type.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -120,7 +126,15 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [host, quota],
-  triggers: [newInvoice],
+  triggers: [
+    newInvoice,
+    newVenue,
+    newInstructor,
+    newStaffMember,
+    newCourse,
+    newMembershipPlan,
+    newOfferingType,
+  ],
 };
 
 export default app;
