@@ -5,6 +5,7 @@ Manage Klipfolio data sources, Klips, dashboards, users, clients and groups, and
 - **App id:** `io.w6w.klipfolio` · **Category:** analytics
 - **API:** `https://app.klipfolio.com/api/1.0/` (reference: https://apidocs.klipfolio.com/). The reference is hand-written readme.io pages, not an OpenAPI document; every path here was read from it.
 - **Auth:** `api-key` — the key goes in the `kf-api-key` header (My Profile → API key, or Users for an admin with `user.manage`). Requests act as the key's owner with that user's role permissions.
+- **Triggers** — 2 (poll)
 - **Icon:** `assets/icon.png`, the 512×512 PNG from https://www.klipfolio.com/favicon.png, verbatim.
 
 ## Actions (42)

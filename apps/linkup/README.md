@@ -5,6 +5,8 @@ page-to-markdown fetch, a research agent, batch tasks, and past-day "rewind" sea
 <https://docs.linkup.so>; OpenAPI: <https://api.linkup.so/v1/openapi.json>. This is linkup.so, not
 "LinkupAPI" (a different, LinkedIn-focused product).
 
+- **Triggers** — 6 (poll)
+
 Category: **AI**, **Search**, **Developer Tools**.
 
 ## Connecting
@@ -78,7 +80,10 @@ streaming and the MCP server (`mcp.linkup.so`) are not part of the REST API and 
 | `new-task` | poll | `tasks-list` | Each task newly created in the organisation |
 | `new-research-task` | poll | `research-list` | Each research task newly created |
 | `new-extract-task` | poll | `extract-list` | Each extract task newly created |
+| `new-or-updated-task` | poll | `tasks-list` | Each task newly created, or whose `updatedAt` moved (e.g. pending to completed) |
+| `new-or-updated-research-task` | poll | `research-list` | Same, for research tasks |
+| `new-or-updated-extract-task` | poll | `extract-list` | Same, for extract tasks |
 
-The task lists document `sortBy` (`createdAt` or `updatedAt`) and `sortDirection` (`asc` default, `desc`) with a page size up to 100; the triggers request `sortBy=createdAt&sortDirection=desc&pageSize=100`.
+The task lists document `sortBy` (`createdAt` or `updatedAt`) and `sortDirection` (`asc` default, `desc`) with a page size up to 100; the `new-*` triggers request `sortBy=createdAt&sortDirection=desc&pageSize=100`; the `new-or-updated-*` triggers request `sortBy=updatedAt&sortDirection=desc&pageSize=100` (the vendor's task outputs carry an `updatedAt`) and de-duplicate on `id:updatedAt`, so a task re-fires each time its `updatedAt` changes.
 
 Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.linkup.so/v1/openapi.json (verified 2026-11-09).

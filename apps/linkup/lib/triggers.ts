@@ -11,21 +11,37 @@ export function newTaskTrigger(spec: {
   description: string;
   action: ActionDefinition<Record<string, unknown>>;
   idLabel: string;
+  /** §9.2: sort by `updatedAt` and fire again when a task's `updatedAt` moves. */
+  updated?: boolean;
 }) {
   return pollFromListAction({
     key: spec.key,
     title: spec.title,
     description: spec.description,
     action: spec.action,
-    input: () => ({ sortBy: "createdAt", sortDirection: "desc", pageSize: 100 }),
+    input: () => ({
+      sortBy: spec.updated ? "updatedAt" : "createdAt",
+      sortDirection: "desc",
+      pageSize: 100,
+    }),
     items: (result) => (result as { items?: unknown[] }).items ?? [],
-    idOf: (item) => String((item as { id?: unknown }).id ?? ""),
+    idOf: (item) => {
+      const task = item as { id?: unknown; updatedAt?: unknown };
+      const id = String(task.id ?? "");
+      return spec.updated ? `${id}:${String(task.updatedAt ?? "")}` : id;
+    },
     output: [
       { key: "id", type: "string", label: spec.idLabel },
       { key: "status", type: "string", label: "Status" },
       { key: "createdAt", type: "string", label: "Created at" },
+      { key: "updatedAt", type: "string", label: "Updated at" },
     ],
-    sample: { id: "tsk_123", status: "pending", createdAt: "2026-11-09T12:00:00.000Z" },
+    sample: {
+      id: "tsk_123",
+      status: "pending",
+      createdAt: "2026-11-09T12:00:00.000Z",
+      updatedAt: "2026-11-09T12:00:00.000Z",
+    },
     maxPages: 1,
   });
 }

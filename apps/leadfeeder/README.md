@@ -3,6 +3,7 @@
 Identify the companies visiting your website, search and match companies and contacts, and manage
 lists and tags through the **current** Leadfeeder API (`https://api.leadfeeder.com/v1/*`).
 
+- **Triggers** — 1 (poll)
 - Reference: the vendor's OpenAPI document, <https://api.leadfeeder.com/openapi.yaml> (linked from
   <https://docs.leadfeeder.com/api/public>). Every path, parameter and body below was read from it
   on 2026-10-06.

@@ -5,6 +5,8 @@ transfer or close it, tag its threads, search chat history, look up and update c
 the license's agents, groups, tags and channels. Built on the Agent Chat Web API and the
 Configuration API, both v3.6 (`https://api.livechatinc.com/v3.6`).
 
+- **Triggers** — 1 (poll)
+
 App id `io.w6w.livechat` · categories `support`, `communication` · egress `api.livechatinc.com`
 (every action) and `status.livechat.com` (the `service` health check only).
 

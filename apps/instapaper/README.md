@@ -6,6 +6,8 @@ service. Built against Instapaper's **Full Developer API**
 an older but still-live REST surface distinct from the "Simple API" (a one-way, add-only surface
 this app does not implement, since the Full API already covers adding and far more).
 
+- **Triggers** — 1 (poll)
+
 ## Verifying the docs against a client-rendered page
 
 `instapaper.com/developers` today serves a client-rendered React shell (confirmed live,

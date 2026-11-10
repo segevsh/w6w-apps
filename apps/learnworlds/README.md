@@ -154,4 +154,4 @@ headroom anywhere across all 94 v2 operations.
 | --- | --- | --- | --- |
 | `new-user` | poll | `users-list` | Each newly registered user |
 
-The API's newest-first user list is polled every five minutes. Vendor API documentation: https://www.learnworlds.dev/ (verified 2026-11-09).
+The trigger polls the existing `users-list` action every five minutes and relies on that action's own documentation of a newest-first order; the vendor's Stoplight portal is JavaScript-rendered, so the order was not independently re-checked against the vendor's pages. Vendor API documentation: https://www.learnworlds.dev/ (portal root; endpoint pages not verifiable without a browser).

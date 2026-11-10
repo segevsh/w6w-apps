@@ -4,6 +4,7 @@ Conversational chatbots over web chat, WhatsApp and Messenger. This app drives L
 API: channels, customers (conversations) and their transcripts, outbound messages and WhatsApp
 templates, conversation assignment, per-customer custom fields and channel message hooks.
 
+- Triggers: 1 (poll)
 - App id: `io.w6w.landbot` · categories: `communication`, `support`, `marketing`
 - Host: `api.landbot.io`, prefix `/v1` (the only entry in `network.allow`)
 - Source of truth: Landbot's OpenAPI 3.1 document,

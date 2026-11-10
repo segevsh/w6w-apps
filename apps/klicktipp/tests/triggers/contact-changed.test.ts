@@ -63,3 +63,23 @@ test("contact-changed: pages through nextCursor and skips a boundary-second repe
   assertEquals(r.calls[0].url.includes("from=1794225900"), true);
   assertEquals(third.events, []); // boundary-second duplicate of the previous listing
 });
+
+test("contact-changed: a burst above 100 new ids emits 100 and keeps the cursor to work off the rest", async () => {
+  clock.now = () => T0 * 1000;
+  const seeded = await trigger.poll!({ ...input, state: {} }, mockCtx([page(["0"])]).ctx);
+  clock.now = () => (T0 + 300) * 1000;
+  const ids = Array.from({ length: 150 }, (_, i) => String(i + 1));
+  const burst = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([page(ids)]).ctx,
+  );
+  assertEquals(burst.events.length, 100);
+  // The cursor did not advance, so the next check lists the same window again.
+  assertEquals((burst.nextState as { cursor?: number }).cursor, T0);
+  clock.now = () => (T0 + 600) * 1000;
+  const r = mockCtx([page(ids)]);
+  const next = await trigger.poll!({ ...input, state: burst.nextState }, r.ctx);
+  assertEquals(r.calls[0].url.includes("from=1794225600"), true);
+  assertEquals(next.events.length, 50);
+  assertEquals((next.nextState as { cursor?: number }).cursor, T0 + 600);
+});

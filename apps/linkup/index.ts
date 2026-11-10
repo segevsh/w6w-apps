@@ -24,6 +24,9 @@ import quota from "./health/quota.ts";
 import newTask from "./triggers/new-task.ts";
 import newResearchTask from "./triggers/new-research-task.ts";
 import newExtractTask from "./triggers/new-extract-task.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newOrUpdatedResearchTask from "./triggers/new-or-updated-research-task.ts";
+import newOrUpdatedExtractTask from "./triggers/new-or-updated-extract-task.ts";
 
 /**
  * Linkup — AI web search and fetch API (linkup.so; not "LinkupAPI", a different LinkedIn
@@ -62,7 +65,14 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newTask, newResearchTask, newExtractTask],
+  triggers: [
+    newTask,
+    newResearchTask,
+    newExtractTask,
+    newOrUpdatedTask,
+    newOrUpdatedResearchTask,
+    newOrUpdatedExtractTask,
+  ],
 };
 
 export default app;

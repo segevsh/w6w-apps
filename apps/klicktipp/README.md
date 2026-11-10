@@ -123,6 +123,6 @@ A unit test pins its size and hash. Format with `deno task fmt`, never bare `den
 | --- | --- | --- | --- |
 | `contact-changed` | poll | `subscriber-changed` | The id of each contact KlickTipp lists as changed since the last check |
 
-`GET /subscriber/changed?from=<unix seconds>` lists contact ids changed since a timestamp with cursor paging. The feed returns ids only and does not say whether a change was a creation, so the trigger is `contact-changed`, not "new contact": it asks from the previous check's second, skips the boundary-second repeat of the previous listing, and works off a very large burst (more than 5 pages of 200 ids or 100 new ids) over the following checks.
+`GET /subscriber/changed?from=<unix seconds>` lists contact ids changed since a timestamp with cursor paging. The feed returns ids only and does not say whether a change was a creation, so the trigger is `contact-changed`, not "new contact": it asks from the previous check's second, skips every id that was in the previous check's listing (the feed carries no timestamps, so the boundary-second repeat cannot be told from a genuine re-change: a contact changed again in the next window is not reported again while it stays in the listing), and works off a very large burst (more than 5 pages of 200 ids or 100 new ids) over the following checks.
 
 Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://developers.klicktipp.com/ (verified 2026-11-09).
