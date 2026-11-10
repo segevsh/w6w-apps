@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2020 triggers, 2230 unaccounted list actions in 502 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -31,13 +31,8 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/wakatime | 1 | 11 | 10 |
 | apps/highlevel | 4 | 9 | 9 |
 | apps/lusha | 1 | 9 | 9 |
-| apps/meta/instagram-for-business | 1 | 10 | 9 |
-| apps/microsoft/microsoft-entra-id | 1 | 10 | 9 |
-| apps/mixmax | 1 | 10 | 9 |
 | apps/motion | 0 | 9 | 9 |
 | apps/nocrm | 1 | 10 | 9 |
-| apps/phrase | 2 | 10 | 9 |
-| apps/printavo | 1 | 10 | 9 |
 | apps/procore | 0 | 9 | 9 |
 | apps/qualtrics | 0 | 9 | 9 |
 | apps/recruiterflow | 0 | 9 | 9 |
@@ -620,11 +615,14 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/manus | 7 | 10 | 0 |
 | apps/meistertask | 12 | 12 | 0 |
 | apps/mercury | 9 | 10 | 0 |
+| apps/meta/instagram-for-business | 4 | 10 | 0 |
+| apps/microsoft/microsoft-entra-id | 10 | 10 | 0 |
 | apps/microsoft/onedrive | 8 | 6 | 0 |
 | apps/microsoft/outlook | 4 | 5 | 0 |
 | apps/microsoft/teams | 8 | 8 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/missive | 10 | 15 | 0 |
+| apps/mixmax | 8 | 10 | 0 |
 | apps/mollie | 9 | 15 | 0 |
 | apps/mural | 9 | 12 | 0 |
 | apps/notion | 42 | 30 | 0 |
@@ -635,10 +633,12 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/pardot | 2 | 0 | 0 |
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
+| apps/phrase | 11 | 10 | 0 |
 | apps/pipedrive | 13 | 3 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/practicebetter | 9 | 11 | 0 |
+| apps/printavo | 2 | 10 | 0 |
 | apps/productboard | 12 | 20 | 0 |
 | apps/productive | 2 | 17 | 0 |
 | apps/pylon | 8 | 13 | 0 |
@@ -1058,10 +1058,10 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/mem | 2 | task-list | new-task, new-or-updated-task | apps/mem/README.md Triggers section (verified 2026-11-09) | hand | task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI. |
 | apps/memberstack | 1 | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
 | apps/mercury | 9 | customer-list | new-account, new-account-statement, new-card, new-category, new-customer, new-invoice, new-recipient, new-transaction, new-user | apps/mercury/README.md Triggers section (verified 2026-11-10) | hand | order=desc on every list endpoint (https://docs.mercury.com/reference/listtransactions); sorted field not named by the vendor, newest-created-first is the expected order |
-| apps/meta/instagram-for-business | 1 | list-media | new-media | apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-09) | hand | Media edge is documented as most recent first. |
+| apps/meta/instagram-for-business | 4 | list-media | new-media, new-comment, new-story, new-instagram-account | apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-10) | hand | Media and comments edges are newest first; stories and managed Pages with a linked Instagram account are small bounded snapshots. |
 | apps/microsoft/azuredevops | 3 | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
 | apps/microsoft/excel | 2 | list-workbooks | new-workbook, new-or-updated-workbook | apps/microsoft/excel/README.md Triggers section (verified 2026-11-09) | hand | list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp). |
-| apps/microsoft/microsoft-entra-id | 1 | list-deleted-items | new-deleted-item | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09) | hand | Deleted items are requested by deletedDateTime descending. |
+| apps/microsoft/microsoft-entra-id | 10 | list-deleted-items | new-deleted-item, new-user, new-group, new-application, new-service-principal, new-group-member, new-group-owner, new-user-membership, new-directory-role, new-directory-role-member | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-10) | hand | Users, groups, applications and service principals sorted by createdDateTime desc; memberships, owners, roles as bounded snapshots. |
 | apps/microsoft/onedrive | 8 | list-changes | file-changed, new-file, new-folder, file-updated, folder-updated, item-deleted, new-permission, new-drive | apps/microsoft/onedrive/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over list-changes (delta: created/updated/deleted files and folders), list-permissions and list-drives (bounded snapshots); Graph drive webhooks not shipped: notifications carry no item data and expire in under 30 days with no renewal hook (https://learn.microsoft.com/en-us/graph/api/resources/subscription) |
 | apps/microsoft/onenote | 1 | list-pages | new-or-updated-page | apps/microsoft/onenote/README.md Triggers section (verified 2026-11-09) | hand | Page feed is documented as last-modified descending; update stamp is part of id. |
 | apps/microsoft/outlook | 4 | list-messages | new-email, new-event, new-calendar, new-mail-folder | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-10) | hand | polls over list-messages and list-events (newest first) and list-calendars and list-mail-folders (snapshots); no webhook: Graph subscriptions expire in under 7 days and need renewal (https://learn.microsoft.com/en-us/graph/change-notifications-overview) |
@@ -1071,7 +1071,7 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/millionverifier | 2 | bulk-list-files | new-bulk-file, new-or-updated-bulk-file | apps/millionverifier/README.md Triggers section (verified 2026-11-09) | hand | bulk-list-files takes createdate_from / updated_at_from since-filters (yyyy-MM-dd HH:mm:ss, written by the trigger itself); id file_id (https://developer.millionverifier.com/) |
 | apps/miro | 1 | board-list | new-board | apps/miro/README.md Triggers section (verified 2026-11-09) | hand | board-list sort=last_created with required teamId (Miro honours sort only within a team or project). |
 | apps/missive | 10 | conversation-list | new-comment, new-contact-group, new-conversation, new-draft, new-message, new-or-updated-contact, new-or-updated-conversation, new-or-updated-task, new-post, new-task | apps/missive/README.md Triggers section (verified 2026-11-10) | hand | Newest-first conversation and task activity polls (omitting `until`), per-conversation comment/draft/message/post feeds, new-or-updated siblings for conversations/tasks/contacts; remaining administrative lists have no documented safe order or since filter. |
-| apps/mixmax | 1 | unsubscribe-list | new-unsubscribe | no | hand | shipped poll trigger(s) over list action unsubscribe-list |
+| apps/mixmax | 8 | unsubscribe-list | new-unsubscribe, new-message, new-sequence, new-sequence-folder, new-sequence-recipient, new-team, new-team-member, new-template | apps/mixmax/README.md Triggers section (verified 2026-11-10) | hand | Unsubscribes, messages, teams, templates (sort=createdAt desc) and sequence recipients (sortBy=createdAt, sortDesc) newest first; sequences (cursor-followed, capped) folders and team members as snapshots. |
 | apps/mixpanel | 1 | cohort-list | new-cohort | apps/mixpanel/README.md Triggers section (verified 2026-11-09) | hand | Saved cohorts are a small bounded collection; pollSnapshot emits a cohort when its id first appears. |
 | apps/moco | 1 | contact-list | new-or-updated-contact | apps/moco/README.md Triggers section (verified 2026-11-09) | hand | contact-list updated_after set to cursor minus 2 min overlap, id includes updated_at (shape b). |
 | apps/mollie | 9 | chargeback-list | new-chargeback, new-customer, new-customer-payment, new-mandate, new-payment, new-payment-link, new-refund, new-subscription, new-subscription-all | apps/mollie/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=desc where documented; payment links and account-wide subscriptions throw if a page is not newest-first by createdAt) for payments, customers, chargebacks, refunds, payment links and account-wide subscriptions; selected-customer feeds for payments, mandates and subscriptions. |
@@ -1109,7 +1109,7 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/perplexity | 1 | list-models | new-model | apps/perplexity/README.md Triggers section (verified 2026-11-09) | hand | Snapshots the short vendor-wide Agent API model catalog (GET /v1/models, one request) and emits additions only; web-search is an ad-hoc ranked search, not a record feed (https://docs.perplexity.ai/api-reference/models-get) |
 | apps/personio | 2 | list-employees | new-employee, new-or-updated-employee | apps/personio/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-employees updatedSince = cursor-10min, id dedupe; new-employee keeps created_at in window (https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml) |
 | apps/perspective | 1 | contact-list | new-contact | apps/perspective/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
-| apps/phrase | 2 | job-list | new-job, new-or-updated-job | apps/phrase/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll with a declared projectId param: job-list updatedSince = cursor-10min, id dedupe (https://developers.phrase.com/en/api/strings/jobs/list-jobs) |
+| apps/phrase | 11 | job-list | new-job, new-or-updated-job, new-key, new-or-updated-key, new-translation, new-or-updated-translation, new-project, new-or-updated-project, new-account, new-locale, new-tag | apps/phrase/README.md Triggers section (verified 2026-11-10) | hand | Keys and translations sort by created_at/updated_at desc; projects by updated_at desc; accounts, locales, tags are bounded snapshots. |
 | apps/pinecone | 2 | index-list | new-index, new-backup | apps/pinecone/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshots (<=200 indexes, <=1000 backups per project per https://docs.pinecone.io/reference/api/database-limits/object-limits), additions only; namespace-list unbounded, model-list is a vendor catalog, record-list is lexicographic id enumeration |
 | apps/placid | 2 | template-list | new-template, new-or-updated-template | apps/placid/README.md Triggers section (verified 2026-11-09) | hand | Polls created and updated template sort orders. |
 | apps/plaid | 1 | transaction-sync | new-transaction | apps/plaid/README.md Triggers section (verified 2026-11-10) | hand | transaction-sync (POST /transactions/sync) is a documented cursor change feed (added/modified/removed + next_cursor, https://plaid.com/docs/api/products/transactions/#transactionssync): new-transaction stores the cursor (pollToken) and emits added; institution-list stays unwrapped (catalog with no sort or created filter) |
@@ -1120,7 +1120,7 @@ depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-p
 | apps/postgres | 1 | query | new-row | no | hand | shipped poll trigger(s) over list action query |
 | apps/postmark | 1 | list-outbound-messages | new-outbound-message | apps/postmark/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-outbound-messages |
 | apps/practicebetter | 9 | list-client-records | new-client-record, new-or-updated-client-record, new-invoice, new-session, new-tag, new-reminder, new-package-instance, new-service, new-package | apps/practicebetter/README.md Triggers section (verified 2026-11-10) | hand | every business list is behind a poll trigger (descending-by-created order documented in https://api-docs.practicebetter.io/swagger.json, or a rank-ordered catalogue snapshot); webhook subscriptions also exist |
-| apps/printavo | 1 | task-list | new-task | apps/printavo/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by CREATED_AT descending. |
+| apps/printavo | 2 | task-list | new-task, new-payment-request | apps/printavo/README.md Triggers section (verified 2026-11-10) | hand | Tasks by CREATED_AT desc; open payment requests as a snapshot. Quotes, invoices and orders have no created-at sort key. |
 | apps/printnode | 1 | printjob-list | new-printjob | apps/printnode/README.md Triggers section (verified 2026-11-09) | hand | GET /printjobs is documented newest first |
 | apps/processstreet | 1 | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
 | apps/productboard | 12 | note-list | new-entity, new-entity-relationship, new-jira-integration-connection, new-member, new-note, new-note-relationship, new-or-updated-entity, new-or-updated-note, new-or-updated-team, new-plugin-integration-connection, new-team, new-team-member | apps/productboard/README.md Triggers section (verified 2026-11-10) | hand | 12 poll triggers: since-filter notes (createdFrom/updatedFrom) and entities (entity-search filter.createdAt/updatedAt), plus bounded snapshots of teams, members, team members and entity/note relationships and Jira/plugin integration connections (https://developer.productboard.com/openapi/entities.yaml) |

@@ -6183,12 +6183,23 @@
     "path": "apps/meta/instagram-for-business",
     "mechanism": "poll",
     "candidates": [
-      "new-media"
+      "new-media",
+      "new-comment",
+      "new-story",
+      "new-instagram-account"
     ],
     "pollAction": "list-media",
-    "reason": "Media edge is documented as most recent first.",
-    "verified": "apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Media and comments edges are newest first; stories and managed Pages with a linked Instagram account are small bounded snapshots.",
+    "verified": "apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-comment-replies": "per-comment list: the parent is a single comment, not something a user picks; replies have no documented order (https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-comment/replies)",
+      "list-media-children": "per-parent list of the items inside one carousel post, not something a user picks; the post itself is delivered by new-media",
+      "list-hashtag-recent-media": "no documented order or time filter and unbounded: edge pages by after-cursor only, last 24 hours of all public posts for the hashtag",
+      "list-hashtag-top-media": "popularity ranking, not a chronological feed: membership and order change with engagement, no stable new-record signal",
+      "search-hashtag": "hashtag name-to-id lookup with a 30-unique-hashtags-per-7-days quota, not a record feed",
+      "list-tagged-media": "no sort argument; its posted_after/posted_before filters are applied after each page is cut, so a window cannot be read without walking the whole edge"
+    }
   },
   {
     "path": "apps/meta/whatsapp",
@@ -6263,11 +6274,20 @@
     "path": "apps/microsoft/microsoft-entra-id",
     "mechanism": "poll",
     "candidates": [
-      "new-deleted-item"
+      "new-deleted-item",
+      "new-user",
+      "new-group",
+      "new-application",
+      "new-service-principal",
+      "new-group-member",
+      "new-group-owner",
+      "new-user-membership",
+      "new-directory-role",
+      "new-directory-role-member"
     ],
     "pollAction": "list-deleted-items",
-    "reason": "Deleted items are requested by deletedDateTime descending.",
-    "verified": "apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Users, groups, applications and service principals sorted by createdDateTime desc; memberships, owners, roles as bounded snapshots.",
+    "verified": "apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -6483,12 +6503,23 @@
     "path": "apps/mixmax",
     "mechanism": "poll",
     "candidates": [
-      "new-unsubscribe"
+      "new-unsubscribe",
+      "new-message",
+      "new-sequence",
+      "new-sequence-folder",
+      "new-sequence-recipient",
+      "new-team",
+      "new-team-member",
+      "new-template"
     ],
     "pollAction": "unsubscribe-list",
-    "reason": "shipped poll trigger(s) over list action unsubscribe-list",
-    "verified": false,
-    "source": "hand"
+    "reason": "Unsubscribes, messages, teams, templates (sort=createdAt desc) and sequence recipients (sortBy=createdAt, sortDesc) newest first; sequences (cursor-followed, capped) folders and team members as snapshots.",
+    "verified": "apps/mixmax/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "sequence-recipient-list": "sortBy takes only email, lastStage, lastMessageCreated, nextStageScheduledAt, opens, clicks, downloads, replied, accepted, declined or tentative (no join-time key) and offset+limit stops at 25,000, so neither newest-first nor a snapshot that fits; new-sequence-recipient covers the same records across sequences via sequence-search (https://developer.mixmax.com/reference/sequencesidrecipients)",
+      "task-list": "the task query documents only a sortBy:due example, no creation sort or since filter, and the list is unbounded (https://developer.mixmax.com/reference/listtasks)"
+    }
   },
   {
     "path": "apps/mixpanel",
@@ -7307,12 +7338,28 @@
     "mechanism": "poll",
     "candidates": [
       "new-job",
-      "new-or-updated-job"
+      "new-or-updated-job",
+      "new-key",
+      "new-or-updated-key",
+      "new-translation",
+      "new-or-updated-translation",
+      "new-project",
+      "new-or-updated-project",
+      "new-account",
+      "new-locale",
+      "new-tag"
     ],
     "pollAction": "job-list",
-    "reason": "Since-filter poll with a declared projectId param: job-list updatedSince = cursor-10min, id dedupe (https://developers.phrase.com/en/api/strings/jobs/list-jobs)",
-    "verified": "apps/phrase/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Keys and translations sort by created_at/updated_at desc; projects by updated_at desc; accounts, locales, tags are bounded snapshots.",
+    "verified": "apps/phrase/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "key-search": "new-key"
+    },
+    "skipped": {
+      "format-list": "static reference data: the file formats Phrase supports",
+      "upload-list": "documents only branch, page and per_page: no sort and no since filter, and grows without bound (https://developers.phrase.com/en/api/strings/uploads/list-uploads)"
+    }
   },
   {
     "path": "apps/pinecone",
@@ -7605,12 +7652,23 @@
     "path": "apps/printavo",
     "mechanism": "poll",
     "candidates": [
-      "new-task"
+      "new-task",
+      "new-payment-request"
     ],
     "pollAction": "task-list",
-    "reason": "Polls tasks sorted by CREATED_AT descending.",
-    "verified": "apps/printavo/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Tasks by CREATED_AT desc; open payment requests as a snapshot. Quotes, invoices and orders have no created-at sort key.",
+    "verified": "apps/printavo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "customer-list": "connection documents no sort or filter arguments and is unbounded (https://www.printavo.com/docs/api/v2)",
+      "contact-list": "sorts only by email, name, customer name or order count (no recency key) and is unbounded",
+      "inquiry-list": "connection takes only first/after: no sort or filter, unbounded",
+      "status-list": "order statuses are account configuration (a reference list), not records users act on",
+      "product-search": "the API requires a caller-supplied search term; a catalog lookup, not a feed",
+      "quote-list": "no created-at sort key; VISUAL_ID is a string with undocumented ordering (https://www.printavo.com/docs/api/v2)",
+      "invoice-list": "no created-at sort key; VISUAL_ID is a string with undocumented ordering (https://www.printavo.com/docs/api/v2)",
+      "order-list": "no created-at sort key; VISUAL_ID is a string with undocumented ordering (https://www.printavo.com/docs/api/v2)"
+    }
   },
   {
     "path": "apps/printful",
