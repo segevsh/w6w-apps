@@ -92,6 +92,21 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newSale from "./triggers/new-sale.ts";
 import saleWebhook from "./triggers/sale-webhook.ts";
+import saleRefunded from "./triggers/sale-refunded.ts";
+import disputeRaised from "./triggers/dispute-raised.ts";
+import disputeWon from "./triggers/dispute-won.ts";
+import subscriptionCancelled from "./triggers/subscription-cancelled.ts";
+import subscriptionUpdated from "./triggers/subscription-updated.ts";
+import subscriptionEnded from "./triggers/subscription-ended.ts";
+import subscriptionRestarted from "./triggers/subscription-restarted.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newProduct from "./triggers/new-product.ts";
+import newOfferCode from "./triggers/new-offer-code.ts";
+import newVariantCategory from "./triggers/new-variant-category.ts";
+import newVariant from "./triggers/new-variant.ts";
+import newSubscriber from "./triggers/new-subscriber.ts";
+import newReview from "./triggers/new-review.ts";
+import newPayout from "./triggers/new-payout.ts";
 
 export default {
   actions: [
@@ -163,5 +178,23 @@ export default {
   // states the authorization/token URLs, so no oauth2 method is declared.
   auth: [accessToken],
   healthChecks: [service, quota],
-  triggers: [newSale, saleWebhook],
+  triggers: [
+    newSale,
+    saleWebhook,
+    saleRefunded,
+    disputeRaised,
+    disputeWon,
+    subscriptionCancelled,
+    subscriptionUpdated,
+    subscriptionEnded,
+    subscriptionRestarted,
+    anyEvent,
+    newProduct,
+    newOfferCode,
+    newVariantCategory,
+    newVariant,
+    newReview,
+    newSubscriber,
+    newPayout,
+  ],
 } satisfies AppDefinition;

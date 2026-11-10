@@ -30,8 +30,6 @@ test("new list entry webhook cleanup ignores an already-gone registration", asyn
   await newListEntry.onUnsubscribe!({ params: {}, state: { webhookId: "9" } }, ctx);
 });
 
-const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
-
 test("handleIngest yields the delivered body and refuses non-POST", async () => {
   const body = { type: "list_entry.created", body: { id: 3, list_id: 1 } };
   assert.deepEqual(await newListEntry.handleIngest!({ raw: { method: "POST", body } } as never), [
