@@ -142,6 +142,76 @@ test("onSubscribe (activity): a chosen file target and normalised trigger names;
   assert.equal(none.calls.length, 0);
 });
 
+// Literal copy of every Box event the rows file maps to the Any-event trigger (`activity`): 29.
+const ANY_EVENTS = [
+  "COLLABORATION.CREATED",
+  "COLLABORATION.ACCEPTED",
+  "COLLABORATION.REJECTED",
+  "COLLABORATION.REMOVED",
+  "COLLABORATION.UPDATED",
+  "COMMENT.CREATED",
+  "COMMENT.UPDATED",
+  "COMMENT.DELETED",
+  "DOCGEN_DOCUMENT_GENERATION_FAILED",
+  "DOCGEN_DOCUMENT_GENERATION_STARTED",
+  "DOCGEN_DOCUMENT_GENERATION_SUCCEEDED",
+  "FILE.PREVIEWED",
+  "FILE.DOWNLOADED",
+  "FILE.LOCKED",
+  "FILE.UNLOCKED",
+  "FOLDER.DOWNLOADED",
+  "METADATA_INSTANCE.CREATED",
+  "METADATA_INSTANCE.UPDATED",
+  "METADATA_INSTANCE.DELETED",
+  "TASK_ASSIGNMENT.CREATED",
+  "TASK_ASSIGNMENT.UPDATED",
+  "SIGN_REQUEST.COMPLETED",
+  "SIGN_REQUEST.DECLINED",
+  "SIGN_REQUEST.EXPIRED",
+  "SIGN_REQUEST.SIGNER_EMAIL_BOUNCED",
+  "SIGN_REQUEST.SIGNER_SIGNED",
+  "SIGN_REQUEST.SIGNATURE_REQUESTED",
+  "SIGN_REQUEST.ERROR_FINALIZING",
+  "WEBHOOK.DELETED",
+];
+
+test("onSubscribe (activity): every event the README and rows file send to `activity` is accepted and registered as written", async () => {
+  assert.equal(ANY_EVENTS.length, 29);
+  for (const name of ANY_EVENTS) {
+    const m = mockCtx([{ body: { entries: [] } }, { body: { id: "WH3" } }]);
+    await activity.onSubscribe!(
+      {
+        params: { targetType: "folder", targetId: "7", triggers: name },
+        subscriptionId: "s",
+        callbackUrl: CALLBACK,
+        hostUrl: "h",
+      },
+      m.ctx,
+    );
+    assert.deepEqual(JSON.parse(m.calls[1].body!).triggers, [name], name);
+  }
+});
+
+test("onSubscribe (activity): the dot-less pattern is only for DOCGEN_ names", async () => {
+  const none = mockCtx();
+  for (const bad of ["UPLOADED", "DOCGEN", "DOCGEN_", "DOCGEN_x y", "FILE_UPLOADED"]) {
+    await assert.rejects(
+      activity.onSubscribe!(
+        {
+          params: { targetId: "7", triggers: bad },
+          subscriptionId: "s",
+          callbackUrl: CALLBACK,
+          hostUrl: "h",
+        },
+        none.ctx,
+      ),
+      /Not a Box trigger name/,
+      bad,
+    );
+  }
+  assert.equal(none.calls.length, 0);
+});
+
 test("onUnsubscribe: DELETE the webhook; 404 and 410 are already gone; other errors propagate", async () => {
   const ok = mockCtx([{ status: 204 }]);
   await fileUploaded.onUnsubscribe!({ params: {}, state: STATE, subscriptionId: "s" }, ok.ctx);
