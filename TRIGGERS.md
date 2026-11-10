@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -47,14 +47,7 @@ depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-p
 | apps/workos | 1 | 8 | 7 |
 | apps/zoho/zoho-people | 1 | 8 | 7 |
 | apps/zoho/zoho-workdrive | 1 | 8 | 7 |
-| apps/alegra | 1 | 7 | 6 |
 | apps/atlassian/jira-service-management | 2 | 8 | 6 |
-| apps/callrail | 1 | 8 | 6 |
-| apps/capsulecrm | 2 | 7 | 6 |
-| apps/chargebee | 1 | 7 | 6 |
-| apps/clerk | 2 | 7 | 6 |
-| apps/cleverreach | 1 | 7 | 6 |
-| apps/clio | 2 | 7 | 6 |
 | apps/clockodo | 0 | 6 | 6 |
 | apps/cloudinary | 1 | 7 | 6 |
 | apps/cursor | 1 | 7 | 6 |
@@ -438,6 +431,7 @@ depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-p
 | apps/aidbase | 12 | 12 | 0 |
 | apps/aircall | 7 | 11 | 0 |
 | apps/airtable | 3 | 2 | 0 |
+| apps/alegra | 6 | 7 | 0 |
 | apps/anchor | 8 | 11 | 0 |
 | apps/apify | 8 | 8 | 0 |
 | apps/apollo | 6 | 13 | 0 |
@@ -467,12 +461,18 @@ depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-p
 | apps/brex | 8 | 6 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
+| apps/callrail | 8 | 8 | 0 |
 | apps/campaignmonitor | 3 | 2 | 0 |
 | apps/canny | 9 | 10 | 0 |
+| apps/capsulecrm | 7 | 7 | 0 |
+| apps/chargebee | 11 | 7 | 0 |
 | apps/chatwork | 8 | 8 | 0 |
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
+| apps/clerk | 8 | 7 | 0 |
+| apps/cleverreach | 2 | 7 | 0 |
 | apps/clickup | 20 | 5 | 0 |
+| apps/clio | 14 | 7 | 0 |
 | apps/clockify | 16 | 3 | 0 |
 | apps/close | 7 | 9 | 0 |
 | apps/cloze | 4 | 12 | 0 |
@@ -811,7 +811,7 @@ depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-p
 | apps/aidbase | 12 | ticket-list | new-chat, new-chatbot, new-chatbot-knowledge, new-email, new-email-inbox, new-email-inbox-knowledge, new-faq-item, new-knowledge-item, new-knowledge-sub-page, new-ticket, new-ticket-form, new-ticket-form-knowledge | apps/aidbase/README.md Triggers section (verified 2026-11-10) | hand | created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference) |
 | apps/aircall | 7 | call-list | new-call, new-contact, new-or-updated-contact, new-user, new-number, new-team, new-user-number | apps/aircall/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (order=desc, documented) on calls, contacts, users, numbers and teams; contacts also by updated_at; a user's numbers as a bounded snapshot (https://developer.aircall.io/api-references/). |
 | apps/airtable | 3 | search-records | new-record, new-or-updated-record, new-base | apps/airtable/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over search-records and list-bases; Airtable webhooks are ping-only and need a saved payload cursor (https://airtable.com/developers/web/api/webhooks-overview) |
-| apps/alegra | 1 | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
+| apps/alegra | 6 | contact-list | new-contact, new-bill, new-estimate, new-invoice, new-item, new-payment | apps/alegra/README.md Triggers section (verified 2026-11-10) | hand | 6 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/algolia | 1 | index-list | new-index | apps/algolia/README.md Triggers section (verified 2026-11-09) | hand | Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices). |
 | apps/amplitude | 1 | cohort-list | new-cohort | apps/amplitude/README.md Triggers section (verified 2026-11-10) | hand | GET /api/3/cohorts returns the project's whole set of cohort definitions (https://amplitude.com/docs/apis/analytics/behavioral-cohorts); snapshot diff, added only. annotation-list not polled: project-wide list with no documented bound |
 | apps/anchor | 8 | invoice-list | new-invoice, new-payout, new-contact, new-proposal, new-proposal-draft, new-agreement, new-proposal-template, new-service-template | apps/anchor/README.md Triggers section (verified 2026-11-10) | hand | Invoices and payouts newest-first (sortField/sortDirection=desc); contacts, proposals, drafts, agreements and templates have no sort or created-since filter, so they are bounded snapshots (https://docs.sayanchor.com/reference/pagination-filtering). |
@@ -860,23 +860,23 @@ depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-p
 | apps/browserless | 1 | crawl-list | new-crawl | apps/browserless/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls |
 | apps/bubble | 2 | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
 | apps/buffer | 1 | post-list | new-post | apps/buffer/README.md Triggers section (verified 2026-11-09) | hand | post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed |
-| apps/callrail | 1 | call-list | new-call | apps/callrail/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
+| apps/callrail | 8 | call-list | new-call, new-company, new-form-submission, new-or-updated-text-conversation, new-tag, new-text-conversation, new-tracker, new-user | apps/callrail/README.md Triggers section (verified 2026-11-10) | hand | 8 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/campaignmonitor | 3 | list-subscribers-get | new-client, new-smart-email, new-subscriber | apps/campaignmonitor/README.md Triggers section (verified 2026-11-10) | hand | subscribers sort by date desc; clients and smart emails return the whole collection in one response so they are snapshot-diffed (https://www.campaignmonitor.com/api/v3-3/) |
 | apps/canny | 9 | post-list | new-post, new-comment, new-vote, new-status-change, new-tag, new-category, new-board, new-changelog-entry, new-or-updated-changelog-entry | apps/canny/README.md Triggers section (verified 2026-11-10) | hand | posts via sort=newest; comments, votes, status changes, tags and categories are documented 'Sorted by newest'; entries have created/lastSaved sorts; boards are a bounded snapshot (https://developers.canny.io/api-reference) |
 | apps/canva | 1 | list-designs | new-design | apps/canva/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-designs |
-| apps/capsulecrm | 2 | opportunity-list | new-opportunity, new-or-updated-opportunity | apps/capsulecrm/README.md Triggers section (verified 2026-11-09) | hand | since (changed-since) filter, no documented order: cursor window + id dedupe |
+| apps/capsulecrm | 7 | opportunity-list | new-opportunity, new-or-updated-opportunity, new-milestone, new-or-updated-party, new-party, new-pipeline, new-user | apps/capsulecrm/README.md Triggers section (verified 2026-11-10) | hand | 7 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/certifier | 2 | credential-search | new-credential, new-or-updated-credential | apps/certifier/README.md Triggers section (verified 2026-11-09) | hand | credential-search sorted createdAt/updatedAt desc |
-| apps/chargebee | 1 | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
+| apps/chargebee | 11 | list-events | new-event, new-customer, new-invoice, new-or-updated-customer, new-or-updated-invoice, new-or-updated-item, new-or-updated-item-price, new-or-updated-payment-source, new-or-updated-subscription, new-payment-source, new-subscription | apps/chargebee/README.md Triggers section (verified 2026-11-10) | hand | 11 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/chatwork | 8 | room-message-list | new-contact, new-contact-request, new-message, new-my-task, new-room, new-room-file, new-room-member, new-room-task | apps/chatwork/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over every list action: messages, chats, contacts, contact requests, members, tasks, files |
 | apps/checkly | 7 | check-result-list | new-check-result, new-check-alert, new-check, new-or-updated-check, new-check-group, new-alert-channel, new-maintenance-window | apps/checkly/README.md Triggers section (verified 2026-11-10) | hand | Check results and alerts by documented from= since filter (alerts floor-guarded); checks, groups, alert channels and maintenance windows are bounded snapshots, no sort or created-since filter (https://api.checklyhq.com/openapi.json). |
 | apps/circle | 9 | event-list | new-event, new-post, new-or-updated-post, new-comment, new-member-tag, new-space, new-space-group, new-event-attendee, new-space-member | apps/circle/README.md Triggers section (verified 2026-11-10) | hand | newest-first via documented sort/default order (events, posts sort=latest/latest_updated, comments, member tags sort=newest); bounded snapshots for spaces, space groups, one event's RSVPs, one space's members |
 | apps/circleci | 1 | pipeline-list | new-pipeline | apps/circleci/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id |
-| apps/clerk | 2 | user-list | new-user, new-or-updated-user | apps/clerk/README.md Triggers section (verified 2026-11-09) | hand | order_by=-created_at / -updated_at via new optional orderBy input |
-| apps/cleverreach | 1 | group-list | new-group | apps/cleverreach/README.md Triggers section (verified 2026-11-09) | hand | order=created DESC; changed-field name not verified so no updated trigger |
+| apps/clerk | 8 | user-list | new-user, new-or-updated-user, new-invitation, new-organization, new-organization-invitation, new-organization-membership, new-organization-role, new-session | apps/clerk/README.md Triggers section (verified 2026-11-10) | hand | 8 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
+| apps/cleverreach | 2 | group-list | new-group, new-receiver | apps/cleverreach/README.md Triggers section (verified 2026-11-10) | hand | 2 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/clickhouse | 1 | activity-list | new-activity | apps/clickhouse/README.md Triggers section (verified 2026-11-09) | hand | from_date filter, unpaged, id dedupe with cursor window |
 | apps/clicksend | 1 | sms-history-list | new-sms | apps/clicksend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action sms-history-list |
 | apps/clientify | 4 | contact-list | new-contact, new-or-updated-contact, new-deal, new-or-updated-deal | apps/clientify/README.md Triggers section (verified 2026-11-09) | hand | Since-filter polls on the documented created[gte]/modified[gte] date filters of the contact and deal lists (https://developer.clientify.com) |
-| apps/clio | 2 | contact-list | new-contact, new-or-updated-contact | apps/clio/README.md Triggers section (verified 2026-11-09) | hand | created_since / updated_since filters, id(asc) order: cursor window + id dedupe |
+| apps/clio | 14 | contact-list | new-contact, new-or-updated-contact, new-activity, new-calendar-entry, new-document, new-matter, new-note, new-or-updated-activity, new-or-updated-calendar-entry, new-or-updated-document, new-or-updated-matter, new-or-updated-note, new-or-updated-task, new-task | apps/clio/README.md Triggers section (verified 2026-11-10) | hand | 14 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot) |
 | apps/close | 7 | list-opportunities | new-opportunity, new-lead, new-or-updated-lead, new-contact, new-task, new-activity, new-user | apps/close/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over list-opportunities, search (leads, date_created desc), list-leads (updated-first), list-contacts (newest-first), list-tasks, list-activities, list-users |
 | apps/cloudbeds | 2 | reservation-list | new-reservation, new-or-updated-reservation | apps/cloudbeds/README.md Triggers section (verified 2026-11-09) | hand | since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated) |
 | apps/cloudflare | 1 | dns-record-list | new-dns-record | apps/cloudflare/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000) |

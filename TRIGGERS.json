@@ -413,12 +413,20 @@
     "path": "apps/alegra",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-bill",
+      "new-estimate",
+      "new-invoice",
+      "new-item",
+      "new-payment"
     ],
     "pollAction": "contact-list",
-    "reason": "Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1).",
-    "verified": "apps/alegra/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "6 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/alegra/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "tax-list": "reference data: the account's tax definitions (a handful of rows that change only when the accountant edits them)"
+    }
   },
   {
     "path": "apps/algolia",
@@ -1873,11 +1881,18 @@
     "path": "apps/callrail",
     "mechanism": "poll",
     "candidates": [
-      "new-call"
+      "new-call",
+      "new-company",
+      "new-form-submission",
+      "new-or-updated-text-conversation",
+      "new-tag",
+      "new-text-conversation",
+      "new-tracker",
+      "new-user"
     ],
     "pollAction": "call-list",
-    "reason": "shipped poll trigger(s) over list action call-list",
-    "verified": "apps/callrail/README.md Triggers section (verified 2026-11-09)",
+    "reason": "8 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/callrail/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1932,12 +1947,23 @@
     "mechanism": "poll",
     "candidates": [
       "new-opportunity",
-      "new-or-updated-opportunity"
+      "new-or-updated-opportunity",
+      "new-milestone",
+      "new-or-updated-party",
+      "new-party",
+      "new-pipeline",
+      "new-user"
     ],
     "pollAction": "opportunity-list",
-    "reason": "since (changed-since) filter, no documented order: cursor window + id dedupe",
-    "verified": "apps/capsulecrm/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "7 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/capsulecrm/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "party-search": "new-party"
+    },
+    "skipped": {
+      "task-list": "no order or since filter and unbounded: the list takes only status, page, perPage, embed (https://developer.capsulecrm.com/v2/operations/Task)"
+    }
   },
   {
     "path": "apps/certifier",
@@ -1955,12 +1981,59 @@
     "path": "apps/chargebee",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-event",
+      "new-customer",
+      "new-invoice",
+      "new-or-updated-customer",
+      "new-or-updated-invoice",
+      "new-or-updated-item",
+      "new-or-updated-item-price",
+      "new-or-updated-payment-source",
+      "new-or-updated-subscription",
+      "new-payment-source",
+      "new-subscription"
     ],
     "pollAction": "list-events",
-    "reason": "shipped poll trigger(s) over list action list-events",
-    "verified": "apps/chargebee/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "11 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/chargebee/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "n8n": {
+      "*": "skip: webhook — queued",
+      "card_added": "skip: webhook — queued",
+      "card_deleted": "skip: webhook — queued",
+      "card_expired": "skip: webhook — queued",
+      "card_expiring": "skip: webhook — queued",
+      "card_updated": "skip: webhook — queued",
+      "customer_changed": "skip: webhook — queued",
+      "customer_created": "skip: webhook — queued",
+      "customer_deleted": "skip: webhook — queued",
+      "invoice_created": "skip: webhook — queued",
+      "invoice_deleted": "skip: webhook — queued",
+      "invoice_generated": "skip: webhook — queued",
+      "invoice_updated": "skip: webhook — queued",
+      "payment_failed": "skip: webhook — queued",
+      "payment_initiated": "skip: webhook — queued",
+      "payment_refunded": "skip: webhook — queued",
+      "payment_succeeded": "skip: webhook — queued",
+      "refund_initiated": "skip: webhook — queued",
+      "subscription_activated": "skip: webhook — queued",
+      "subscription_cancellation_scheduled": "skip: webhook — queued",
+      "subscription_cancelled": "skip: webhook — queued",
+      "subscription_cancelling": "skip: webhook — queued",
+      "subscription_changed": "skip: webhook — queued",
+      "subscription_created": "skip: webhook — queued",
+      "subscription_deleted": "skip: webhook — queued",
+      "subscription_reactivated": "skip: webhook — queued",
+      "subscription_renewal_reminder": "skip: webhook — queued",
+      "subscription_renewed": "skip: webhook — queued",
+      "subscription_scheduled_cancellation_removed": "skip: webhook — queued",
+      "subscription_shipping_address_updated": "skip: webhook — queued",
+      "subscription_started": "skip: webhook — queued",
+      "subscription_trial_ending": "skip: webhook — queued",
+      "transaction_created": "skip: webhook — queued",
+      "transaction_deleted": "skip: webhook — queued",
+      "transaction_updated": "skip: webhook — queued"
+    }
   },
   {
     "path": "apps/chatbase",
@@ -2077,23 +2150,37 @@
     "mechanism": "poll",
     "candidates": [
       "new-user",
-      "new-or-updated-user"
+      "new-or-updated-user",
+      "new-invitation",
+      "new-organization",
+      "new-organization-invitation",
+      "new-organization-membership",
+      "new-organization-role",
+      "new-session"
     ],
     "pollAction": "user-list",
-    "reason": "order_by=-created_at / -updated_at via new optional orderBy input",
-    "verified": "apps/clerk/README.md Triggers section (verified 2026-11-09)",
+    "reason": "8 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/clerk/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
     "path": "apps/cleverreach",
     "mechanism": "poll",
     "candidates": [
-      "new-group"
+      "new-group",
+      "new-receiver"
     ],
     "pollAction": "group-list",
-    "reason": "order=created DESC; changed-field name not verified so no updated trigger",
-    "verified": "apps/cleverreach/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "2 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/cleverreach/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "attribute-list": "reference data: attribute (field) definitions of the account or a group",
+      "report-list": "admin/analytics output: mailing reports and statistics",
+      "blacklist-list": "no order or time filter and unbounded: GET /v3/blacklist takes only pagesize, page, search (https://rest.cleverreach.com/explorer/v3/)",
+      "mailing-list": "no single creation order or filter: start/end mean finished, creation or send time depending on state, and the response is an untyped array in the vendor spec (https://rest.cleverreach.com/explorer/v3/)",
+      "tag-list": "no created order (order_by tag/origin/count only) and page/limit semantics undocumented, so the whole set cannot be read reliably (https://rest.cleverreach.com/explorer/v3/)"
+    }
   },
   {
     "path": "apps/clickhouse",
@@ -2233,11 +2320,23 @@
     "mechanism": "poll",
     "candidates": [
       "new-contact",
-      "new-or-updated-contact"
+      "new-or-updated-contact",
+      "new-activity",
+      "new-calendar-entry",
+      "new-document",
+      "new-matter",
+      "new-note",
+      "new-or-updated-activity",
+      "new-or-updated-calendar-entry",
+      "new-or-updated-document",
+      "new-or-updated-matter",
+      "new-or-updated-note",
+      "new-or-updated-task",
+      "new-task"
     ],
     "pollAction": "contact-list",
-    "reason": "created_since / updated_since filters, id(asc) order: cursor window + id dedupe",
-    "verified": "apps/clio/README.md Triggers section (verified 2026-11-09)",
+    "reason": "14 poll triggers: one per listable record type (newest-first, since-filter window or bounded snapshot)",
+    "verified": "apps/clio/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
