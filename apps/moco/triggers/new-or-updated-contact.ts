@@ -57,6 +57,8 @@ const trigger: TriggerDefinition = {
           items.push(...got);
           if (got.length < PER_PAGE) break;
         }
+        // The vendor documents no order; hand the kit newest-updated-first.
+        items.sort((a, b) => String(b.updated_at ?? "").localeCompare(String(a.updated_at ?? "")));
         return { items };
       },
     });
