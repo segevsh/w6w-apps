@@ -16,6 +16,12 @@ import listOpportunities from "./actions/list-opportunities.ts";
 import createOpportunity from "./actions/create-opportunity.ts";
 import updateOpportunity from "./actions/update-opportunity.ts";
 import newOpportunity from "./triggers/new-opportunity.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newContact from "./triggers/new-contact.ts";
+import newLead from "./triggers/new-lead.ts";
+import newOrUpdatedLead from "./triggers/new-or-updated-lead.ts";
+import newTask from "./triggers/new-task.ts";
+import newUser from "./triggers/new-user.ts";
 
 import listActivities from "./actions/list-activities.ts";
 import createNote from "./actions/create-note.ts";
@@ -64,5 +70,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newOpportunity],
+  triggers: [newOpportunity, newLead, newOrUpdatedLead, newContact, newTask, newActivity, newUser],
 } satisfies AppDefinition;
