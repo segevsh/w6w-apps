@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1991 triggers, 2275 unaccounted list actions in 507 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -40,13 +40,8 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/printavo | 1 | 10 | 9 |
 | apps/procore | 0 | 9 | 9 |
 | apps/qualtrics | 0 | 9 | 9 |
-| apps/recharge | 2 | 10 | 9 |
 | apps/recruiterflow | 0 | 9 | 9 |
-| apps/signrequest | 1 | 10 | 9 |
-| apps/snyk | 2 | 10 | 9 |
 | apps/tally | 1 | 10 | 9 |
-| apps/tumblr | 1 | 10 | 9 |
-| apps/uscreen | 3 | 11 | 9 |
 | apps/vercel | 1 | 10 | 9 |
 | apps/vimeo | 1 | 10 | 9 |
 | apps/zoho/zoho-projects | 0 | 9 | 9 |
@@ -648,6 +643,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/productive | 2 | 17 | 0 |
 | apps/pylon | 8 | 13 | 0 |
 | apps/razorpay | 12 | 12 | 0 |
+| apps/recharge | 12 | 10 | 0 |
 | apps/ringover | 6 | 11 | 0 |
 | apps/rootly | 13 | 13 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
@@ -655,8 +651,10 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/seamlessai | 11 | 16 | 0 |
 | apps/shopify | 18 | 4 | 0 |
 | apps/shortcut | 12 | 13 | 0 |
+| apps/signrequest | 4 | 10 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
+| apps/snyk | 9 | 10 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
@@ -667,6 +665,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
+| apps/tumblr | 6 | 10 | 0 |
 | apps/twilio/sendgrid | 1 | 0 | 0 |
 | apps/twilio/twilio | 5 | 0 | 0 |
 | apps/twist | 11 | 16 | 0 |
@@ -675,6 +674,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/unbounce | 6 | 11 | 0 |
 | apps/upsales | 17 | 18 | 0 |
 | apps/uptimerobot | 2 | 2 | 0 |
+| apps/uscreen | 10 | 11 | 0 |
 | apps/vanta | 15 | 17 | 0 |
 | apps/vero | 1 | 0 | 0 |
 | apps/woocommerce | 10 | 3 | 0 |
@@ -1139,7 +1139,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/read-ai | 1 | list-meetings | new-meeting | apps/read-ai/README.md Triggers section (verified 2026-11-09) | hand | GET /v1/meetings is newest first and bounded to ten records |
 | apps/readwise | 1 | book-list | new-or-updated-book | apps/readwise/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: book-list updated__gt; no creation filter so no pure new-book |
 | apps/recallai | 1 | calendar-list | new-calendar | apps/recallai/README.md Triggers section (verified 2026-11-09) | hand | GET /api/v2/calendars/ takes created_at__gte; bot status webhooks also exist (see webhooks file) |
-| apps/recharge | 2 | order-list | new-order, new-or-updated-order | apps/recharge/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: order-list created_at_min / updated_at_min with cursor paging |
+| apps/recharge | 12 | order-list | new-address, new-charge, new-customer, new-discount, new-onetime, new-or-updated-address, new-or-updated-charge, new-or-updated-customer, new-or-updated-order, new-or-updated-subscription, new-order, new-subscription | apps/recharge/README.md Triggers section (verified 2026-11-10) | hand | poll since-filter: created_at_min / updated_at_min on orders, customers, addresses, subscriptions, onetimes, discounts and charges with cursor paging |
 | apps/recruitee | 1 | candidate-list | new-candidate | apps/recruitee/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: candidate-list created_after (documented); no updated filter |
 | apps/recurly | 2 | list-invoices | new-invoice, new-or-updated-invoice | apps/recurly/README.md Triggers section (verified 2026-11-09) | hand | poll: list-invoices sort=created_at\|updated_at order=desc page 1 (OpenAPI list_invoices) |
 | apps/reddit | 1 | post-list | new-post | apps/reddit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-list |
@@ -1180,7 +1180,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/shipstation | 2 | shipment-list | new-shipment, new-or-updated-shipment | apps/shipstation/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/shipments with documented sort_by=created_at\|modified_at&sort_dir=desc (additive sortBy/sortDir action params) |
 | apps/short-io | 1 | link-list | new-link | apps/short-io/README.md Triggers section (verified 2026-11-09) | hand | GET /api/links with documented dateSortOrder=desc; links carry no update stamp |
 | apps/shortcut | 12 | story-search | new-epic, new-epic-comment, new-epic-story, new-iteration, new-iteration-story, new-label, new-label-story, new-member, new-or-updated-story, new-project, new-story, new-story-comment | apps/shortcut/README.md Triggers section (verified 2026-11-10) | hand | story-search since-filter (created_at_start/updated_at_start) plus id-diff snapshots of epics, iterations, labels, members, projects, comments and the stories of an epic, iteration or label |
-| apps/signrequest | 1 | document-search | new-document | apps/signrequest/README.md Triggers section (verified 2026-11-09) | hand | documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used |
+| apps/signrequest | 4 | document-search | new-document, new-team, new-team-member, new-template | apps/signrequest/README.md Triggers section (verified 2026-11-10) | hand | documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used; templates, team members and teams are bounded snapshots |
 | apps/simplero | 2 | contact-list | new-contact, new-or-updated-contact | apps/simplero/README.md Triggers section (verified 2026-11-09) | hand | GET /api/v2/customers documents created_at/updated_at DateFilter (custom from/to dates); date-window poll with after-cursor resume (https://simplero.com/api/v2/docs/openapi.json) |
 | apps/simpletexting | 2 | contact-list | new-contact, new-or-updated-contact | apps/simpletexting/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /api/contacts (vendor sorts/filters by updated, no created filter): new-contact keeps created in window; resumes by page |
 | apps/simplybook | 1 | booking-get-many | new-booking | apps/simplybook/README.md Triggers section (verified 2026-11-10) | hand | GET /admin/bookings documents filter[record_date_from\|to] (YYYY-MM-DD, company time zone, read from GET /admin/company/info) and every booking carries record_date; the booking has no edit stamp, so filter[edited_date_from] cannot back a new-or-updated trigger: since-filter poll widened one day and filtered by record_date (https://simplybook.me/api/swagger-admin) |
@@ -1188,7 +1188,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/slite | 1 | note-list | new-or-updated-note | apps/slite/README.md Triggers section (verified 2026-11-09) | hand | GET /v1/notes?orderBy=lastEditedAt_DESC (documented enum); no created-time order is documented so no new-note |
 | apps/smartsheet | 2 | list-sheets | new-sheet, new-or-updated-sheet | apps/smartsheet/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /sheets (documented modifiedSince, no sort): new-sheet keeps createdAt in window; resumes by page; list-container-children/reports/workspaces/users considered and not shipped |
 | apps/smartsuite | 2 | list-records | new-record, new-or-updated-record | apps/smartsuite/README.md Triggers section (verified 2026-11-09) | hand | POST records/list sorted by system field first_created / last_updated desc (documented sort syntax and sortable First Created / Last Updated fields) |
-| apps/snyk | 2 | issue-list | new-issue, new-or-updated-issue | apps/snyk/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /rest/orgs/{org_id}/issues (documented created_after / updated_after, no sort); action returnAll drains the window |
+| apps/snyk | 9 | issue-list | new-collection, new-collection-project, new-group, new-group-issue, new-issue, new-or-updated-group-issue, new-or-updated-issue, new-organization, new-target | apps/snyk/README.md Triggers section (verified 2026-11-10) | hand | since-filter on issues (org and group: created_after / updated_after) and targets (created_gte); bounded snapshots for organizations, groups, collections and one collection's projects |
 | apps/softr | 1 | database-list | new-database | apps/softr/README.md Triggers section (verified 2026-11-09) | hand | GET /databases takes no parameters and returns every database in one request: snapshot poll for new databases; record-list has no sort/filter and record-search sorts only by a table-specific field id (https://docs.softr.io/softr-api/softr-database-api/databases/get-databases) |
 | apps/solapi | 2 | list-messages | new-message, new-or-updated-message | apps/solapi/README.md Triggers section (verified 2026-11-09) | hand | list-messages takes startDate/endDate with dateType CREATED\|UPDATED and a startKey/nextKey cursor (limit up to 500, ours 100): since-filter poll with resume and seed floor (https://developers.solapi.com/references/messages/list-messages) |
 | apps/splitwise | 2 | list-expenses | new-expense, new-or-updated-expense | apps/splitwise/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /get_expenses (documented updated_after, no sort or created filter): new-expense keeps created_at in window; resumes by offset |
@@ -1219,7 +1219,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/timelinesai | 1 | messages-list | new-message | apps/timelinesai/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): messages-list sorting_order=desc, per chat |
 | apps/tremendous | 1 | order-list | new-order | apps/tremendous/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): order-list createdAtGte (created_at[gte]); floor/resume per brief 9.8/9.9 |
 | apps/trustpilot | 1 | business-unit-reviews-list | new-review | apps/trustpilot/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): orderBy=createdat.desc, per business unit |
-| apps/tumblr | 1 | blog-posts-list | new-post | apps/tumblr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action blog-posts-list |
+| apps/tumblr | 6 | blog-posts-list | new-blog-following, new-draft-post, new-post, new-post-note, new-queued-post, new-submission | apps/tumblr/README.md Triggers section (verified 2026-11-10) | hand | newest-first lists (posts, drafts, followed blogs, post notes) and bounded offset snapshots (queue, submissions) |
 | apps/twilio/sendgrid | 1 | list-get-all | new-list | apps/twilio/sendgrid/README.md Triggers section (verified 2026-11-09) | hand | list-get-all snapshot-diffed (page_size max 1000); contact triggers dropped: contacts/search returns at most 50 rows, no page token or sort (https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts); Event Webhook upgrade queued |
 | apps/twist | 11 | message-list | new-message, new-comment, new-thread, new-or-updated-thread, new-conversation, new-or-updated-conversation, new-or-updated-inbox-thread, new-channel, new-group, new-workspace, new-workspace-user | apps/twist/README.md Triggers section (verified 2026-11-10) | hand | poll triggers cover Twist's record feeds: id-ordered new thread/conversation, activity-ordered new-or-updated siblings, and snapshots of the unordered whole collections |
 | apps/twitch | 1 | get-channel-followers | new-follower | apps/twitch/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): get-channel-followers lists most recent follower first (https://dev.twitch.tv/docs/api/reference/#get-channel-followers); needs moderator:read:followers |
@@ -1229,7 +1229,7 @@ depth: 682 apps, 1959 triggers, 2320 unaccounted list actions in 512 apps, n8n-p
 | apps/unbounce | 6 | page-lead-list | new-lead, new-page, new-domain, new-sub-account, new-page-group, new-account | apps/unbounce/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over every sortable list action (sort_order=desc, newest first; https://developer.unbounce.com/api_reference/) |
 | apps/upsales | 17 | contact-list | new-contact, new-activity, new-appointment, new-campaign, new-comment, new-company, new-order, new-product, new-subscription, new-ticket, new-user, new-or-updated-activity, new-or-updated-appointment, new-or-updated-company, new-or-updated-contact, new-or-updated-order, new-or-updated-subscription | apps/upsales/README.md Triggers section (verified 2026-11-10) | hand | Id-crawl poll triggers use sort=id with id=gt:<last id>, a seed floor plus the newest id at seed, overlap state, and resume position; new-or-updated-* use modDate=gte:<window> with id paging (https://api.upsales.com). |
 | apps/uptimerobot | 2 | monitor-list | new-monitor, new-alert-contact | apps/uptimerobot/README.md Triggers section (verified 2026-11-09) | hand | getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/) |
-| apps/uscreen | 3 | customer-list | new-customer, new-invoice, new-or-updated-invoice | apps/uscreen/README.md Triggers section (verified 2026-11-09) | hand | /customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml) |
+| apps/uscreen | 10 | customer-list | new-content, new-customer, new-customer-access, new-group, new-group-member, new-invoice, new-offer, new-or-updated-group, new-or-updated-invoice, new-playlist-item | apps/uscreen/README.md Triggers section (verified 2026-11-10) | hand | /customers, /invoices and /groups document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; /contents and /accesses send from only; offers and playlist items are bounded snapshots (https://uscreen.io/api/publisher.yml) |
 | apps/vanta | 15 | issue-list | new-issue, new-control, new-document, new-framework, new-integration, new-monitored-computer, new-person, new-policy, new-risk-scenario, new-test, new-test-entity, new-user, new-vendor, new-vulnerability, new-vulnerability-remediation | apps/vanta/README.md Triggers section (verified 2026-11-10) | hand | 15 poll triggers: issue-list newest-first; vulnerability-list and vulnerability-remediation-list via their since-filters (slaDeadlineAfterDate, remediatedAfterDate); every other list has no sort order or created-since filter in the vendor spec and is snapshot-diffed; Vanta webhooks (questionnaire, vendor decision, trust-center events; dashboard-registered, Svix-signed) are queued for a webhook node and cover none of these record feeds |
 | apps/vapi | 1 | phone-number-list | new-phone-number | apps/vapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action phone-number-list |
 | apps/vbout | 1 | list-list | new-list | apps/vbout/README.md Triggers section (verified 2026-11-09) | hand | getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json) |

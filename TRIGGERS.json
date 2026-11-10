@@ -7955,13 +7955,28 @@
     "path": "apps/recharge",
     "mechanism": "poll",
     "candidates": [
+      "new-address",
+      "new-charge",
+      "new-customer",
+      "new-discount",
+      "new-onetime",
+      "new-or-updated-address",
+      "new-or-updated-charge",
+      "new-or-updated-customer",
+      "new-or-updated-order",
+      "new-or-updated-subscription",
       "new-order",
-      "new-or-updated-order"
+      "new-subscription"
     ],
     "pollAction": "order-list",
-    "reason": "poll since-filter: order-list created_at_min / updated_at_min with cursor paging",
-    "verified": "apps/recharge/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll since-filter: created_at_min / updated_at_min on orders, customers, addresses, subscriptions, onetimes, discounts and charges with cursor paging",
+    "verified": "apps/recharge/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "product-list": "GET /products is the store's mirrored product catalogue: documents only external_product_ids, no created/updated filter or sort, unbounded (https://developer.rechargepayments.com/2021-11)",
+      "payment-method-list": "GET /payment_methods documents only customer_id, no created/updated filter or sort, and is an unbounded vault of per-customer payment records (https://developer.rechargepayments.com/2021-11)",
+      "webhook-list": "the merchant's own webhook subscription configuration, not business records"
+    }
   },
   {
     "path": "apps/recruit-crm",
@@ -8947,12 +8962,25 @@
     "path": "apps/signrequest",
     "mechanism": "poll",
     "candidates": [
-      "new-document"
+      "new-document",
+      "new-team",
+      "new-team-member",
+      "new-template"
     ],
     "pollAction": "document-search",
-    "reason": "documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used",
-    "verified": "apps/signrequest/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used; templates, team members and teams are bounded snapshots",
+    "verified": "apps/signrequest/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "document-list": "new-document"
+    },
+    "skipped": {
+      "audit-event-list": "login/security audit log (admin/audit output)",
+      "webhook-list": "the team's own webhook subscription configuration, not business records",
+      "event-list": "swagger.json documents no ordering on /events/ and timestamp/delivered_on are exact-match filters only; history is unbounded (https://signrequest.com/api/v1/schema/swagger.json); webhook candidate queued",
+      "signrequest-list": "swagger.json documents only who/from_email filters and no order or since-filter on /signrequests/, unbounded (https://signrequest.com/api/v1/schema/swagger.json)",
+      "document-attachment-list": "swagger.json documents only an exact-match created filter and no order on /document-attachments/, unbounded (https://signrequest.com/api/v1/schema/swagger.json)"
+    }
   },
   {
     "path": "apps/signwell",
@@ -9240,13 +9268,25 @@
     "path": "apps/snyk",
     "mechanism": "poll",
     "candidates": [
+      "new-collection",
+      "new-collection-project",
+      "new-group",
+      "new-group-issue",
       "new-issue",
-      "new-or-updated-issue"
+      "new-or-updated-group-issue",
+      "new-or-updated-issue",
+      "new-organization",
+      "new-target"
     ],
     "pollAction": "issue-list",
-    "reason": "since-filter window on GET /rest/orgs/{org_id}/issues (documented created_after / updated_after, no sort); action returnAll drains the window",
-    "verified": "apps/snyk/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter on issues (org and group: created_after / updated_after) and targets (created_gte); bounded snapshots for organizations, groups, collections and one collection's projects",
+    "verified": "apps/snyk/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "audit-log-list": "group audit log search (admin/audit output)",
+      "package-issues-list": "known-vulnerability lookup for one package URL: vulnerability reference data, not the organization's records",
+      "project-list": "GET /rest/orgs/{org_id}/projects documents no created/updated filter or sort (only cli_monitored_before/after) and an organization's projects are unbounded; new repositories are delivered by new-target (https://api.snyk.io/rest/openapi/2026-03-25)"
+    }
   },
   {
     "path": "apps/softr",
@@ -10407,12 +10447,23 @@
     "path": "apps/tumblr",
     "mechanism": "poll",
     "candidates": [
-      "new-post"
+      "new-blog-following",
+      "new-draft-post",
+      "new-post",
+      "new-post-note",
+      "new-queued-post",
+      "new-submission"
     ],
     "pollAction": "blog-posts-list",
-    "reason": "shipped poll trigger(s) over list action blog-posts-list",
-    "verified": "apps/tumblr/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first lists (posts, drafts, followed blogs, post notes) and bounded offset snapshots (queue, submissions)",
+    "verified": "apps/tumblr/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "blog-followers-list": "docs state only 'offset: result to start at 0 (first follower)', no sort order, and the list is unbounded (https://www.tumblr.com/docs/en/api/v2)",
+      "user-following-list": "docs state only 'offset: result number to start at 0 (first followee)', no sort order, and the list is unbounded (https://www.tumblr.com/docs/en/api/v2)",
+      "blog-likes-list": "docs allow only one of offset, before, after per call and state no order, so a since-window cannot be paged or resumed safely (https://www.tumblr.com/docs/en/api/v2)",
+      "user-likes-list": "docs allow only one of offset, before, after per call and state no order, so a since-window cannot be paged or resumed safely (https://www.tumblr.com/docs/en/api/v2)"
+    }
   },
   {
     "path": "apps/twilio/segment",
@@ -10656,14 +10707,26 @@
     "path": "apps/uscreen",
     "mechanism": "poll",
     "candidates": [
+      "new-content",
       "new-customer",
+      "new-customer-access",
+      "new-group",
+      "new-group-member",
       "new-invoice",
-      "new-or-updated-invoice"
+      "new-offer",
+      "new-or-updated-group",
+      "new-or-updated-invoice",
+      "new-playlist-item"
     ],
     "pollAction": "customer-list",
-    "reason": "/customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml)",
-    "verified": "apps/uscreen/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "/customers, /invoices and /groups document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; /contents and /accesses send from only; offers and playlist items are bounded snapshots (https://uscreen.io/api/publisher.yml)",
+    "verified": "apps/uscreen/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "email-topic-list": "store configuration: a store has at most 10 topics, in the order of the email preferences page (https://uscreen.io/api/publisher.yml)",
+      "views-list": "analytics output (video views report), not records",
+      "views-summary-list": "analytics output (video views summary report), not records"
+    }
   },
   {
     "path": "apps/vanta",
