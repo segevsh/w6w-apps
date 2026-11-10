@@ -172,3 +172,19 @@ for (const c of CASES) {
     });
   }
 }
+
+test("new-or-updated-group: a second update of an already emitted group is a second event", async () => {
+  at(T0);
+  const s0 = (await newOrUpdatedGroup.poll!({ ...input, state: {} }, mockCtx([]).ctx)).nextState;
+  at(T1);
+  const v1 = grp(5, "2026-11-09T12:06:00.000Z", "2026-11-08T08:00:00.000Z");
+  const r1 = await newOrUpdatedGroup.poll!({ ...input, state: s0 }, mockCtx([keyed([v1])]).ctx);
+  assertEquals(r1.events, [v1]);
+  at(T1 + 300_000);
+  const v2 = grp(5, "2026-11-09T12:12:00.000Z", "2026-11-08T08:00:00.000Z");
+  const r2 = await newOrUpdatedGroup.poll!(
+    { ...input, state: r1.nextState },
+    mockCtx([keyed([v2])]).ctx,
+  );
+  assertEquals(r2.events, [v2]);
+});

@@ -138,3 +138,33 @@ test("new-or-updated-contact: an edit to an OLD contact is an event; new-contact
     clock.now = realNow;
   }
 });
+
+for (const t of [newContact, newOrUpdatedContact]) {
+  test(`${t.key}: a contact created 60s before the seed (inside the overlap) never fires`, async () => {
+    try {
+      const state = await seed(t);
+      at(T0 + 300_000);
+      const early = rec(T0 - 60_000);
+      const r = await run(t, state, [page([early], 1)]);
+      assertEquals(r.events, []);
+    } finally {
+      clock.now = realNow;
+    }
+  });
+}
+
+test("new-or-updated-contact: a second edit of an already emitted contact is a second event", async () => {
+  try {
+    const state = await seed(newOrUpdatedContact);
+    at(T0 + 300_000);
+    const v1 = rec(OLD, T0 + 100_000);
+    const r1 = await run(newOrUpdatedContact, state, [page([v1], 1)]);
+    assertEquals(r1.events, [v1]);
+    at(T0 + 600_000);
+    const v2 = { ...v1, updatedAt: iso(T0 + 400_000) };
+    const r2 = await run(newOrUpdatedContact, r1.nextState, [page([v2], 1)]);
+    assertEquals(r2.events, [v2]);
+  } finally {
+    clock.now = realNow;
+  }
+});

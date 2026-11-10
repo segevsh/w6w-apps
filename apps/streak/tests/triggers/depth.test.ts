@@ -87,7 +87,7 @@ const CASES: Case[] = [
     params: { boxKey: "box_1" },
     url: `${B}/boxes/box_1/tasks`,
     respond: (rows) => ({ body: { results: rows } }),
-    row: (n) => ({ key: `task_${n}`, boxKey: "box_1", text: `Task ${n}` }),
+    row: (n) => ({ key: `task_${n}`, boxKey: "box_1", text: `Task ${n}`, status: "NOT_DONE" }),
   },
 ];
 
@@ -106,6 +106,14 @@ for (const c of CASES) {
     const first = await run(seeded.nextState, [c.row(1), c.row(2)]);
     const retry = await run(seeded.nextState, [c.row(1), c.row(2)]);
     assertEquals(first.events, [c.row(2)]);
+    if (c.trigger === newTask) {
+      assertEquals((first.events[0] as { status?: string }).status, "NOT_DONE");
+      assertEquals(
+        c.trigger.output?.some((o) => o.key === "status") &&
+          !c.trigger.output?.some((o) => o.key === "done"),
+        true,
+      );
+    }
     assertEquals(retry, first);
     const edited = await run(seeded.nextState, [{ ...c.row(1), name: "renamed" }]);
     assertEquals(edited.events, []);

@@ -220,3 +220,31 @@ for (const [t, url] of SNAPSHOTS) {
     assertEquals(next.events, [row(3)]);
   });
 }
+
+test("ServiceTitan new-or-updated triggers emit a second edit of an already emitted record", async () => {
+  await withClock(async () => {
+    const old = T0 - 86_400_000;
+    for (
+      const t of [newOrUpdatedJob, newOrUpdatedLead, newOrUpdatedLocation, newOrUpdatedAppointment]
+    ) {
+      clock.now = () => T0;
+      const s0 = (await call(t, {}, mockCtx([], opts).ctx as never)).nextState;
+      clock.now = () => T0 + 60_000;
+      const v1 = rec(7, old, T0 + 30_000);
+      const r1 = await call(
+        t,
+        s0,
+        mockCtx([{ body: { data: [v1], hasMore: false } }], opts).ctx as never,
+      );
+      assertEquals(r1.events, [v1]);
+      clock.now = () => T0 + 360_000;
+      const v2 = rec(7, old, T0 + 300_000);
+      const r2 = await call(
+        t,
+        r1.nextState,
+        mockCtx([{ body: { data: [v2], hasMore: false } }], opts).ctx as never,
+      );
+      assertEquals(r2.events, [v2]);
+    }
+  });
+});

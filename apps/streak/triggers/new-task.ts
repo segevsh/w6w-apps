@@ -15,8 +15,8 @@ export default snapshotTrigger<{ boxKey: string }>({
     { key: "key", type: "string", label: "Task key" },
     { key: "boxKey", type: "string", label: "Box key" },
     { key: "text", type: "string", label: "Task text" },
-    { key: "done", type: "boolean", label: "Done" },
+    { key: "status", type: "string", label: "Status (NOT_DONE or DONE)" },
   ],
-  sample: { key: "task_101", boxKey: "box_101", text: "Send proposal", done: false },
+  sample: { key: "task_101", boxKey: "box_101", text: "Send proposal", status: "NOT_DONE" },
   rows: async (p, ctx) => resultsOf(await taskList.execute({ boxKey: p.boxKey }, ctx)),
 });
