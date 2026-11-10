@@ -11,6 +11,7 @@ and fetch completed documents.
 - **API docs** — https://developers.signwell.com ·
   schema: `https://developers.signwell.com/openapi/resources-and-endpoints.json` (OpenAPI 3.0.1,
   ~229KB, fetched 2026-10-06)
+- **Triggers** — 3 (webhook)
 
 ## Setup
 
@@ -126,4 +127,16 @@ were not observed on an authenticated 200. A 429 body names the limit and reset 
 Vector Graphics image"), not an ICO. Format with `deno task fmt`, never bare `deno fmt`, which
 rewrites it.
 
-Triggers: not shipped — bulk-send-list documents only page/limit/user_email/api_application_id: no sort order and no since filter, and no document-list action exists (https://developers.signwell.com/openapi/resources-and-endpoints.json)
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `document-completed` — Document Completed | webhook (API-registered, signed) | `document_completed` | event type and time, document id, name and status, account id, the full document |
+| `document-signed` — Document Signed | webhook (API-registered, signed) | `document_signed` (once per signer) | the same, plus the signer's name and email |
+| `document-event` — Document or Template Event | webhook (API-registered, signed) | any of the 18 listed events, or the ones named in its `events` param | the same, plus the related signer when SignWell sends one |
+
+**Setup.** Nothing to paste. Subscribing registers the trigger's callback URL with `POST /api/v1/hooks` and keeps the webhook id SignWell returns; unsubscribing deletes it with `DELETE /api/v1/hooks/{id}` (a webhook SignWell no longer has counts as deleted). SignWell registers a callback for every event, so each trigger registers its own webhook and drops the events it was not asked for. The `document-event` trigger takes a comma-separated `events` list (`document_created`, `document_sent`, `document_viewed`, `document_in_progress`, `document_recipients_updated`, `document_signed`, `document_completed`, `document_expired`, `document_canceled`, `document_declined`, `document_bounced`, `document_error`, `template_created`, `template_error`, `template_available`, `template_unavailable`, `document_sms_failed`, `document_sms_opted_out`); empty means all.
+
+**Trust model.** Each delivery carries `event.hash`: the hex HMAC-SHA256 of `<event.type>@<event.time>` keyed with the webhook's own id (the id `POST /hooks` returns). The trigger reads that id back from the subscription, refuses a delivery whose id is unset, compares in constant time and rejects an `event.time` more than five minutes from now, before it reads any event data. **SignWell signs the type and the time, not the body:** the document or template in `data.object` is not bound by the hash, so anyone who captures one valid (type, time, hash) triple can attach a different body to it for five minutes. SignWell's docs state no retry policy, so a delivery that arrives later than five minutes after `event.time` is refused. Keep the callback URL private as well.
+
+Docs (verified 2026-11-10): https://developers.signwell.com/reference/events, https://developers.signwell.com/reference/event-data, https://developers.signwell.com/reference/event-hash-verification and https://developers.signwell.com/reference/createwebhook

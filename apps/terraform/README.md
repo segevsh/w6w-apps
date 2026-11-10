@@ -7,6 +7,7 @@ manage the variables runs execute with.
 - **Categories** — devops, developer-tools
 - **Auth methods** — token
 - **Actions** — 20
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `*`
 - **Website** — https://www.hashicorp.com/products/terraform
 - **API docs** — https://developer.hashicorp.com/terraform/cloud-docs/api-docs
@@ -252,4 +253,17 @@ path still has its gate parameter**, and **nothing logs a variable value or a
 state output value**, checked on the log call's values rather than its keys so
 `count: outputs.length` passes and `outputs: outputs` does not.
 
-Triggers: not shipped — GET /workspaces/:id/runs documents page, filter[status|operation|source] and no sort order or created/updated-since filter (https://developer.hashicorp.com/terraform/cloud-docs/api-docs/run#list-runs-in-a-workspace)
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `run-completed` — Run Completed | webhook (API-registered, signed) | notification trigger `run:completed` | trigger, run id, URL, status, message, creator and last updater, workspace id and name, organization |
+| `run-errored` — Run Errored | webhook (API-registered, signed) | `run:errored` (a run terminated early) | the same |
+| `run-needs-attention` — Run Needs Attention | webhook (API-registered, signed) | `run:needs_attention` (a plan awaiting approval or a policy override) | the same |
+| `run-event` — Run Event | webhook (API-registered, signed) | any of the 13 run triggers named in its `triggers` param (`run:created`, `run:planning`, `run:needs_attention`, `run:pending_apply_approval`, `run:cost_estimated`, `run:policy_override_required`, `run:policies_checked`, `run:applying`, `run:completed`, `run:errored`, `run:run_errored`, `run:run_canceled`, `run:policy_soft_failed`); empty means all | the same |
+
+**Setup.** Give the workspace as `workspaceId` (`ws-…`) or as `organization` plus `workspace`. Subscribing creates a workspace notification configuration (`POST /api/v2/workspaces/{id}/notification-configurations`, `destination-type: generic`, enabled) with the trigger's callback URL, the chosen run triggers and a random signing token generated for the subscription and kept with it; unsubscribing deletes the configuration (`DELETE /api/v2/notification-configurations/{id}`; one HCP Terraform no longer has counts as deleted). The connection's token needs admin access to the workspace, and a workspace holds at most 20 notification configurations. Terraform Enterprise works the same way provided the instance can reach the callback URL. Workspace-level events (drift, health assessments, auto destroy) use a different payload and are not covered. When the configuration is created, HCP Terraform sends a verification request to the callback URL before the subscription has stored its token; the trigger refuses it (one failed delivery row), and the host still answers it, which is all HCP Terraform needs to enable the configuration.
+
+**Trust model.** Every delivery carries `X-TFE-Notification-Signature`: the hex HMAC-SHA512 of the exact request body keyed with the configuration's token. The trigger reads the token back from the subscription, refuses a delivery whose token is unset, compares in constant time, and does all of this before it reads the body as JSON. The signature covers the whole body, so a body cannot be altered; **the scheme has no timestamp, so a captured signed delivery can be replayed** and nothing here can remember deliveries. Keep the callback URL private as well.
+
+Docs (verified 2026-11-10): https://developer.hashicorp.com/terraform/cloud-docs/api-docs/notification-configurations and https://developer.hashicorp.com/terraform/cloud-docs/api-docs/notification-configurations/workspace

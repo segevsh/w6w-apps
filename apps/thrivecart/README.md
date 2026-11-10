@@ -14,6 +14,7 @@ and manage subscriptions, affiliates, Learn students and webhook subscriptions, 
 - **API reference (Postman)** — https://apidocs.thrivecart.com/
 - **PHP SDK (source of truth for base URL/headers)** — https://github.com/thrivecart/php-api
 - **Status page** — none published
+- **Triggers** — 4 (webhook)
 
 > **Everything below was verified on 2026-08-15** against ThriveCart's own published Postman
 > collection (`https://apidocs.thrivecart.com/api/collections/13408532/TVejhANr`, 93,209 bytes, 33
@@ -229,4 +230,17 @@ deno task fmt        # never bare `deno fmt` — the task's file list excludes a
 deno task test
 ```
 
-Triggers: not shipped — webhook candidate queued for a webhook node: ThriveCart subscription events; product/bump/upsell/downsell lists are catalogs, not created feeds (https://apidocs.thrivecart.com/)
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `new-purchase` — New Purchase | webhook (API-registered, unsigned) | `order_payment_product` | event, delivery id, event id, the full delivery |
+| `subscription-payment` — Subscription Payment | webhook (API-registered, unsigned) | `order_rebill` (successful recurring payment) | the same |
+| `subscription-cancelled` — Subscription Cancelled | webhook (API-registered, unsigned) | `order_rebill_cancelled` | the same |
+| `thrivecart-event` — ThriveCart Event | webhook (API-registered, unsigned) | the one event named in its `event` param, or `*` for all (`order_created`, `order_payment_bump`, `order_payment_upsell`, `order_payment_downsell`, `order_rebill_failed`, `order_rebill_completed`, `order_refund_product` / `_bump` / `_upsell` / `_downsell`, `subscription_paused`, `subscription_resumed`, `cart_abandoned`, `affiliate_approved`, `affiliate_rejected`, `affiliate_commission_earned` / `_payout` / `_refund`) | the same |
+
+**Setup.** Nothing to paste. Subscribing registers the trigger's own callback URL for its event with `POST /api/external/subscribe` (`{ "event", "target_url", "trigger_fields" }`) and keeps the URL; unsubscribing calls `POST /api/external/unsubscribe` with that URL (ThriveCart removes subscriptions by URL, which is why every subscription has its own; a subscription ThriveCart no longer has counts as removed). The optional `triggerFields` param is ThriveCart's own filter object, for example `{"mode_int": 2}` for live-mode orders only or `{"base_product": [5, 19]}` for chosen products; each event's page in the developer portal lists the fields it accepts. ThriveCart only accepts a `target_url` that begins with a URL registered in the app's settings when the connection is an OAuth app; an account-wide API key is exempt. ThriveCart documents the delivery's `webhook_id` (one per delivery, the same on a retry, so use it as an idempotency key) and `event_id` (may be absent) but not the rest of the payload, so the run gets the delivery exactly as ThriveCart sent it in `data`.
+
+**Trust model.** ThriveCart does not sign event-subscription deliveries: its Event Subscription documentation describes no signature, secret or signing header, so there is nothing to verify and none is invented. **The callback URL is the secret.** The host issues it per subscription as a long unguessable id; anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
+
+Docs (verified 2026-11-10): https://developers.thrivecart.com/documentation/event_subscription/intro/ and https://apidocs.thrivecart.com/ (Create event subscription, Unsubscribe from an event)

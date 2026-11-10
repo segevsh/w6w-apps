@@ -86,6 +86,11 @@ import studentCreate from "./actions/student-create.ts";
 import webhookSubscribe from "./actions/webhook-subscribe.ts";
 import webhookUnsubscribe from "./actions/webhook-unsubscribe.ts";
 
+import newPurchase from "./triggers/new-purchase.ts";
+import subscriptionPayment from "./triggers/subscription-payment.ts";
+import subscriptionCancelled from "./triggers/subscription-cancelled.ts";
+import thrivecartEvent from "./triggers/thrivecart-event.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -138,6 +143,7 @@ export default {
   // Access token only. The collection documents a bearer credential; a
   // separate OAuth2 app flow exists for third-party apps but is not part of
   // the published collection this app was built from — see auth/api-token.ts.
+  triggers: [newPurchase, subscriptionPayment, subscriptionCancelled, thrivecartEvent],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
