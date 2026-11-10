@@ -14,7 +14,7 @@ const day = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
  * time (the action truncates to `YYYY-MM-DD`) and documents no result order, so the trigger always
  * reads yesterday AND today (UTC) in one window, so a poll just after midnight still sees what was
  * logged late on the old day, at the action's maximum page size of 1000, follows `page`, and
- * snapshots the ids. A full final page after 5 pages (5000 requests across both days) throws
+ * snapshots the ids. A full final page after 5 pages (5000 or more requests across both days) throws
  * instead of silently dropping requests.
  */
 const trigger: TriggerDefinition = {

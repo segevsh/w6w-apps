@@ -218,6 +218,6 @@ or `headerErrors`, naming the exact field — far more useful than the top-level
 | --- | --- | --- | --- |
 | `new-envelope` — New Document | Poll | `envelope-find` | Each newly created document |
 
-Each check reads the first page of `envelope-find` (documents only); Documenso's OpenAPI lists `orderByDirection` with default `desc` and a single sort column, `createdAt`, so the first page is the newest. The first check only records.
+Each check reads the first page of `envelope-find` (documents only); Documenso's OpenAPI lists `orderByDirection` with default `desc` and a single sort column, `createdAt`, so the first page is the newest. The first check only records. Each check reads one page, so a burst of more than one page of new envelopes between two checks emits only the newest page; the older ones are skipped.
 
 Source: [Documenso v2 OpenAPI: GET /envelope](https://app.documenso.com/api/v2/openapi.json) (verified 2026-11-09).

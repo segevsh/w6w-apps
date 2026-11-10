@@ -82,4 +82,4 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 | `new-message` — New Message | Poll | `list-messages` | Each newly posted message in the selected channel |
 
 Discord returns channel messages newest-first; the first check records current messages without
-firing, and later checks emit only unseen messages. Source: [Get Channel Messages](https://discord.com/developers/docs/resources/message#get-channel-messages) (verified 2026-11-09).
+firing, and later checks emit only unseen messages. Each check reads one page (100 messages), so a burst of more than 100 new messages between two checks emits only the newest 100; the older ones are skipped. Source: [Get Channel Messages](https://discord.com/developers/docs/resources/message#get-channel-messages) (verified 2026-11-09).
