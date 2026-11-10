@@ -19,7 +19,7 @@ export default snapshotTrigger({
   sample: {
     id: "185200",
     name: "Template 1",
-    preview_link: "https://app.vbout.com/ricks/template/185200/",
+    preview_link: "https://example.com/template/185200/",
   },
   rows: async (_params, ctx) =>
     itemsOf(await emailTemplateList.execute({} as never, ctx), "templates"),

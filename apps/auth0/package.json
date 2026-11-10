@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/auth0",
   "version": "0.3.0",
-  "description": "Manage an Auth0 tenant — users, roles, organizations, connections, applications and the tenant log — through the Management API, and trigger workflows on tenant logs, new users, applications, connections, organizations, roles, organization members and role assignments.",
+  "description": "Manage an Auth0 tenant — users, roles, organizations, connections, applications and the tenant log — through the Management API, and trigger workflows on new logs, users, apps, roles and members.",
   "license": "MIT",
   "author": {
     "name": "w6w"

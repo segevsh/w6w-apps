@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vbout",
   "version": "0.3.0",
-  "description": "VBOUT marketing automation: contact lists, contacts, tags, email campaigns, social channels and goals. Poll triggers start a workflow on each new contact list, contact, audience, email campaign, email template, goal or connected social channel.",
+  "description": "VBOUT marketing automation: contact lists, contacts, tags, email campaigns, social channels and goals. Poll triggers fire on new lists, contacts, audiences, campaigns, templates, goals and channels.",
   "license": "MIT",
   "author": {
     "name": "w6w"
