@@ -7,7 +7,7 @@ import { clock } from "../../lib/triggers.ts";
 clock.now = () => Date.parse("2026-11-09T12:00:00Z");
 
 const input = { params: {}, subscriptionId: "sub-1" };
-const res = (reservationID: string, dateModified = "2026-11-09 11:00:00") => ({
+const res = (reservationID: string, dateModified = "2026-11-09 12:00:30") => ({
   reservationID,
   dateModified,
 });
@@ -59,9 +59,9 @@ test("new-or-updated-reservation: an edit to a seen reservation is an event", as
   );
   const edited = await trigger.poll!(
     { ...input, state: seeded.nextState },
-    ctx([res("r1", "2026-11-09 11:30:00")]).ctx,
+    ctx([res("r1", "2026-11-09 12:01:00")]).ctx,
   );
-  assertEquals(edited.events, [res("r1", "2026-11-09 11:30:00")]);
+  assertEquals(edited.events, [res("r1", "2026-11-09 12:01:00")]);
   const quiet = await trigger.poll!(
     { ...input, state: seeded.nextState },
     ctx([res("r1", "2026-11-09 10:00:00")]).ctx,

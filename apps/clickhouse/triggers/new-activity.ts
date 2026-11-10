@@ -1,9 +1,11 @@
 import type { ActionDefinition, HookContext, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 import activityList from "../actions/activity-list.ts";
 
 /** Look-back before the previous check, so an event that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
+/** The ids kept so an overlap re-read never re-emits; the response is unpaged, so this is generous. */
+const SEEN_WINDOW = 5000;
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
@@ -13,6 +15,13 @@ interface Activity {
   createdAt?: string;
 }
 
+/**
+ * `GET /v1/organizations/{id}/activities?from_date=` answers the whole window in ONE unpaged
+ * response, so a check cannot stall on a long window (brief 9.8): every record in it is emitted,
+ * whatever its size, and the cursor moves to the check time. The seed stores `floor = now` and later
+ * checks drop activities created before it (brief 9.9). The endpoint documents no pagination, so there is
+ * nothing to resume: a response the vendor shortened would lose its tail (README states this).
+ */
 const trigger: TriggerDefinition = {
   key: "new-activity",
   title: "New Activity",
@@ -33,29 +42,26 @@ const trigger: TriggerDefinition = {
     createdAt: "2026-11-09T09:00:00Z",
   },
   minIntervalMs: 300_000,
-  async poll({ state }, ctx: HookContext) {
-    const checkedAt = clock.now();
-    const prior = state as { cursor?: number } | undefined;
-    const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-    const fromDate = new Date(cursor - OVERLAP_MS).toISOString();
-    const { events, nextState } = await pollNewItems<Activity>({
+  poll({ state }, ctx: HookContext) {
+    return pollWindow<Activity, number>({
       state,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
       maxPages: 1,
+      pageSize: 1,
+      seenWindow: SEEN_WINDOW,
       idOf: (a) => String(a.id ?? ""),
-      async fetchPage() {
-        // `GET /v1/organizations/{id}/activities?from_date=` — one unpaged response.
+      tsOf: (a) => toMs(a.createdAt),
+      async load(sinceMs) {
         const res = await (activityList as unknown as ActionDefinition).execute(
-          { fromDate },
+          { fromDate: new Date(sinceMs).toISOString() },
           ctx,
         ) as {
           activities?: Activity[];
         };
-        const items = (res.activities ?? []).slice();
-        items.sort((a, b) => (a.createdAt ?? "") < (b.createdAt ?? "") ? 1 : -1);
-        return { items };
+        return { items: res.activities ?? [] };
       },
     });
-    return { events, nextState: { ...nextState, cursor: checkedAt } };
   },
 };
 

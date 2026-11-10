@@ -1,8 +1,11 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 import action from "../actions/person-list.ts";
 
 export const OVERLAP_MS = 120_000;
+/** Pages read per check; a longer window is resumed on the next check (brief 9.8). */
+export const MAX_PAGES = 40;
+const PAGE_SIZE = 25;
 export const clock = { now: (): number => Date.now() };
 
 function personTrigger(
@@ -19,35 +22,30 @@ function personTrigger(
     sample: { id: "person-101" },
     minIntervalMs: 300_000,
     async poll({ state }, ctx) {
-      const checkedAt = clock.now();
-      const cursor = typeof (state as { cursor?: unknown })?.cursor === "number"
-        ? (state as { cursor: number }).cursor
-        : checkedAt;
-      const filter = `${field} gt '${new Date(cursor - OVERLAP_MS).toISOString()}'`;
       const idOf = (item: unknown) => {
         const person = item as { id?: unknown; modified_date?: unknown };
         const id = String(person.id ?? "");
         return field === "modified_date" ? `${id}:${String(person.modified_date ?? "")}` : id;
       };
-      const { events, nextState } = await pollNewItems<unknown>({
+      return await pollWindow<unknown, number>({
         state,
-        maxEvents: 2500,
+        now: clock.now(),
+        overlapMs: OVERLAP_MS,
+        maxPages: MAX_PAGES,
+        pageSize: PAGE_SIZE,
         seenWindow: 5000,
         idOf,
-        async fetchPage() {
-          const items: unknown[] = [];
-          for (let page = 1; page <= 100; page++) {
-            const result = await action.execute({ filter, page, perPage: 25 }, ctx) as {
-              items?: unknown[];
-              hasMore?: boolean;
-            };
-            items.push(...(result.items ?? []));
-            if (!result.hasMore) break;
-          }
-          return { items };
+        tsOf: (item) => toMs((item as Record<string, unknown>)[field]),
+        async load(since, pos) {
+          const page = pos ?? 1;
+          const filter = `${field} gt '${new Date(since).toISOString()}'`;
+          const result = await action.execute({ filter, page, perPage: PAGE_SIZE }, ctx) as {
+            items?: unknown[];
+            hasMore?: boolean;
+          };
+          return { items: result.items ?? [], next: result.hasMore ? page + 1 : undefined };
         },
       });
-      return { events, nextState: { ...nextState, cursor: checkedAt } };
     },
   };
 }

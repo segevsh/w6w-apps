@@ -1,9 +1,9 @@
-import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
+import { pollWindow } from "./window.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
-/** Pages walked per check; `MAX_ITEMS` is `MAX_PAGES` full pages, so a check never emits a partial window. */
+/** Pages read per check; a longer window is resumed on the next check (brief 9.8), never cut. */
 export const MAX_PAGES = 5;
 export const MAX_ITEMS = 250;
 export const SEEN_WINDOW = 500;
@@ -11,65 +11,73 @@ export const SEEN_WINDOW = 500;
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
 
-export interface SinceSpec<T> {
+export interface SinceSpec<T, P = Record<string, unknown>> {
   key: string;
   title: string;
   description: string;
+  params?: Param[];
   output: OutputField[];
   sample: unknown;
+  /** Records per full page (default 100); sizes the head batch kept across a multi-check drain. */
+  pageSize?: number;
   /** One page of records at or after `sinceMs` (epoch ms); `more` is true when another page follows. */
   fetchPage(
     sinceMs: number,
     page: number,
     ctx: HookContext,
-  ): Promise<{ items: T[]; more: boolean }>;
+    params: P,
+    token?: string,
+  ): Promise<{ items: T[]; more: boolean; next?: string }>;
   idOf(item: T): string;
+  /** Creation (or, for updated triggers, modification) time in ms; undefined keeps the item. */
+  tsOf?(item: T): number | undefined;
+}
+
+/** Epoch ms of a vendor timestamp; a zone-less string is read as UTC. Undefined when unparseable. */
+export function toMs(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string" || value === "") return undefined;
+  // A date without a time (a day-granular field) cannot be compared with the floor: keep the item.
+  if (!/\d:\d\d/.test(value)) return undefined;
+  const zoned = /(?:Z|[+-]\d\d:?\d\d)$/i.test(value);
+  const parsed = Date.parse(zoned ? value : `${value.replace(" ", "T")}Z`);
+  return Number.isNaN(parsed) ? undefined : parsed;
 }
 
 /**
  * Since-filter poll (brief 9.1 b): list records changed since `cursor - overlap` with the app's
- * own list action, dedupe by id with `pollNewItems`. The first check records the cursor and the
- * ids in the window and emits nothing. A window longer than `MAX_PAGES` pages is cut at the cap
- * with a warning (holding the cursor back would re-list the same capped pages forever).
+ * own list action. The first check stores `floor = now` and emits nothing; later checks drop
+ * records stamped before the floor (9.9). A window longer than `MAX_PAGES` pages is resumed from
+ * the persisted position on the next check and the cursor moves only once it drains (9.8).
  */
-export function sinceTrigger<T>(spec: SinceSpec<T>): TriggerDefinition {
+export function sinceTrigger<T, P = Record<string, unknown>>(
+  spec: SinceSpec<T, P>,
+): TriggerDefinition<P> {
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
+    params: spec.params,
     output: spec.output,
     sample: spec.sample,
     minIntervalMs: 300_000,
-    async poll({ state }, ctx) {
-      const checkedAt = clock.now();
-      const prior = state as { cursor?: unknown } | null;
-      const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-      let truncated = false;
-      const { events, nextState } = await pollNewItems<T>({
+    async poll({ state, params }, ctx) {
+      return await pollWindow<T, string | number>({
         state,
-        maxPages: 1,
-        maxEvents: MAX_ITEMS,
+        now: clock.now(),
+        overlapMs: OVERLAP_MS,
+        maxPages: MAX_PAGES,
+        pageSize: spec.pageSize ?? 100,
         seenWindow: SEEN_WINDOW,
         idOf: spec.idOf,
-        async fetchPage() {
-          const items: T[] = [];
-          for (let page = 1; page <= MAX_PAGES; page++) {
-            const res = await spec.fetchPage(cursor - OVERLAP_MS, page, ctx);
-            items.push(...res.items);
-            if (!res.more) return { items };
-          }
-          truncated = true;
-          return { items };
+        tsOf: spec.tsOf ?? (() => undefined),
+        async load(since, pos) {
+          const page = typeof pos === "number" ? pos : 1;
+          const token = typeof pos === "string" ? pos : undefined;
+          const res = await spec.fetchPage(since, page, ctx, params, token);
+          return { items: res.items, next: res.more ? (res.next ?? page + 1) : undefined };
         },
       });
-      if (truncated) {
-        // Holding the cursor back would re-list the same capped pages forever, so move on and say so.
-        ctx.log(
-          "warn",
-          `${spec.key}: more than ${MAX_ITEMS} records in the window; the rest are skipped`,
-        );
-      }
-      return { events, nextState: { ...nextState, cursor: checkedAt } };
     },
   };
 }

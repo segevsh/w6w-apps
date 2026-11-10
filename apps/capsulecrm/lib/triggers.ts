@@ -1,5 +1,5 @@
 import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "./window.ts";
 import opportunityList from "../actions/opportunity-list.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
@@ -19,11 +19,6 @@ export interface Opportunity {
   updatedAt?: string;
 }
 
-/** The kit's ids envelope plus the epoch ms of the last successful check. */
-interface CursorState {
-  cursor?: number;
-}
-
 export const OPPORTUNITY_OUTPUT: OutputField[] = [
   { key: "id", type: "number", label: "Opportunity ID" },
   { key: "name", type: "string", label: "Name" },
@@ -31,47 +26,39 @@ export const OPPORTUNITY_OUTPUT: OutputField[] = [
   { key: "updatedAt", type: "string", label: "Updated at" },
 ];
 
-/** `GET /opportunities?since=` returns records CHANGED since the stamp, in no documented order. */
-async function fetchSince(since: string, mode: "new" | "updated", ctx: HookContext) {
-  const out: Opportunity[] = [];
-  let page: number | undefined = 1;
-  while (page !== undefined && page <= MAX_PAGES) {
-    const res = await opportunityList.execute({ since, page, perPage: 100 }, ctx) as {
-      opportunities?: Opportunity[];
-      nextPage?: number;
-    };
-    out.push(...(res.opportunities ?? []));
-    page = res.nextPage;
-  }
-  // "changed since" also returns old records that were merely edited: a NEW opportunity
-  // is one created inside the window.
-  return mode === "new" ? out.filter((o) => (o.createdAt ?? "") >= since) : out;
-}
-
-async function check(
-  mode: "new" | "updated",
-  state: unknown,
-  ctx: HookContext,
-) {
-  const checkedAt = clock.now();
-  const prior = state as CursorState | undefined;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const since = new Date(cursor - OVERLAP_MS).toISOString();
-  const stampOf = (r: Opportunity) => (mode === "new" ? r.createdAt : r.updatedAt) ?? "";
-  const { events, nextState } = await pollNewItems<Opportunity>({
+/**
+ * `GET /opportunities?since=` returns records CHANGED since the stamp, in no documented order. A
+ * window longer than `MAX_PAGES` pages is resumed from the persisted page on the next check and the
+ * cursor moves only once it drains (brief 9.8); the seed stores `floor = now` and later checks drop
+ * records stamped before it (brief 9.9).
+ */
+function check(mode: "new" | "updated", state: unknown, ctx: HookContext) {
+  return pollWindow<Opportunity, number>({
     state,
-    maxPages: 1,
-    maxEvents: MAX_EVENTS,
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: 100,
     seenWindow: SEEN_WINDOW,
     idOf: (r) => (mode === "new" ? String(r.id) : `${r.id}:${r.updatedAt}`),
-    async fetchPage() {
-      const all = await fetchSince(since, mode, ctx);
-      // The kit wants newest-first pages.
-      all.sort((a, b) => (stampOf(a) < stampOf(b) ? 1 : stampOf(a) > stampOf(b) ? -1 : 0));
-      return { items: all };
+    tsOf: (r) => toMs(mode === "new" ? r.createdAt : r.updatedAt),
+    async load(sinceMs, pos) {
+      const since = new Date(sinceMs).toISOString();
+      const page = pos ?? 1;
+      const res = await opportunityList.execute({ since, page, perPage: 100 }, ctx) as {
+        opportunities?: Opportunity[];
+        nextPage?: number;
+      };
+      const items = res.opportunities ?? [];
+      // "changed since" also returns old records that were merely edited: a NEW opportunity
+      // is one created inside the window.
+      return {
+        items: mode === "new" ? items.filter((o) => (o.createdAt ?? "") >= since) : items,
+        next: res.nextPage,
+        read: items.length,
+      };
     },
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
 }
 
 export const newTrigger: TriggerDefinition = {

@@ -263,7 +263,7 @@ Poll triggers built on the app's existing `contact-list` action (same client, en
 |---|---|---|---|
 | `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each Front contact that is newly created or edited, once per edit. |
 
-How the feed is read: `GET /contacts` with the `q[updated_after]` filter only: the action exposes no sort, so the trigger is a since-filter poll.
+How the feed is read: `GET /contacts` with the `q[updated_after]` filter only: the action exposes no sort, so the trigger is a since-filter poll. Each check reads its whole window in one go, at most 2000 contacts and with no way to resume; a window longer than that (only after a long outage of the checks) fires the first 2000 and the surplus is not guaranteed.
 
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 

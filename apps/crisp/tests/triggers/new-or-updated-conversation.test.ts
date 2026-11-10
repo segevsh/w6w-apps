@@ -7,7 +7,9 @@ import { clock } from "../../lib/triggers.ts";
 clock.now = () => Date.parse("2026-11-09T12:00:00Z");
 
 const input = { params: {}, subscriptionId: "sub-1" };
-const conv = (session_id: string, updated_at = 1000) => ({ session_id, updated_at });
+// Stamped after the seed (clock 12:00), as a real post-seed activity would be (brief 9.9).
+const U = Date.parse("2026-11-09T12:00:30Z");
+const conv = (session_id: string, updated_at = U) => ({ session_id, updated_at });
 const ctx = (items: unknown[]) => mockCtx([{ body: { error: false, data: items } }], "site_1");
 
 test("new-or-updated-conversation: seeds without flooding and sends the since filter", async () => {
@@ -54,15 +56,15 @@ test("new-or-updated-conversation: the same state and responses give the same re
 });
 
 test("new-or-updated-conversation: new activity on a seen conversation is an event", async () => {
-  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([conv("s1", 1000)]).ctx);
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([conv("s1", U)]).ctx);
   const active = await trigger.poll!(
     { ...input, state: seeded.nextState },
-    ctx([conv("s1", 2000)]).ctx,
+    ctx([conv("s1", U + 1000)]).ctx,
   );
-  assertEquals(active.events, [conv("s1", 2000)]);
+  assertEquals(active.events, [conv("s1", U + 1000)]);
   const quiet = await trigger.poll!(
     { ...input, state: seeded.nextState },
-    ctx([conv("s1", 1000)]).ctx,
+    ctx([conv("s1", U)]).ctx,
   );
   assertEquals(quiet.events, []);
 });

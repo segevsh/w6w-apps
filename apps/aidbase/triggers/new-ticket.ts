@@ -1,9 +1,11 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 import action from "../actions/ticket-list.ts";
 
 /** Keep a small overlap because timestamps are the only ordering guarantee. */
 export const OVERLAP_MS = 120_000;
+/** Pages read per check; a longer window is resumed on the next check (brief 9.8). */
+export const MAX_PAGES = 10;
 export const clock = { now: (): number => Date.now() };
 
 interface TicketParams {
@@ -28,30 +30,34 @@ const trigger: TriggerDefinition<TicketParams> = {
   sample: { id: "ticket-101" },
   minIntervalMs: 300_000,
   async poll({ params, state }, ctx) {
-    const checkedAt = clock.now();
-    const prior = state as { cursor?: unknown } | null;
-    const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-    const createdAfter = new Date(cursor - OVERLAP_MS).toISOString();
-    const { events, nextState } = await pollNewItems<unknown>({
+    const result = await pollWindow<unknown, string>({
       state,
-      maxPages: 3,
-      maxEvents: 100,
-      seenWindow: 400,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: 100,
+      seenWindow: 1500,
       idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-      async fetchPage(nextCursor) {
-        const result = await action.execute({
+      tsOf: (item) => {
+        const t = item as Record<string, unknown>;
+        return toMs(t.created_at ?? t.createdAt);
+      },
+      async load(since, nextCursor) {
+        const res = await action.execute({
           ...params,
-          createdAfter,
+          createdAfter: new Date(since).toISOString(),
           limit: 100,
           nextCursor,
         } as never, ctx) as { items?: unknown[]; nextCursor?: unknown };
         return {
-          items: result.items ?? [],
-          nextPageToken: typeof result.nextCursor === "string" ? result.nextCursor : undefined,
+          items: res.items ?? [],
+          next: typeof res.nextCursor === "string" && res.nextCursor !== ""
+            ? res.nextCursor
+            : undefined,
         };
       },
     });
-    return { events, nextState: { ...nextState, cursor: checkedAt } as TicketState };
+    return { events: result.events, nextState: result.nextState as unknown as TicketState };
   },
 };
 

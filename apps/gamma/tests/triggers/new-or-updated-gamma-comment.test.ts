@@ -48,10 +48,16 @@ test("new-or-updated-gamma-comment: emits only the record that is new", async ()
 });
 
 test("new-or-updated-gamma-comment: the same state and responses give the same result", async () => {
-  const state = seeded;
-  const a = await trigger.poll!({ ...input, state }, ctx([item(2), item(1)]).ctx);
-  const b = await trigger.poll!({ ...input, state }, ctx([item(2), item(1)]).ctx);
-  assertEquals(a, b);
+  // The state carries a cursor stamped from the clock: pin it so the two runs are byte-equal.
+  Date.now = () => Date.parse("2026-11-09T12:00:00Z");
+  try {
+    const state = seeded;
+    const a = await trigger.poll!({ ...input, state }, ctx([item(2), item(1)]).ctx);
+    const b = await trigger.poll!({ ...input, state }, ctx([item(2), item(1)]).ctx);
+    assertEquals(a, b);
+  } finally {
+    Date.now = realNow;
+  }
 });
 
 test("new-or-updated-gamma-comment: requests exactly the endpoint the list action calls", async () => {

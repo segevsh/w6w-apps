@@ -1,8 +1,18 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 import action from "../actions/lead-list.ts";
 
-export const OVERLAP_MS = 86_400_000;
+/** Look-back before the previous check. The vendor filter is a whole day, so the day before is requested and `clientSince` trims the rest. */
+export const OVERLAP_MS = 120_000;
+const DAY_MS = 86_400_000;
+/** Pages read per check; a longer window is resumed on the next check (brief 9.8). */
+export const MAX_PAGES = 10;
+const PAGE_SIZE = 100;
+/** The lead's creation time; the vendor field name is read leniently and an unparseable one keeps the lead. */
+export function leadCreatedAt(item: unknown): number | undefined {
+  const lead = item as Record<string, unknown>;
+  return toMs(lead.createDate ?? lead.createdAt ?? lead.created_at ?? lead.dateCreated);
+}
 export const clock = { now: (): number => Date.now() };
 
 const trigger: TriggerDefinition = {
@@ -14,31 +24,29 @@ const trigger: TriggerDefinition = {
   sample: { id: 101 },
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
-    const checkedAt = clock.now();
-    const cursor = typeof (state as { cursor?: unknown })?.cursor === "number"
-      ? (state as { cursor: number }).cursor
-      : checkedAt;
-    const startDate = new Date(cursor - OVERLAP_MS).toISOString().slice(0, 10);
-    const { events, nextState } = await pollNewItems<unknown>({
+    return await pollWindow<unknown, number>({
       state,
-      maxEvents: 100,
-      seenWindow: 400,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      // Covers a day of leads re-served whole when the stamp carries no time (cannot be trimmed).
+      seenWindow: 2000,
+      clientSince: true,
       idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-      async fetchPage() {
-        const items: unknown[] = [];
-        for (let page = 1; page <= 100; page++) {
-          const result = await action.execute({ startDate, page, pageSize: 100 }, ctx) as {
-            leads?: unknown[];
-            totalCount?: number;
-          };
-          const leads = result.leads ?? [];
-          items.push(...leads);
-          if (leads.length < 100 || page * 100 >= Number(result.totalCount ?? 0)) break;
-        }
-        return { items };
+      tsOf: leadCreatedAt,
+      async load(since, pos) {
+        const page = pos ?? 1;
+        const startDate = new Date(since - DAY_MS).toISOString().slice(0, 10);
+        const result = await action.execute({ startDate, page, pageSize: PAGE_SIZE }, ctx) as {
+          leads?: unknown[];
+          totalCount?: number;
+        };
+        const leads = result.leads ?? [];
+        const more = leads.length >= PAGE_SIZE && page * PAGE_SIZE < Number(result.totalCount ?? 0);
+        return { items: leads, next: more ? page + 1 : undefined };
       },
     });
-    return { events, nextState: { ...nextState, cursor: checkedAt } };
   },
 };
 

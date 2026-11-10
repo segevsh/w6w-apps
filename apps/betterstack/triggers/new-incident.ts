@@ -1,4 +1,4 @@
-import { sinceTrigger } from "../lib/since.ts";
+import { sinceTrigger, toMs } from "../lib/since.ts";
 import incidentList from "../actions/incident-list.ts";
 
 /** The vendor maximum for incidents (see the incident-list action). */
@@ -6,6 +6,7 @@ export const PAGE_SIZE = 50;
 
 interface Incident {
   id?: string;
+  started_at?: string;
 }
 
 /** `from` takes a date (YYYY-MM-DD), not a time, so the window is the UTC day of the look-back. */
@@ -24,7 +25,9 @@ export default sinceTrigger<Incident>({
     ) as { items?: Incident[]; hasMore?: boolean };
     return { items: res.items ?? [], more: res.hasMore === true };
   },
+  pageSize: PAGE_SIZE,
   idOf: (i) => String(i.id),
+  tsOf: (i) => toMs(i.started_at),
   output: [
     { key: "id", type: "string", label: "Incident ID" },
     { key: "name", type: "string", label: "Name" },
