@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -20,8 +20,6 @@ depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-p
 | apps/eventbrite | 16 | 23 | 23 |
 | apps/bigcommerce | 1 | 17 | 16 |
 | apps/heartbeat | 8 | 16 | 16 |
-| apps/superchat | 1 | 17 | 16 |
-| apps/vanta | 1 | 17 | 16 |
 | apps/ashby | 1 | 16 | 15 |
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/keap | 1 | 17 | 15 |
@@ -671,6 +669,7 @@ depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-p
 | apps/stackexchange | 11 | 32 | 0 |
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
+| apps/superchat | 11 | 17 | 0 |
 | apps/telegram | 2 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
@@ -679,6 +678,7 @@ depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-p
 | apps/twitter | 1 | 1 | 0 |
 | apps/upsales | 17 | 18 | 0 |
 | apps/uptimerobot | 2 | 2 | 0 |
+| apps/vanta | 15 | 17 | 0 |
 | apps/vero | 1 | 0 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
@@ -1200,7 +1200,7 @@ depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-p
 | apps/strapi | 1 | entry-list | new-entry | apps/strapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
 | apps/streak | 2 | box-list | new-box, new-or-updated-box | apps/streak/README.md Triggers section (verified 2026-11-09) | hand | sortBy=creationTimestamp \| lastUpdatedTimestamp, 'Both are in descending order' (https://streak.readme.io/reference/list-all-boxes-in-pipeline) |
 | apps/supabase | 1 | rows-list | new-row | apps/supabase/README.md Triggers section (verified 2026-11-09) | hand | explicit PostgREST order=<creation column>.desc.nullslast,id.desc on the caller's named table and creation column (https://docs.postgrest.org/en/stable/references/api/tables_views.html) |
-| apps/superchat | 1 | contact-list | new-contact | apps/superchat/README.md Triggers section (verified 2026-11-09) | hand | 'Objects are sorted descendingly by their created_at value' (https://developers.superchat.com/reference/get_contacts); conversation list documents no sort |
+| apps/superchat | 11 | contact-list | new-contact, new-channel, new-contact-list, new-contact-list-membership, new-conversation, new-conversation-message, new-file, new-inbox, new-template-folder, new-template, new-workspace-user | apps/superchat/README.md Triggers section (verified 2026-11-10) | hand | Contacts, channels and files are newest-first (documented sort) and polled through their list actions; every other Superchat list documents no sort order and is read whole (cursor-paged, 5000 rows) and snapshot-diffed. |
 | apps/synthflow | 1 | call-list | new-call | apps/synthflow/README.md Triggers section (verified 2026-11-09) | hand | since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls) |
 | apps/systemeio | 1 | contact-list | new-contact | apps/systemeio/README.md Triggers section (verified 2026-11-09) | hand | order=desc, documented default; cursor is the item id so order is by id (https://developer.systeme.io/reference/api) |
 | apps/tableau | 2 | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
@@ -1229,7 +1229,7 @@ depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-p
 | apps/upsales | 17 | contact-list | new-contact, new-activity, new-appointment, new-campaign, new-comment, new-company, new-order, new-product, new-subscription, new-ticket, new-user, new-or-updated-activity, new-or-updated-appointment, new-or-updated-company, new-or-updated-contact, new-or-updated-order, new-or-updated-subscription | apps/upsales/README.md Triggers section (verified 2026-11-10) | hand | Id-crawl poll triggers use sort=id with id=gt:<last id>, a seed floor plus the newest id at seed, overlap state, and resume position; new-or-updated-* use modDate=gte:<window> with id paging (https://api.upsales.com). |
 | apps/uptimerobot | 2 | monitor-list | new-monitor, new-alert-contact | apps/uptimerobot/README.md Triggers section (verified 2026-11-09) | hand | getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/) |
 | apps/uscreen | 3 | customer-list | new-customer, new-invoice, new-or-updated-invoice | apps/uscreen/README.md Triggers section (verified 2026-11-09) | hand | /customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml) |
-| apps/vanta | 1 | issue-list | new-issue | apps/vanta/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-list |
+| apps/vanta | 15 | issue-list | new-issue, new-control, new-document, new-framework, new-integration, new-monitored-computer, new-person, new-policy, new-risk-scenario, new-test, new-test-entity, new-user, new-vendor, new-vulnerability, new-vulnerability-remediation | apps/vanta/README.md Triggers section (verified 2026-11-10) | hand | 15 poll triggers: issue-list newest-first; vulnerability-list and vulnerability-remediation-list via their since-filters (slaDeadlineAfterDate, remediatedAfterDate); every other list has no sort order or created-since filter in the vendor spec and is snapshot-diffed; Vanta webhooks (questionnaire, vendor decision, trust-center events; dashboard-registered, Svix-signed) are queued for a webhook node and cover none of these record feeds |
 | apps/vapi | 1 | phone-number-list | new-phone-number | apps/vapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action phone-number-list |
 | apps/vbout | 1 | list-list | new-list | apps/vbout/README.md Triggers section (verified 2026-11-09) | hand | getlists takes no paging params and returns every list in one response: snapshot-diffed; getcontacts is per list and campaigns has no documented order (https://developers.vbout.com/scripts/openapi.json) |
 | apps/vercel | 1 | deployment-list | new-deployment | apps/vercel/README.md Triggers section (verified 2026-11-09) | hand | Documented since-filter poll trigger on deployment-list (since + until paging), resume position + seed floor. |

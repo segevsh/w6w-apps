@@ -8426,12 +8426,32 @@
     "path": "apps/superchat",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-channel",
+      "new-contact-list",
+      "new-contact-list-membership",
+      "new-conversation",
+      "new-conversation-message",
+      "new-file",
+      "new-inbox",
+      "new-template-folder",
+      "new-template",
+      "new-workspace-user"
     ],
     "pollAction": "contact-list",
-    "reason": "'Objects are sorted descendingly by their created_at value' (https://developers.superchat.com/reference/get_contacts); conversation list documents no sort",
-    "verified": "apps/superchat/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Contacts, channels and files are newest-first (documented sort) and polled through their list actions; every other Superchat list documents no sort order and is read whole (cursor-paged, 5000 rows) and snapshot-diffed.",
+    "verified": "apps/superchat/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-search": "new-contact",
+      "contact-conversations-list": "new-conversation"
+    },
+    "skipped": {
+      "custom-attribute-list": "reference data: workspace custom-attribute definitions",
+      "label-list": "reference data: workspace conversation-label definitions",
+      "note-list": "per-conversation notes have no documented order or since filter and are unbounded (https://developers.superchat.com/reference/get_conversations-id-notes)",
+      "webhook-list": "administrative webhook-subscription configuration"
+    }
   },
   {
     "path": "apps/surveymonkey",
@@ -8989,12 +9009,32 @@
     "path": "apps/vanta",
     "mechanism": "poll",
     "candidates": [
-      "new-issue"
+      "new-issue",
+      "new-control",
+      "new-document",
+      "new-framework",
+      "new-integration",
+      "new-monitored-computer",
+      "new-person",
+      "new-policy",
+      "new-risk-scenario",
+      "new-test",
+      "new-test-entity",
+      "new-user",
+      "new-vendor",
+      "new-vulnerability",
+      "new-vulnerability-remediation"
     ],
     "pollAction": "issue-list",
-    "reason": "shipped poll trigger(s) over list action issue-list",
-    "verified": "apps/vanta/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "15 poll triggers: issue-list newest-first; vulnerability-list and vulnerability-remediation-list via their since-filters (slaDeadlineAfterDate, remediatedAfterDate); every other list has no sort order or created-since filter in the vendor spec and is snapshot-diffed; Vanta webhooks (questionnaire, vendor decision, trust-center events; dashboard-registered, Svix-signed) are queued for a webhook node and cover none of these record feeds",
+    "verified": "apps/vanta/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "framework-control-list": "new-control"
+    },
+    "skipped": {
+      "event-log-list": "audit-log output (what users did in Vanta, GET /v1/event-logs), not a record feed (https://developer.vanta.com/reference/manage-vanta)"
+    }
   },
   {
     "path": "apps/vapi",
