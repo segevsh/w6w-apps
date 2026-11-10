@@ -102,7 +102,7 @@ the subscription's state. Unsubscribing runs `DELETE /v4/webhook/{id}` (a webhoo
 deleted). The API key needs the `ModifyWebNotifications` access level, and Elastic Email offers
 notification webhooks on its PRO plans only. When a webhook is created Elastic Email sends one sample
 `Opened` notification for `test@test.com` to the URL (signed with a secret the host does not hold yet);
-it never starts a run.
+the host refuses it and records it as one failed event on the subscription; it never starts a run.
 
 **Trust model.** Elastic Email signs a webhook created with signing. Each delivery carries
 `X-ElasticEmail-Timestamp` (Unix seconds), `X-ElasticEmail-Signature` (a comma-separated list of

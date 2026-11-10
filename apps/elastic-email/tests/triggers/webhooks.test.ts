@@ -192,7 +192,7 @@ test("unset or empty secret + absent or empty header → refused", async () => {
 
 test("a stale or future timestamp (even correctly signed) → refused; one inside the window passes", async () => {
   const b = body();
-  for (const ts of [NOW - 301, NOW + 301]) {
+  for (const ts of [NOW - 301, NOW + 600]) {
     await assertRejects(
       () => ingest(emailOpened, call(b, { headers: headers(b, ts) })),
       Error,

@@ -1,5 +1,5 @@
 import { test } from "node:test";
-import { assert, assertEquals, assertRejects } from "../_assert.ts";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import app from "../../index.ts";
 import newSubscriber from "../../triggers/new-subscriber.ts";
@@ -84,19 +84,12 @@ test("each trigger keeps only its own event", async () => {
   assertEquals(evs(await ingest(addedToSegment, call(payload("subscriber.created")))), []);
 });
 
-test("a non-POST call, a non-JSON body and a non-event body are refused", async () => {
-  await assertRejects(
-    () => ingest(newSubscriber, call(payload(), { method: "GET" })),
-    Error,
-    "POST",
-  );
-  await assertRejects(() => ingest(newSubscriber, call("not json")), Error, "not JSON");
-  await assertRejects(
-    () => ingest(newSubscriber, call({ hello: "world" })),
-    Error,
-    "Not a Flodesk",
-  );
-  await assertRejects(() => ingest(newSubscriber, call(null)), Error, "Not a Flodesk");
+test("a non-POST call, a non-JSON body and a non-event body are refused", () => {
+  // handleIngest is synchronous, so a refusal is a synchronous throw.
+  assertThrows(() => ingest(newSubscriber, call(payload(), { method: "GET" })), Error, "POST");
+  assertThrows(() => ingest(newSubscriber, call("not json")), Error, "not JSON");
+  assertThrows(() => ingest(newSubscriber, call({ hello: "world" })), Error, "Not a Flodesk");
+  assertThrows(() => ingest(newSubscriber, call(null)), Error, "Not a Flodesk");
 });
 
 test("onSubscribe POSTs the webhook (name, post_url, one event) and keeps its id", async () => {

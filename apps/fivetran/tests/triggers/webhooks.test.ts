@@ -178,6 +178,19 @@ test("onSubscribe POSTs an account webhook with a random secret and keeps it in 
   assertEquals(state, { webhookId: "wh_9", secret: sent.secret });
 });
 
+test("every subscription gets its own random secret", async () => {
+  const secrets = new Set<string>();
+  for (const subscriptionId of ["sub_1", "sub_2", "sub_3"]) {
+    const { ctx } = mockCtx([{ body: { data: { id: `wh_${subscriptionId}` } } }]);
+    const state = await syncEnded.onSubscribe!(
+      { params: {}, subscriptionId, callbackUrl: CALLBACK, hostUrl: "" },
+      ctx,
+    ) as { secret: string };
+    secrets.add(state.secret);
+  }
+  assertEquals(secrets.size, 3);
+});
+
 test("onSubscribe with a destination uses the group path and the trigger's own event", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "wh_9" } } }]);
   await syncStarted.onSubscribe!(
@@ -206,16 +219,18 @@ test("onSubscribe refuses an answer without a webhook id", async () => {
   );
 });
 
-test("onUnsubscribe DELETEs the webhook; 404 is already gone; 500 propagates", async () => {
+test("onUnsubscribe DELETEs the webhook; 404 and 410 are already gone; 500 propagates", async () => {
   const state = { webhookId: "wh_9", secret: "s" };
   const ok = mockCtx([{ body: { code: "Success" } }]);
   await syncEnded.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, ok.ctx);
   assertEquals(ok.calls.length, 1);
   assertEquals(ok.calls[0].method, "DELETE");
   assertEquals(new URL(ok.calls[0].url).pathname, "/v1/webhooks/wh_9");
-  const gone = mockCtx([{ status: 404, body: { code: "NotFound", message: "no webhook" } }]);
-  await syncEnded.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, gone.ctx);
-  assertEquals(gone.calls.length, 1);
+  for (const status of [404, 410]) {
+    const gone = mockCtx([{ status, body: { code: "NotFound", message: "no webhook" } }]);
+    await syncEnded.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, gone.ctx);
+    assertEquals(gone.calls.length, 1);
+  }
   const boom = mockCtx([{ status: 500, body: { message: "boom" } }]);
   await assertRejects(() =>
     syncEnded.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, boom.ctx)

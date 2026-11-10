@@ -128,7 +128,7 @@ export function webhookTrigger(
       }
     },
 
-    async handleIngest({ raw }) {
+    handleIngest({ raw }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Flodesk delivers webhooks with POST, not ${raw.method}.`);
       }

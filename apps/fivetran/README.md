@@ -259,7 +259,9 @@ emits only additions. The first check only records what exists.
 with the one event, the host's callback URL and a random per-subscription `secret` that is kept in
 the subscription's state; unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone
 counts as deleted). The API key must be allowed to manage webhooks. Fivetran sends one test `POST`
-to the URL when a webhook is created and only creates it if the URL answers with a success status.
+to the URL when a webhook is created and only creates it if the URL answers with a success status. That test
+delivery reaches the host before the secret is stored, so it is refused and shows up as one failed
+event on the subscription; it never starts a run.
 
 **Trust model.** Fivetran signs a webhook when it was created with a secret: the
 `X-Fivetran-Signature-256` header is the hex HMAC-SHA256 of the exact request body, keyed by that
