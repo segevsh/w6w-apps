@@ -1,6 +1,17 @@
 # SendPulse
 
-Triggers: not shipped — deals-list is offset-paginated with no documented creation/update ordering or since filter (https://api.sendpulse.com/.well-known/openapi/crm.yaml)
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-pipeline` — New Pipeline | poll (snapshot) | `pipelines-list` | Each CRM pipeline newly created in the account. |
+| `new-mailing-list` — New Mailing List | poll (snapshot) | `mailing-lists-list` | Each mailing list newly created in the account. |
+
+Both are small bounded collections, watched as a snapshot (added rows only; a renamed or edited row is not an event). `GET /crm/v1/pipelines` is unpaged and the number of pipelines is limited by the tariff plan ([CRM OpenAPI](https://api.sendpulse.com/.well-known/openapi/crm.yaml), `createPipeline`). `GET /addressbooks` has no documented sort order, so it is read in up to 10 pages of 100 through the action's own `limit`/`offset`; an account with more than 1000 lists is refused with an error rather than truncated ([Bulk Email OpenAPI](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml), `getMailingLists`). Verified 2026-11-09.
+
+Not triggers: `deals-list` is offset-paginated with no documented creation/update ordering or since filter, and the deal history is unbounded, so it fits neither a newest-first nor a snapshot trigger ([CRM OpenAPI](https://api.sendpulse.com/.well-known/openapi/crm.yaml)). `campaigns-list` documents only an `order` of `asc`/`desc` with no named sort field, the action does not pass it, and the campaign history is unbounded ([Bulk Email OpenAPI](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml), `GET /campaigns`).
 
 Manage SendPulse **CRM** deals and contacts, and send **Bulk Email** campaigns, against
 SendPulse's own published OpenAPI 3 documents.

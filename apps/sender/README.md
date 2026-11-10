@@ -9,7 +9,7 @@
 | `new-subscriber` — New Subscriber | poll | `subscriber-list` | Each newly created subscriber. |
 | `new-or-updated-subscriber` — New or Updated Subscriber | poll | `subscriber-list` | Each newly created or updated subscriber. |
 
-Sender documents `order` and `direction` on [its pagination endpoint](https://api.sender.net/pagination/). Verified 2026-11-09.
+Sender documents `order` and `direction` on [its pagination endpoint](https://api.sender.net/pagination/); `order` accepts "the key values from the resource data". The triggers send `order=created` / `order=modified`, and the subscriber key names `created` / `modified` could not be confirmed on the vendor's page (it is a JavaScript shell); treat them as unproven until a live response is seen. Verified 2026-11-09.
 
 Send campaigns, manage subscribers/groups/segments, custom fields and custom events, and manage
 account webhooks on **Sender (sender.net)**, an email (and SMS) marketing platform.

@@ -9,7 +9,7 @@
 | `new-form` — New Form | poll | `form-list` | Each newly created registration form. |
 | `new-or-updated-form` — New or Updated Form | poll | `form-list` | Each newly created or updated registration form. |
 
-The `form-list` sort and date filters are documented by [RegFox's Forms API](https://api.webconnex.com/docs). Verified 2026-11-09.
+`new-form` reads `form-list` newest-first (`sort=desc`, an id-cursor listing). `new-or-updated-form` uses the action's `dateUpdatedAfter` filter (`sort=asc`) from the saved cursor minus a 2-minute overlap, de-duplicates by `id:dateUpdated`, and pages through a window larger than one page across checks (`startingAfter` resume position) before moving the cursor. Both are documented in [RegFox's Webconnex API v2](https://docs.webconnex.io/api/v2/). Verified 2026-11-09.
 
 Event registration on the Webconnex platform, driven through the Webconnex public API v2
 (`https://api.webconnex.com/v2/public`). The same API and key also reach TicketSpice, RedPodium and

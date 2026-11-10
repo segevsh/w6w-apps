@@ -11,7 +11,7 @@ test("new-order seeds, emits, retries, and requests literal created ordering", a
   assertEquals(seed.calls[0].method, "GET");
   assertEquals(
     seed.calls[0].url,
-    "https://api.salla.dev/admin/v2/orders?sort_by=created_at&page=1&per_page=60",
+    "https://api.salla.dev/admin/v2/orders?sort_by=created_at-desc&page=1&per_page=60",
   );
   const response = { data: [item(2), item(1)] };
   const first = await trigger.poll!(

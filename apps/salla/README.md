@@ -9,7 +9,7 @@
 | `new-order` — New Order | poll | `order-list` | Each newly created order. |
 | `new-or-updated-order` — New or Updated Order | poll | `order-list` | Each newly created or updated order. |
 
-Salla documents the order-list `sort_by` field in its [Orders API](https://docs.salla.dev/doc-421135). Verified 2026-11-09.
+Salla documents `sort_by` on [List Orders](https://docs.salla.dev/orders/list.md): the direction is chosen by appending `-asc` or `-desc` to the attribute, so the triggers send `created_at-desc` (new) and `updated_at-desc` (new or updated). Verified 2026-11-09.
 
 Products, orders, customers, categories, brands, discount coupons and store details in Salla, the
 Saudi e-commerce platform, over the Merchant API (`api.salla.dev/admin/v2`).

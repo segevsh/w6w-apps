@@ -13,7 +13,7 @@ test("new-or-updated-agent seeds, emits edited keys, retries, and posts update s
   assertEquals(JSON.parse(seed.calls[0].body!), {
     page: 1,
     page_size: 100,
-    sort: ["-update_date_"],
+    sort: [{ update_date_: "desc" }],
   });
   const body = { results: [item("a", "2"), item("a", "1")] };
   const first = await trigger.poll!(

@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Order",
   description: "The run gets each newly created order.",
   action: orderList,
-  input: () => ({ sort_by: "created_at", page: 1, per_page: 60 }),
+  input: () => ({ sort_by: "created_at-desc", page: 1, per_page: 60 }),
   items: (result) => (result as { data?: unknown[] }).data ?? [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   output: [{ key: "id", type: "number", label: "Order ID" }],

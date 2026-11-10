@@ -11,7 +11,7 @@ test("new-or-updated-order seeds, emits edits, retries, and requests updated ord
   assertEquals(seed.calls[0].method, "GET");
   assertEquals(
     seed.calls[0].url,
-    "https://api.salla.dev/admin/v2/orders?sort_by=updated_at&page=1&per_page=60",
+    "https://api.salla.dev/admin/v2/orders?sort_by=updated_at-desc&page=1&per_page=60",
   );
   const body = { data: [item(1, "b"), item(1, "a")] };
   const first = await trigger.poll!(

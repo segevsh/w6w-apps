@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New or Updated Order",
   description: "The run gets each newly created or updated order.",
   action: orderList,
-  input: () => ({ sort_by: "updated_at", page: 1, per_page: 60 }),
+  input: () => ({ sort_by: "updated_at-desc", page: 1, per_page: 60 }),
   items: (result) => (result as { data?: unknown[] }).data ?? [],
   idOf: (item) => {
     const order = item as { id?: unknown; updated_at?: unknown };

@@ -1,6 +1,15 @@
 # Reply.io
 
-Triggers: not shipped — contact-list is offset-paginated with no documented creation ordering or created-since filter (https://docs.reply.io/api-reference/contacts/get-all-contacts)
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `contact-filter` | Each contact newly added to the account (`sortBy: addedOn`, `sortDirection: desc`). |
+| `new-sequence-contact` — New Sequence Contact | poll | `sequence-contact-list` | Each contact newly enrolled in the sequence given by `sequenceId` (`sort_by=addingDate`, `sort_direction=desc`). |
+
+Both wrap an existing action and request newest-first explicitly. `GET /v3/contacts` (`contact-list`) is not used: it has no documented sort or created-since filter. The sort fields (`addedOn` on `POST /v3/contacts/filter`; `addingDate` on `GET /v3/sequences/{id}/contacts`, which the vendor also orders most-recently-added first when `sort_by` is omitted) are documented in Reply's [OpenAPI document](https://docs.reply.io/api-reference/bundled.yaml). Verified 2026-11-09.
 
 Manage contacts, sequences (multichannel outreach campaigns), email accounts, custom fields, and
 team-wide email reporting, on the **Reply API v3**.

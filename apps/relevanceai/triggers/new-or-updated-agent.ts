@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New or Updated Agent",
   description: "The run gets each newly created or updated agent.",
   action: agentList,
-  input: () => ({ page: 1, pageSize: 100, sort: ["-update_date_"] }),
+  input: () => ({ page: 1, pageSize: 100, sort: [{ update_date_: "desc" }] }),
   items: (result) => (result as { results?: unknown[] }).results ?? [],
   idOf: (item) => {
     const agent = item as { agent_id?: unknown; update_date_?: unknown };

@@ -14,7 +14,7 @@ test("new-agent seeds, emits new agents, retries, and posts a literal newest-fir
   assertEquals(JSON.parse(seed.calls[0].body!), {
     page: 1,
     page_size: 100,
-    sort: ["-insert_date_"],
+    sort: [{ insert_date_: "desc" }],
   });
   const first = await trigger.poll!(
     { params: {}, state: seeded.nextState, subscriptionId: "s" },

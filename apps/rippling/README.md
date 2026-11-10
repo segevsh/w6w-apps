@@ -9,7 +9,7 @@
 | `new-user` — New User | poll | `user-list` | Each newly created user. |
 | `new-or-updated-user` — New or Updated User | poll | `user-list` | Each newly created or updated user. |
 
-The `order_by` values used by user-list are documented in [Rippling's Users API](https://developer.rippling.com/documentation/api/users). Verified 2026-11-09.
+The `order_by` values used by user-list are documented in [Rippling's List Users reference](https://developer.rippling.com/documentation/rest-api/reference/list-users). Verified 2026-11-09.
 
 Read and manage the HR core of a Rippling company (workers, users, org structure, leave, custom
 objects) on the **Rippling REST API v2**.
