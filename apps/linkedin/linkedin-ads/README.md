@@ -351,4 +351,12 @@ up `_tools/deno.json` instead and cannot resolve the `@w6w/types` value imports 
 
 ## Triggers
 
-- **New Ad Account** wraps the existing `ad-account-list` action and polls its newest-first feed. Vendor documentation: https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-campaigns (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Ad Account (`new-ad-account`) | poll | `ad-account-list` — whole collection | each ad account that becomes accessible to the connection |
+
+The trigger polls every 5 minutes. LinkedIn documents `sortOrder` for this finder as sorting by account ID only, so the trigger does not rely on newest-first: it reads every account the connection can reach through the existing action (pages of 100 by `pageToken`, at most 5000) and compares it with the previous check as a snapshot. An advertiser's accessible accounts are a small bounded collection (at the development tier, only the accounts mapped to the Developer app). The first check seeds and emits nothing; only a content hash per account is kept in the trigger state.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts (verified 2026-11-09): the Ad Accounts "Search for Ad Accounts" section documents `q=search`, cursor paging, and "Use the sortOrder parameter to sort results … It also sorts by ID in descending order".
