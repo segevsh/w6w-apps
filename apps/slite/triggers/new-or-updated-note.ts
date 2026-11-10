@@ -27,13 +27,13 @@ export default pollFromListAction({
   output: [
     { key: "id", type: "string", label: "Note ID" },
     { key: "title", type: "string", label: "Title" },
-    { key: "url", type: "string", label: "URL" },
+    { key: "parentNoteId", type: "string", label: "Parent note ID" },
     { key: "lastEditedAt", type: "string", label: "Last edited at" },
   ],
   sample: {
     id: "noteId1",
     title: "Onboarding guide",
-    url: "https://acme.slite.com/api/s/noteId1/Onboarding-guide",
+    parentNoteId: "noteId0",
     lastEditedAt: "2026-11-09T10:30:00.000Z",
   },
   maxPages: 1,

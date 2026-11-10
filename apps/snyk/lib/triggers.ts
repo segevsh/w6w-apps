@@ -40,7 +40,7 @@ function isSeeded(state: unknown): state is WindowState {
  */
 export async function pollWindow<T>(o: {
   state: unknown;
-  fetch(
+  read(
     sinceIso: string,
     pos: Pos | undefined,
     ctx: HookContext,
@@ -59,7 +59,7 @@ export async function pollWindow<T>(o: {
     sinceMs = prior.resume?.sinceMs ?? prior.cursor - OVERLAP_MS;
     let pos = prior.resume?.pos;
     for (let page = 0; page < MAX_PAGES; page++) {
-      const res = await o.fetch(new Date(sinceMs).toISOString(), pos, o.ctx);
+      const res = await o.read(new Date(sinceMs).toISOString(), pos, o.ctx);
       for (const item of res.items) if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
       next = res.next;
       if (next === undefined) break;
@@ -138,11 +138,11 @@ export const newIssueTrigger: TriggerDefinition<Params> = {
   },
   minIntervalMs: 300_000,
   poll({ params, state }, ctx) {
-    const fetch = fetchSince("createdAfter");
+    const read = fetchSince("createdAfter");
     return pollWindow<Issue>({
       state,
       ctx,
-      fetch: (since, pos, c) => fetch(since, pos, c, params),
+      read: (since, pos, c) => read(since, pos, c, params),
       idOf: (i) => String(i.id),
     });
   },
@@ -167,11 +167,11 @@ export const newOrUpdatedIssueTrigger: TriggerDefinition<Params> = {
   },
   minIntervalMs: 300_000,
   poll({ params, state }, ctx) {
-    const fetch = fetchSince("updatedAfter");
+    const read = fetchSince("updatedAfter");
     return pollWindow<Issue>({
       state,
       ctx,
-      fetch: (since, pos, c) => fetch(since, pos, c, params),
+      read: (since, pos, c) => read(since, pos, c, params),
       idOf: (i) => `${i.id}:${i.attributes?.updated_at ?? ""}`,
     });
   },

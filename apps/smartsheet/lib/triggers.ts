@@ -40,7 +40,7 @@ function isSeeded(state: unknown): state is WindowState {
  */
 export async function pollWindow<T>(o: {
   state: unknown;
-  fetch(
+  read(
     sinceIso: string,
     pos: Pos | undefined,
     ctx: HookContext,
@@ -59,7 +59,7 @@ export async function pollWindow<T>(o: {
     sinceMs = prior.resume?.sinceMs ?? prior.cursor - OVERLAP_MS;
     let pos = prior.resume?.pos;
     for (let page = 0; page < MAX_PAGES; page++) {
-      const res = await o.fetch(new Date(sinceMs).toISOString(), pos, o.ctx);
+      const res = await o.read(new Date(sinceMs).toISOString(), pos, o.ctx);
       for (const item of res.items) if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
       next = res.next;
       if (next === undefined) break;
@@ -95,7 +95,6 @@ const OUTPUT: OutputField[] = [
   { key: "id", type: "number", label: "Sheet ID" },
   { key: "name", type: "string", label: "Name" },
   { key: "accessLevel", type: "string", label: "Access level" },
-  { key: "permalink", type: "string", label: "Permalink" },
   { key: "createdAt", type: "string", label: "Created at" },
   { key: "modifiedAt", type: "string", label: "Modified at" },
 ];
@@ -105,7 +104,6 @@ function sample(modifiedAt: string) {
     id: 4583173393803140,
     name: "Project plan",
     accessLevel: "OWNER",
-    permalink: "https://app.smartsheet.com/sheets/abc123",
     createdAt: "2026-11-09T09:00:00Z",
     modifiedAt,
   };
@@ -141,7 +139,7 @@ export const newSheetTrigger: TriggerDefinition = {
     return pollWindow<Sheet>({
       state,
       ctx,
-      fetch: fetchSince,
+      read: fetchSince,
       idOf: (s) => String(s.id),
       keep: (s, sinceMs) => Date.parse(s.createdAt ?? "") >= sinceMs,
     });
@@ -159,7 +157,7 @@ export const newOrUpdatedSheetTrigger: TriggerDefinition = {
     return pollWindow<Sheet>({
       state,
       ctx,
-      fetch: fetchSince,
+      read: fetchSince,
       idOf: (s) => `${s.id}:${s.modifiedAt ?? ""}`,
     });
   },

@@ -40,7 +40,7 @@ function isSeeded(state: unknown): state is WindowState {
  */
 export async function pollWindow<T>(o: {
   state: unknown;
-  fetch(
+  read(
     sinceIso: string,
     pos: Pos | undefined,
     ctx: HookContext,
@@ -59,7 +59,7 @@ export async function pollWindow<T>(o: {
     sinceMs = prior.resume?.sinceMs ?? prior.cursor - OVERLAP_MS;
     let pos = prior.resume?.pos;
     for (let page = 0; page < MAX_PAGES; page++) {
-      const res = await o.fetch(new Date(sinceMs).toISOString(), pos, o.ctx);
+      const res = await o.read(new Date(sinceMs).toISOString(), pos, o.ctx);
       for (const item of res.items) if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
       next = res.next;
       if (next === undefined) break;
@@ -154,7 +154,7 @@ export const newExpenseTrigger: TriggerDefinition<Params> = {
     return pollWindow<Expense>({
       state,
       ctx,
-      fetch: (since, pos, c) => fetchSince(since, pos, c, params),
+      read: (since, pos, c) => fetchSince(since, pos, c, params),
       idOf: (e) => String(e.id),
       keep: (e, sinceMs) => !e.deleted_at && Date.parse(e.created_at ?? "") >= sinceMs,
     });
@@ -173,7 +173,7 @@ export const newOrUpdatedExpenseTrigger: TriggerDefinition<Params> = {
     return pollWindow<Expense>({
       state,
       ctx,
-      fetch: (since, pos, c) => fetchSince(since, pos, c, params),
+      read: (since, pos, c) => fetchSince(since, pos, c, params),
       idOf: (e) => `${e.id}:${e.updated_at ?? ""}`,
     });
   },

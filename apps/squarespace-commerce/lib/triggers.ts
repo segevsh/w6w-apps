@@ -40,7 +40,7 @@ function isSeeded(state: unknown): state is WindowState {
  */
 export async function pollWindow<T>(o: {
   state: unknown;
-  fetch(
+  read(
     sinceIso: string,
     pos: Pos | undefined,
     ctx: HookContext,
@@ -59,7 +59,7 @@ export async function pollWindow<T>(o: {
     sinceMs = prior.resume?.sinceMs ?? prior.cursor - OVERLAP_MS;
     let pos = prior.resume?.pos;
     for (let page = 0; page < MAX_PAGES; page++) {
-      const res = await o.fetch(new Date(sinceMs).toISOString(), pos, o.ctx);
+      const res = await o.read(new Date(sinceMs).toISOString(), pos, o.ctx);
       for (const item of res.items) if (!o.keep || o.keep(item, sinceMs)) gathered.push(item);
       next = res.next;
       if (next === undefined) break;
@@ -146,7 +146,7 @@ export const newOrderTrigger: TriggerDefinition = {
     return pollWindow<Order>({
       state,
       ctx,
-      fetch: fetchSince,
+      read: fetchSince,
       idOf: (o) => String(o.id),
       keep: (o, sinceMs) => Date.parse(o.createdOn ?? "") >= sinceMs,
     });
@@ -164,7 +164,7 @@ export const newOrUpdatedOrderTrigger: TriggerDefinition = {
     return pollWindow<Order>({
       state,
       ctx,
-      fetch: fetchSince,
+      read: fetchSince,
       idOf: (o) => `${o.id}:${o.modifiedOn ?? ""}`,
     });
   },
