@@ -25,6 +25,9 @@ import createEvent from "./actions/create-event.ts";
 import updateEvent from "./actions/update-event.ts";
 import deleteEvent from "./actions/delete-event.ts";
 import newEmail from "./triggers/new-email.ts";
+import newEvent from "./triggers/new-event.ts";
+import newCalendar from "./triggers/new-calendar.ts";
+import newMailFolder from "./triggers/new-mail-folder.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -50,7 +53,7 @@ export default {
     updateEvent,
     deleteEvent,
   ],
-  triggers: [newEmail],
+  triggers: [newEmail, newEvent, newCalendar, newMailFolder],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
