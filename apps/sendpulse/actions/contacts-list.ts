@@ -8,6 +8,8 @@ interface Input {
   lastName?: string;
   email?: string;
   phone?: string;
+  from?: string;
+  updateFrom?: string;
 }
 
 /**
@@ -30,6 +32,20 @@ const action: ActionDefinition<Input> = {
     { key: "lastName", label: "Last name", type: "string" },
     { key: "email", label: "Email", type: "string" },
     { key: "phone", label: "Phone", type: "string" },
+    {
+      key: "from",
+      label: "Created on or after",
+      type: "string",
+      hint: "Date, YYYY-MM-DD (day granularity).",
+      advanced: true,
+    },
+    {
+      key: "updateFrom",
+      label: "Updated on or after",
+      type: "string",
+      hint: "Date, YYYY-MM-DD (day granularity).",
+      advanced: true,
+    },
   ],
   output: [
     { key: "data", type: "object", label: "`{ list, total }`" },
@@ -43,6 +59,8 @@ const action: ActionDefinition<Input> = {
       lastName: input.lastName,
       email: input.email,
       phone: input.phone,
+      from: input.from,
+      updateFrom: input.updateFrom,
     });
     return await new SendPulseClient(ctx).crm("/contacts/get-list", { method: "POST", body });
   },
