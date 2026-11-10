@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/unbounce",
-  "version": "0.2.0",
-  "description": "Manage Unbounce landing pages, leads and form submissions, and read account, sub-account and domain structure.",
+  "version": "0.3.0",
+  "description": "Manage Unbounce landing pages, leads and form submissions, and read account, sub-account and domain structure. Poll triggers fire on new leads, pages, domains, sub-accounts, page groups and accounts.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -75,6 +75,11 @@ import userGet from "./actions/user-get.ts";
 
 import service from "./health/service.ts";
 import newLead from "./triggers/new-lead.ts";
+import newPage from "./triggers/new-page.ts";
+import newDomain from "./triggers/new-domain.ts";
+import newSubAccount from "./triggers/new-sub-account.ts";
+import newPageGroup from "./triggers/new-page-group.ts";
+import newAccount from "./triggers/new-account.ts";
 
 export default {
   actions: [
@@ -112,7 +117,7 @@ export default {
   ],
   // API Key for a single account (works everywhere except the two OAuth-only
   // lead-deletion endpoints); OAuth for a public integration, or to reach those.
-  triggers: [newLead],
+  triggers: [newLead, newPage, newDomain, newSubAccount, newPageGroup, newAccount],
   auth: [apiKey, oauth2],
   healthChecks: [service],
 } satisfies AppDefinition;
