@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1793 triggers, 2563 unaccounted list actions in 536 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -30,11 +30,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/gumroad | 2 | 12 | 11 |
 | apps/lokalise | 5 | 11 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
-| apps/lemonsqueezy | 1 | 11 | 10 |
 | apps/mighty-networks | 3 | 10 | 10 |
-| apps/practicebetter | 2 | 11 | 10 |
-| apps/ringover | 1 | 11 | 10 |
-| apps/systemeio | 1 | 11 | 10 |
 | apps/tickettailor | 0 | 10 | 10 |
 | apps/tidio | 0 | 10 | 10 |
 | apps/unbounce | 1 | 11 | 10 |
@@ -621,6 +617,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/klaviyo | 2 | 0 | 0 |
 | apps/knack | 1 | 1 | 0 |
 | apps/leadfeeder | 7 | 10 | 0 |
+| apps/lemonsqueezy | 10 | 11 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
 | apps/linear | 7 | 5 | 0 |
 | apps/linkedin/linkedin | 2 | 1 | 0 |
@@ -647,10 +644,12 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/pipedrive | 13 | 3 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
+| apps/practicebetter | 9 | 11 | 0 |
 | apps/productboard | 12 | 20 | 0 |
 | apps/productive | 2 | 17 | 0 |
 | apps/pylon | 8 | 13 | 0 |
 | apps/razorpay | 12 | 12 | 0 |
+| apps/ringover | 6 | 11 | 0 |
 | apps/rootly | 13 | 13 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
@@ -663,6 +662,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/superchat | 11 | 17 | 0 |
+| apps/systemeio | 9 | 11 | 0 |
 | apps/tapfiliate | 9 | 14 | 0 |
 | apps/teamup | 7 | 13 | 0 |
 | apps/telegram | 11 | 0 | 0 |
@@ -1027,7 +1027,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/leadfeeder | 7 | visitor-company-list | new-visitor-company, new-campaign, new-custom-feed, new-tag, new-list, new-list-item, new-web-visit | apps/leadfeeder/README.md Triggers section (verified 2026-11-10) | hand | visitor-company-list most-recent-visitor-first by documented default (https://api.leadfeeder.com/openapi.yaml); bounded snapshots for campaigns, custom feeds, tags, lists and one list's items; web visits via a since-filter (start_date/end_date) poll on web-visit-search |
 | apps/learnworlds | 1 | users-list | new-user | apps/learnworlds/README.md Triggers section (verified 2026-11-09) | hand | users-list returns users newest registered first per the existing action's own documented behaviour; the vendor portal is JavaScript-rendered so the order is not independently re-verified (https://www.learnworlds.dev/) |
 | apps/leexi | 1 | meeting-event-list | new-meeting-event | no | hand | shipped poll trigger(s) over list action meeting-event-list |
-| apps/lemonsqueezy | 1 | order-list | new-order | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09) | hand | order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders) |
+| apps/lemonsqueezy | 10 | order-list | new-order, new-checkout, new-customer, new-discount, new-license-key, new-price, new-subscription, new-product, new-variant, new-store | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-10) | hand | nine list actions behind poll triggers (documented created_at/id-descending defaults, or a whole-collection snapshot for name/sort-ordered catalogues); https://docs.lemonsqueezy.com/api |
 | apps/lever | 2 | posting-list | new-posting, new-or-updated-posting | apps/lever/README.md Triggers section (verified 2026-11-09) | hand | posting-list read as a bounded whole-collection snapshot (cursor pages of 100, max 5000), no sort relied on (https://hire.lever.co/developer/documentation#list-all-postings) |
 | apps/lexware-office | 2 | voucher-list | new-voucher, new-or-updated-voucher | apps/lexware-office/README.md Triggers section (verified 2026-11-09) | hand | voucher-list sort=createdDate,DESC / updatedDate,DESC (https://developers.lexware.io/docs/) |
 | apps/linkedin/linkedin | 2 | list-posts-by-author | new-post, new-or-updated-post | apps/linkedin/linkedin/README.md Triggers section (verified 2026-11-09) | hand | list-posts-by-author sortBy=CREATED / LAST_MODIFIED (https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api) |
@@ -1119,7 +1119,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/podium | 11 | conversation-list | new-conversation, new-feedback, new-location, new-or-updated-appointment, new-or-updated-call, new-or-updated-campaign, new-or-updated-contact, new-or-updated-review, new-review, new-review-invite, new-user | apps/podium/README.md Triggers section (verified 2026-11-10) | hand | newest-first and updated-since poll triggers over /v4 list actions plus whole-collection snapshots for locations and users |
 | apps/postgres | 1 | query | new-row | no | hand | shipped poll trigger(s) over list action query |
 | apps/postmark | 1 | list-outbound-messages | new-outbound-message | apps/postmark/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-outbound-messages |
-| apps/practicebetter | 2 | list-client-records | new-client-record, new-or-updated-client-record | apps/practicebetter/README.md Triggers section (verified 2026-11-09) | hand | GET /consultant/records is documented newest-created first and takes modified_gte; webhook subscriptions also exist (see webhooks file) |
+| apps/practicebetter | 9 | list-client-records | new-client-record, new-or-updated-client-record, new-invoice, new-session, new-tag, new-reminder, new-package-instance, new-service, new-package | apps/practicebetter/README.md Triggers section (verified 2026-11-10) | hand | every business list is behind a poll trigger (descending-by-created order documented in https://api-docs.practicebetter.io/swagger.json, or a rank-ordered catalogue snapshot); webhook subscriptions also exist |
 | apps/printavo | 1 | task-list | new-task | apps/printavo/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by CREATED_AT descending. |
 | apps/printnode | 1 | printjob-list | new-printjob | apps/printnode/README.md Triggers section (verified 2026-11-09) | hand | GET /printjobs is documented newest first |
 | apps/processstreet | 1 | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
@@ -1152,7 +1152,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/resend | 1 | email-list | new-email | apps/resend/README.md Triggers section (verified 2026-11-09) | hand | GET /emails is documented newest first |
 | apps/retellai | 2 | list-agents | new-agent, new-or-updated-agent | apps/retellai/README.md Triggers section (verified 2026-11-09) | hand | list-agents sort_order=descending (default); sort field unnamed by the vendor, creation order unproven (https://docs.retellai.com/api-references/list-agents) |
 | apps/ringcentral | 2 | call-log-list | new-call-log-record, new-message | apps/ringcentral/README.md Triggers section (verified 2026-11-09) | hand | call-log-list and message-store-list document a dateFrom filter (RingCentral OpenAPI); polled as since-filter with page resume and id dedupe; a webhook (Validation-Token handshake) is also available and queued as an upgrade |
-| apps/ringover | 1 | call-list | new-call | apps/ringover/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
+| apps/ringover | 6 | call-list | new-call, new-contact, new-conversation, new-group, new-user, new-tag | apps/ringover/README.md Triggers section (verified 2026-11-10) | hand | call log newest first; contacts, conversations, groups, users and tags as whole-collection snapshots (no created-at order/filter documented, https://developer.ringover.com/web/openapi_public.yml) |
 | apps/rippling | 2 | user-list | new-user, new-or-updated-user | apps/rippling/README.md Triggers section (verified 2026-11-09) | hand | user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users) |
 | apps/rocketchat | 2 | list-users | new-user, new-or-updated-user | apps/rocketchat/README.md Triggers section (verified 2026-11-09) | hand | list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list) |
 | apps/rootly | 13 | incident-list | new-alert, new-environment, new-functionality, new-incident, new-incident-action-item, new-incident-event, new-or-updated-alert, new-or-updated-user, new-schedule, new-service, new-severity, new-team, new-user | apps/rootly/README.md Triggers section (verified 2026-11-10) | hand | newest-first sort=-created_at on incidents, services, teams, users, functionalities, environments, severities; created/updated since-filter on alerts; id-diff snapshots of schedules and one incident's events and action items |
@@ -1203,7 +1203,7 @@ depth: 682 apps, 1764 triggers, 2603 unaccounted list actions in 540 apps, n8n-p
 | apps/supabase | 1 | rows-list | new-row | apps/supabase/README.md Triggers section (verified 2026-11-09) | hand | explicit PostgREST order=<creation column>.desc.nullslast,id.desc on the caller's named table and creation column (https://docs.postgrest.org/en/stable/references/api/tables_views.html) |
 | apps/superchat | 11 | contact-list | new-contact, new-channel, new-contact-list, new-contact-list-membership, new-conversation, new-conversation-message, new-file, new-inbox, new-template-folder, new-template, new-workspace-user | apps/superchat/README.md Triggers section (verified 2026-11-10) | hand | Contacts, channels and files are newest-first (documented sort) and polled through their list actions; every other Superchat list documents no sort order and is read whole (cursor-paged, 5000 rows) and snapshot-diffed. |
 | apps/synthflow | 1 | call-list | new-call | apps/synthflow/README.md Triggers section (verified 2026-11-09) | hand | since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls) |
-| apps/systemeio | 1 | contact-list | new-contact | apps/systemeio/README.md Triggers section (verified 2026-11-09) | hand | order=desc, documented default; cursor is the item id so order is by id (https://developer.systeme.io/reference/api) |
+| apps/systemeio | 9 | contact-list | new-contact, new-campaign, new-community, new-course, new-enrollment, new-funnel, new-membership, new-newsletter, new-tag | apps/systemeio/README.md Triggers section (verified 2026-11-10) | hand | every collection takes order=desc with id cursors, so each new-<record> trigger polls newest first (https://developer.systeme.io/reference/api) |
 | apps/tableau | 2 | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
 | apps/tailscale | 1 | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |
 | apps/tally | 1 | submission-get-many | new-submission | apps/tally/README.md Triggers section (verified 2026-11-09) | hand | since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list) |

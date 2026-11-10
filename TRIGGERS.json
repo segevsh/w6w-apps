@@ -5100,12 +5100,24 @@
     "path": "apps/lemonsqueezy",
     "mechanism": "poll",
     "candidates": [
-      "new-order"
+      "new-order",
+      "new-checkout",
+      "new-customer",
+      "new-discount",
+      "new-license-key",
+      "new-price",
+      "new-subscription",
+      "new-product",
+      "new-variant",
+      "new-store"
     ],
     "pollAction": "order-list",
-    "reason": "order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders)",
-    "verified": "apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "nine list actions behind poll triggers (documented created_at/id-descending defaults, or a whole-collection snapshot for name/sort-ordered catalogues); https://docs.lemonsqueezy.com/api",
+    "verified": "apps/lemonsqueezy/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhook-list": "integration-management config: the account's own webhook registrations, not business records"
+    }
   },
   {
     "path": "apps/lever",
@@ -7158,12 +7170,24 @@
     "mechanism": "poll",
     "candidates": [
       "new-client-record",
-      "new-or-updated-client-record"
+      "new-or-updated-client-record",
+      "new-invoice",
+      "new-session",
+      "new-tag",
+      "new-reminder",
+      "new-package-instance",
+      "new-service",
+      "new-package"
     ],
     "pollAction": "list-client-records",
-    "reason": "GET /consultant/records is documented newest-created first and takes modified_gte; webhook subscriptions also exist (see webhooks file)",
-    "verified": "apps/practicebetter/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "every business list is behind a poll trigger (descending-by-created order documented in https://api-docs.practicebetter.io/swagger.json, or a rank-ordered catalogue snapshot); webhook subscriptions also exist",
+    "verified": "apps/practicebetter/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-timezones": "reference/static data: time-zone names",
+      "list-webhook-event-types": "reference/static data: the webhook event-type catalogue",
+      "list-webhook-subscriptions": "integration-management config: the account's own webhook registrations"
+    }
   },
   {
     "path": "apps/printavo",
@@ -7707,12 +7731,26 @@
     "path": "apps/ringover",
     "mechanism": "poll",
     "candidates": [
-      "new-call"
+      "new-call",
+      "new-contact",
+      "new-conversation",
+      "new-group",
+      "new-user",
+      "new-tag"
     ],
     "pollAction": "call-list",
-    "reason": "shipped poll trigger(s) over list action call-list",
-    "verified": "apps/ringover/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "call log newest first; contacts, conversations, groups, users and tags as whole-collection snapshots (no created-at order/filter documented, https://developer.ringover.com/web/openapi_public.yml)",
+    "verified": "apps/ringover/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "call-search": "new-call"
+    },
+    "skipped": {
+      "blacklist-list": "admin configuration: the team's number blacklist",
+      "call-live-list": "transient in-progress snapshot (calls gone within minutes, a 5-minute poll misses most); finished calls are delivered by new-call",
+      "message-list": "per-conversation list with no documented order and an undocumented last_id_returned cursor direction (openapi_public.yml GET /conversations/{convId}/messages: only 'first 100 messages by default'): no reliable new-message window can be built",
+      "number-list": "provisioning inventory that defaults to unassigned numbers only (other filters need Monitoring): not a record feed"
+    }
   },
   {
     "path": "apps/rippling",
@@ -9524,12 +9562,24 @@
     "path": "apps/systemeio",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-campaign",
+      "new-community",
+      "new-course",
+      "new-enrollment",
+      "new-funnel",
+      "new-membership",
+      "new-newsletter",
+      "new-tag"
     ],
     "pollAction": "contact-list",
-    "reason": "order=desc, documented default; cursor is the item id so order is by id (https://developer.systeme.io/reference/api)",
-    "verified": "apps/systemeio/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "every collection takes order=desc with id cursors, so each new-<record> trigger polls newest first (https://developer.systeme.io/reference/api)",
+    "verified": "apps/systemeio/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-field-list": "field definitions: static configuration, not records",
+      "webhook-list": "integration-management config: the account's own webhook registrations"
+    }
   },
   {
     "path": "apps/tableau",
