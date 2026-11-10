@@ -4325,12 +4325,13 @@
     "path": "apps/mural",
     "mechanism": "poll",
     "candidates": [
-      "new-mural-list"
+      "new-mural",
+      "new-or-updated-mural"
     ],
     "pollAction": "mural-list",
-    "reason": "list action mural-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn (developers.mural.co getworkspacemurals documents both sorts and updatedOn)",
+    "verified": "apps/mural/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/murf",
@@ -4345,25 +4346,26 @@
   },
   {
     "path": "apps/mux",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
       "new-asset-list"
     ],
-    "pollAction": "asset-list",
-    "reason": "list action asset-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "asset-list has no documented sort order or created-since filter (params: limit, page, live_stream_id, upload_id; https://github.com/muxinc/mux-node-sdk/blob/master/src/resources/video/assets.ts)",
+    "verified": "apps/mux/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/nationbuilder",
     "mechanism": "poll",
     "candidates": [
-      "new-person-list"
+      "new-person",
+      "new-or-updated-person"
     ],
     "pollAction": "person-list",
-    "reason": "list action person-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit",
+    "verified": "apps/nationbuilder/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/netlify",
@@ -4422,12 +4424,12 @@
     "path": "apps/nocodb",
     "mechanism": "poll",
     "candidates": [
-      "new-record-list"
+      "new-record"
     ],
     "pollAction": "record-list",
-    "reason": "list action record-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table",
+    "verified": "apps/nocodb/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/nocrm",
@@ -4466,12 +4468,13 @@
     "path": "apps/odoo",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "wraps list-contacts with order=create_date desc / write_date desc (ORM log-access fields)",
+    "verified": "apps/odoo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/okta",
@@ -4518,12 +4521,12 @@
     "path": "apps/oncehub",
     "mechanism": "poll",
     "candidates": [
-      "new-sms-notification-list"
+      "new-sms-notification"
     ],
     "pollAction": "sms-notification-list",
-    "reason": "list action sms-notification-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "OnceHub pagination guide: list requests return objects in reverse chronological order",
+    "verified": "apps/oncehub/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/onepagecrm",
@@ -4538,14 +4541,14 @@
   },
   {
     "path": "apps/onepassword",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
       "new-item-file-list"
     ],
-    "pollAction": "item-file-list",
-    "reason": "list action item-file-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "no existing list fits: Connect collections have no documented sort or created-since filter; audit-event/signin-attempt are start_time cursor streams with unstated order (https://developer.1password.com/docs/events-api/reference/)",
+    "verified": "apps/onepassword/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/onesignal",
@@ -4632,12 +4635,13 @@
     "path": "apps/outreach",
     "mechanism": "poll",
     "candidates": [
-      "new-account-list"
+      "new-account",
+      "new-or-updated-account"
     ],
     "pollAction": "account-list",
-    "reason": "list action account-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "wraps account-list with sort=-createdAt / -updatedAt (sort syntax documented; per-attribute sortability not spelled out)",
+    "verified": "apps/outreach/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/outseta",
@@ -4652,12 +4656,12 @@
     "path": "apps/paddle",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order_by documents only id, default id[DESC]",
+    "verified": "apps/paddle/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pagerduty",
@@ -4674,12 +4678,13 @@
     "path": "apps/pandadoc",
     "mechanism": "poll",
     "candidates": [
-      "new-document-get-many"
+      "new-document",
+      "new-or-updated-document"
     ],
     "pollAction": "document-get-many",
-    "reason": "list action document-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order_by documents -date_created / -date_modified",
+    "verified": "apps/pandadoc/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/paperform",
@@ -4694,12 +4699,13 @@
     "path": "apps/pardot",
     "mechanism": "poll",
     "candidates": [
-      "new-landing-page-list"
+      "new-landing-page",
+      "new-or-updated-landing-page"
     ],
     "pollAction": "landing-page-list",
-    "reason": "list action landing-page-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "new-landing-page orderBy=id DESC; new-or-updated-landing-page since-filter updatedAtAfter (landing-page-list param) with idOf id:updatedAt",
+    "verified": "apps/pardot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/parseur",
@@ -4716,12 +4722,12 @@
     "path": "apps/particle",
     "mechanism": "poll",
     "candidates": [
-      "new-device-list"
+      "new-device"
     ],
     "pollAction": "device-list",
-    "reason": "list action device-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "snapshot diff over GET /v1/devices (unpaged account list sorted by last_handshake_at, not claim time)",
+    "verified": "apps/particle/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/patreon",
@@ -4779,12 +4785,13 @@
     "path": "apps/pdfmonkey",
     "mechanism": "poll",
     "candidates": [
-      "new-documents"
+      "new-document",
+      "new-or-updated-document"
     ],
     "pollAction": "list-documents",
-    "reason": "list action list-documents has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter: q[updated_since]=cursor-120s with id dedupe (no documented sort order); new-document ignores cards whose created_at is older than the since window; page-2 loss mode disclosed in README",
+    "verified": "apps/pdfmonkey/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pendo",
@@ -4799,12 +4806,12 @@
     "path": "apps/pennylane",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-invoices"
+      "new-customer-invoice"
     ],
     "pollAction": "list-customer-invoices",
-    "reason": "list action list-customer-invoices has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort documented, default -id; trigger sorts -id explicitly",
+    "verified": "apps/pennylane/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/peopledatalabs",

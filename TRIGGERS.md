@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 400, none: 208
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 398, none: 210
 
 ## webhook-api (58)
 
@@ -95,7 +95,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (400)
+## poll (398)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -333,30 +333,28 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/moneybird | sales-invoice-list | new-sales-invoice, new-or-updated-sales-invoice | apps/moneybird/README.md Triggers section (verified 2026-11-10) | hand | sales-invoice-list passes the documented created_after/updated_after filters (exclusive, UTC) with a 10-minute overlap and id dedupe (https://developer.moneybird.com/api/sales_invoices); contact-list has no filter param so contacts stay webhook-only |
 | apps/mongodb-atlas | event-list | new-event | apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09) | hand | event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented. |
 | apps/moonclerk | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
-| apps/mural | mural-list | new-mural-list | no | scan | list action mural-list has pagination and order/since params |
-| apps/mux | asset-list | new-asset-list | no | scan | list action asset-list has pagination and order/since params |
-| apps/nationbuilder | person-list | new-person-list | no | scan | list action person-list has pagination and order/since params |
+| apps/mural | mural-list | new-mural, new-or-updated-mural | apps/mural/README.md Triggers section (verified 2026-11-09) | hand | new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn (developers.mural.co getworkspacemurals documents both sorts and updatedOn) |
+| apps/nationbuilder | person-list | new-person, new-or-updated-person | apps/nationbuilder/README.md Triggers section (verified 2026-11-09) | hand | wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit |
 | apps/ninox | record-list | new-or-updated-record | apps/ninox/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action record-list |
-| apps/nocodb | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
+| apps/nocodb | record-list | new-record | apps/nocodb/README.md Triggers section (verified 2026-11-09) | hand | wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table |
 | apps/nocrm | lead-get-many | new-lead | apps/nocrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action lead-get-many |
 | apps/notion | get-many-database-pages | new-database-page | apps/notion/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action get-many-database-pages |
 | apps/nutshell | find-leads | new-lead | apps/nutshell/README.md Triggers section (verified 2026-11-10) | hand | Find Leads takes documented $orderBy/$orderDirection/$limit (https://developers-rpc.nutshell.com/detail/class_core.html); trigger reads one id-descending page of 100 with stable lead IDs |
-| apps/odoo | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
+| apps/odoo | list-contacts | new-contact, new-or-updated-contact | apps/odoo/README.md Triggers section (verified 2026-11-09) | hand | wraps list-contacts with order=create_date desc / write_date desc (ORM log-access fields) |
 | apps/okta | user-list | new-user, new-or-updated-user | apps/okta/README.md Triggers section (verified 2026-11-10) | hand | user-list passes SCIM search over documented top-level created/lastUpdated (Okta Management OpenAPI listUsers); search is eventually consistent so a 30-minute overlap plus id dedupe is used; group-list exposes only q so groups stay event-hook-only |
 | apps/omnisend | list-contacts | new-contact | apps/omnisend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
-| apps/oncehub | sms-notification-list | new-sms-notification-list | no | scan | list action sms-notification-list has pagination and order/since params |
+| apps/oncehub | sms-notification-list | new-sms-notification | apps/oncehub/README.md Triggers section (verified 2026-11-09) | hand | OnceHub pagination guide: list requests return objects in reverse chronological order |
 | apps/onepagecrm | list-contacts | new-contact | apps/onepagecrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
-| apps/onepassword | item-file-list | new-item-file-list | no | scan | list action item-file-list has pagination and order/since params |
 | apps/onesignal | view-messages | new-message | apps/onesignal/README.md Triggers section (verified 2026-11-10) | hand | view-messages (GET /notifications) is documented 'sorted by queued_at in descending order' (https://documentation.onesignal.com/reference/view-messages); webhook upgrade (delivery/click events) stays queued |
-| apps/outreach | account-list | new-account-list | no | scan | list action account-list has pagination and order/since params |
-| apps/paddle | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
+| apps/outreach | account-list | new-account, new-or-updated-account | apps/outreach/README.md Triggers section (verified 2026-11-09) | hand | wraps account-list with sort=-createdAt / -updatedAt (sort syntax documented; per-attribute sortability not spelled out) |
+| apps/paddle | customer-list | new-customer | apps/paddle/README.md Triggers section (verified 2026-11-09) | hand | order_by documents only id, default id[DESC] |
 | apps/pagerduty | incident-list | new-incident | apps/pagerduty/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
-| apps/pandadoc | document-get-many | new-document-get-many | no | scan | list action document-get-many has pagination and order/since params |
-| apps/pardot | landing-page-list | new-landing-page-list | no | scan | list action landing-page-list has pagination and order/since params |
+| apps/pandadoc | document-get-many | new-document, new-or-updated-document | apps/pandadoc/README.md Triggers section (verified 2026-11-09) | hand | order_by documents -date_created / -date_modified |
+| apps/pardot | landing-page-list | new-landing-page, new-or-updated-landing-page | apps/pardot/README.md Triggers section (verified 2026-11-09) | hand | new-landing-page orderBy=id DESC; new-or-updated-landing-page since-filter updatedAtAfter (landing-page-list param) with idOf id:updatedAt |
 | apps/parseur | document-list | new-document | apps/parseur/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action document-list |
-| apps/particle | device-list | new-device-list | no | scan | list action device-list has pagination and order/since params |
-| apps/pdfmonkey | list-documents | new-documents | no | scan | list action list-documents has pagination and order/since params |
-| apps/pennylane | list-customer-invoices | new-customer-invoices | no | scan | list action list-customer-invoices has pagination and order/since params |
+| apps/particle | device-list | new-device | apps/particle/README.md Triggers section (verified 2026-11-09) | hand | snapshot diff over GET /v1/devices (unpaged account list sorted by last_handshake_at, not claim time) |
+| apps/pdfmonkey | list-documents | new-document, new-or-updated-document | apps/pdfmonkey/README.md Triggers section (verified 2026-11-09) | hand | since-filter: q[updated_since]=cursor-120s with id dedupe (no documented sort order); new-document ignores cards whose created_at is older than the since window; page-2 loss mode disclosed in README |
+| apps/pennylane | list-customer-invoices | new-customer-invoice | apps/pennylane/README.md Triggers section (verified 2026-11-09) | hand | sort documented, default -id; trigger sorts -id explicitly |
 | apps/perplexity | web-search | new-web-search | no | scan | list action web-search has pagination and order/since params |
 | apps/personio | list-employees | new-employees | no | scan | list action list-employees has pagination and order/since params |
 | apps/perspective | contact-list | new-contact | apps/perspective/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
@@ -500,7 +498,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (208)
+## none (210)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -611,10 +609,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mistral |  | apps/mistral/README.md Triggers section (verified 2026-11-09) | hand | stateless AI inference API; its model list is a capability catalog, not a changing user-record feed |
 | apps/motion |  | apps/motion/README.md Triggers section (verified 2026-11-09) | hand | task and project actions use opaque cursors with no documented creation-time order or since filter |
 | apps/msg91 |  | apps/msg91/README.md Triggers section (verified 2026-11-09) | hand | no fetchable MSG91 webhook documentation found (docs.msg91.com/reference/webhooks 404); existing lists are templates, numbers, analytics and windowed delivery logs, not a stable new-record collection |
+| apps/mux | new-asset-list | apps/mux/README.md Triggers section (verified 2026-11-09) | hand | asset-list has no documented sort order or created-since filter (params: limit, page, live_stream_id, upload_id; https://github.com/muxinc/mux-node-sdk/blob/master/src/resources/video/assets.ts) |
 | apps/netsuite |  | apps/netsuite/README.md Triggers section (verified 2026-11-09) | hand | generic record listing accepts arbitrary record types and filtering but has no fixed record schema or documented newest-first ordering for a safe poll |
 | apps/newrelic |  | apps/newrelic/README.md Triggers section (verified 2026-11-09) | hand | NerdGraph entity and issue searches use cursors but existing actions expose no documented newest-first or since-created query |
 | apps/ollama |  | apps/ollama/README.md Triggers section (verified 2026-11-09) | hand | local model listing is server capability state, not a user-record feed with creation ordering |
 | apps/ollama-cloud |  | apps/ollama-cloud/README.md Triggers section (verified 2026-11-09) | hand | hosted model listing is a capability catalog, not a changing user-record feed |
+| apps/onepassword | new-item-file-list | apps/onepassword/README.md Triggers section (verified 2026-11-09) | hand | no existing list fits: Connect collections have no documented sort or created-since filter; audit-event/signin-attempt are start_time cursor streams with unstated order (https://developer.1password.com/docs/events-api/reference/) |
 | apps/onesimpleapi |  | apps/onesimpleapi/README.md Triggers section (verified 2026-11-09) | hand | stateless conversion, generation, lookup, and validation utility API with no account records |
 | apps/ontraport |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/openai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
