@@ -2,7 +2,16 @@
 
 ## Triggers
 
-`new-project` snapshots the user's project collection and emits additions only. Source: https://wakatime.com/developers (verified 2026-11-09).
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-project` | poll (5 min) | `project-list` | each project newly visible to the WakaTime user |
+
+`GET /users/current/projects` lists the user's projects with no paging or sort documented, so the
+trigger snapshot-diffs the collection (additions only; more than 5000 projects throws). The first
+check only records the projects. Commits and data dumps are not triggers: the commit feed is per
+project with no documented order. WakaTime documents no webhooks.
+
+Source: https://wakatime.com/developers (Projects; verified 2026-11-09).
 
 Read coding-time stats, daily summaries, durations, heartbeats, projects, commits, goals and
 private leaderboards from **WakaTime**, and send heartbeats and external durations, over the
@@ -11,6 +20,7 @@ private leaderboards from **WakaTime**, and send heartbeats and external duratio
 - **Categories** — developer-tools, analytics
 - **Auth methods** — api-key (the account's secret API key, HTTP Basic)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /users/current`, a schema-correct 401 `errors` envelope passes), `quota` (declared
   unavailable, informational) + the derived `auth:api-key`

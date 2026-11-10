@@ -2,7 +2,20 @@
 
 ## Triggers
 
-`new-screen` polls a project's `sort=created` screen feed; the first check seeds and later checks emit unseen screens. Source: https://docs.zeplin.dev/llms.txt (verified 2026-11-09).
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-screen` | poll (5 min) | `list-screens` | each screen newly added to a chosen project |
+
+`GET /v1/projects/{project_id}/screens` documents `limit` (1–100) and `offset`, and a `sort` of
+"`section` or `created` date" without a direction, so no order is assumed: the trigger reads every
+page and snapshot-diffs the project's screens (additions only; more than 5000 throws). The first
+check only records the screens.
+
+Zeplin also offers project webhooks (registered through its API with a caller-chosen secret); they
+are not wired here (webhook candidate recorded for a webhook node).
+
+Sources: https://docs.zeplin.dev/reference/getprojectscreens.md,
+https://docs.zeplin.dev/reference/createprojectwebhooks.md (verified 2026-11-09).
 
 Read and update Zeplin design handoff data from a workflow: projects, screens and their versions
 (image, layers, assets), notes and comments, components, colors, text styles, design tokens and

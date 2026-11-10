@@ -66,7 +66,6 @@ import jobAddPayment from "./actions/job-add-payment.ts";
 
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
-import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -100,5 +99,4 @@ export default {
   // credential — see auth/api-token.ts.
   auth: [apiToken],
   healthChecks: [service, requestRate],
-  triggers: [newLead],
 } satisfies AppDefinition;

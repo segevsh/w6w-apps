@@ -12,6 +12,9 @@ import mailSend from "./actions/mail-send.ts";
 import sendgridApi from "./auth/sendgrid-api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newList from "./triggers/new-list.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -28,4 +31,5 @@ export default {
   ],
   auth: [sendgridApi],
   healthChecks: [service, quota],
+  triggers: [newContact, newOrUpdatedContact, newList],
 } satisfies AppDefinition;

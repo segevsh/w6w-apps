@@ -1,16 +1,38 @@
-import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import customerList from "../actions/customer-list.ts";
+import { sinceTrigger, stampMs } from "../lib/triggers.ts";
 
-/** The Publisher API documents the customer feed as newest-first by created_at. */
-export default pollFromListAction({
+/**
+ * `GET /customers?from=<since>&date_field=created_at` — the publisher API documents a `from`
+ * created-since filter (https://uscreen.io/api/publisher.yml) but no sort order, so the trigger
+ * reads the whole window page by page and dedupes by id.
+ */
+export default sinceTrigger({
   key: "new-customer",
   title: "New Customer",
   description: "The run gets each newly created Uscreen customer.",
-  action: customerList,
-  input: () => ({ dateField: "created_at", page: 1 }),
-  items: (result) => (result as { items?: unknown[] }).items ?? [],
+  output: [
+    { key: "id", type: "number", label: "Customer ID" },
+    { key: "email", type: "string", label: "Email" },
+    { key: "name", type: "string", label: "Name" },
+    { key: "created_at", type: "number", label: "Created at (unix seconds)" },
+  ],
+  sample: {
+    id: 101,
+    email: "customer@example.test",
+    name: "Sample Customer",
+    created_at: 1794182400,
+  },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "number", label: "Customer ID" }],
-  sample: { id: 101, email: "customer@example.test" },
-  maxPages: 1,
+  createdMs: (item) => stampMs((item as { created_at?: unknown }).created_at),
+  async fetchPage(since, page, ctx) {
+    const out = await customerList.execute({ from: since, dateField: "created_at", page }, ctx) as {
+      items?: unknown[];
+      hasMore?: boolean;
+      nextPage?: number | null;
+    };
+    return {
+      items: out.items ?? [],
+      next: out.hasMore && typeof out.nextPage === "number" ? out.nextPage : undefined,
+    };
+  },
 });

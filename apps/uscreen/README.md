@@ -2,7 +2,21 @@
 
 ## Triggers
 
-`new-customer` polls the newest-first customer feed through `customer-list`; the first check seeds and later checks emit unseen customers. Source: https://uscreen.io/api/publisher.yml (verified 2026-11-09).
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-customer` | poll (5 min) | `customer-list` | each newly created customer |
+| `new-invoice` | poll (5 min) | `invoice-list` | each newly created invoice |
+
+Both read `GET /customers` / `GET /invoices` with the vendor's documented `from=<RFC 3339>` and
+`date_field=created_at` filter — the spec documents no sort order, so the trigger never relies on
+one: it re-reads `cursor − 2 min`, pages through the window with the `Link` header's next page
+(resuming on the next check if a window is larger than one page), and dedupes by `id`. The first
+check only records the start time; records created before it are never emitted. Customers carry no
+update stamp in the spec, so there is no `new-or-updated-customer`. No webhook offering is
+documented in the Publisher API, so there is nothing to subscribe to.
+
+Source: https://uscreen.io/api/publisher.yml (`/customers`, `/invoices` `from`, `date_field`
+parameters; verified 2026-11-09).
 
 Video membership / OTT platform ([uscreen.tv](https://www.uscreen.tv)): customers, product
 access, subscriptions, group (team) seats, invoices, offers, content visibility and view analytics

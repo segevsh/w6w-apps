@@ -1,6 +1,6 @@
 # Wiza
 
-Triggers: not shipped — the existing contact export is scoped to a user-selected enrichment list and vendor docs give no bounded collection or creation order for a general feed (https://docs.wiza.co/swagger/v1/openapi.yaml).
+Triggers: not shipped — the only list-shaped actions read one caller-selected list (`get-list`, `get-list-contacts`); the OpenAPI document has no list index (`/api/lists` is POST create only) and no created/updated filter, so there is no feed to poll (https://docs.wiza.co/swagger/v1/openapi.yaml; list/reveal completion webhooks (`callback_url`, `x-auth-key` header) are a queued webhook candidate, verified 2026-11-09).
 
 Reveal contacts, enrich lists and companies, search Wiza's prospect and company databases, resolve
 filter values and read the credit balance, over the **Wiza API**.

@@ -2,7 +2,15 @@
 
 ## Triggers
 
-`new-lead-list` snapshots the documented account lead-list collection and emits additions only. Source: https://www.wappalyzer.com/openapi/v2-public.yaml (verified 2026-11-09).
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-lead-list` | poll (5 min) | `lists-list` | each lead list newly created in Wappalyzer |
+
+`GET /v2/lists/` (`listLeadLists`) returns the account's lead lists as one unpaginated array of
+`ListSummary` objects, so the trigger snapshot-diffs it (additions only; more than 5000 throws). The
+first check only records the lists. Wappalyzer documents no webhooks.
+
+Source: https://www.wappalyzer.com/openapi/v2-public.yaml (`/lists`; verified 2026-11-09).
 
 Website technology intelligence: look up the tech stack behind up to ten URLs, discover a
 company's serving subdomains, verify an email address, and build technographic lead lists.

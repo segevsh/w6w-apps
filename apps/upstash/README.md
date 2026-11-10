@@ -1,6 +1,6 @@
 # Upstash Redis
 
-Triggers: not shipped — REST commands operate on caller-selected Redis keys and collections, not a stable account record feed (https://upstash.com/docs/redis/features/restapi).
+Triggers: not shipped — Upstash Redis REST commands run against caller-chosen keys and collections: there is no account record list with a stable id and no created/updated filter or sort (https://upstash.com/docs/redis/features/restapi, verified 2026-11-09).
 
 **This app is Upstash Redis over Upstash's HTTP REST API — not generic/raw Redis.** w6w Apps run
 in a network-less sandbox that reaches the network only via `ctx.fetch` over HTTP(S) to hosts on a

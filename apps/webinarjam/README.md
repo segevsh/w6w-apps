@@ -1,6 +1,18 @@
 # WebinarJam / EverWebinar
 
-Triggers: not shipped — webinar-list is an unpaginated account collection, but the existing app cannot type-check because `auth/api-key.ts` passes an `Uint8Array` request body to a string-only helper (https://support.webinarjam.com/en/collections/19655423-developer-api).
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-webinar` | poll (5 min) | `webinar-list` | each webinar newly published in the WebinarJam or EverWebinar account |
+
+`POST /{product}/webinars` takes only the API key and returns "a full list of all webinars
+published in your account" in one response, so the trigger snapshot-diffs it (additions only;
+more than 5000 webinars throws). The first check only records the webinars. Registrants are not a
+trigger: `registrant-list` is per webinar and page, with no documented order. No webhook offering
+is documented in the developer collection.
+
+Source: https://support.webinarjam.com/en/collections/19655423-developer-api (verified 2026-11-09).
 
 Read webinars, register attendees, list registrants and unsubscribe leads across WebinarJam
 (live webinars) and EverWebinar (automated, scheduled replays) — the same vendor's two
@@ -9,6 +21,7 @@ products, over one shared account-wide API key.
 - **Categories** — video, marketing
 - **Auth methods** — api-key (custom, body-carried)
 - **Actions** — 5
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.webinarjam.com`
 - **Website** — https://webinarjam.com
 - **API docs** — https://support.webinarjam.com/en/collections/19655423-developer-api

@@ -41,6 +41,7 @@ import getLeadMetrics from "./actions/get-lead-metrics.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -54,4 +55,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newLead],
 } satisfies AppDefinition;

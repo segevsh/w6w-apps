@@ -1,6 +1,6 @@
 # Workday
 
-Triggers: not shipped — Workday collection actions are offset-paginated tenant reports without a documented creation/update order or since filter (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html).
+Triggers: not shipped — collection actions (`job-list`, `organization-list`, `leave-of-absence-list`, ...) are tenant-specific offset-paginated reports whose vendor documentation sits behind the tenant login, so no created/updated filter, sort or bounded size can be cited (https://community.workday.com/sites/default/files/file-hosting/restapi/index.html, verified 2026-11-09).
 
 Workday HCM over the **Workday REST API**: workers, jobs, organizations, absence and time off, person
 contact information and time tracking, plus one write (request time off). 25 actions across five

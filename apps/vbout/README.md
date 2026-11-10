@@ -1,6 +1,19 @@
 # VBOUT
 
-Triggers: not shipped — contact and campaign lists are paginated without a documented creation/update order or since filter (https://api.vbout.com/1).
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-list` | poll (5 min) | `list-list` | each email-marketing contact list newly created in Vbout |
+
+`GET /1/emailmarketing/getlists.json` takes no paging parameters and returns every list of the
+account in one response, so the trigger snapshot-diffs it (additions only; more than 5000 lists
+throws). The first check only records the lists. Contacts and campaigns are not triggers:
+`getcontacts` is per list with no documented sort or since filter, and `campaigns` pages with no
+documented order. The OpenAPI document's `Webhook/*` paths describe popups (their parameters are
+popup fields), so no webhook offering is recorded.
+
+Source: https://developers.vbout.com/scripts/openapi.json (`EmailMarketing/GetLists`; verified 2026-11-09).
 
 Marketing automation (email, contacts, social, goals) driven through the VBOUT REST API
 (`https://api.vbout.com/1`). 26 actions centred on the email-marketing surface.
