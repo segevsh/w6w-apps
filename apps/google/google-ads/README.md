@@ -1,5 +1,7 @@
 # Google Ads
 
+Triggers: not shipped — customer_client rows carry no creation time and the list is ordered by hierarchy level, so a new sub-account in a manager with many clients cannot be told apart from a bounded page (<https://developers.google.com/google-ads/api/reference/rpc/latest/CustomerClient>).
+
 Read and manage Google Ads accounts: GAQL reporting, campaigns, budgets, ad groups, ads and keywords
 over the Google Ads API v25 REST interface.
 
@@ -315,11 +317,3 @@ for every path, request field, resource field and enum asserted here. Two things
 when this ages: the **version** (Google ships several majors a year — bump `API_VERSION` in
 `lib/client.ts`), and the **status feed** (surfaces move; if the `service` check starts failing for
 everyone at once, that is the first suspect).
-
-## Triggers
-
-| Key — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-customer-clients` — New Customer Client | poll | `list-customer-clients` | Each newly visible customer client |
-
-Source: <https://developers.google.com/google-ads/api/fields/v22/customer_client> (verified 2026-11-09).

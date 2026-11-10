@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Contact Group",
   description: "The run gets each newly discovered contact group.",
   action: listContactGroups,
-  input: () => ({ pageSize: 1000 }),
+  input: () => ({ pageSize: 200 }),
   items: (result) => (result as { contactGroups?: unknown[] }).contactGroups ?? [],
   idOf: (item) => String((item as { resourceName?: unknown }).resourceName ?? ""),
   output: [{ key: "resourceName", type: "string", label: "Contact group resource name" }],

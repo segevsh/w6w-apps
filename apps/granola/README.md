@@ -6,6 +6,7 @@ holds and the audit log, on the **Granola public API** (`public-api.granola.ai/v
 - **Categories** — ai, productivity, legal
 - **Auth methods** — api-key (HTTP bearer, `grn_...`)
 - **Actions** — 17
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `public-api.granola.ai` (the `service` check adds `status.granola.ai` to its
   own hook allowlist, never to the app's)
@@ -91,3 +92,5 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 | `new-audit-event` — New Audit Event | poll | `audit-event-list` | Each newly recorded audit event |
 
 Source: <https://docs.granola.ai/api-reference/openapi.json> (verified 2026-11-09).
+
+The audit log is returned in `collected_at` order (oldest first) and `page_size` is capped at 30, so the trigger lists `GET /v1/audit` with `occurred_after` set to the last check minus a 10-minute overlap, reads up to 10 pages of 30, and dedupes by event id. The vendor's line: "Return events that occurred after this date." More than 300 new events inside one window are emitted over later checks.

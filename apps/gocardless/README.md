@@ -6,6 +6,7 @@ refunds — over the **GoCardless REST API**.
 - **Categories** — commerce, finance
 - **Auth methods** — access-token (bearer + API-version header)
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `api.gocardless.com`, `api-sandbox.gocardless.com`
 - **Website** — https://gocardless.com

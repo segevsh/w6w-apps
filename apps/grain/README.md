@@ -6,6 +6,7 @@ workspace's users, teams and meeting types, via the Grain Public API (v2).
 - **Categories** — ai, productivity, video
 - **Auth methods** — api-key
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.grain.com`
 
 ## Links
@@ -183,6 +184,8 @@ identically:
 | `new-recording` — New Recording | poll | `recording-list` | Each newly available recording |
 
 Source: <https://developers.grain.com/reference/list-recordings> (verified 2026-11-09).
+
+The list documents no sort order, so the trigger sets the recording filter `after_datetime` (the field name this app already trusts, see the note above about the vendor's swapped descriptions) to the last check minus 24 hours, reads up to 5 cursor pages and dedupes by recording id. If Grain's filter direction is in fact the reverse of its name, the trigger emits nothing; this was not verifiable without a live workspace (the reference page answers 403 to a plain fetch).
 Authorization: Bearer {token}
 ```
 

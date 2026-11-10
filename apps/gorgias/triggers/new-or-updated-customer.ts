@@ -12,7 +12,10 @@ export default pollFromListAction({
     const customer = item as { id?: unknown; updated_datetime?: unknown };
     return `${String(customer.id ?? "")}:${String(customer.updated_datetime ?? "")}`;
   },
-  output: [{ key: "id", type: "number", label: "Customer ID" }],
+  output: [
+    { key: "id", type: "number", label: "Customer ID" },
+    { key: "updated_datetime", type: "string", label: "Updated at" },
+  ],
   sample: { id: 1, updated_datetime: "2026-11-09T00:00:00Z" },
   maxPages: 1,
 });

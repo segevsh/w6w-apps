@@ -9,7 +9,7 @@ export default pollFromListAction<{ part: string; channelId: string }>({
   action: listCommentThreads as unknown as ActionDefinition,
   input: (params) => ({
     part: "snippet",
-    channelId: String(params.channelId ?? ""),
+    allThreadsRelatedToChannelId: String(params.channelId ?? ""),
     order: "time",
     maxResults: 100,
   }),

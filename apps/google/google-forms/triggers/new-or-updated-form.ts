@@ -6,13 +6,16 @@ export default pollFromListAction({
   title: "New or Updated Form",
   description: "The run gets each newly created or updated Google Form.",
   action: listForms,
-  input: () => ({ pageSize: 1000, orderBy: "modifiedTime desc" }),
+  input: () => ({ pageSize: 200, orderBy: "modifiedTime desc" }),
   items: (result) => (result as { files?: unknown[] }).files ?? [],
   idOf: (item) => {
     const form = item as { id?: unknown; modifiedTime?: unknown };
     return `${String(form.id ?? "")}:${String(form.modifiedTime ?? "")}`;
   },
-  output: [{ key: "id", type: "string", label: "Form ID" }],
+  output: [
+    { key: "id", type: "string", label: "Form ID" },
+    { key: "modifiedTime", type: "string", label: "Modified time" },
+  ],
   sample: { id: "1AbCd", modifiedTime: "2026-11-09T00:00:00Z" },
   maxPages: 1,
 });

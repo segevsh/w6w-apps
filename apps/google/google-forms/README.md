@@ -5,6 +5,7 @@ Create and update Google Forms, manage publish state, and read form responses.
 - **Categories** — forms, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 12
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `forms.googleapis.com`, `www.googleapis.com`
 - **Website** — https://www.google.com/forms/about/
 - **API docs** — https://developers.google.com/forms/api/reference/rest
@@ -207,3 +208,5 @@ reference pages under `developers.google.com/forms/api`. Status surfaces move; r
 | `new-or-updated-form` — New or Updated Form | poll | `list-forms` | Each newly created or updated Google Form |
 
 Source: <https://developers.google.com/drive/api/reference/rest/v3/files/list> (verified 2026-11-09).
+
+Both triggers request a page of 200, matching the kit's 200-id seen window.

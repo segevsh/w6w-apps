@@ -5,6 +5,7 @@ Read and manage a Google account's contacts and contact groups.
 - **Categories** — crm, productivity
 - **Auth methods** — oauth2
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `people.googleapis.com`, `www.googleapis.com`
 - **Website** — https://contacts.google.com
 - **API docs** — https://developers.google.com/people/api/rest
@@ -258,3 +259,5 @@ once.
 | `new-contact-group` — New Contact Group | poll | `list-contact-groups` | Each newly discovered contact group |
 
 Source: <https://developers.google.com/people/api/rest/v1/contactGroups/list> (verified 2026-11-09).
+
+Order is undocumented; the trigger reads one page of 200 groups (the poll kit's seen window), which holds an ordinary account's whole set.

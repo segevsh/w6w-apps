@@ -7,7 +7,7 @@ export default pollFromListAction<{ space: string }>({
   title: "New Message",
   description: "The run gets each newly posted Chat message.",
   action: listMessages as unknown as ActionDefinition,
-  input: (params) => ({ space: String(params.space ?? ""), orderBy: "DESC", pageSize: 1000 }),
+  input: (params) => ({ space: String(params.space ?? ""), orderBy: "DESC", pageSize: 200 }),
   params: [{ key: "space", label: "Space", type: "string", required: true }],
   items: (result) => (result as { messages?: unknown[] }).messages ?? [],
   idOf: (item) => String((item as { name?: unknown }).name ?? ""),

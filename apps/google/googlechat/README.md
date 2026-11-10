@@ -10,6 +10,8 @@ signed-in user.
 > **Google Workspace only.** The Chat API is not available to consumer `@gmail.com` accounts. A
 > connection needs a Workspace account and a Google Cloud project with the Google Chat API enabled.
 
+- **Triggers** — 1 (poll)
+
 ---
 
 ## Auth
@@ -239,3 +241,5 @@ appears in that document; nothing was inferred. Every URL above was checked for 
 | `new-message` — New Message | poll | `list-messages` | Each newly posted message in the configured space |
 
 Source: <https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.messages/list> (verified 2026-11-09).
+
+The request asks for `orderBy=DESC` through the action (documented: "DESC for descending", default `createTime ASC`) and a page of 200, matching the kit's 200-id seen window.

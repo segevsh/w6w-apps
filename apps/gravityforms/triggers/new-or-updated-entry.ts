@@ -12,7 +12,10 @@ export default pollFromListAction({
     const entry = item as { id?: unknown; date_updated?: unknown };
     return `${String(entry.id ?? "")}:${String(entry.date_updated ?? "")}`;
   },
-  output: [{ key: "id", type: "number", label: "Entry ID" }],
+  output: [
+    { key: "id", type: "number", label: "Entry ID" },
+    { key: "date_updated", type: "string", label: "Date updated" },
+  ],
   sample: { id: 1, date_updated: "2026-11-09 00:00:00" },
   maxPages: 1,
 });

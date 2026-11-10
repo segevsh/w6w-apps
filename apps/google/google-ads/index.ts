@@ -16,7 +16,6 @@ import listAds from "./actions/list-ads.ts";
 import listKeywords from "./actions/list-keywords.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newCustomerClients from "./triggers/new-customer-clients.ts";
 
 export default {
   actions: [
@@ -37,5 +36,4 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newCustomerClients],
 } satisfies AppDefinition;

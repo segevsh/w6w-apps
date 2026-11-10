@@ -5,6 +5,7 @@ Manage Gorgias tickets, customers, messages, tags, views and satisfaction survey
 - **Categories** — support
 - **Auth methods** — basic
 - **Actions** — 22
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.gorgias.com`
 - **Website** — https://www.gorgias.com
 - **API docs** — https://developers.gorgias.com/reference/introduction
