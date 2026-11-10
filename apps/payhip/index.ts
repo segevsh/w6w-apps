@@ -26,6 +26,11 @@ import licenseDisable from "./actions/license-disable.ts";
 import licenseUsageIncrease from "./actions/license-usage-increase.ts";
 import licenseUsageDecrease from "./actions/license-usage-decrease.ts";
 
+import newSale from "./triggers/new-sale.ts";
+import saleRefunded from "./triggers/sale-refunded.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import subscriptionCancelled from "./triggers/subscription-cancelled.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -37,6 +42,7 @@ export default {
     licenseUsageIncrease,
     licenseUsageDecrease,
   ],
+  triggers: [newSale, saleRefunded, newSubscription, subscriptionCancelled],
   auth: [productSecretKey, apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

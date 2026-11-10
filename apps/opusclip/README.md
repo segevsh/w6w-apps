@@ -1,6 +1,6 @@
 # OpusClip
 
-Triggers: not shipped — clip-list requires a selected project or collection and has no documented creation-order or since filter, and collection-list / brand-template-list expose no documented size bound for a snapshot; the webhook is queued for a webhook node (project-creation notifications, X-Opus-Signature HMAC-SHA256) (https://help.opus.pro/api-reference/webhook).
+Triggers: not shipped — the only webhook is a `conclusionActions` WEBHOOK on the create-project request, i.e. a completion callback for a project the caller starts, not an account event stream; clip-list requires a selected project or collection and has no documented creation-order or since filter (https://help.opus.pro/api-reference/webhook)
 
 Turn a long-form video into short, viral, vertical clips with AI curation, on the **OpusClip Clip
 API**.

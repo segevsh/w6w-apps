@@ -1,7 +1,5 @@
 # Payhip
 
-Triggers: not shipped — the Public API only verifies and manages a supplied license key and has no list feed; Payhip webhooks (paid, refunded, subscription.created, subscription.deleted) are queued for a webhook node (https://help.payhip.com/article/115-webhooks).
-
 Verify, enable, disable and count uses of Payhip **software license keys**.
 
 **Scope.** Payhip's public API covers software license keys and nothing else. It documents no
@@ -10,6 +8,40 @@ endpoints for products, orders, customers, coupons or payouts, so this app has n
 articles [317](https://help.payhip.com/article/317-public-api) (current) and
 [114](https://help.payhip.com/article/114-public-api) (legacy).) Nothing here was exercised
 against a live account.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `new-sale` — New Sale | webhook (manual) | `paid` | the transaction id, buyer email, price in minor units, currency and items |
+| `sale-refunded` — Sale Refunded | webhook (manual) | `refunded` | as above plus the amount refunded and the dates created and refunded |
+| `new-subscription` — New Subscription | webhook (manual) | `subscription.created` | the subscription and customer ids, plan, product and customer name and email |
+| `subscription-cancelled` — Subscription Cancelled | webhook (manual) | `subscription.deleted` | as above plus the end date |
+
+### Setup
+
+Payhip webhooks are set up by hand in the store, not through the API.
+
+1. Create the trigger in w6w, give it your Payhip API key (Payhip, Settings, Developer tab), and copy
+   the callback URL w6w shows for the subscription.
+2. In Payhip open Settings, Developer, paste the callback URL into the webhook endpoint field and tick
+   the events you want (`paid`, `refunded`, `subscription.created`, `subscription.deleted`).
+3. Payhip posts every ticked event to that one URL. Each trigger starts a run only for its own event
+   and acknowledges the others without one. The endpoint must answer 200; Payhip retries hourly for up
+   to 3 hours otherwise.
+
+### Trust model
+
+Each delivery body has a `signature` field which Payhip documents as `sha256` of your API key. The
+trigger recomputes that from the key you gave it and compares in constant time; a missing, wrong or
+empty signature, an absent raw body or an unset key refuses the delivery (one failed row, no run).
+**This is a shared token, not a signature over the body**: it proves the sender knows your API key
+but does not detect a changed body, and it has no timestamp, so a captured delivery can be replayed.
+The callback URL is therefore a second secret that matters: keep it private. Anyone who learns your API
+key can forge deliveries, so rotate it (and update the trigger) if it leaks. The Payhip API key is not
+the per-product secret key the license actions use.
+
+Docs (verified 2026-11-10): https://help.payhip.com/article/115-webhooks
 
 ## Actions
 

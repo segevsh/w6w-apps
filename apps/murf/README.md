@@ -1,6 +1,6 @@
 # Murf
 
-Triggers: not shipped — dubbing-job completion callbacks are a webhook candidate; voice and project lists lack documented new-record ordering or a since filter (https://murf.ai/api/docs/capabilities/dubbing/webhooks)
+Triggers: not shipped — the only webhook is a completion callback for a dubbing job the caller starts (the webhook URL and its HMAC secret are supplied in each create-job request), not an account event stream; voice and project lists lack documented new-record ordering or a since filter (https://murf.ai/api/docs/capabilities/dubbing/webhooks)
 
 Synthesize speech, browse voices, manage cloned voices, re-voice audio, translate text and run
 dubbing jobs and projects over the **Murf API** (`api.murf.ai`).
