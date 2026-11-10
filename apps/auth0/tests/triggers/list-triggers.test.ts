@@ -125,3 +125,21 @@ test("new-role: a list longer than 5000 rows throws instead of passing silently"
     newRole.poll!({ params: {}, state: {}, subscriptionId: "s" }, ctxFor(pages).ctx)
   );
 });
+
+test("new-connection: the connection's options (which can hold a client secret) never reach the run", async () => {
+  const conn = (id: string) => ({
+    id,
+    name: `conn-${id}`,
+    strategy: "google-oauth2",
+    options: { client_id: "sample-client-id", client_secret: "test-client-secret" },
+  });
+  const seeded = await newConnection.poll!(
+    { params: {}, state: {}, subscriptionId: "s" },
+    ctxFor([[conn("a")]]).ctx,
+  );
+  const next = await newConnection.poll!(
+    { params: {}, state: seeded.nextState, subscriptionId: "s" },
+    ctxFor([[conn("b"), conn("a")]]).ctx,
+  );
+  assertEquals(next.events, [{ id: "b", name: "conn-b", strategy: "google-oauth2" }]);
+});

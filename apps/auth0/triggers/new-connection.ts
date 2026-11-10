@@ -14,7 +14,13 @@ export default snapshotTrigger({
     { key: "strategy", type: "string", label: "Strategy" },
   ],
   sample: { id: "con_abc123", name: "Username-Password-Authentication", strategy: "auth0" },
+  // `options` can hold the identity provider's client secret: never put it in run history.
   rows: async (_params, ctx) =>
-    rowsOf("connections")(await connectionList.execute({ ...WHOLE_LIST } as never, ctx)),
+    rowsOf("connections")(await connectionList.execute({ ...WHOLE_LIST } as never, ctx)).map(
+      (row) => {
+        const { options: _options, ...safe } = row as Record<string, unknown>;
+        return safe;
+      },
+    ),
   idOf: (item) => str((item as { id?: unknown }).id),
 });
