@@ -10,7 +10,6 @@ export default pollFromListAction({
   input: (params: { conversationId: string }) => ({
     id: params.conversationId,
     limit: 10,
-    until: 0,
   }),
   items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),

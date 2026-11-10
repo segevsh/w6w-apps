@@ -7,7 +7,7 @@ export default pollFromListAction({
   title: "New Task",
   description: "The run gets each new Missive task.",
   action: taskList as unknown as ActionDefinition,
-  input: () => ({ limit: 50, until: 0, type: "all" }),
+  input: () => ({ limit: 50, type: "all" }),
   items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   output: [{ key: "id", type: "string", label: "Task ID" }],

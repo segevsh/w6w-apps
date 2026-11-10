@@ -7,7 +7,7 @@ export default pollFromListAction({
   title: "New or Updated Task",
   description: "The run gets each new or newly active Missive task.",
   action: taskList as unknown as ActionDefinition,
-  input: () => ({ limit: 50, until: 0, type: "all" }),
+  input: () => ({ limit: 50, type: "all" }),
   items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => {
     const task = item as { id?: unknown; last_activity_at?: unknown };

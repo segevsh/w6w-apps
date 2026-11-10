@@ -7,7 +7,7 @@ export default pollFromListAction({
   title: "New Conversation",
   description: "The run gets each new conversation in the selected mailbox.",
   action: conversationList as unknown as ActionDefinition,
-  input: (params: { mailbox: string; mailboxId?: string }) => ({ ...params, limit: 50, until: 0 }),
+  input: (params: { mailbox: string; mailboxId?: string }) => ({ ...params, limit: 50 }),
   items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   params: [
