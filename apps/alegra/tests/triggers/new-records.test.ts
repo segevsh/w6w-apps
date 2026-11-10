@@ -15,7 +15,7 @@ const cases = [
     key: "new-bill",
     trigger: newBill,
     url:
-      "https://api.alegra.com/api/v1/bills?start=0&order_direction=DESC&order_field=id&limit=30&metadata=true",
+      "https://api.alegra.com/api/v1/bills?start=0&order_direction=DESC&order_field=date&limit=30&metadata=true",
   },
   {
     key: "new-estimate",

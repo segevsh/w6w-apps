@@ -93,4 +93,13 @@ test("the invitation accept link and session tokens never reach the run event", 
     mockCtx([{ body: [{ id: "s1", last_active_token: { jwt: "token-value" } }, item("z")] }]).ctx,
   );
   assertEquals(sess.events, [{ id: "s1" }]);
+  const tokSeed = await newSession.poll!(
+    { params: { userId: "user_1" }, state: {} },
+    mockCtx([{ body: [item("z")] }]).ctx,
+  );
+  const tok = await newSession.poll!(
+    { params: { userId: "user_1" }, state: tokSeed.nextState },
+    mockCtx([{ body: [{ id: "s2", token: "opaque-value" }, item("z")] }]).ctx,
+  );
+  assertEquals(tok.events, [{ id: "s2" }]);
 });

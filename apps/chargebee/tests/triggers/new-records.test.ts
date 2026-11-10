@@ -124,3 +124,22 @@ test("gateway tokens (reference_id) never reach the run event", async () => {
   assertEquals(out.events, [{ id: "a", payment_method: { type: "card", status: "valid" } }]);
   assertEquals(JSON.stringify(out.events).includes("gw-token"), false);
 });
+
+test("gateway tokens nested inside arrays are stripped too", async () => {
+  const withArray = {
+    id: "a",
+    payment_methods: [{ type: "card", reference_id: "gw-token-3" }, [{
+      reference_id: "gw-token-4",
+    }]],
+  };
+  const seeded = await newCustomer.poll!(
+    { params: {}, state: {} },
+    connected(mockCtx([{ body: rows("customer", [{ id: "z" }]) }]).ctx),
+  );
+  const out = await newCustomer.poll!(
+    { params: {}, state: seeded.nextState },
+    connected(mockCtx([{ body: rows("customer", [withArray, { id: "z" }]) }]).ctx),
+  );
+  assertEquals(out.events, [{ id: "a", payment_methods: [{ type: "card" }, [{}]] }]);
+  assertEquals(JSON.stringify(out.events).includes("gw-token"), false);
+});

@@ -87,7 +87,7 @@ Costa Rica, Chile, …) — e.g. `{"stamp":{"generateStamp":true}}` for an elect
 | `new-item` — New Item | Poll | `item-list` | Each newly created item |
 | `new-payment` — New Payment | Poll | `payment-list` | Each newly created payment |
 
-Each list is polled newest-first (`order_direction=DESC&order_field=id`, 30 per page). Source: [Alegra API docs](https://developer.alegra.com/) (verified 2026-11-10).
+Each list is polled newest-first (`order_direction=DESC&order_field=id`, 30 per page). `new-bill` is the exception: Alegra's bill list can only be ordered by `date`, `name` or `dueDate` (not `id`), so it is polled `order_field=date` newest-first, and a bill back-dated older than the newest 30 is missed. Source: [Alegra API docs](https://developer.alegra.com/) (verified 2026-11-10).
 
 Not covered: `tax-list` (reference data: the account's tax definitions)
 

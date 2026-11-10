@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Supplier Bill",
   description: "The run gets each newly created supplier bill.",
   action,
-  input: () => ({ start: 0, limit: 30, orderDirection: "DESC", orderField: "id" }),
+  input: () => ({ start: 0, limit: 30, orderDirection: "DESC", orderField: "date" }),
   items: (result) => (result as { items?: unknown[] }).items ?? [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
   output: [{ key: "id", type: "string", label: "Supplier Bill ID" }, {
