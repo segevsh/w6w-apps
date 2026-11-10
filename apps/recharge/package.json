@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/recharge",
   "version": "0.3.0",
-  "description": "Manage customers, addresses, subscriptions, charges and orders on Recharge, the recurring-billing platform for Shopify and BigCommerce stores. Poll triggers: new and updated orders, customers, addresses, subscriptions and charges, plus new one-time purchases and discounts.",
+  "description": "Manage customers, addresses, subscriptions, charges and orders on Recharge. Poll triggers: new and updated orders, customers, addresses, subscriptions and charges.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -16,13 +16,13 @@ export default tumblrOffsetSnapshot({
   limit: false,
   output: [
     { key: "id", type: "number", label: "Submission post ID" },
-    { key: "post_url", type: "string", label: "Post URL" },
+    { key: "slug", type: "string", label: "Slug" },
     { key: "type", type: "string", label: "Post type" },
     { key: "timestamp", type: "number", label: "Epoch seconds" },
   ],
   sample: {
     id: 125,
-    post_url: "https://example.tumblr.com/post/125",
+    slug: "my-question",
     type: "text",
     timestamp: 1308781073,
   },

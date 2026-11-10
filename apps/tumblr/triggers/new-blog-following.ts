@@ -23,7 +23,7 @@ export default pollFromListAction<{ blogIdentifier: string }>({
   ],
   sample: {
     name: "david",
-    url: "https://www.davidslog.com",
+    url: "davidslog.example",
     title: "David's Log",
     updated: 1308781073,
   },
