@@ -3090,12 +3090,14 @@
   },
   {
     "path": "apps/instapaper",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-folder"
+    ],
+    "pollAction": "folders-list",
+    "reason": "folders-list is a small whole-account snapshot (https://www.instapaper.com/api/full); bookmarks-list has no documented order or since filter, so bookmarks are not polled",
+    "verified": "apps/instapaper/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/intercom",
@@ -3146,21 +3148,24 @@
   },
   {
     "path": "apps/jenkins",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-build",
+      "new-job"
+    ],
+    "pollAction": "get-job-info",
+    "reason": "get-job-info exposes the job's builds, sorted by number in the trigger; list-jobs is a whole-root snapshot (https://www.jenkins.io/doc/book/using/remote-access-api/)",
+    "verified": "apps/jenkins/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jev",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless typed-evaluation API: `evaluate` is a compute call and `list-models` returns the static model catalog, so there are no user records that change (https://docs.typesafe.ai)",
+    "verified": "apps/jev/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jibble",
@@ -3178,9 +3183,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "`batches-list` takes only a `limit` (no documented sort or created-after filter) and is not the whole collection, and `classifiers-list` was measured returning `500` for every request, so no list action is a reliable record feed; the rest is stateless embeddings, rerank and classify compute (https://api.jina.ai/openapi.json: /v1/batches takes only `limit`)",
+    "verified": "apps/jinaai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jobber",
@@ -3231,12 +3236,15 @@
   },
   {
     "path": "apps/judgeme",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "review/created",
+      "review/updated"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: review/created, review/updated (POST /webhooks); list-reviews has no sort or since filter (https://judge.me/api/docs.yaml)",
+    "verified": "apps/judgeme/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jumpcloud",
@@ -3306,30 +3314,38 @@
   },
   {
     "path": "apps/klaviyo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-profile",
+      "new-or-updated-profile"
+    ],
+    "pollAction": "get-profiles",
+    "reason": "get-profiles sorted -created / -updated, both documented sort fields (https://developers.klaviyo.com/en/reference/get_profiles)",
+    "verified": "apps/klaviyo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/klicktipp",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "contact-changed"
+    ],
+    "pollAction": "subscriber-changed",
+    "reason": "subscriber-changed is a documented since-filter feed of changed contact ids with cursor paging (https://developers.klicktipp.com/)",
+    "verified": "apps/klicktipp/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/klipfolio",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-dashboard",
+      "new-data-source"
+    ],
+    "pollAction": "dashboard-list",
+    "reason": "dashboard-list and datasource-list return the whole account collection through limit/offset with a total (https://apidocs.klipfolio.com/)",
+    "verified": "apps/klipfolio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/knack",
@@ -3389,21 +3405,26 @@
   },
   {
     "path": "apps/landbot",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-channel"
+    ],
+    "pollAction": "channel-list",
+    "reason": "channel-list is the whole workspace channel set through offset/limit with a total; customer-list has no documented order or since filter (https://dev.landbot.io/api-reference/platform/openapi.json)",
+    "verified": "apps/landbot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/launchdarkly",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-flag",
+      "new-audit-log-entry"
+    ],
+    "pollAction": "flag-list",
+    "reason": "flag-list sorted -creationDate (documented sort field) and audit-log-list with the documented epoch-ms after filter (https://launchdarkly.com/docs/api/feature-flags/get-feature-flags)",
+    "verified": "apps/launchdarkly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/lawmatics",
@@ -3418,21 +3439,25 @@
   },
   {
     "path": "apps/leadfeeder",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-visitor-company"
+    ],
+    "pollAction": "visitor-company-list",
+    "reason": "visitor-company-list over a date range; the vendor documents most-recent-visitor-first when no sort is given (https://api.leadfeeder.com/openapi.yaml)",
+    "verified": "apps/leadfeeder/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/learnworlds",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-user"
+    ],
+    "pollAction": "users-list",
+    "reason": "users-list returns users newest registered first per the existing action's own documented behaviour; the vendor portal is JavaScript-rendered so the order is not independently re-verified (https://www.learnworlds.dev/)",
+    "verified": "apps/learnworlds/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/leexi",
@@ -3494,12 +3519,17 @@
   },
   {
     "path": "apps/line",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "message",
+      "follow",
+      "unfollow",
+      "postback"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: message, follow, unfollow, postback events signed with x-line-signature (https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/)",
+    "verified": "apps/line/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linear",
@@ -3540,21 +3570,30 @@
   },
   {
     "path": "apps/linkedin/linkedin-conversions",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversion-rule"
+    ],
+    "pollAction": "conversion-rule-list",
+    "reason": "conversion-rule-list returns every rule of one Ad Account through start/count with paging.total (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api)",
+    "verified": "apps/linkedin/linkedin-conversions/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linkup",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-task",
+      "new-research-task",
+      "new-extract-task",
+      "new-or-updated-task",
+      "new-or-updated-research-task",
+      "new-or-updated-extract-task"
+    ],
+    "pollAction": "tasks-list",
+    "reason": "tasks-list, research-list and extract-list document sortBy=createdAt|updatedAt and sortDirection=desc; task outputs carry updatedAt, so new-or-updated-* de-duplicate on id:updatedAt (https://api.linkup.so/v1/openapi.json)",
+    "verified": "apps/linkup/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linkupapi",
@@ -3590,12 +3629,14 @@
   },
   {
     "path": "apps/livechat",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-chat-thread"
+    ],
+    "pollAction": "list-archives",
+    "reason": "list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api)",
+    "verified": "apps/livechat/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/livestorm",
@@ -3611,12 +3652,14 @@
   },
   {
     "path": "apps/lob",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-address"
+    ],
+    "pollAction": "address-list",
+    "reason": "address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list)",
+    "verified": "apps/lob/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/lodgify",

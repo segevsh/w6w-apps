@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 62, manual-webhook: 18, poll: 415, none: 188
+**Totals:** 683 apps — webhook-api: 63, manual-webhook: 19, poll: 428, none: 173
 
-## webhook-api (62)
+## webhook-api (63)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -44,6 +44,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/heygen | avatar_video.success, avatar_video.fail | apps/heygen/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: avatar_video.success, avatar_video.fail (HMAC-SHA256 `signature` header, registered via POST /v3/webhooks/endpoints, https://developers.heygen.com/docs/webhooks); the video list GET /v3/videos documents no result order, sort or since-filter (https://developers.heygen.com/reference/list-videos) |
 | apps/invoiceninja | invoice-webhook, new-invoice | apps/invoiceninja/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/jotform | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
+| apps/judgeme | review/created, review/updated | apps/judgeme/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: review/created, review/updated (POST /webhooks); list-reviews has no sort or since filter (https://judge.me/api/docs.yaml) |
 | apps/lemlist | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | comment, cycle, issue, project | apps/linear/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/lokalise | project, key, translation, task | no | hand | webhook candidate queued for a webhook node: project, key, translation and task events |
@@ -77,7 +78,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (18)
+## manual-webhook (19)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -89,6 +90,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/highlevel | contact, appointment, opportunity, conversation | apps/highlevel/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: contact, appointment, opportunity, conversation events (https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html); GET /contacts/ documents no order or since-filter; pipelines/forms/calendars are rarely-changing account configuration, and /opportunities/search and /conversations/search order/date params are not sent by the existing actions |
 | apps/homeassistant | webhook trigger | apps/homeassistant/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: automation webhook trigger (https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger); state listing is an uncapped full instance snapshot with no change filter (https://developers.home-assistant.io/docs/api/rest/) |
 | apps/intercom | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
+| apps/line | message, follow, unfollow, postback | apps/line/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: message, follow, unfollow, postback events signed with x-line-signature (https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/) |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-lead-ads | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/whatsapp | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
@@ -100,7 +102,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (415)
+## poll (428)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -285,8 +287,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/inoreader | stream-contents | new-article | apps/inoreader/README.md Triggers section (verified 2026-11-09) | hand | shape a: stream/contents r defaults to newest first, order=newest sends no r (https://www.inoreader.com/developers/stream-contents) |
 | apps/insightly | contact-get-many | new-contact, new-lead, new-opportunity, new-organisation, new-or-updated-contact, new-or-updated-lead, new-or-updated-opportunity, new-or-updated-organisation | apps/insightly/README.md Triggers section (verified 2026-11-09) | hand | *-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded |
 | apps/instantly | email-list | new-email | apps/instantly/README.md Triggers section (verified 2026-08-29) | hand | shipped poll trigger(s) over list action email-list |
+| apps/instapaper | folders-list | new-folder | apps/instapaper/README.md Triggers section (verified 2026-11-09) | hand | folders-list is a small whole-account snapshot (https://www.instapaper.com/api/full); bookmarks-list has no documented order or since filter, so bookmarks are not polled |
 | apps/ironclad | record-list | new-record, new-or-updated-record | apps/ironclad/README.md Triggers section (verified 2026-11-09) | hand | Records support descending agreement-date and last-updated sorts with stable IDs. |
 | apps/iterable | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
+| apps/jenkins | get-job-info | new-build, new-job | apps/jenkins/README.md Triggers section (verified 2026-11-09) | hand | get-job-info exposes the job's builds, sorted by number in the trigger; list-jobs is a whole-root snapshot (https://www.jenkins.io/doc/book/using/remote-access-api/) |
 | apps/jibble | activity-list | new-activity | apps/jibble/README.md Triggers section (verified 2026-11-09) | hand | shape a: Activity has createdAt (OData $metadata), trigger sends $orderby=createdAt desc (https://workspace.prod.jibble.io/v1/$metadata) |
 | apps/jobber | invoice-list | new-invoice, new-or-updated-invoice | apps/jobber/README.md Triggers section (verified 2026-11-09) | hand | invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/) |
 | apps/jobnimbus | contact-list | new-contact, new-or-updated-contact | apps/jobnimbus/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x) |
@@ -297,20 +301,31 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/keap | contact-list | new-contact | apps/keap/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/kintone | comments-list | new-comment | apps/kintone/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action comments-list |
 | apps/kit | list-subscribers | new-subscriber | apps/kit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-subscribers |
+| apps/klaviyo | get-profiles | new-profile, new-or-updated-profile | apps/klaviyo/README.md Triggers section (verified 2026-11-09) | hand | get-profiles sorted -created / -updated, both documented sort fields (https://developers.klaviyo.com/en/reference/get_profiles) |
+| apps/klicktipp | subscriber-changed | contact-changed | apps/klicktipp/README.md Triggers section (verified 2026-11-09) | hand | subscriber-changed is a documented since-filter feed of changed contact ids with cursor paging (https://developers.klicktipp.com/) |
+| apps/klipfolio | dashboard-list | new-dashboard, new-data-source | apps/klipfolio/README.md Triggers section (verified 2026-11-09) | hand | dashboard-list and datasource-list return the whole account collection through limit/offset with a total (https://apidocs.klipfolio.com/) |
 | apps/knack | record-list | new-record | apps/knack/README.md Triggers section (verified 2026-11-09) | hand | record-list sorted descending by a caller-named creation-time field (sort_field / sort_order, https://docs.knack.com/reference/sorting) |
 | apps/kommo | lead-list | new-lead | apps/kommo/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action lead-list |
 | apps/kudosity | sms-list | new-sms | no | hand | shipped poll trigger(s) over list action sms-list |
 | apps/kustomer | customer-list | new-customer, new-or-updated-customer | apps/kustomer/README.md Triggers section (verified 2026-11-09) | hand | customer-list sort=-createdAt / -updatedAt (https://developer.kustomer.com/api/core-resources/get-customers) |
+| apps/landbot | channel-list | new-channel | apps/landbot/README.md Triggers section (verified 2026-11-09) | hand | channel-list is the whole workspace channel set through offset/limit with a total; customer-list has no documented order or since filter (https://dev.landbot.io/api-reference/platform/openapi.json) |
+| apps/launchdarkly | flag-list | new-flag, new-audit-log-entry | apps/launchdarkly/README.md Triggers section (verified 2026-11-09) | hand | flag-list sorted -creationDate (documented sort field) and audit-log-list with the documented epoch-ms after filter (https://launchdarkly.com/docs/api/feature-flags/get-feature-flags) |
 | apps/lawmatics | list-contacts | new-contact | apps/lawmatics/README.md Triggers section (verified 2026-11-09) | hand | list-contacts sort_by=created_at&sort_order=desc (https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw) |
+| apps/leadfeeder | visitor-company-list | new-visitor-company | apps/leadfeeder/README.md Triggers section (verified 2026-11-09) | hand | visitor-company-list over a date range; the vendor documents most-recent-visitor-first when no sort is given (https://api.leadfeeder.com/openapi.yaml) |
+| apps/learnworlds | users-list | new-user | apps/learnworlds/README.md Triggers section (verified 2026-11-09) | hand | users-list returns users newest registered first per the existing action's own documented behaviour; the vendor portal is JavaScript-rendered so the order is not independently re-verified (https://www.learnworlds.dev/) |
 | apps/leexi | meeting-event-list | new-meeting-event | no | hand | shipped poll trigger(s) over list action meeting-event-list |
 | apps/lemonsqueezy | order-list | new-order | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-09) | hand | order-list relies on the documented created_at-descending default (https://docs.lemonsqueezy.com/api/orders/list-all-orders) |
 | apps/lever | posting-list | new-posting, new-or-updated-posting | apps/lever/README.md Triggers section (verified 2026-11-09) | hand | posting-list read as a bounded whole-collection snapshot (cursor pages of 100, max 5000), no sort relied on (https://hire.lever.co/developer/documentation#list-all-postings) |
 | apps/lexware-office | voucher-list | new-voucher, new-or-updated-voucher | apps/lexware-office/README.md Triggers section (verified 2026-11-09) | hand | voucher-list sort=createdDate,DESC / updatedDate,DESC (https://developers.lexware.io/docs/) |
 | apps/linkedin/linkedin | list-posts-by-author | new-post, new-or-updated-post | apps/linkedin/linkedin/README.md Triggers section (verified 2026-11-09) | hand | list-posts-by-author sortBy=CREATED / LAST_MODIFIED (https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api) |
 | apps/linkedin/linkedin-ads | ad-account-list | new-ad-account | apps/linkedin/linkedin-ads/README.md Triggers section (verified 2026-11-09) | hand | ad-account-list read as a bounded whole-collection snapshot via pageToken (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts) |
+| apps/linkedin/linkedin-conversions | conversion-rule-list | new-conversion-rule | apps/linkedin/linkedin-conversions/README.md Triggers section (verified 2026-11-09) | hand | conversion-rule-list returns every rule of one Ad Account through start/count with paging.total (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api) |
+| apps/linkup | tasks-list | new-task, new-research-task, new-extract-task, new-or-updated-task, new-or-updated-research-task, new-or-updated-extract-task | apps/linkup/README.md Triggers section (verified 2026-11-09) | hand | tasks-list, research-list and extract-list document sortBy=createdAt\|updatedAt and sortDirection=desc; task outputs carry updatedAt, so new-or-updated-* de-duplicate on id:updatedAt (https://api.linkup.so/v1/openapi.json) |
 | apps/linkupapi | job-candidates-list | new-candidate | no | hand | shipped poll trigger(s) over list action job-candidates-list |
 | apps/littlegreenlight | constituent-search | new-constituent, new-or-updated-constituent | apps/littlegreenlight/README.md Triggers section (verified 2026-11-09) | hand | constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key) |
+| apps/livechat | list-archives | new-chat-thread | apps/livechat/README.md Triggers section (verified 2026-11-09) | hand | list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api) |
 | apps/livestorm | event-list | new-event, new-or-updated-event | apps/livestorm/README.md Triggers section (verified 2026-11-09) | hand | since-filter poll: filter[created_since]/[updated_since]=cursor-120s over event-list, page[number] 0-indexed, id dedupe |
+| apps/lob | address-list | new-address | apps/lob/README.md Triggers section (verified 2026-11-09) | hand | address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list) |
 | apps/lofty | lead-list | new-lead | apps/lofty/README.md Triggers section (verified 2026-11-09) | hand | lead-list sort=CreateTime desc=true limit 100; id leadId (vendor reference is client-rendered, sort value rests on the action's documented list) |
 | apps/loop-returns | order-list | new-order | no | hand | shipped poll trigger(s) over list action order-list |
 | apps/loops | transactional-list | new-transactional | apps/loops/README.md Triggers section (verified 2026-11-09) | hand | vendor: list transactional emails 'most recently created first' (https://loops.so/docs/api-reference/list-transactional-emails) |
@@ -520,7 +535,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (188)
+## none (173)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -587,25 +602,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/hedy |  | apps/hedy/README.md Triggers section (verified 2026-11-09) | hand | session and highlight lists are cursor-paged without a documented newest-first order or created/updated-since filter (https://api.swaggerhub.com/apis/HedyAI/hedy-api/1.0.1) |
 | apps/holded |  | apps/holded/README.md Triggers section (verified 2026-11-09) | hand | CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference); the funnel list is rarely-changing account configuration, rejected as a 'new funnel' event |
 | apps/htmlcsstoimage |  | apps/htmlcsstoimage/README.md Triggers section (verified 2026-11-09) | hand | the image list GET /v1/images documents only page_token and count: no stated order and no since-filter, so new images cannot be told from old ones (https://htmlcsstoimage.com/openapi/v1.json) |
-| apps/instapaper |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/jenkins |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/jev |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/jinaai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/judgeme |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/klaviyo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/klicktipp |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/klipfolio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/jev |  | apps/jev/README.md Triggers section (verified 2026-11-09) | hand | stateless typed-evaluation API: `evaluate` is a compute call and `list-models` returns the static model catalog, so there are no user records that change (https://docs.typesafe.ai) |
+| apps/jinaai |  | apps/jinaai/README.md Triggers section (verified 2026-11-09) | hand | `batches-list` takes only a `limit` (no documented sort or created-after filter) and is not the whole collection, and `classifiers-list` was measured returning `500` for every request, so no list action is a reliable record feed; the rest is stateless embeddings, rerank and classify compute (https://api.jina.ai/openapi.json: /v1/batches takes only `limit`) |
 | apps/kvcore | new-user | apps/kvcore/README.md Triggers section (verified 2026-11-09) | hand | user-list takes only an updated-since filter and documents no created-time field or sort, so a new user cannot be told from an edited one (https://developer.insiderealestate.com/publicv2/reference/get_v2-public-users) |
-| apps/landbot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/launchdarkly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/leadfeeder |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/learnworlds |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/line |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/linkedin/linkedin-conversions |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/linkup |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/litellm |  | no | hand | no actions: a model-provider connection used only by the host's model layer |
-| apps/livechat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/lob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/lodgify |  | no | hand | list-bookings has no sort order and no created-since filter, only updatedSince with no documented booking stamp to tell new from edited; vendor docs 403 to curl so default order unverifiable (https://docs.lodgify.com/reference/list-bookings) |
 | apps/mailcheck |  | no | hand | email-validation API lists batch-operation jobs, not durable created records |
 | apps/meta/facebook-conversions |  | no | hand | dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists |
