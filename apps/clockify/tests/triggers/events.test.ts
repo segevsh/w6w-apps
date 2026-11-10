@@ -10,6 +10,7 @@ import clientDeleted from "../../triggers/client-deleted.ts";
 import taskUpdated from "../../triggers/task-updated.ts";
 import taskDeleted from "../../triggers/task-deleted.ts";
 import anyEvent from "../../triggers/any-event.ts";
+import { CLOCKIFY_EVENTS } from "../../lib/triggers.ts";
 import newWorkspace from "../../triggers/new-workspace.ts";
 
 const TOKEN = "tok-abcdefghijklmnop-0123456789";
@@ -115,7 +116,7 @@ test("clockify any-event: one webhook per named event, each with its own token",
   }, m.ctx);
   assertEquals(m.calls.map((c) => c.method), ["GET", "POST", "POST"]);
   assertEquals(JSON.parse(m.calls[1].body!), {
-    name: "w6w any-event NEW_TAG",
+    name: "w6w 1 NEW_TAG",
     url: callbackUrl,
     webhookEvent: "NEW_TAG",
     triggerSourceType: "WORKSPACE_ID",
@@ -123,6 +124,31 @@ test("clockify any-event: one webhook per named event, each with its own token",
   });
   assertEquals(JSON.parse(m.calls[2].body!).webhookEvent, "NEW_INVOICE");
   assertEquals(got, anyState);
+});
+
+test("clockify any-event: every catalog event registers under a name Clockify accepts (<= 30)", async () => {
+  const all = [...CLOCKIFY_EVENTS];
+  const longest = all.reduce((a, b) => (b.length > a.length ? b : a));
+  assertEquals(longest.length > 30, true);
+  const m = mockCtx([
+    { body: [] },
+    ...all.map((_, i) => ({
+      status: 201,
+      body: { id: `w${i}`, authToken: `tok-${i}-abcdefghijklmnop` },
+    })),
+  ]);
+  await anyEvent.onSubscribe!({
+    params: { workspaceId: WS, events: all.join(",") },
+    callbackUrl,
+    subscriptionId: "s",
+    hostUrl: "h",
+  }, m.ctx);
+  const posts = m.calls.filter((c) => c.method === "POST").map((c) => JSON.parse(c.body!));
+  assertEquals(posts.length, all.length);
+  const names = posts.map((p) => p.name as string);
+  for (const n of names) assertEquals(n.length >= 2 && n.length <= 30, true);
+  assertEquals(new Set(names).size, all.length);
+  assertEquals(posts.find((p) => p.webhookEvent === longest) !== undefined, true);
 });
 
 test("clockify any-event: an empty or unknown events list is refused before any call", async () => {

@@ -1,6 +1,8 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import listContacts from "../actions/list-contacts.ts";
 
+const PAGE = 100;
+
 /**
  * `GET /contacts?limit=100&offset=0&sort=desc`: Brevo sorts "in the ascending/descending order of
  * record creation", descending by default (https://developers.brevo.com/reference/get-contacts,
@@ -12,7 +14,14 @@ export default pollFromListAction({
   description:
     "The run gets each contact newly created in the Brevo account (any list or none). New contact on a list is the New Contact webhook.",
   action: listContacts,
-  input: () => ({ limit: 100, offset: 0, sort: "desc" }),
+  input: () => ({ limit: PAGE, offset: 0, sort: "desc" }),
+  // A bulk import can add more than one page between checks: keep paging newest-first until a
+  // page holds an already-seen contact (the resume position) or the list ends.
+  nextPageInput: (input, result) => {
+    const got = (result as { contacts?: unknown })?.contacts;
+    const n = Array.isArray(got) ? got.length : 0;
+    return n < PAGE ? undefined : { ...input, offset: Number(input.offset) + PAGE };
+  },
   items: (result) => {
     const contacts = (result as { contacts?: unknown })?.contacts;
     return Array.isArray(contacts) ? contacts : [];
@@ -36,5 +45,5 @@ export default pollFromListAction({
     listIds: [8],
     attributes: { FIRSTNAME: "Ada" },
   },
-  maxPages: 1,
+  maxPages: 30,
 });

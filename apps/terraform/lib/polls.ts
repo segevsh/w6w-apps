@@ -3,6 +3,7 @@ import { pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** 50 pages of 100 = the snapshot kit's 5000-row cap. */
 const MAX_PAGES = 50;
+const LABEL = "Terraform";
 
 /**
  * Read every page of a paged list action (`page`/`pageSize` in, `nextPage` out), through the SAME
@@ -30,9 +31,11 @@ export async function listAll(
       }
       byId.set(id, row);
     }
-    if (typeof result?.nextPage !== "number") break;
+    if (typeof result?.nextPage !== "number") return byId;
   }
-  return byId;
+  throw new Error(
+    `${LABEL} list has more than ${MAX_PAGES} pages (${MAX_PAGES * 100} rows); narrow the scope`,
+  );
 }
 
 /** Diff the rows against the previous check: only newly seen ids become events. */

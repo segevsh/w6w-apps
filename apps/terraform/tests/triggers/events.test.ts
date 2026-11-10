@@ -315,3 +315,15 @@ test("terraform new-variable: seed, new variable once, value never emitted, lite
   );
   assertEquals(retry, first);
 });
+
+test("terraform new-organization: more than 50 pages fails loudly instead of truncating", async () => {
+  const m = mockCtx(Array.from({ length: 50 }, (_, i) => ({ body: page([org(`o${i}`)], i + 2) })));
+  let msg = "";
+  try {
+    await newOrganization.poll!({ ...input, state: {} }, m.ctx);
+  } catch (err) {
+    msg = (err as Error).message;
+  }
+  assert(msg.includes("50 pages"), `expected a cap error, got: ${msg}`);
+  assertEquals(m.calls.length, 50);
+});

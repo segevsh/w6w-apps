@@ -218,6 +218,39 @@ test("brevo contact-created: seeds, emits only new contacts, is idempotent, asks
   assert.deepEqual(retry, first);
 });
 
+test("brevo contact-created: a bulk import over one page is paged to the resume position, none lost", async () => {
+  const seeded = await contactCreated.poll!(
+    { ...input, state: {} },
+    mockCtx([{ body: { contacts: [contact(1)], count: 1 } }]).ctx,
+  );
+  const ids = (from: number, to: number) =>
+    Array.from({ length: to - from + 1 }, (_, i) => contact(to - i));
+  const m = mockCtx([
+    { body: { contacts: ids(152, 251), count: 251 } },
+    { body: { contacts: ids(52, 151), count: 251 } },
+    { body: { contacts: [...ids(2, 51), contact(1)], count: 251 } },
+  ]);
+  const got = await contactCreated.poll!({ ...input, state: seeded.nextState }, m.ctx);
+  assert.deepEqual(m.calls.map((c) => c.url), [
+    "https://api.brevo.com/v3/contacts?limit=100&offset=0&sort=desc",
+    "https://api.brevo.com/v3/contacts?limit=100&offset=100&sort=desc",
+    "https://api.brevo.com/v3/contacts?limit=100&offset=200&sort=desc",
+  ]);
+  // maxEvents (100) holds back the newest; those are not marked seen and arrive next check.
+  assert.equal(got.events.length, 100);
+  assert.equal((got.events[0] as { id: number }).id, 2);
+  const m2 = mockCtx([
+    { body: { contacts: ids(152, 251), count: 251 } },
+    { body: { contacts: ids(52, 151), count: 251 } },
+    { body: { contacts: [...ids(2, 51), contact(1)], count: 251 } },
+  ]);
+  const more = await contactCreated.poll!({ ...input, state: got.nextState }, m2.ctx);
+  assert.deepEqual(
+    [...got.events, ...more.events].map((e) => (e as { id: number }).id),
+    Array.from({ length: 200 }, (_, i) => i + 2),
+  );
+});
+
 const sender = (id: number, name = "S") => ({
   id,
   name,

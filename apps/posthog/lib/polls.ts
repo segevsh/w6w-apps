@@ -3,6 +3,7 @@ import { pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** 50 pages of 100 = the snapshot kit's 5000-row cap. */
 const MAX_PAGES = 50;
+const LABEL = "PostHog";
 const PAGE = 100;
 
 /**
@@ -27,9 +28,11 @@ export async function listAll(
       }
       byId.set(String(id), row);
     }
-    if (typeof result?.next !== "string" || result.next === "") break;
+    if (typeof result?.next !== "string" || result.next === "") return byId;
   }
-  return byId;
+  throw new Error(
+    `${LABEL} list has more than ${MAX_PAGES} pages (${MAX_PAGES * 100} rows); narrow the scope`,
+  );
 }
 
 /** Diff the rows against the previous check: only newly seen ids become events. */

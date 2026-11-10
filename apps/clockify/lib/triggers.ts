@@ -184,6 +184,15 @@ export function webhookTrigger(
  * Every `webhookEvent` Clockify's "Create webhook" accepts
  * (https://docs.clockify.me/ `POST /v1/workspaces/{workspaceId}/webhooks`, enum read 2026-11-10).
  */
+/**
+ * Clockify refuses a webhook name over 30 characters (OpenAPI `CreateWebhookRequestV1.name`
+ * maxLength 30, read 2026-11-10) and the longest event is 32. The index keeps names unique, the
+ * event fills what room is left. Unsubscribe deletes by stored id, never by name.
+ */
+export function webhookName(index: number, event: string): string {
+  return `w6w ${index + 1} ${event}`.slice(0, 30);
+}
+
 export const CLOCKIFY_EVENTS: readonly string[] = [
   "NEW_PROJECT",
   "NEW_TASK",
@@ -316,11 +325,11 @@ export function anyEventTrigger(spec: {
       }
       const webhooks: AnyEventState["webhooks"] = [];
       try {
-        for (const event of events) {
+        for (const [index, event] of events.entries()) {
           const created = await client.request<{ id?: unknown; authToken?: unknown }>(base, {
             method: "POST",
             body: {
-              name: `w6w ${spec.key} ${event}`,
+              name: webhookName(index, event),
               url: callbackUrl,
               webhookEvent: event,
               triggerSourceType: "WORKSPACE_ID",

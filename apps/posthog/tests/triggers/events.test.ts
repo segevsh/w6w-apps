@@ -242,3 +242,15 @@ test("posthog new-or-updated-insight: newest-modified first, an edit of an old i
   );
   assertEquals(retry, first);
 });
+
+test("posthog new-cohort: more than 50 pages fails loudly instead of truncating", async () => {
+  const m = mockCtx(
+    Array.from({ length: 50 }, (_, i) => ({
+      body: page([cohort(i + 1)], "https://us.posthog.com/next"),
+    })),
+    { connection: conn },
+  );
+  const err = await rejects(() => newCohort.poll!({ ...input, state: {} }, m.ctx));
+  nodeAssert.ok(err.message.includes("50 pages"), err.message);
+  assertEquals(m.calls.length, 50);
+});
