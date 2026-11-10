@@ -1,6 +1,6 @@
 # Raindrop.io
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 Manage Raindrop.io bookmarks from a workflow: collections, raindrops (bookmarks), highlights, tags,
 and the counts and search behind them.
@@ -366,6 +366,13 @@ No runtime dependencies: `@w6w/types` is types-only.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-collection` — New Collection | Poll | `collection-list` | Each newly created collection |
+| `new-bookmark` — New Bookmark | Poll | `raindrop-search` | Each newly saved bookmark across all collections except Trash |
+| `new-collection` — New Collection | Poll (snapshot) | `collection-list` | Each root collection created since the last check |
 
-Polled through the existing `collection-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.raindrop.io/v1/collections) (verified 2026-11-09).
+- Raindrop docs, Get raindrops, `sort`: "-created by date descending (default)". `raindrop-search` is called for collection `0` with `sort=-created`, `perpage=50`, `page=0`.
+- `collection-list` returns all root collections in one response ordered by the account's manual sort (the docs describe `sort` as "the order of collection"), not by creation, so `new-collection` diffs the set (snapshot kit, added only). Sub-collections are not covered.
+- No `new-or-updated-*`: `sort` offers no update-time ordering.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://developer.raindrop.io/v1/raindrops/multiple; https://developer.raindrop.io/v1/collections/methods.

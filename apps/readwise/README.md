@@ -244,6 +244,11 @@ cd ../../_tools && deno run --no-check -A audit.ts readwise
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-book` — New Book | Poll | `book-list` | Each newly created book |
+| `new-or-updated-book` — New or Updated Book | Poll | `book-list` | Each book, article, tweet or podcast that is new or was updated, e.g. by new highlights (event id = `id:updated`) |
 
-Polled through the existing `book-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://readwise.io/api_deets) (verified 2026-11-09).
+- Readwise API, List Books: "updated__gt – filter by last updated datetime (greater than)". The trigger calls `book-list` with `updated__gt = last check − 120 s`, `page_size=100`, following `next` up to 3 pages, deduping by `id:updated`.
+- There is no creation-time filter or sort, so a pure `new-book` trigger would fire for old books the first time they get a highlight; only the honest new-or-updated trigger ships.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://readwise.io/api_deets.

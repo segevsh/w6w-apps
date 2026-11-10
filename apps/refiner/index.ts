@@ -20,7 +20,6 @@
  *     which `lib/client.ts` builds from plain objects and arrays.
  */
 import type { AppDefinition } from "@w6w/types";
-import newContact from "./triggers/new-contact.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -47,6 +46,7 @@ import responseTag from "./actions/response-tag.ts";
 import segmentAddContact from "./actions/segment-add-contact.ts";
 import segmentList from "./actions/segment-list.ts";
 import segmentRemoveContact from "./actions/segment-remove-contact.ts";
+import newSurvey from "./triggers/new-survey.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -72,7 +72,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [api, service, quota],
-  triggers: [newContact],
+  triggers: [newSurvey],
 };
 
 export default app;

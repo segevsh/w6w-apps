@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/recurly",
   "version": "0.2.0",
-  "description": "Manage Recurly accounts, subscriptions, plans, invoices, transactions and coupons via the Recurly V3 API Includes a poll trigger for new invoice.",
+  "description": "Manage Recurly accounts, subscriptions, plans, invoices, transactions and coupons via the Recurly V3 API. Includes poll triggers for new invoice and new or updated invoice.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://recurly.com/developers/api/v2021-02-25/index.html"
     ],
-    "longDescription": "Recurly runs subscription billing and recurring-payment operations for a lot of SaaS and subscription-commerce businesses, and this app lets a workflow act directly on that billing data. Create and look up accounts, list and inspect subscriptions, and drive the subscription lifecycle — create and cancel.\n\nOn the money side, list invoices, pull up a specific one, and collect payment against a pending or past-due one. Browse the plan catalog to know what you're billing for, pull the transaction log for a payment attempt, and look up coupons.\n\nAuthentication is HTTP Basic with a private API key as the username and an empty password. Every request must also declare the API version it targets — this app pins `v2021-02-25`, Recurly's current GA version.\n\nA poll trigger starts workflows when a new invoice is found.",
+    "longDescription": "Recurly runs subscription billing and recurring-payment operations for a lot of SaaS and subscription-commerce businesses, and this app lets a workflow act directly on that billing data. Create and look up accounts, list and inspect subscriptions, and drive the subscription lifecycle — create and cancel.\n\nOn the money side, list invoices, pull up a specific one, and collect payment against a pending or past-due one. Browse the plan catalog to know what you're billing for, pull the transaction log for a payment attempt, and look up coupons.\n\nAuthentication is HTTP Basic with a private API key as the username and an empty password. Every request must also declare the API version it targets — this app pins `v2021-02-25`, Recurly's current GA version.\n\nPoll triggers start workflows when an invoice is created or updated.",
     "categories": [
       "commerce",
       "finance"

@@ -1,7 +1,6 @@
 # Recruitee
 
-Triggers: not shipped — candidate-list sort choices do not document a newest-first creation ordering suitable for a new-candidate feed (https://apidocs.recruitee.com/)
-
+- **Triggers** — 1 (poll)
 
 Manage candidates, job offers, notes, tasks, tags and the hiring pipeline in **Recruitee**, an
 applicant tracking system (ATS), over its REST API.
@@ -164,3 +163,16 @@ flows, interview scheduling, the referral portal/program, billing, and anything 
 signed-in-browser-only `Admin.Web.*`/`Auth.Web.OAuth.PersonalToken` surfaces — either not reachable
 with a personal API token (confirmed live, not assumed), or with no request-body schema this app
 could point at a real documented example for. See finding #1.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | Poll | `candidate-list` | Each newly created candidate |
+
+- Recruitee API, List all candidates: "created_after string (optional) — Show only candidates created after given date". The trigger calls `candidate-list` with `created_after = last check − 120 s`, `limit=200`, following `offset` up to 3 pages, deduping by id.
+- No `new-or-updated-candidate`: the list has no updated-since filter or sort (only `by_date` / `by_last_message`).
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://apidocs.recruitee.com/.

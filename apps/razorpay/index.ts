@@ -37,7 +37,6 @@
  * full list of what is out of scope and why.
  */
 import type { AppDefinition } from "@w6w/types";
-import newOrder from "./triggers/new-order.ts";
 import basic from "./auth/basic.ts";
 
 import orderCreate from "./actions/order-create.ts";
@@ -98,6 +97,7 @@ import invoiceList from "./actions/invoice-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [

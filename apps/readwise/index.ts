@@ -28,7 +28,6 @@
  * rather than guessing at one.
  */
 import type { AppDefinition } from "@w6w/types";
-import newBook from "./triggers/new-book.ts";
 import accessToken from "./auth/api-token.ts";
 
 import highlightCreate from "./actions/highlight-create.ts";
@@ -57,6 +56,7 @@ import dailyReviewGet from "./actions/daily-review-get.ts";
 import dailyReviewComplete from "./actions/daily-review-complete.ts";
 
 import service from "./health/service.ts";
+import newOrUpdatedBook from "./triggers/new-or-updated-book.ts";
 
 export default {
   actions: [
@@ -90,5 +90,5 @@ export default {
   // apps — the token is the whole authentication story.
   auth: [accessToken],
   healthChecks: [service],
-  triggers: [newBook],
+  triggers: [newOrUpdatedBook],
 } satisfies AppDefinition;

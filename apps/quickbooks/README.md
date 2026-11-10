@@ -1,6 +1,6 @@
 # QuickBooks
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, the chart of
 accounts and estimates, run a Profit and Loss report, and fall back to a raw query for anything
@@ -184,5 +184,11 @@ once.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list` | Each customer that is new or was updated (event id = `Id:LastUpdatedTime`) |
 
-Polled through the existing `customer-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer) (verified 2026-11-09).
+- `customer-list` runs QuickBooks' query endpoint with `ORDERBY MetaData.CreateTime DESC` (new) or `ORDERBY MetaData.LastUpdatedTime DESC` (new-or-updated), `MAXRESULTS 100`, first page. The `MetaData` object carries both stamps; the action's own `orderBy` parameter is documented with the placeholder `Metadata.LastUpdatedTime DESC`.
+- Disclosure: Intuit's reference pages are JavaScript-rendered and could not be fetched with `curl` on 2026-11-09, so the `CreateTime` ordering is taken from Intuit's query language (`ORDERBY <property> [DESC]`) and is not quoted from the page; it has not been exercised against a live company.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer.

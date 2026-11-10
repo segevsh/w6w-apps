@@ -59,7 +59,6 @@
  * README.
  */
 import type { AppDefinition } from "@w6w/types";
-import newCollection from "./triggers/new-collection.ts";
 
 import testToken from "./auth/test-token.ts";
 import oauth2 from "./auth/oauth2.ts";
@@ -117,6 +116,8 @@ import backupCreate from "./actions/backup-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBookmark from "./triggers/new-bookmark.ts";
+import newCollection from "./triggers/new-collection.ts";
 
 export default {
   actions: [
@@ -171,5 +172,5 @@ export default {
   // installation needs.
   auth: [testToken, oauth2],
   healthChecks: [service, quota],
-  triggers: [newCollection],
+  triggers: [newBookmark, newCollection],
 } satisfies AppDefinition;

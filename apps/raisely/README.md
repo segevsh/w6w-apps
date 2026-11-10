@@ -1,6 +1,6 @@
 # Raisely
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 Read and manage campaigns, fundraiser profiles, donations, users (supporters and donors), recurring
 subscriptions and tags on **Raisely**, the fundraising platform, over the **Raisely API v3**.
@@ -117,5 +117,10 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-campaign` — New Campaign | Poll | `campaign-list` | Each newly created campaign |
+| `new-or-updated-campaign` — New or Updated Campaign | Poll | `campaign-list` | Each campaign that is new or was updated (event id = `uuid:updatedAt`) |
 
-Polled through the existing `campaign-list` action; the first check records the current page without firing and later checks emit unseen rows. Source: [vendor docs](https://developers.raisely.com/) (verified 2026-11-09).
+- Raisely API reference, `GET /campaigns`: "sort — The record attribute to filter on (use in conjunction with order); order — The direction to sort … asc, desc". The triggers call `campaign-list` with `sort=createdAt&order=desc` / `sort=updatedAt&order=desc`, `limit=100`, `offset=0`.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://developers.raisely.com/reference/getcampaigns.

@@ -21,7 +21,6 @@
  *     `www.raiselystatus.com`, and that final host is the one declared.
  */
 import type { AppDefinition } from "@w6w/types";
-import newCampaign from "./triggers/new-campaign.ts";
 import apiKey from "./auth/api-key.ts";
 
 import campaignList from "./actions/campaign-list.ts";
@@ -50,6 +49,8 @@ import tagRecordRemove from "./actions/tag-record-remove.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
 
 export default {
   actions: [
@@ -86,5 +87,5 @@ export default {
   // offered, because a credential in a query string is logged everywhere.
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newCampaign],
+  triggers: [newCampaign, newOrUpdatedCampaign],
 } satisfies AppDefinition;

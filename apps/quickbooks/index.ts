@@ -22,7 +22,6 @@
  * subset plus the generic `query` action for anything else.
  */
 import type { AppDefinition } from "@w6w/types";
-import newCustomer from "./triggers/new-customer.ts";
 import oauth2 from "./auth/oauth2.ts";
 
 import customerList from "./actions/customer-list.ts";
@@ -57,6 +56,8 @@ import query from "./actions/query.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
 
 export default {
   actions: [
@@ -93,5 +94,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newCustomer],
+  triggers: [newCustomer, newOrUpdatedCustomer],
 } satisfies AppDefinition;

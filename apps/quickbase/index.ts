@@ -1,5 +1,4 @@
 import type { AppDefinition } from "@w6w/types";
-import newTable from "./triggers/new-table.ts";
 import userToken from "./auth/user-token.ts";
 // record
 import queryRecords from "./actions/query-records.ts";
@@ -29,6 +28,7 @@ import runFormula from "./actions/run-formula.ts";
 // health
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTable from "./triggers/new-table.ts";
 
 export default {
   actions: [
