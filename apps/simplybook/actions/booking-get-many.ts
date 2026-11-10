@@ -12,6 +12,8 @@ interface Input {
   date?: string;
   dateFrom?: string;
   dateTo?: string;
+  recordDateFrom?: string;
+  recordDateTo?: string;
   search?: string;
 }
 
@@ -58,6 +60,20 @@ const bookingGetMany: ActionDefinition<Input, unknown[]> = {
     { key: "date", label: "Date (YYYY-MM-DD)", type: "date", advanced: true },
     { key: "dateFrom", label: "Date from (YYYY-MM-DD)", type: "date", advanced: true },
     { key: "dateTo", label: "Date to (YYYY-MM-DD)", type: "date", advanced: true },
+    {
+      key: "recordDateFrom",
+      label: "Created from (YYYY-MM-DD)",
+      type: "date",
+      advanced: true,
+      hint: "Filter by booking creation date, in the company time zone.",
+    },
+    {
+      key: "recordDateTo",
+      label: "Created to (YYYY-MM-DD)",
+      type: "date",
+      advanced: true,
+      hint: "Filter by booking creation date, in the company time zone.",
+    },
     { key: "clientId", label: "Client ID", type: "number", advanced: true },
     {
       key: "serviceIds",
@@ -88,6 +104,8 @@ const bookingGetMany: ActionDefinition<Input, unknown[]> = {
         "filter[date]": input.date,
         "filter[date_from]": input.dateFrom,
         "filter[date_to]": input.dateTo,
+        "filter[record_date_from]": input.recordDateFrom,
+        "filter[record_date_to]": input.recordDateTo,
         "filter[client_id]": input.clientId,
         "filter[services]": input.serviceIds,
         "filter[providers]": input.providerIds,

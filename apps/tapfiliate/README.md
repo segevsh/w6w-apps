@@ -6,6 +6,7 @@ Manage affiliate programs, affiliates, customers, conversions, commissions and p
 - **Categories** — marketing, crm
 - **Auth methods** — api-key
 - **Actions** — 46
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.tapfiliate.com` (the `service` check adds `status.tapfiliate.com` to
   its own hook allowlist, never to the app's)
@@ -175,4 +176,18 @@ deno task fmt         # format (run before check/lint, not after)
 deno task validate    # manifest + icon-legibility audit
 ```
 
-Triggers: not shipped — the lists document only day-granular `date_from`/`date_to`, a fixed 25-per-page pager and no sort order, so a poll would re-read a whole day of records per check (https://tapfiliate.com/docs/rest/)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversion` — New Conversion | Poll | `conversion-list` | Each conversion created after the trigger was set up |
+
+`GET /conversions/` has no sort order and only a day-granular `date_from` / `date_to` ("a day in UTC"),
+so each check asks for the window one day wider on both sides and keeps a row only if its own
+`created_at` lies in the exact window. The first check stores the start time and reads nothing; later
+checks read from two minutes before the previous check (never before the start), up to 4 pages of 25
+per check, resume a larger window from the saved page on the next check, and drop ids already emitted.
+A conversion has no update stamp, so there is no "new or updated" trigger; `click-list` is
+Enterprise-plan only and is not polled. Source:
+[Tapfiliate API reference, List all conversions](https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions)
+(verified 2026-11-10).

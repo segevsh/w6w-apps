@@ -6,6 +6,7 @@ Book, read, update, cancel, approve and decline SimplyBook.me bookings; list ser
 - **Categories** — calendar
 - **Auth methods** — login (custom)
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — every host `https://simplybook.me/api/swagger-admin`'s `servers` array
   names (see below)
 - **Website** — https://simplybook.me
@@ -160,4 +161,19 @@ Researched and endpoint-verified 2026-09-05 by fetching the live OpenAPI documen
 live probes of `POST /admin/auth` and the status-page candidates above. Re-verify if a probe starts
 failing for everyone at once.
 
-Triggers: not shipped — the booking creation/edit filters (`filter[record_date_from]`, `filter[edited_date_from]`) are day-granular in the company time zone, which this app cannot read, and the existing action does not expose them; the client list has no order or since filter (https://simplybook.me/api/swagger-admin)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-booking` — New Booking | Poll | `booking-get-many` | Each booking created after the trigger was set up |
+
+`GET /admin/bookings` has no sort order and only a day-granular `filter[record_date_from]` /
+`filter[record_date_to]` in the company time zone, which each check reads from `GET /admin/company/info`
+(`timezone`). The check asks for the window one day wider on both sides and keeps a booking only if its
+own `record_date` (read in that zone) lies in the exact window. The first check stores the start time and
+reads nothing; later checks read from two minutes before the previous check (never before the start),
+100 per page, one page per check, resume a larger window from the saved page on the next check, and drop
+ids already emitted. A booking carries no edit stamp (only `record_date`), so there is no "new or
+updated" trigger even though `filter[edited_date_from]` exists. `booking-get-many` gained the optional
+`recordDateFrom` / `recordDateTo` inputs for this. Source:
+[SimplyBook.me admin API](https://simplybook.me/api/swagger-admin) (verified 2026-11-10).

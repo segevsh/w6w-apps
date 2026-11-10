@@ -82,3 +82,24 @@ test("new-enrollment drains a window of 2 full pages across checks: each row onc
   );
   assertEquals(ids(r3.events), [201]);
 });
+
+test("new-enrollment: 5 pages of pre-seed rows behind a vendor that honours created_after emit nothing, then one new row", async () => {
+  const state = await seedState();
+  // The window starts at the seed, so a vendor honouring `created_after` returns no pre-seed row
+  // however many exist: 5 checks of empty pages, then the one row created after the seed.
+  let s: unknown = state;
+  for (let n = 1; n <= 5; n++) {
+    at(T1 + n * 300_000);
+    const m = mockCtx([{ body: listEnvelope([]) }]);
+    const r = await trigger.poll!({ ...input, state: s }, m.ctx);
+    assertEquals(r.events, []);
+    assertEquals(m.calls[0].url.includes("query%5Bcreated_after%5D="), true);
+    s = r.nextState;
+  }
+  at(T1 + 2_000_000);
+  const last = await trigger.poll!(
+    { ...input, state: s },
+    mockCtx([{ body: listEnvelope([item(501)]) }]).ctx,
+  );
+  assertEquals(ids(last.events), [501]);
+});
