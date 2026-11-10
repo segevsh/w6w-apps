@@ -42,6 +42,8 @@ export interface JiraEvent {
   comment: Record<string, unknown> | null;
   project: Record<string, unknown> | null;
   changelog: Record<string, unknown> | null;
+  /** Any Event only: the whole verified delivery body (sprint, board, version, worklog, … objects). */
+  payload?: Record<string, unknown>;
 }
 
 const SIGNING_SECRET_PARAM: Param = {
@@ -71,6 +73,11 @@ const OUTPUT: OutputField[] = [
   { key: "comment", type: "object", label: "Comment" },
   { key: "project", type: "object", label: "Project" },
   { key: "changelog", type: "object", label: "Changelog" },
+];
+
+const ANY_OUTPUT: OutputField[] = [
+  ...OUTPUT,
+  { key: "payload", type: "object", label: "Full delivery body" },
 ];
 
 function asObject(v: unknown): Record<string, unknown> | null {
@@ -144,7 +151,7 @@ export function webhookTrigger(
     title: spec.title,
     description: spec.description,
     params: spec.event ? [SIGNING_SECRET_PARAM] : [SIGNING_SECRET_PARAM, EVENTS_PARAM],
-    output: OUTPUT,
+    output: spec.event ? OUTPUT : ANY_OUTPUT,
     sample: spec.sample,
 
     onSubscribe({ callbackUrl }) {
@@ -167,7 +174,8 @@ export function webhookTrigger(
       const event = normalizeDelivery(parsed, raw);
       if (spec.event) return event.webhookEvent === spec.event ? [event] : [];
       const wanted = (params?.events ?? "").split(",").map((e) => e.trim()).filter(Boolean);
-      return wanted.length === 0 || wanted.includes(event.webhookEvent) ? [event] : [];
+      const withBody = { ...event, payload: asObject(parsed) ?? {} };
+      return wanted.length === 0 || wanted.includes(event.webhookEvent) ? [withBody] : [];
     },
   };
 }

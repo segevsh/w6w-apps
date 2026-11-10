@@ -5,7 +5,7 @@ Create and manage Linear issues, comments, projects and labels through its Graph
 - **Categories** — project-management, developer-tools
 - **Auth methods** — api-key, oauth2
 - **Actions** — 11
-- **Triggers** — 6 (webhook)
+- **Triggers** — 7 (webhook)
 - **Egress allowlist** — `api.linear.app`
 - **Website** — https://linear.app
 - **API docs** — https://linear.app/developers
@@ -24,7 +24,8 @@ scope, can create or read webhooks, so the connection must be one of those.
 | `project` — Project Event | webhook | `Project` | action, project, previous values |
 | `cycle` — Cycle Event | webhook | `Cycle` | action, cycle, previous values |
 | `issue-label` — Label Event | webhook | `IssueLabel` | action, label, previous values |
-| `any-event` — Any Event | webhook | the **Resource types** you list (blank: `Comment`, `Issue`, `IssueLabel`, `Project`, `Cycle`, `Reaction`) | resource type, action, record, previous values |
+| `user` — User Event | webhook | `User` | action, user, previous values |
+| `any-event` — Any Event | webhook | the **Resource types** you list (blank: `Comment`, `Issue`, `IssueLabel`, `Project`, `Cycle`, `Reaction`) | resource type, action, record, previous values, and the whole delivery body as `payload` (reaches types such as `IssueSLA` and `OAuthApp` whose fields are not under `data`) |
 
 Every run also gets `resourceType`, `action` (`create`, `update`, `remove`), `deliveryId`
 (`Linear-Delivery`), `id`, `url`, `actor`, `createdAt`, the record as `data` and, on an update,

@@ -113,7 +113,7 @@ for (const [key, ev] of NAMED) {
   });
 }
 
-const SIGNED = ["issue-created", "comment-deleted", "user-updated", "any-event"];
+const SIGNED = [...NAMED.map(([k]) => k), "any-event"];
 for (const key of SIGNED) {
   test(`${key}: signature failures throw and echo nothing`, async () => {
     const b = body(NAMED.find(([k]) => k === key)?.[1] ?? "sprint_started");
@@ -134,6 +134,14 @@ for (const key of SIGNED) {
           key,
           input(b, { headers: { "x-hub-signature": sign(JSON.stringify(JSON.parse(b))) } }),
         ),
+      Error,
+      "signature does not match",
+    );
+    // the signature itself with its last character flipped
+    const good = sign(b);
+    const last = good.endsWith("0") ? "1" : "0";
+    await assertRejects(
+      () => ingest(key, input(b, { headers: { "x-hub-signature": good.slice(0, -1) + last } })),
       Error,
       "signature does not match",
     );
@@ -233,4 +241,20 @@ test("any-event: blank events keeps every event; a list keeps only those named",
     ),
     [],
   );
+});
+
+test("any-event: the whole delivery body rides along as payload (sprint, worklog)", async () => {
+  for (
+    const [ev, extra] of [
+      ["sprint_started", { sprint: { id: 7, state: "active" } }],
+      ["worklog_created", { worklog: { id: "w1", timeSpent: "1h" } }],
+    ] as const
+  ) {
+    const b = JSON.stringify({ webhookEvent: ev, timestamp: 1762769400000, ...extra });
+    const out = evs(await ingest("any-event", input(b)));
+    assertEquals(out.length, 1);
+    const e = out[0] as Record<string, unknown>;
+    assertEquals(e.webhookEvent, ev);
+    assertEquals(e.payload, JSON.parse(b));
+  }
 });

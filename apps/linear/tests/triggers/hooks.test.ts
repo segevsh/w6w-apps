@@ -58,13 +58,14 @@ const goodHeaders = (body = BODY) => ({
   "linear-event": "Issue",
 });
 
-test("app: six webhook triggers, each with output and sample", () => {
+test("app: seven webhook triggers, each with output and sample", () => {
   assertEquals(app.triggers.map((t) => t.key), [
     "issue",
     "comment",
     "project",
     "cycle",
     "issue-label",
+    "user",
     "any-event",
   ]);
   for (const t of app.triggers) {

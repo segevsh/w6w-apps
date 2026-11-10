@@ -105,7 +105,7 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 | `user-created` | webhook | `user_created` | user |
 | `user-updated` | webhook | `user_updated` | user |
 | `user-deleted` | webhook | `user_deleted` | user |
-| `any-event` | webhook | any `webhookEvent` Jira sends, optionally limited by the **Events** list (e.g. `sprint_started,worklog_created`) | event name and whatever issue, comment, project or user it carries |
+| `any-event` | webhook | any `webhookEvent` Jira sends, optionally limited by the **Events** list (e.g. `sprint_started,worklog_created`) | event name, the issue, comment, project or user it carries, and the whole delivery body as `payload` (sprint, board, version, worklog and the rest) |
 
 Every run of a webhook trigger also gets `webhookEvent`, `timestamp`, `eventType` (issue events),
 `deliveryId` (`X-Atlassian-Webhook-Identifier`, the same across Jira's retries) and the objects named above.

@@ -5,6 +5,7 @@ import type { TriggerCall } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import anyEvent from "../../triggers/any-event.ts";
 import issueLabel from "../../triggers/issue-label.ts";
+import user from "../../triggers/user.ts";
 import type { TriggerState } from "../../lib/triggers.ts";
 
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
@@ -148,5 +149,92 @@ test("issue-label: only IssueLabel deliveries emit; registers IssueLabel", async
   );
   assertEquals((gql(calls[1].body).variables.input as { resourceTypes: string[] }).resourceTypes, [
     "IssueLabel",
+  ]);
+});
+
+const rawBody = (o: Record<string, unknown>) =>
+  JSON.stringify({ ...o, webhookTimestamp: Date.now() });
+
+test("any-event: the whole body rides along as payload (IssueSLA, OAuthApp)", async () => {
+  for (
+    const o of [
+      { action: "set", type: "IssueSLA", issueData: { id: "i1", title: "T" } },
+      { action: "revoked", type: "OAuthApp", oauthClientId: "client-1", organizationId: "org-1" },
+    ]
+  ) {
+    const b = rawBody(o);
+    const out = evs(await ingest(call(b, good(b))));
+    assertEquals(out.length, 1);
+    const e = out[0] as { resourceType: string; payload: Record<string, unknown> };
+    assertEquals(e.resourceType, o.type);
+    assertEquals(e.payload, JSON.parse(b));
+  }
+});
+
+const TRIGGERS: Record<string, { t: typeof anyEvent; type: string }> = {
+  "any-event": { t: anyEvent, type: "Reaction" },
+  "issue-label": { t: issueLabel as never, type: "IssueLabel" },
+  "user": { t: user as never, type: "User" },
+};
+
+for (const name of Object.keys(TRIGGERS)) {
+  test(`${name}: signature failures and a flipped signature character throw`, async () => {
+    const { t, type } = TRIGGERS[name];
+    const st = { ...STATE, resourceType: type };
+    const go = (raw: TriggerCall, ...rest: [Partial<TriggerState> | undefined?]) =>
+      t.handleIngest!(
+        {
+          raw,
+          params: {},
+          state: (rest.length > 0 ? rest[0] : st) as TriggerState,
+          subscriptionId: "s",
+        },
+        mockCtx().ctx,
+      );
+    const b = bodyAt(Date.now(), type, "update");
+    const sig = sign(b);
+    const flipped = sig.slice(0, -1) + (sig.endsWith("0") ? "1" : "0");
+    await assertRejects(
+      () => go(call(b, { "linear-signature": flipped })),
+      Error,
+      "signature does not match",
+    );
+    await assertRejects(
+      () => go(call(b.replace("tada", "tadb"), { "linear-signature": sig })),
+      Error,
+      "signature does not match",
+    );
+    await assertRejects(() => go(call(b, {})), Error, "signature does not match");
+    await assertRejects(() => go(call(undefined, { "linear-signature": sig })), Error, "raw body");
+    const stale = bodyAt(NOW - 120_000, type, "update");
+    await assertRejects(() => go(call(stale, good(stale))), Error, "60-second window");
+    for (const state of [undefined, { ...st, secret: "" }]) {
+      await assertRejects(() => go(call(b, {}), state), Error, "secret");
+    }
+  });
+}
+
+test("user: only User deliveries emit; registers User", async () => {
+  const body = bodyAt(Date.now(), "User", "update");
+  const st = { ...STATE, resourceType: "User" };
+  const run = (b: string) =>
+    user.handleIngest!(
+      { raw: call(b, good(b)), params: {}, state: st, subscriptionId: "s" },
+      mockCtx().ctx,
+    );
+  const out = evs(await run(body));
+  assertEquals(out.length, 1);
+  assertEquals((out[0] as { resourceType: string }).resourceType, "User");
+  assertEquals(evs(await run(BODY)), []);
+  const { ctx, calls } = mockCtx([
+    { body: { data: { webhooks: { nodes: [] } } } },
+    { body: { data: { webhookCreate: { success: true, webhook: { id: "w" } } } } },
+  ]);
+  await user.onSubscribe!(
+    { params: {}, subscriptionId: "s", callbackUrl: CALLBACK, hostUrl: HOST },
+    ctx,
+  );
+  assertEquals((gql(calls[1].body).variables.input as { resourceTypes: string[] }).resourceTypes, [
+    "User",
   ]);
 });

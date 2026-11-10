@@ -23,7 +23,7 @@ import { LinearClient } from "./client.ts";
  *
  * Registering and reading webhooks needs a workspace admin (or an OAuth app with the `admin` scope).
  *
- * Docs (verified 2026-11-09): https://linear.app/developers/webhooks ("Create webhook using API",
+ * Docs (verified 2026-11-10): https://linear.app/developers/webhooks ("Create webhook using API",
  * "Securing Webhooks") and Linear's GraphQL schema (`WebhookCreateInput.secret`).
  */
 
@@ -60,6 +60,8 @@ export interface LinearEvent {
   data: Record<string, unknown>;
   /** On an update, the previous values of the changed fields. */
   updatedFrom: Record<string, unknown> | null;
+  /** Any Event only: the whole verified delivery body (reaches types whose record is not in `data`, e.g. IssueSLA, OAuthApp). */
+  payload?: Record<string, unknown>;
 }
 
 const TEAM_PARAM: Param = {
@@ -297,6 +299,11 @@ export function anyEventTrigger(
     createdAt: "2026-11-10T10:00:00.000Z",
     data: { id: "5c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f", emoji: "tada" },
     updatedFrom: null,
+    payload: {
+      type: "Reaction",
+      action: "create",
+      data: { id: "5c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f", emoji: "tada" },
+    },
   };
   return {
     key: spec.key,
@@ -304,7 +311,7 @@ export function anyEventTrigger(
     description:
       "Fires on any Linear data change for the resource types you pick (issues, comments, labels, projects, cycles, reactions by default). The run gets the resource type, the action, the record and, on an update, the values that changed.",
     params: [TEAM_PARAM, ACTIONS_PARAM, EVENTS_PARAM],
-    output: [...BASE_OUTPUT],
+    output: [...BASE_OUTPUT, { key: "payload", type: "object", label: "Full delivery body" }],
     sample,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
@@ -362,6 +369,7 @@ export function anyEventTrigger(
         createdAt: str(body.createdAt),
         data,
         updatedFrom: asObject(body.updatedFrom),
+        payload: body,
       }];
     },
   };

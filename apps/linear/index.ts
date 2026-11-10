@@ -36,6 +36,7 @@ import commentEvent from "./triggers/comment.ts";
 import projectEvent from "./triggers/project.ts";
 import cycleEvent from "./triggers/cycle.ts";
 import issueLabelEvent from "./triggers/issue-label.ts";
+import userEvent from "./triggers/user.ts";
 import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -64,6 +65,7 @@ export default {
     projectEvent,
     cycleEvent,
     issueLabelEvent,
+    userEvent,
     anyEvent,
   ],
   auth: [apiKey, oauth2],
