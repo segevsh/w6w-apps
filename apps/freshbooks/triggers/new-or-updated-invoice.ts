@@ -1,6 +1,6 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import invoiceList from "../actions/invoice-list.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 
 // FreshBooks documents `search[updated_min]` on invoices as a YYYY-MM-DD, greater-than-or-equal
 // filter (https://www.freshbooks.com/api/invoices), so each check re-reads the whole day and the
@@ -15,13 +15,14 @@ interface Invoice {
   updated?: string;
 }
 
-interface State {
-  v: 1;
-  kind: "ids";
-  seeded: true;
-  ids: string[];
-  cursor: number;
-}
+/**
+ * `updated` is a zone-less `YYYY-MM-DD HH:MM:SS` stamp and FreshBooks does not document UTC for it
+ * (its own times are US Eastern). To never drop a genuinely new invoice, the floor compares the
+ * stamp read as UTC PLUS five hours, the latest instant it can mean: a pre-seed invoice updated in
+ * the five hours before the seed may still fire once, nothing post-seed is ever dropped (brief 9.9).
+ */
+const ZONE_SLACK_MS = 5 * 3_600_000;
+const SEEN_WINDOW = MAX_PAGES * PAGE_SIZE + PAGE_SIZE;
 
 const trigger: TriggerDefinition = {
   key: "new-or-updated-invoice",
@@ -42,32 +43,32 @@ const trigger: TriggerDefinition = {
     updated: "2026-11-09 09:00:00",
   },
   minIntervalMs: 300_000,
-  async poll({ state }, ctx) {
-    const now = clock.now();
-    const prior = state as { cursor?: unknown } | null;
-    const cursor = typeof prior?.cursor === "number" ? prior.cursor : now;
-    const updatedMin = new Date(cursor - OVERLAP_MS).toISOString().slice(0, 10);
-    const { events, nextState } = await pollNewItems<Invoice>({
+  poll({ state }, ctx) {
+    // A window longer than MAX_PAGES pages is resumed from the persisted page on the next check and
+    // the cursor moves only once it drains (brief 9.8); the seed stores `floor = now` (brief 9.9).
+    return pollWindow<Invoice, number>({
       state,
-      maxPages: 1,
-      maxEvents: 500,
-      seenWindow: 1000,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      seenWindow: SEEN_WINDOW,
       idOf: (invoice) => `${invoice.id ?? ""}:${invoice.updated ?? ""}`,
-      async fetchPage() {
-        const items: Invoice[] = [];
-        for (let page = 1; page <= MAX_PAGES; page++) {
-          const result = await invoiceList.execute(
-            { page, perPage: PAGE_SIZE, search: { updated_min: updatedMin } },
-            ctx,
-          ) as { response?: { result?: { invoices?: Invoice[] } } };
-          const batch = result?.response?.result?.invoices ?? [];
-          items.push(...batch);
-          if (batch.length < PAGE_SIZE) break;
-        }
-        return { items };
+      tsOf: (invoice) => {
+        const ms = toMs(invoice.updated);
+        return ms === undefined ? undefined : ms + ZONE_SLACK_MS;
+      },
+      async load(sinceMs, pos) {
+        const page = pos ?? 1;
+        const updatedMin = new Date(sinceMs).toISOString().slice(0, 10);
+        const result = await invoiceList.execute(
+          { page, perPage: PAGE_SIZE, search: { updated_min: updatedMin } },
+          ctx,
+        ) as { response?: { result?: { invoices?: Invoice[] } } };
+        const items = result?.response?.result?.invoices ?? [];
+        return { items, next: items.length >= PAGE_SIZE ? page + 1 : undefined };
       },
     });
-    return { events, nextState: { ...nextState, cursor: now } as State };
   },
 };
 

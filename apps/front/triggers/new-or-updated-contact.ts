@@ -1,11 +1,19 @@
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import type { ActionDefinition, TriggerDefinition } from "@w6w/types";
 import action from "../actions/contact-list.ts";
+import { pollWindow } from "../lib/window.ts";
 
 /** Re-read this much before the cursor so a record stamped just before the last check is not lost. */
 const OVERLAP_MS = 120_000;
 
 type Item = Record<string, unknown>;
+
+/**
+ * The window is read whole in one check: `returnAll` walks Front's `page_token` until the window
+ * `updated_after = cursor - overlap` is exhausted, so a window longer than one page cannot stall or
+ * be cut (brief 9.8) and the window is minutes wide by construction. The seed stores `floor = now`
+ * and later checks drop contacts updated before it (brief 9.9).
+ */
+const SEEN_WINDOW = 5000;
 
 const trigger: TriggerDefinition = {
   key: "new-or-updated-contact",
@@ -13,26 +21,27 @@ const trigger: TriggerDefinition = {
   description: "The run gets each Front contact that is newly created or edited, once per edit.",
   minIntervalMs: 300_000,
 
-  async poll({ state, params }, ctx) {
-    const prev = (state ?? {}) as { cursor?: unknown };
-    const cursor = typeof prev.cursor === "number" ? prev.cursor : undefined;
-    const since = (cursor ?? Date.now()) - OVERLAP_MS;
-    const result = await (action as unknown as ActionDefinition).execute(
-      { ...(params as Record<string, unknown>), limit: 100, updatedAfter: since / 1000 },
-      ctx,
-    );
-    const items = result as Item[];
-    const idOf = (i: Item) => String(i.id ?? "") + ":" + String(i.updated_at ?? "");
-    const stampOf = (i: Item): number => Number(i.updated_at) * 1000;
-    const { events, nextState } = await pollNewItems<Item>({
+  poll({ state, params }, ctx) {
+    return pollWindow<Item, number>({
       state,
-      fetchPage: () => Promise.resolve({ items }),
-      idOf,
+      now: Date.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: 1,
+      pageSize: 1,
+      seenWindow: SEEN_WINDOW,
+      idOf: (i) => String(i.id ?? "") + ":" + String(i.updated_at ?? ""),
+      tsOf: (i) => {
+        const ms = Number(i.updated_at) * 1000;
+        return Number.isFinite(ms) ? ms : undefined;
+      },
+      async load(sinceMs) {
+        const result = await (action as unknown as ActionDefinition).execute(
+          { ...(params as Record<string, unknown>), returnAll: true, updatedAfter: sinceMs / 1000 },
+          ctx,
+        );
+        return { items: result as Item[] };
+      },
     });
-    // The cursor only moves to a stamp that was actually emitted.
-    const stamps = events.map(stampOf).filter((n) => Number.isFinite(n));
-    const base = cursor ?? Date.now();
-    return { events, nextState: { ...nextState, cursor: Math.max(base, ...stamps) } };
   },
   output: [
     { key: "id", type: "string", label: "Contact ID" },

@@ -1,9 +1,13 @@
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import type { ActionDefinition, TriggerDefinition } from "@w6w/types";
 import listGammaComments from "../actions/list-gamma-comments.ts";
+import { pollWindow, toMs } from "../lib/window.ts";
 
 /** Re-read this much before the cursor so a record stamped just before the last check is not lost. */
 const OVERLAP_MS = 120_000;
+/** Per-check ceiling: 5 pages of 50; a longer window is resumed on the next check (brief 9.8). */
+const MAX_PAGES = 5;
+const PAGE_SIZE = 50;
+const SEEN_WINDOW = MAX_PAGES * PAGE_SIZE + PAGE_SIZE;
 
 type Item = Record<string, unknown>;
 
@@ -14,30 +18,35 @@ const trigger: TriggerDefinition = {
     "The run gets each comment thread on the chosen Gamma that is new or has new activity (an edit or reply), once per change.",
   minIntervalMs: 300_000,
   params: [{ key: "gammaId", label: "Gamma ID", type: "string", required: true }],
-  async poll({ state, params }, ctx) {
-    const prev = (state ?? {}) as { cursor?: unknown };
-    const cursor = typeof prev.cursor === "number" ? prev.cursor : undefined;
-    const since = (cursor ?? Date.now()) - OVERLAP_MS;
-    const result = await (listGammaComments as unknown as ActionDefinition).execute(
-      {
-        ...(params as Record<string, unknown>),
-        limit: 50,
-        updatedSince: new Date(since).toISOString(),
-      },
-      ctx,
-    );
-    const items = ((result as { data?: unknown[] }).data ?? []) as Item[];
-    const idOf = (i: Item) => String(i.id ?? "") + ":" + String(i.updatedTime ?? "");
-    const stampOf = (i: Item): number => Date.parse(String(i.updatedTime ?? ""));
-    const { events, nextState } = await pollNewItems<Item>({
+  poll({ state, params }, ctx) {
+    // The window's `after` cursor is persisted when it holds more than MAX_PAGES pages and the
+    // cursor moves only once it drains (brief 9.8); the seed stores `floor = now` and later checks
+    // drop comments last modified before it (brief 9.9).
+    return pollWindow<Item, string>({
       state,
-      fetchPage: () => Promise.resolve({ items }),
-      idOf,
+      now: Date.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      seenWindow: SEEN_WINDOW,
+      idOf: (i) => String(i.id ?? "") + ":" + String(i.updatedTime ?? ""),
+      tsOf: (i) => toMs(i.updatedTime),
+      async load(sinceMs, after) {
+        const result = await (listGammaComments as unknown as ActionDefinition).execute(
+          {
+            ...(params as Record<string, unknown>),
+            limit: PAGE_SIZE,
+            updatedSince: new Date(sinceMs).toISOString(),
+            ...(after ? { after } : {}),
+          },
+          ctx,
+        ) as { data?: Item[]; hasMore?: boolean; nextCursor?: string | null };
+        return {
+          items: result.data ?? [],
+          next: result.hasMore && result.nextCursor ? result.nextCursor : undefined,
+        };
+      },
     });
-    // The cursor only moves to a stamp that was actually emitted.
-    const stamps = events.map(stampOf).filter((n) => Number.isFinite(n));
-    const base = cursor ?? Date.now();
-    return { events, nextState: { ...nextState, cursor: Math.max(base, ...stamps) } };
   },
   output: [
     { key: "id", type: "string", label: "Comment ID" },
