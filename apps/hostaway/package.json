@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hostaway",
   "version": "0.2.0",
-  "description": "Manage Hostaway vacation-rental listings, calendars, reservations, guest conversations, reviews, tasks and financial reports. Poll triggers: new reservations, listings, reviews and conversation messages.",
+  "description": "Manage Hostaway vacation-rental listings, calendars, reservations, guest conversations, reviews, tasks and financial reports. Poll triggers on new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
