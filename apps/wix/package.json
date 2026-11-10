@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wix",
-  "version": "0.2.0",
-  "description": "Manage a Wix site's CMS collections and data items, contacts and labels, Stores products, and eCommerce orders via the Wix REST API. Includes a New Contact poll trigger.",
+  "version": "0.3.0",
+  "description": "Manage a Wix site's CMS collections and data items, contacts and labels, Stores products, and eCommerce orders via the Wix REST API. Poll triggers for new contacts, products, orders, sites, CMS collections and data items.",
   "license": "MIT",
   "author": {
     "name": "w6w"
