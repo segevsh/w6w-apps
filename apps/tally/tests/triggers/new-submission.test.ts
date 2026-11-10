@@ -129,6 +129,7 @@ test("new-submission: a window of more than MAX_PAGES full pages is drained acro
   const secondMock = mockCtx([{ body: body(pageOf(pages), total, pages) }]);
   const second = await trigger.poll!({ ...input, state: first.nextState }, secondMock.ctx);
   assertEquals(secondMock.calls.length, 1);
+  assertEquals(secondMock.calls[0].url.includes("page=4"), true);
   const s2 = second.nextState as { cursor: number; resume?: unknown };
   assertEquals(s2.cursor, T0 + 300_000);
   assertEquals(s2.resume, undefined);
