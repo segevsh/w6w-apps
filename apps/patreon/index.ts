@@ -23,6 +23,9 @@ import createWebhook from "./actions/create-webhook.ts";
 import updateWebhook from "./actions/update-webhook.ts";
 import deleteWebhook from "./actions/delete-webhook.ts";
 
+import newPledge from "./triggers/new-pledge.ts";
+import postPublished from "./triggers/post-published.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -40,6 +43,7 @@ export default {
     updateWebhook,
     deleteWebhook,
   ],
+  triggers: [newPledge, postPublished],
   auth: [oauth2, creatorAccessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

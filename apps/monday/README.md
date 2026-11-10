@@ -1,12 +1,11 @@
 # monday.com
 
-Triggers: not shipped — webhook candidate queued for a webhook node: board and item events; existing board/item list actions paginate without a documented newest-first order or creation-since filter (https://developer.monday.com/api-reference/docs/webhooks)
-
 Boards, groups, items and columns on monday.com via its GraphQL API.
 
 - **Categories** — project-management, productivity
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.monday.com`
 - **Website** — https://monday.com
 - **API docs** — https://developer.monday.com/api-reference/docs
@@ -29,6 +28,36 @@ change never surprises a running workflow.
 
 `board_id` and `item_id` are `ID`s; `group_id` and `column_id` are string keys
 (`topics`, `status`). The `*-get-many` lookups exist to discover them.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `item-created` — Item Created | webhook (API-registered) | `create_item` (delivered as `create_pulse`) | the item id and name, board, group, creator and initial column values |
+| `column-value-changed` — Column Value Changed | webhook (API-registered) | `change_column_value` (delivered as `update_column_value`) | the item, the column id, title and type, and its new and previous value |
+
+### Setup
+
+Nothing to paste. Subscribing needs the board's id (the number in `monday.com/boards/<id>`) and runs
+the GraphQL `create_webhook` mutation with the subscription's callback URL; unsubscribing runs
+`delete_webhook` (a webhook monday no longer has counts as deleted). The connection needs the
+`webhooks:write` scope. This app's OAuth sign-in requests only `me:read boards:read boards:write`, so
+use an API token whose owner may create webhooks, or an OAuth app granted `webhooks:write`. monday first POSTs a
+`{"challenge": "..."}` body to the URL and expects the token echoed back in the reply: the trigger
+answers that itself (status 200, `{"challenge": "..."}`) and starts no run. Subitem events and monday's
+other webhook event types are not offered.
+
+### Trust model
+
+**monday does not sign these webhooks, so the subscription's callback URL is the only secret.** monday
+documents one authenticity check: a JWT in the `Authorization` header, signed with a monday app's Signing
+Secret, present only on webhooks created with an integration-app token. This trigger does not verify
+that JWT (the app holds no Signing Secret), so treat the callback URL like a password: do not publish
+or log it, and delete the subscription if it leaks. The URL-verification challenge proves only that
+the endpoint exists, not who is calling; anyone holding the URL can start a run with a forged event.
+Deliveries retry once a minute for 30 minutes, so the same event may arrive more than once.
+
+Docs (verified 2026-11-10): https://developer.monday.com/api-reference/docs/webhooks
 
 ## Health check
 

@@ -1,16 +1,42 @@
 # Patreon
 
-Triggers: not shipped — members and posts are cursor-paginated with no documented order or filter, and list-campaigns returns the creator's one or few campaigns (a "new campaign" event would almost never fire); webhook candidate queued for member and post events (https://docs.patreon.com/#tag/Webhooks).
-
 Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2.
 
 - **Categories** — commerce, crm
 - **Auth methods** — oauth2, creator-access-token
 - **Actions** — 11
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `www.patreon.com`
 - **Website** — https://www.patreon.com
 - **API docs** — https://docs.patreon.com/#api (redirected from
   `patreon.com/platform/documentation/api`)
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `new-pledge` — New Pledge | webhook (API-registered) | `members:pledge:create` | the member resource: patron status, entitled amount, campaign and user |
+| `post-published` — Post Published | webhook (API-registered) | `posts:publish` | the post resource: title, URL, publish time and campaign |
+
+### Setup
+
+Nothing to paste. Subscribing needs the campaign id (from List Campaigns) and runs `POST /webhooks`
+for that one trigger with the subscription's callback URL; Patreon returns the webhook's `secret`,
+which is kept in the subscription's state. Unsubscribing runs `DELETE /webhooks/{id}` (a 404/410 counts
+as already deleted). The connection needs the `w:campaigns.webhook` scope. The delivered payload only
+holds what the webhook's scopes allow: a webhook without `campaigns.members` carries no member data, so
+connect with the member scopes you want in the run.
+
+### Trust model
+
+Every delivery's `X-Patreon-Signature` header is checked before the body is parsed: Patreon documents it
+as the hex digest of the message body HMAC-signed **with MD5** under the webhook's secret, so that is
+what is verified (constant-time compare). MD5 is Patreon's choice and cannot be changed here. A missing
+or wrong signature, an absent raw body or an unset secret refuses the delivery (one failed row, no run).
+Patreon sends no timestamp, so there is no replay window: a captured delivery can be replayed.
+Keep the callback URL private as well.
+
+Docs (verified 2026-11-10): https://docs.patreon.com/#webhooks (Webhooks, Triggers v2, Webhook Payloads and POST/DELETE /webhooks)
 
 ## Why API v2, not v1
 
