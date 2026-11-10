@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -28,8 +28,6 @@ depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-p
 | apps/mighty-networks | 3 | 10 | 10 |
 | apps/tickettailor | 0 | 10 | 10 |
 | apps/tidio | 0 | 10 | 10 |
-| apps/highlevel | 4 | 9 | 9 |
-| apps/lusha | 1 | 9 | 9 |
 | apps/motion | 0 | 9 | 9 |
 | apps/nocrm | 1 | 10 | 9 |
 | apps/procore | 0 | 9 | 9 |
@@ -576,6 +574,7 @@ depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-p
 | apps/gusto | 15 | 14 | 0 |
 | apps/heartbeat | 19 | 16 | 0 |
 | apps/hibob | 7 | 13 | 0 |
+| apps/highlevel | 22 | 9 | 0 |
 | apps/hospitable | 9 | 12 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
@@ -603,6 +602,7 @@ depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-p
 | apps/livestorm | 9 | 13 | 0 |
 | apps/lofty | 5 | 10 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
+| apps/lusha | 7 | 9 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
 | apps/maintainx | 12 | 10 | 0 |
 | apps/manus | 7 | 10 | 0 |
@@ -724,7 +724,7 @@ depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-p
 | apps/lemlist | 2 | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | 7 | issue, comment, project, cycle, issue-label, user, any-event | apps/linear/README.md Triggers section (verified 2026-11-10) | hand | webhook-api: signed webhookCreate-registered triggers for Issue, Comment, Project, Cycle, IssueLabel and User plus any-event; list actions are covered by those webhook triggers or skipped as reference data |
 | apps/lokalise | 5 | key-added, key-modified, translation-updated, task-created, task-closed | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound) |
-| apps/lusha | 1 | signal-received | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned |
+| apps/lusha | 7 | signal-received, contact-promotion, contact-company-change, company-hiring-surge, company-headcount-change, company-news, new-subscription | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned; signal-received is the any-signal trigger, five named triggers fix the entity type and signal types; new-subscription polls subscription-list (newest first, limit 100) |
 | apps/mailchimp/mailchimp | 10 | new-member, new-campaign, new-group-interest, member-subscribed, member-unsubscribed, member-updated, member-cleaned, email-changed, campaign-status, any-event | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook-api triggers (the app registers the audience webhook and keeps its signing secret) plus polls over list-members, list-campaigns and list-group-interests |
 | apps/mailchimp/mandrill | 1 | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
 | apps/mailerlite | 4 | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -768,7 +768,7 @@ depth: 682 apps, 2116 triggers, 2106 unaccounted list actions in 487 apps, n8n-p
 | apps/dropbox/dropbox | 2 | new-file, files-changed | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual webhook (X-Dropbox-Signature, set up in the App Console) plus a poll over list-folder on one named folder capped at 600 entries |
 | apps/esignatures | 5 | contract-event, contract-sent, contract-signed, signer-signed, signer-declined | apps/esignatures/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp). |
 | apps/formspark | 1 | new-submission | apps/formspark/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook set per form in the dashboard (no webhook API); signing is optional at Formspark so the trigger requires it: Formspark-Signature v1= hex HMAC-SHA256 of '<Formspark-Timestamp>.<raw body>' under the pasted secret, 5-minute window. |
-| apps/highlevel | 4 | contact-created, opportunity-created, appointment-created, inbound-message | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); no poll: contact search has no order or since filter |
+| apps/highlevel | 22 | contact-created, opportunity-created, appointment-created, inbound-message, contact-updated, contact-deleted, contact-tag-updated, opportunity-updated, opportunity-deleted, opportunity-stage-changed, opportunity-status-changed, appointment-updated, appointment-deleted, outbound-message, location-created, location-updated, any-event, new-opportunity, conversation-active, new-pipeline, new-calendar, new-form | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); named triggers for contact, opportunity, appointment, message and location events plus any-event; polls for opportunities (order=added_desc), conversations (sort=desc&sortBy=last_message_date) and snapshots of pipelines, calendars and forms; list-contacts has no sort or since filter (covered by contact-created) |
 | apps/homeassistant | 1 | automation-event | apps/homeassistant/README.md Triggers section (verified 2026-11-10) | hand | manual webhook receiving rest_command calls from the user's automations (Home Assistant has no outbound event feed); unsigned, callback URL is the secret; no poll: state list is an uncapped snapshot with no change filter |
 | apps/hubspot | 23 | any-event, company-created, company-deleted, company-updated, contact-created, contact-deleted, contact-updated, deal-created, deal-deleted, deal-updated, new-company, new-contact, new-deal, new-form, new-or-updated-company, new-or-updated-contact, new-or-updated-deal, new-or-updated-ticket, new-owner, new-ticket, ticket-created, ticket-deleted, ticket-updated | apps/hubspot/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user sets the Target URL in a HubSpot app) plus search and list polls |
 | apps/intercom | 17 | conversation-created, contact-created, new-contact, contact-updated, contact-deleted, company-created, company-updated, company-deleted, new-conversation, conversation-user-replied, conversation-admin-replied, conversation-closed, conversation-assigned, conversation-deleted, any-event, new-note, new-tag | apps/intercom/README.md Triggers section (verified 2026-11-10) | hand | signed manual webhooks (X-Hub-Signature HMAC-SHA1, client secret) for contact, company and conversation topics plus Any Event; polls new-note (note-get-many read page by page, order-independent snapshot of note ids: the 2.11 reference the client pins documents no sort order) and new-tag (tag-get-many snapshot); company/contact/conversation lists covered by their created webhooks (no documented newest-first order on GET /conversations) |
