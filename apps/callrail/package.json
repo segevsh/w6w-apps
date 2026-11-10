@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/callrail",
-  "version": "0.2.0",
-  "description": "Read and manage CallRail calls, text messages, form submissions, trackers and companies, and poll for new calls.",
+  "version": "0.3.0",
+  "description": "Read and manage CallRail calls, text messages, form submissions, trackers and companies, and poll for new calls, users, companies, trackers, tags, form submissions and text conversations.",
   "license": "MIT",
   "author": {
     "name": "w6w"
