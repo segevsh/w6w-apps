@@ -3,12 +3,24 @@
     "path": "apps/2chat",
     "mechanism": "poll",
     "candidates": [
-      "new-message"
+      "new-message",
+      "new-conversation",
+      "new-or-updated-conversation",
+      "new-group-message",
+      "new-group",
+      "new-number",
+      "new-user",
+      "new-waba-template"
     ],
     "pollAction": "messages-list",
-    "reason": "messages-list returns the newest 100 messages first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages); webhooks are separate and not shipped",
+    "reason": "poll triggers over the newest-first conversation/message lists and snapshot diffs of the small per-account lists (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/list-conversations)",
     "verified": "apps/2chat/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "contacts-list": "no documented order and no created/updated filter, unbounded paged list (https://developers.2chat.co/docs/API/Contacts/list-contacts)",
+      "contacts-search": "search by a caller-supplied term, no order or created filter (https://developers.2chat.co/docs/API/Contacts/search-contacts)",
+      "webhooks-list": "the account's webhook subscription configuration, not business records"
+    }
   },
   {
     "path": "apps/accelo",
@@ -97,9 +109,17 @@
       "new-list"
     ],
     "pollAction": "list-get-all",
-    "reason": "getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order",
+    "reason": "getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. The other list actions have no documented id keying/order or are unbounded (see skipped)",
     "verified": "apps/acumbamail/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "campaigns-list": "getCampaigns is documented as a dict 'List of campaigns' (name and identifiers) with a date_field (created|sent) + start_date/end_date filter and a status filter, but the item shape is undocumented, so no id key is pinned to dedupe on (https://acumbamail.com/en/apidoc/function/getCampaigns/)",
+      "templates-list": "getTemplates is documented as a dict of templates with their ID, name and availability, but the item shape and keying are undocumented, so no id key is pinned to dedupe on (https://acumbamail.com/en/apidoc/function/getTemplates/)",
+      "subscribers-list": "no created-after filter or order; blocks of 10,000 emails exceed the 5000-row snapshot cap (https://acumbamail.com/en/apidoc/function/getSubscribers/); new subscribers are the list webhook event 'subscribes' (queued)",
+      "subscriber-search": "lookup of one known email across lists, not a feed (https://acumbamail.com/en/apidoc/function/searchSubscriber/)",
+      "campaign-openers-list": "per-campaign engagement report (https://acumbamail.com/en/apidoc/function/getCampaignOpeners/)",
+      "campaign-clicks-list": "per-campaign engagement report (https://acumbamail.com/en/apidoc/function/getCampaignClicks/)"
+    }
   },
   {
     "path": "apps/adalo",
@@ -150,12 +170,23 @@
     "path": "apps/agencyzoom",
     "mechanism": "poll",
     "candidates": [
-      "new-lead"
+      "new-lead",
+      "new-customer",
+      "new-task",
+      "new-customer-policy",
+      "new-employee",
+      "new-csr"
     ],
     "pollAction": "lead-list",
-    "reason": "Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml).",
-    "verified": "apps/agencyzoom/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Lead list supports the documented startDate creation-date filter with a rolling cursor; customer and task searches take sort=id order=desc (https://app.agencyzoom.com/openapi/agencyzoom.yaml).",
+    "verified": "apps/agencyzoom/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "carrier-list": "agency reference data (carriers) used to look up IDs, not records",
+      "lead-source-list": "agency reference data (lead sources) used to look up IDs, not records",
+      "pipeline-list": "agency configuration (pipelines) used to look up IDs, not records",
+      "pipeline-stage-list": "agency configuration (pipeline stages) used to look up IDs, not records"
+    }
   },
   {
     "path": "apps/ahrefs",
@@ -10223,12 +10254,26 @@
     "path": "apps/unbounce",
     "mechanism": "poll",
     "candidates": [
-      "new-lead"
+      "new-lead",
+      "new-page",
+      "new-domain",
+      "new-sub-account",
+      "new-page-group",
+      "new-account"
     ],
     "pollAction": "page-lead-list",
-    "reason": "shipped poll trigger(s) over list action page-lead-list",
-    "verified": "apps/unbounce/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over every sortable list action (sort_order=desc, newest first; https://developer.unbounce.com/api_reference/)",
+    "verified": "apps/unbounce/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "account-page-list": "new-page",
+      "sub-account-page-list": "new-page",
+      "domain-page-list": "new-page",
+      "page-group-page-list": "new-page"
+    },
+    "skipped": {
+      "page-form-field-list": "form field definitions of one page (schema/reference data), not records"
+    }
   },
   {
     "path": "apps/upsales",

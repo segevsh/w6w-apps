@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -32,10 +32,7 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 | apps/mighty-networks | 3 | 10 | 10 |
 | apps/tickettailor | 0 | 10 | 10 |
 | apps/tidio | 0 | 10 | 10 |
-| apps/unbounce | 1 | 11 | 10 |
 | apps/wakatime | 1 | 11 | 10 |
-| apps/2chat | 1 | 10 | 9 |
-| apps/agencyzoom | 1 | 10 | 9 |
 | apps/atlassian/confluence | 2 | 10 | 9 |
 | apps/avoma | 1 | 10 | 9 |
 | apps/bexio | 1 | 10 | 9 |
@@ -151,7 +148,6 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 | apps/workos | 1 | 8 | 7 |
 | apps/zoho/zoho-people | 1 | 8 | 7 |
 | apps/zoho/zoho-workdrive | 1 | 8 | 7 |
-| apps/acumbamail | 1 | 7 | 6 |
 | apps/alegra | 1 | 7 | 6 |
 | apps/atlassian/bitbucket | 7 | 6 | 6 |
 | apps/atlassian/jira-service-management | 2 | 8 | 6 |
@@ -551,9 +547,12 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 | apps/zoho/zoho-calendar | 1 | 3 | 1 |
 | apps/zoho/zoho-sheet | 2 | 2 | 1 |
 | apps/zoho/zoho-sign | 1 | 2 | 1 |
+| apps/2chat | 8 | 10 | 0 |
 | apps/accelo | 4 | 0 | 0 |
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
+| apps/acumbamail | 1 | 7 | 0 |
+| apps/agencyzoom | 6 | 10 | 0 |
 | apps/ahrefs | 2 | 12 | 0 |
 | apps/aidbase | 12 | 12 | 0 |
 | apps/aircall | 7 | 11 | 0 |
@@ -673,6 +672,7 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 | apps/twist | 11 | 16 | 0 |
 | apps/twitter | 1 | 1 | 0 |
 | apps/typeform | 8 | 5 | 0 |
+| apps/unbounce | 6 | 11 | 0 |
 | apps/upsales | 17 | 18 | 0 |
 | apps/uptimerobot | 2 | 2 | 0 |
 | apps/vanta | 15 | 17 | 0 |
@@ -800,13 +800,13 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
-| apps/2chat | 1 | messages-list | new-message | apps/2chat/README.md Triggers section (verified 2026-11-10) | hand | messages-list returns the newest 100 messages first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages); webhooks are separate and not shipped |
+| apps/2chat | 8 | messages-list | new-message, new-conversation, new-or-updated-conversation, new-group-message, new-group, new-number, new-user, new-waba-template | apps/2chat/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over the newest-first conversation/message lists and snapshot diffs of the small per-account lists (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/list-conversations) |
 | apps/accelo | 4 | activity-list | new-activity, new-or-updated-activity, new-company, new-job | apps/accelo/README.md Triggers section (verified 2026-11-10) | hand | list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity requests the documented date_modified field via _fields and orders activity-list by order_by_desc(date_modified), keyed on id:date_modified |
 | apps/acculynx | 8 | job-list | new-job, new-or-updated-job, new-contact, new-invoice, new-job-estimate, new-job-representative, new-user, new-appointment | apps/acculynx/README.md Triggers section (verified 2026-11-10) | hand | poll triggers cover newest-first jobs, contacts and invoices, and bounded snapshots of per-job estimates and representatives, users and per-calendar appointments |
 | apps/actionnetwork | 1 | person-list | new-person, new-or-updated-person | apps/actionnetwork/README.md Triggers section (verified 2026-11-09) | hand | People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/). |
-| apps/acumbamail | 1 | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order |
+| apps/acumbamail | 1 | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. The other list actions have no documented id keying/order or are unbounded (see skipped) |
 | apps/addevent | 1 | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
-| apps/agencyzoom | 1 | lead-list | new-lead | apps/agencyzoom/README.md Triggers section (verified 2026-11-09) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
+| apps/agencyzoom | 6 | lead-list | new-lead, new-customer, new-task, new-customer-policy, new-employee, new-csr | apps/agencyzoom/README.md Triggers section (verified 2026-11-10) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor; customer and task searches take sort=id order=desc (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
 | apps/ahrefs | 2 | project-list | new-project, new-site-audit-crawl | apps/ahrefs/README.md Triggers section (verified 2026-11-10) | hand | snapshot of the management project collection plus finished Site Audit crawls from the free /site-audit/projects health-score list (https://docs.ahrefs.com/openapi.json) |
 | apps/aidbase | 12 | ticket-list | new-chat, new-chatbot, new-chatbot-knowledge, new-email, new-email-inbox, new-email-inbox-knowledge, new-faq-item, new-knowledge-item, new-knowledge-sub-page, new-ticket, new-ticket-form, new-ticket-form-knowledge | apps/aidbase/README.md Triggers section (verified 2026-11-10) | hand | created_after since-window for tickets, chats and emails; whole-list snapshots for chatbots, inboxes, forms, knowledge and what is attached to each (https://docs.aidbase.ai/apis/chatbot-api/reference) |
 | apps/aircall | 7 | call-list | new-call, new-contact, new-or-updated-contact, new-user, new-number, new-team, new-user-number | apps/aircall/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (order=desc, documented) on calls, contacts, users, numbers and teams; contacts also by updated_at; a user's numbers as a bounded snapshot (https://developer.aircall.io/api-references/). |
@@ -1226,7 +1226,7 @@ depth: 682 apps, 1804 triggers, 2540 unaccounted list actions in 535 apps, n8n-p
 | apps/twitter | 1 | tweet-search-recent | new-tweet | apps/twitter/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action tweet-search-recent |
 | apps/typefully | 1 | draft-list | new-draft | apps/typefully/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action draft-list |
 | apps/typesense | 1 | document-search | new-document | apps/typesense/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a) by user-supplied sortBy (sort_by documented, https://typesense.org/docs/28.0/api/search.html); q=*, strict |
-| apps/unbounce | 1 | page-lead-list | new-lead | apps/unbounce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action page-lead-list |
+| apps/unbounce | 6 | page-lead-list | new-lead, new-page, new-domain, new-sub-account, new-page-group, new-account | apps/unbounce/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over every sortable list action (sort_order=desc, newest first; https://developer.unbounce.com/api_reference/) |
 | apps/upsales | 17 | contact-list | new-contact, new-activity, new-appointment, new-campaign, new-comment, new-company, new-order, new-product, new-subscription, new-ticket, new-user, new-or-updated-activity, new-or-updated-appointment, new-or-updated-company, new-or-updated-contact, new-or-updated-order, new-or-updated-subscription | apps/upsales/README.md Triggers section (verified 2026-11-10) | hand | Id-crawl poll triggers use sort=id with id=gt:<last id>, a seed floor plus the newest id at seed, overlap state, and resume position; new-or-updated-* use modDate=gte:<window> with id paging (https://api.upsales.com). |
 | apps/uptimerobot | 2 | monitor-list | new-monitor, new-alert-contact | apps/uptimerobot/README.md Triggers section (verified 2026-11-09) | hand | getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/) |
 | apps/uscreen | 3 | customer-list | new-customer, new-invoice, new-or-updated-invoice | apps/uscreen/README.md Triggers section (verified 2026-11-09) | hand | /customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml) |
