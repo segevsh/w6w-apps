@@ -1,4 +1,4 @@
-import type { HookContext, TriggerDefinition } from "@w6w/types";
+import type { ActionDefinition, HookContext, Param, TriggerDefinition } from "@w6w/types";
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import workspaceArticleList from "../actions/workspace-article-list.ts";
 import { projectIdParam, workspaceIdParam } from "./params.ts";
@@ -78,3 +78,44 @@ export const articleSample = {
   status: "published",
   category_id: "c1b2c3d4-0000-4000-8000-000000000002",
 };
+
+/** Snapshot a small, complete collection through its existing list action. */
+export function boundedListSnapshot(
+  spec: Pick<TriggerDefinition, "key" | "title" | "description" | "output" | "sample"> & {
+    action: ActionDefinition;
+    params?: Param[];
+    input: (params: Record<string, unknown>) => Record<string, unknown>;
+    maxPages?: number;
+  },
+): TriggerDefinition {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params ?? [],
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state, params }, ctx) {
+      const items: Array<Record<string, unknown>> = [];
+      const maxPages = spec.maxPages ?? 10;
+      for (let page = 1; page <= maxPages; page++) {
+        const result = await spec.action.execute(
+          { ...spec.input(params as Record<string, unknown>), page, pageSize: PAGE_SIZE },
+          ctx,
+        ) as { items?: Array<Record<string, unknown>>; pagination?: { has_more?: boolean } | null };
+        items.push(...(result.items ?? []));
+        if (!result.pagination?.has_more) break;
+        if (page === maxPages) {
+          throw new Error(`${spec.key} has more than ${maxPages * PAGE_SIZE} records`);
+        }
+      }
+      const { events, nextState } = await pollSnapshot({
+        state,
+        emit: { added: true },
+        rows: items.map((item) => ({ key: String(item.id ?? ""), values: item })),
+      });
+      return { events: events.map((event) => event.values), nextState };
+    },
+  };
+}
