@@ -43,6 +43,7 @@ import templatePreview from "./actions/template-preview.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newSubmission from "./triggers/new-submission.ts";
 
 export default {
   actions: [
@@ -65,4 +66,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newSubmission],
 } satisfies AppDefinition;

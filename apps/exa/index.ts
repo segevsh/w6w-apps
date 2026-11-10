@@ -9,6 +9,8 @@ import getWebset from "./actions/get-webset.ts";
 import listWebsets from "./actions/list-websets.ts";
 import deleteWebset from "./actions/delete-webset.ts";
 import listWebsetItems from "./actions/list-webset-items.ts";
+import newWebsetItem from "./triggers/new-webset-item.ts";
+import websetItemEnriched from "./triggers/webset-item-enriched.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import credits from "./health/credits.ts";
@@ -27,4 +29,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota, credits],
+  triggers: [newWebsetItem, websetItemEnriched],
 } satisfies AppDefinition;
