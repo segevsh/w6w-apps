@@ -6,7 +6,7 @@ labels, teams, and canned responses, on the **Missive REST API v1**.
 - **Categories** — communication, support, productivity
 - **Auth methods** — api-token
 - **Actions** — 42
-- **Triggers** — 9 (poll)
+- **Triggers** — 10 (poll)
 - **Health checks** — 2 (~~`service`~~, ~~`quota`~~), both declared absences, plus the derived
   `auth:api-token`
 - **Egress allowlist** — `public.missiveapp.com`
@@ -271,6 +271,7 @@ cd ../../_tools && deno run --no-check -A audit.ts missive
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-or-updated-contact` | New or Updated Contact | Poll | `contact-list` (`order=last_modified`) | Each new or modified contact |
+| `new-contact-group` | New or Updated Contact Group | Poll snapshot | `contact-group-list` (selected contact book and kind) | Each changed contact group |
 | `new-conversation` | New Conversation | Poll | `conversation-list` (newest activity first) | Each new conversation in a mailbox |
 | `new-or-updated-conversation` | New or Updated Conversation | Poll | `conversation-list` (newest activity first) | Each newly active conversation in a mailbox |
 | `new-comment` | New Conversation Comment | Poll | `conversation-comments-list` | Each new comment in a conversation |

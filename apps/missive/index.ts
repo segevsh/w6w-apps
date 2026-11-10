@@ -103,6 +103,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 import newComment from "./triggers/new-comment.ts";
+import newContactGroup from "./triggers/new-contact-group.ts";
 import newConversation from "./triggers/new-conversation.ts";
 import newDraft from "./triggers/new-draft.ts";
 import newMessage from "./triggers/new-message.ts";
@@ -172,6 +173,7 @@ export default {
   triggers: [
     newOrUpdatedContact,
     newComment,
+    newContactGroup,
     newConversation,
     newDraft,
     newMessage,

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import newComment from "../../triggers/new-comment.ts";
+import newContactGroup from "../../triggers/new-contact-group.ts";
 import newConversation from "../../triggers/new-conversation.ts";
 import newDraft from "../../triggers/new-draft.ts";
 import newMessage from "../../triggers/new-message.ts";
@@ -84,6 +85,7 @@ for (const entry of cases) {
     const seeded = await entry.trigger.poll!(input, seed.ctx);
     assertEquals(seeded.events, []);
     assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
+    assertEquals(seed.calls[0].method, "GET");
     assertEquals(seed.calls[0].url, entry.url);
 
     const first = await entry.trigger.poll!(
@@ -98,3 +100,32 @@ for (const entry of cases) {
     assertEquals(retry, first);
   });
 }
+
+test("new-contact-group snapshots a chosen contact book with literal GET pagination", async () => {
+  const input = {
+    params: { contactBook: "book", kind: "group" },
+    state: {},
+    subscriptionId: "sub",
+  };
+  const seed = mockCtx([{ body: { contact_groups: [{ id: "a", name: "First" }] } }]);
+  const seeded = await newContactGroup.poll!(input, seed.ctx);
+  assertEquals(seeded.events, []);
+  assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
+  assertEquals(seed.calls[0].method, "GET");
+  assertEquals(
+    seed.calls[0].url,
+    "https://public.missiveapp.com/v1/contact_groups?contact_book=book&kind=group&limit=200&offset=0",
+  );
+
+  const changed = await newContactGroup.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{
+      body: { contact_groups: [{ id: "a", name: "Renamed" }, { id: "b", name: "New" }] },
+    }])
+      .ctx,
+  );
+  assertEquals(changed.events, [
+    { change: "updated", key: "a", values: { id: "a", name: "Renamed" } },
+    { change: "added", key: "b", values: { id: "b", name: "New" } },
+  ]);
+});
