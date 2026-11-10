@@ -62,6 +62,7 @@ import bankAccountVerify from "./actions/bank-account-verify.ts";
 import creditsBalanceGet from "./actions/credits-balance-get.ts";
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
+import newAddress from "./triggers/new-address.ts";
 
 export default {
   actions: [
@@ -115,4 +116,5 @@ export default {
   // API key only. Lob publishes no OAuth surface; the key is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, rateLimit],
+  triggers: [newAddress],
 } satisfies AppDefinition;

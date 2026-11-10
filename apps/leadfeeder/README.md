@@ -3,6 +3,7 @@
 Identify the companies visiting your website, search and match companies and contacts, and manage
 lists and tags through the **current** Leadfeeder API (`https://api.leadfeeder.com/v1/*`).
 
+- **Triggers** — 1 (poll)
 - Reference: the vendor's OpenAPI document, <https://api.leadfeeder.com/openapi.yaml> (linked from
   <https://docs.leadfeeder.com/api/public>). Every path, parameter and body below was read from it
   on 2026-10-06.
@@ -80,3 +81,13 @@ Format with `deno task fmt`, never bare `deno fmt`.
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-visitor-company` | poll | `visitor-company-list` | Each company that newly shows up as a website visitor (yesterday to today) |
+
+`GET /v1/web-visits/companies` takes a required date range and, with no `sort[...]` parameter, "the companies that visited most recently come first" (vendor OpenAPI, `getWebVisitsCompanies`). The trigger requests yesterday-to-today, 100 per page, and emits a company id it has not seen in its last 200; a company that returns after leaving that memory fires again.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.leadfeeder.com/openapi.yaml (verified 2026-11-09).

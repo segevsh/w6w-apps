@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/klicktipp",
-  "version": "0.1.0",
-  "description": "Manage KlickTipp contacts, tags, data fields and opt-in processes, and sign contacts in through a Listbuilding API key.",
+  "version": "0.2.0",
+  "description": "Manage KlickTipp contacts, tags, data fields and opt-in processes, and sign contacts in through a Listbuilding API key, and trigger workflows on changed contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.klicktipp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

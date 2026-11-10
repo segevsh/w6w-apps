@@ -47,6 +47,7 @@ import messageHookList from "./actions/message-hook-list.ts";
 import messageHookGet from "./actions/message-hook-get.ts";
 import messageHookCreate from "./actions/message-hook-create.ts";
 import messageHookDelete from "./actions/message-hook-delete.ts";
+import newChannel from "./triggers/new-channel.ts";
 
 export default {
   actions: [
@@ -81,4 +82,5 @@ export default {
   ],
   auth: [agentToken],
   healthChecks: [service, api, quota],
+  triggers: [newChannel],
 } satisfies AppDefinition;

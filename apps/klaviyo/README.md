@@ -5,6 +5,7 @@ Klaviyo profiles, lists, events, segments, campaigns, and templates.
 - **Categories** — marketing, email
 - **Auth methods** — api-key
 - **Actions** — 23
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `a.klaviyo.com`
 - **Website** — https://www.klaviyo.com
 - **API docs** — https://developers.klaviyo.com/en/reference/api_overview
@@ -72,3 +73,12 @@ reach a status host.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-profile` | poll | `get-profiles` sorted `-created` | Each newly created profile |
+| `new-or-updated-profile` | poll | `get-profiles` sorted `-updated` | Each newly created or updated profile |
+
+Klaviyo profile sorting is polled every five minutes; a check reads up to 5 pages of 100 (following `links.next`) and stops at the first page holding an already-seen profile. Vendor API documentation: https://developers.klaviyo.com/en/reference/get_profiles (verified 2026-11-09).

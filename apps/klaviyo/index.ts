@@ -31,6 +31,8 @@ import createTemplate from "./actions/create-template.ts";
 import renderTemplate from "./actions/render-template.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newProfile from "./triggers/new-profile.ts";
+import newOrUpdatedProfile from "./triggers/new-or-updated-profile.ts";
 
 export default {
   actions: [
@@ -60,4 +62,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newProfile, newOrUpdatedProfile],
 } satisfies AppDefinition;

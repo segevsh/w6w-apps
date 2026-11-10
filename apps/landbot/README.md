@@ -4,6 +4,7 @@ Conversational chatbots over web chat, WhatsApp and Messenger. This app drives L
 API: channels, customers (conversations) and their transcripts, outbound messages and WhatsApp
 templates, conversation assignment, per-customer custom fields and channel message hooks.
 
+- Triggers: 1 (poll)
 - App id: `io.w6w.landbot` · categories: `communication`, `support`, `marketing`
 - Host: `api.landbot.io`, prefix `/v1` (the only entry in `network.allow`)
 - Source of truth: Landbot's OpenAPI 3.1 document,
@@ -96,3 +97,13 @@ Behaviours worth knowing:
   OpenAPI document and no action calls it, so it is not in `network.allow`.
 - Trigger/webhook ingestion: message hooks are managed here, but receiving their calls is not an
   action.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-channel` | poll | `channel-list` | Each channel newly added to the workspace (snapshot diff) |
+
+`GET /channels/` lists the workspace's channels (web, WhatsApp, Messenger, APIchat; a small bounded set) with `offset`/`limit` paging and a `total`. The trigger reads every page and a new id is a new channel. Customers are deliberately not polled: `GET /customers/` documents no order and no created-after filter.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://dev.landbot.io/api-reference/platform/openapi.json (verified 2026-11-09).
