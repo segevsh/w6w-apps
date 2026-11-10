@@ -37,7 +37,9 @@ export interface SinceSpec<T, P = Record<string, unknown>> {
 export function toMs(value: unknown): number | undefined {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value !== "string" || value === "") return undefined;
-  const zoned = /(?:Z|[+-]\d\d:?\d\d)$/i.test(value) || !/\d:\d\d/.test(value);
+  // A date without a time (a day-granular field) cannot be compared with the floor: keep the item.
+  if (!/\d:\d\d/.test(value)) return undefined;
+  const zoned = /(?:Z|[+-]\d\d:?\d\d)$/i.test(value);
   const parsed = Date.parse(zoned ? value : `${value.replace(" ", "T")}Z`);
   return Number.isNaN(parsed) ? undefined : parsed;
 }

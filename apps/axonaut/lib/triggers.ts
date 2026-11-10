@@ -1,12 +1,19 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow, toMs } from "./window.ts";
 import invoiceList from "../actions/invoice-list.ts";
 
-type Invoice = { id?: string | number; updated_at?: string; updatedAt?: string };
-type CursorState = { cursor?: string };
+type Invoice = {
+  id?: string | number;
+  updated_at?: string;
+  updatedAt?: string;
+  creation_date?: string;
+  created_at?: string;
+  createdAt?: string;
+};
 
 const DAY_MS = 86_400_000;
-const MAX_PAGES = 5;
+export const MAX_PAGES = 5;
+const PAGE_SIZE = 100;
 
 /** Axonaut filters are date-only (`DD/MM/YYYY`); one day of overlap covers the granularity. */
 export function axonautDate(cursor: string): string {
@@ -31,32 +38,45 @@ function invoiceTrigger(
     output: [{ key: "id", type: "string", label: "Invoice ID" }],
     sample: { id: "invoice_1", updated_at: "2026-11-09T00:00:00Z" },
     async poll(call, ctx) {
-      const now = new Date(Date.now()).toISOString();
-      const cursor = (call.state as CursorState | undefined)?.cursor ?? now;
-      const filter = axonautDate(cursor);
-      // The list is filtered, not ordered: read every page of the filtered window (bounded), then
-      // dedupe by id. Seed records the window's ids and the cursor "now".
-      const items: Invoice[] = [];
-      for (let page = 1; page <= MAX_PAGES; page++) {
-        const result = await invoiceList.execute(
-          { ...(call.params as Record<string, unknown>), [field]: filter, page },
-          ctx,
-        ) as { items?: Invoice[] };
-        if (!result.items?.length) break;
-        items.push(...result.items);
-      }
-      const polled = await pollNewItems({
+      // The list is filtered, not ordered. A window longer than MAX_PAGES pages is resumed from the
+      // persisted page on the next check and the cursor moves only once it drains (brief 9.8); the
+      // seed stores `floor = now` and later checks drop invoices stamped before it (brief 9.9).
+      const polled = await pollWindow<Invoice, number>({
         state: call.state,
-        fetchPage: () => Promise.resolve({ items }),
+        now: Date.now(),
+        overlapMs: 0, // axonautDate() already looks back one day
+        maxPages: MAX_PAGES,
+        pageSize: PAGE_SIZE,
+        seenWindow: 1000,
         idOf: (item) => {
           const stamp = item.updated_at ?? item.updatedAt ?? "";
           return updated ? `${item.id}:${stamp}` : String(item.id);
         },
-        maxPages: 1,
-        maxEvents: 100,
-        seenWindow: 1000,
+        tsOf: (item) =>
+          toMs(
+            updated
+              ? (item.updated_at ?? item.updatedAt)
+              : (item.creation_date ?? item.created_at ?? item.createdAt),
+          ),
+        async load(sinceMs, pos) {
+          const page = pos ?? 1;
+          const result = await invoiceList.execute(
+            {
+              ...(call.params as Record<string, unknown>),
+              [field]: axonautDate(new Date(sinceMs).toISOString()),
+              page,
+            },
+            ctx,
+          ) as { items?: Invoice[] };
+          const items = result.items ?? [];
+          return { items, next: items.length > 0 ? page + 1 : undefined };
+        },
       });
-      return { ...polled, nextState: { ...polled.nextState, cursor: now } };
+      // The cursor has always been stored as an ISO string; keep that shape.
+      const cursor = (polled.nextState as { cursor?: unknown }).cursor;
+      return typeof cursor === "number"
+        ? { ...polled, nextState: { ...polled.nextState, cursor: new Date(cursor).toISOString() } }
+        : polled;
     },
   };
 }
