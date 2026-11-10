@@ -272,13 +272,25 @@ bad-credential response, reused everywhere the "500 is not an outage" behaviour 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-transcript` — New Transcript | Poll | `transcript-search` | Each transcript newly available for a meeting from the last two days |
+| `new-channel` — New Channel | Poll | `channel-list` (snapshot) | Each team channel newly created |
+| `new-contact` — New Contact | Poll | `contact-list` (snapshot, keyed by email) | Each person newly met with |
+| `new-team-user` — New Team User | Poll | `user-list` (snapshot) | Each user newly added to the team |
+| `new-active-meeting` — Notetaker Joined a Meeting | Poll | `active-meeting-list` (snapshot) | Each meeting the notetaker newly joined |
 
 `transcripts(fromDate: …)` returns transcripts created after that date
 ([transcripts query](https://docs.fireflies.ai/graphql-api/query/transcripts.md)), so each check asks
 for the last two days (limit 50, the Fireflies cap, order undocumented) and dedupes by transcript `id`.
 A check reads up to four pages of 50; a longer window keeps its `skip` offset and the next check
 continues from it, advancing the check time only once the window is drained. The first check only records what exists.
+The channel, contact, user and active-meeting triggers diff one whole response (these queries take no
+paging arguments; the kit refuses more than 5000 rows); the first check only records. A meeting that
+starts and ends between two checks is not seen by `new-active-meeting`.
+
+Not covered by a trigger: `bite-search` and `app-output-list` — the [bites](https://docs.fireflies.ai/graphql-api/query/bites)
+and [apps](https://docs.fireflies.ai/graphql-api/query/apps) references document only `limit` (50 / 10 maximum)
+and `skip`, with no order or date filter, so a newest-first read or a since-filter is not possible.
+
 Fireflies Webhooks V2 (`meeting.transcribed`, `meeting.summarized`, `meeting.bot_joined`, HMAC-SHA256
 `X-Hub-Signature`) is a separate, not yet shipped path that delivers sooner. Sources:
 [GraphQL API](https://docs.fireflies.ai/) and
-[Webhooks V2](https://docs.fireflies.ai/graphql-api/webhooks-v2.md) (verified 2026-11-09).
+[Webhooks V2](https://docs.fireflies.ai/graphql-api/webhooks-v2.md) (verified 2026-11-10).
