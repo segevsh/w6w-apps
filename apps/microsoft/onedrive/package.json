@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/onedrive",
-  "version": "0.1.2",
-  "description": "Browse, upload, move, share and search files in Microsoft OneDrive via the Microsoft Graph drive API.",
+  "version": "0.2.0",
+  "description": "Browse, upload, move, share and search files in Microsoft OneDrive via the Graph drive API, with triggers for new, updated and deleted files and folders, new permissions and new drives.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://learn.microsoft.com/en-us/graph/api/resources/driveitem",
       "https://learn.microsoft.com/en-us/graph/api/resources/quota"
     ],
-    "longDescription": "Microsoft OneDrive stores a user's files, and this app browses, uploads, shares and searches them through the Microsoft Graph drive API — the same surface behind OneDrive personal and business accounts and SharePoint document libraries alike.\n\nIt covers everyday file management: listing folder contents, reading and searching for items across a whole drive, creating folders, uploading text-based files, and copying, moving, renaming or deleting an item once you've found it. Sharing actions create OneDrive's own view or edit links, list and remove existing permissions, and send a direct sharing invite to a specific person by email. A change-tracking action reports what has been added, updated or removed since a previous run, which is the only way to detect a deletion — a simple listing can't.\n\nThis app works across a user's personal drive, a colleague's shared drive, or a SharePoint library, all addressed the same way. A live check reports remaining storage headroom directly from OneDrive's own quota data, alongside a credential check, since Microsoft publishes no general status page for the service itself.",
+    "longDescription": "Microsoft OneDrive stores a user's files, and this app browses, uploads, shares and searches them through the Microsoft Graph drive API — the same surface behind OneDrive personal and business accounts and SharePoint document libraries alike.\n\nIt covers everyday file management: listing folder contents, reading and searching for items across a whole drive, creating folders, uploading text-based files, and copying, moving, renaming or deleting an item once you've found it. Sharing actions create OneDrive's own view or edit links, list and remove existing permissions, and send a direct sharing invite to a specific person by email. A change-tracking action reports what has been added, updated or removed since a previous run, which is the only way to detect a deletion — a simple listing can't.\n\nThis app works across a user's personal drive, a colleague's shared drive, or a SharePoint library, all addressed the same way. A live check reports remaining storage headroom directly from OneDrive's own quota data, alongside a credential check, since Microsoft publishes no general status page for the service itself.\n\nTriggers start a workflow when a file or folder is created, updated or deleted (Microsoft Graph delta, across the whole drive or one folder), when a new sharing permission is added to an item, or when a new drive becomes reachable.",
     "categories": [
       "documents",
       "storage"
