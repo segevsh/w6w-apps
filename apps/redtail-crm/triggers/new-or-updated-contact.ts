@@ -19,6 +19,7 @@ export default sinceTrigger({
     const c = item as { id?: unknown; updated_at?: unknown };
     return `${c.id ?? ""}:${c.updated_at ?? ""}`;
   },
+  stampOf: (item) => (item as { updated_at?: unknown }).updated_at,
   output: [
     { key: "id", type: "number", label: "Contact ID" },
     { key: "type", type: "string", label: "Type" },

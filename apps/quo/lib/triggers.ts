@@ -22,6 +22,8 @@ export interface Resume {
  */
 export interface SinceState extends IdsState {
   cursor: number;
+  /** Epoch ms stored by the seed (brief 9.9): items stamped before it are never emitted. */
+  floor?: number;
   resume?: Resume;
 }
 
@@ -54,6 +56,11 @@ export function sinceTrigger(spec: {
   ): Record<string, unknown> | undefined;
   items(result: unknown): unknown[];
   idOf(item: unknown): string;
+  /**
+   * The item's own creation stamp (for `new-or-updated-*`: its update stamp). Items stamped before
+   * the seed's floor are dropped before dedupe; an item with no parseable stamp is kept (brief 9.9).
+   */
+  stampOf(item: unknown): unknown;
   params?: Param[];
   output: OutputField[];
   sample: unknown;
@@ -75,6 +82,20 @@ export function sinceTrigger(spec: {
       const prior = state as { cursor?: unknown; resume?: unknown; seeded?: unknown } | null;
       const resume = prior?.seeded === true && isResume(prior.resume) ? prior.resume : undefined;
       const checkedAt = resume ? resume.checkedAt : clock.now();
+      const seeding = prior?.seeded !== true;
+      const floor = typeof (prior as { floor?: unknown } | null)?.floor === "number"
+        ? (prior as { floor: number }).floor
+        : seeding
+        ? checkedAt
+        : undefined;
+      // Vendor stamps have whole-second precision: compare at the second so a record created
+      // within the seed's own second is not mistaken for a pre-seed one.
+      const floorSec = floor === undefined ? undefined : floor - (floor % 1000);
+      const afterFloor = (item: unknown): boolean => {
+        const raw = spec.stampOf(item);
+        const ms = typeof raw === "number" ? raw : typeof raw === "string" ? Date.parse(raw) : NaN;
+        return floorSec === undefined || !Number.isFinite(ms) || ms >= floorSec;
+      };
       const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
       let pending: Record<string, unknown> | undefined;
       const { events, nextState } = await pollNewItems<unknown>({
@@ -91,7 +112,7 @@ export function sinceTrigger(spec: {
           });
           for (let page = 0; input && page < MAX_PAGES; page++) {
             const result = await spec.action.execute(input, ctx);
-            items.push(...spec.items(result));
+            items.push(...spec.items(result).filter(afterFloor));
             input = spec.nextPageInput?.(input, result);
           }
           // An unseeded check only records a baseline; it never carries a window over.
@@ -99,7 +120,7 @@ export function sinceTrigger(spec: {
           return { items };
         },
       });
-      const base = nextState as IdsState;
+      const base = { ...(nextState as IdsState), ...(floor === undefined ? {} : { floor }) };
       return {
         events,
         nextState:

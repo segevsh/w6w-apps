@@ -18,6 +18,7 @@ export default sinceTrigger({
     const r = item as { id?: unknown; dateModified?: unknown };
     return `${r.id ?? ""}:${r.dateModified ?? ""}`;
   },
+  stampOf: (item) => (item as { dateModified?: unknown }).dateModified,
   output: [
     { key: "id", type: "string", label: "Client record ID" },
     { key: "dateCreated", type: "string", label: "Created at" },

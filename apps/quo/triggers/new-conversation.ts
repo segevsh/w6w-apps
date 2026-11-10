@@ -15,6 +15,7 @@ export default sinceTrigger({
     return token ? { ...input, pageToken: token } : undefined;
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
+  stampOf: (item) => (item as { createdAt?: unknown }).createdAt,
   output: [
     { key: "id", type: "string", label: "Conversation ID" },
     { key: "name", type: "string", label: "Name" },

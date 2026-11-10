@@ -15,6 +15,7 @@ export default sinceTrigger({
     return cursor ? { ...input, cursor } : undefined;
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
+  stampOf: (item) => (item as { created_at?: unknown }).created_at,
   output: [
     { key: "id", type: "string", label: "Calendar ID" },
     { key: "platform", type: "string", label: "Platform" },

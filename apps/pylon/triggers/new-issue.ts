@@ -16,6 +16,7 @@ export default sinceTrigger({
     return r.hasNextPage && r.nextCursor ? { ...input, cursor: r.nextCursor } : undefined;
   },
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
+  stampOf: (item) => (item as { created_at?: unknown }).created_at,
   output: [
     { key: "id", type: "string", label: "Issue ID" },
     { key: "number", type: "number", label: "Issue number" },

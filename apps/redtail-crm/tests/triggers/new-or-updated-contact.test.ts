@@ -19,7 +19,7 @@ const req = (c: { method: string; url: string }) => {
     query: Object.fromEntries(u.searchParams),
   };
 };
-const contact = (id: number, updated = "2026-11-10T09:59:00Z") => ({
+const contact = (id: number, updated = "2026-11-10T10:03:00Z") => ({
   id,
   type: "individual",
   updated_at: updated,
@@ -67,12 +67,14 @@ test("new-or-updated-contact drains a window of maxPages + 1 full pages: every i
   const item = (n: number, i: number) => ({
     id: n * 1000 + i,
     type: "individual",
-    updated_at: "2026-11-10T09:59:00Z",
+    updated_at: "2026-11-10T10:03:00Z",
   });
   const pageReply = (n: number) => {
     const items = Array.from({ length: SIZE }, (_, i) => item(n, i));
     const more = n < 3;
-    return { body: { contacts: items, meta: { total_records: SIZE * 4, total_pages: 4 } } };
+    return {
+      body: { contacts: items, meta: { total_records: SIZE * 4, total_pages: more ? 4 : 1 } },
+    };
   };
   clock.now = () => T0;
   const seeded = await trigger.poll!(
@@ -106,4 +108,46 @@ test("new-or-updated-contact drains a window of maxPages + 1 full pages: every i
   const all = [...one.events, ...two.events].map((e) => JSON.stringify(e));
   assertEquals(new Set(all).size, SIZE * 4);
   assertEquals(all.length, SIZE * 4);
+});
+
+// Brief 9.9: the seed stores a floor; records created before it are never emitted, however many
+// pages the window holds; a record created after it is.
+test("new-or-updated-contact never emits a pre-seed record (floor), then emits the one created after the seed", async () => {
+  const SIZE = 50;
+  const OLD = "2026-11-10T09:00:00Z";
+  const NEW = "2026-11-10T10:03:00Z";
+  const mk = (tag: number, stamp: string) => ({ id: tag, type: "individual", updated_at: stamp });
+  const pageReply = (n: number, items: unknown[], more: boolean) => ({
+    body: { contacts: items, meta: { total_records: SIZE * 4, total_pages: more ? 4 : 1 } },
+  });
+  const oldPage = (n: number) =>
+    pageReply(n, Array.from({ length: SIZE }, (_, i) => mk(n * 1000 + i, OLD)), n < 3);
+  clock.now = () => T0;
+  const seeded = await trigger.poll!(
+    input({}),
+    mockCtx([{ body: { contacts: [], meta: { total_records: 0, total_pages: 1 } } }]).ctx,
+  );
+  assertEquals(seeded.events, []);
+  assertEquals((seeded.nextState as { floor?: number }).floor, T0);
+
+  clock.now = () => T0 + 300_000;
+  const one = await trigger.poll!(
+    input(seeded.nextState),
+    mockCtx([oldPage(0), oldPage(1), oldPage(2)]).ctx,
+  );
+  assertEquals(one.events, []);
+  assertEquals((one.nextState as { resume?: unknown }).resume !== undefined, true);
+
+  clock.now = () => T0 + 600_000;
+  const two = await trigger.poll!(input(one.nextState), mockCtx([oldPage(3)]).ctx);
+  assertEquals(two.events, []);
+  assertEquals((two.nextState as { resume?: unknown }).resume, undefined);
+
+  clock.now = () => T0 + 900_000;
+  const fresh = mk(777, NEW);
+  const three = await trigger.poll!(
+    input(two.nextState),
+    mockCtx([pageReply(0, [fresh], false)]).ctx,
+  );
+  assertEquals(three.events, [fresh]);
 });

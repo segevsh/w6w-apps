@@ -23,7 +23,7 @@ const cal = (id: string) => ({
   id,
   platform: "google_calendar",
   status: "connected",
-  created_at: "2026-11-10T09:59:00Z",
+  created_at: "2026-11-10T10:03:00Z",
 });
 const reply = (items: unknown[]) => ({ body: { next: null, previous: null, results: items } });
 
@@ -69,7 +69,7 @@ test("new-calendar drains a window of maxPages + 1 full pages: every item once, 
     id: `c${n}-${i}`,
     platform: "google_calendar",
     status: "connected",
-    created_at: "2026-11-10T09:59:00Z",
+    created_at: "2026-11-10T10:03:00Z",
   });
   const pageReply = (n: number) => {
     const items = Array.from({ length: SIZE }, (_, i) => item(n, i));
@@ -114,4 +114,55 @@ test("new-calendar drains a window of maxPages + 1 full pages: every item once, 
   const all = [...one.events, ...two.events].map((e) => JSON.stringify(e));
   assertEquals(new Set(all).size, SIZE * 4);
   assertEquals(all.length, SIZE * 4);
+});
+
+// Brief 9.9: the seed stores a floor; records created before it are never emitted, however many
+// pages the window holds; a record created after it is.
+test("new-calendar never emits a pre-seed record (floor), then emits the one created after the seed", async () => {
+  const SIZE = 100;
+  const OLD = "2026-11-10T09:00:00Z";
+  const NEW = "2026-11-10T10:03:00Z";
+  const mk = (tag: string, stamp: string) => ({
+    id: tag,
+    platform: "google_calendar",
+    status: "connected",
+    created_at: stamp,
+  });
+  const pageReply = (n: number, items: unknown[], more: boolean) => ({
+    body: {
+      next: more ? `https://us-east-1.recall.ai/api/v2/calendars/?cursor=c${n + 1}` : null,
+      previous: null,
+      results: items,
+    },
+  });
+  const oldPage = (n: number) =>
+    pageReply(n, Array.from({ length: SIZE }, (_, i) => mk(`p${n}-${i}`, OLD)), n < 3);
+  clock.now = () => T0;
+  const seeded = await trigger.poll!(
+    input({}),
+    mockCtx([{ body: { next: null, previous: null, results: [] } }]).ctx,
+  );
+  assertEquals(seeded.events, []);
+  assertEquals((seeded.nextState as { floor?: number }).floor, T0);
+
+  clock.now = () => T0 + 300_000;
+  const one = await trigger.poll!(
+    input(seeded.nextState),
+    mockCtx([oldPage(0), oldPage(1), oldPage(2)]).ctx,
+  );
+  assertEquals(one.events, []);
+  assertEquals((one.nextState as { resume?: unknown }).resume !== undefined, true);
+
+  clock.now = () => T0 + 600_000;
+  const two = await trigger.poll!(input(one.nextState), mockCtx([oldPage(3)]).ctx);
+  assertEquals(two.events, []);
+  assertEquals((two.nextState as { resume?: unknown }).resume, undefined);
+
+  clock.now = () => T0 + 900_000;
+  const fresh = mk("fresh", NEW);
+  const three = await trigger.poll!(
+    input(two.nextState),
+    mockCtx([pageReply(0, [fresh], false)]).ctx,
+  );
+  assertEquals(three.events, [fresh]);
 });
