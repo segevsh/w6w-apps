@@ -6,7 +6,7 @@ workflows.
 - **Categories** — version-control, developer-tools
 - **Auth methods** — access-token, oauth2
 - **Actions** — 24
-- **Triggers** — 6 (webhook)
+- **Triggers** — 15 (webhook)
 - **Egress allowlist** — `api.github.com`
 - **Website** — https://github.com
 - **API docs** — https://docs.github.com/en/rest
@@ -27,11 +27,30 @@ permission, read and write).
 | `issue-comment` — Issue Comment Event | webhook | `issue_comment` | action, comment, issue |
 | `release` — Release Event | webhook | `release` | action, release |
 | `workflow-run` — Workflow Run Event | webhook | `workflow_run` | action, workflow run |
+| `pull-request-review` — Pull Request Review Event | webhook | `pull_request_review` | action, review, pull request |
+| `pull-request-review-comment` — Pull Request Review Comment Event | webhook | `pull_request_review_comment` | action, diff comment, pull request |
+| `ref-created` — Branch or Tag Created | webhook | `create` | ref, ref type, default branch |
+| `ref-deleted` — Branch or Tag Deleted | webhook | `delete` | ref, ref type |
+| `repository-event` — Repository Event | webhook | `repository` | action, repository |
+| `workflow-job` — Workflow Job Event | webhook | `workflow_job` | action, job with status and conclusion |
+| `star` — Star Event | webhook | `star` | action, stargazer |
+| `fork` — Fork Event | webhook | `fork` | the new fork |
+| `any-event` — Any Event | webhook | the events you list (blank = every event) | event name, action, payload |
 
 Every run also gets `event`, `action`, `deliveryId` (`X-GitHub-Delivery`), `repository`
 (`owner/name`), `sender` and the full GitHub `payload`. Triggers with an action (pull request,
-issue, comment, release, workflow run) take an optional **Only these actions** list such as
-`opened,closed`.
+issue, comment, release, workflow run, review, repository, star) take an optional **Only these
+actions** list such as `opened,closed`. **Any Event** takes an **Events** list of GitHub event names
+(`check_run, label`; the `X-GitHub-Event` value) and registers the webhook for exactly those; blank
+registers it for every event (`["*"]`, which GitHub documents for organization webhooks — the
+repository webhooks reference is silent on it, so an unusual repository may refuse it with GitHub's
+own message). Events that only an organization, enterprise or GitHub App can receive
+(`installation`, `organization`, `team`, `membership`, `marketplace_purchase`, and similar) cannot
+come from a repository webhook and are not covered.
+
+Not covered as a list feed: `release-get-many`, `pull-request-get-many`, `repository-get-issues`,
+`organization-get-repositories`, `user-get-repositories` and `workflow-get-many` are not polled; the
+webhook triggers above deliver the same records as they change.
 
 **Trust model.** On activation a random 256-bit secret is generated per subscription and given to
 GitHub as the webhook's secret; it is kept in the subscription's state next to the webhook id. Each
@@ -42,7 +61,8 @@ Only `X-Hub-Signature-256` is accepted (never the legacy SHA-1 header). GitHub s
 timestamp, so a captured delivery is replayable; the per-subscription secret and callback URL limit
 who could capture one.
 
-Vendor docs (verified 2026-11-09):
+Vendor docs (verified 2026-11-10):
+[webhook events and payloads](https://docs.github.com/en/webhooks/webhook-events-and-payloads),
 [validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries),
 [repository webhooks API](https://docs.github.com/en/rest/repos/webhooks).
 

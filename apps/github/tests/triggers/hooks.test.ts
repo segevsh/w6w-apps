@@ -61,9 +61,25 @@ const goodHeaders = (body = BODY, event = "push") => ({
 
 // ── declaration ─────────────────────────────────────────────────────────────
 
-test("app: six webhook triggers, each with output and sample, signature-verifying", () => {
+test("app: fifteen webhook triggers, each with output and sample, signature-verifying", () => {
   const keys = app.triggers.map((t) => t.key);
-  assertEquals(keys, ["push", "pull-request", "issue", "issue-comment", "release", "workflow-run"]);
+  assertEquals(keys, [
+    "push",
+    "pull-request",
+    "issue",
+    "issue-comment",
+    "release",
+    "workflow-run",
+    "pull-request-review",
+    "pull-request-review-comment",
+    "ref-created",
+    "ref-deleted",
+    "repository-event",
+    "workflow-job",
+    "star",
+    "fork",
+    "any-event",
+  ]);
   for (const t of app.triggers) {
     assert(t.output!.length > 0, `${t.key} output`);
     assert(t.sample !== undefined, `${t.key} sample`);
