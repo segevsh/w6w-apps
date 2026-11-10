@@ -204,7 +204,6 @@ test("event-ended: requests end > cursor - 1s and emits only events ending insid
 const ZONES = { "America/Los_Angeles": -8, "Europe/Berlin": 1 } as const;
 const midnightUtc = (date: string, tz: keyof typeof ZONES) =>
   Date.parse(`${date}T00:00:00Z`) - ZONES[tz] * 3_600_000;
-const iso = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
 const allDay = {
   id: "d",
   status: "confirmed",
