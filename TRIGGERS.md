@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 401, none: 207
+**Totals:** 683 apps — webhook-api: 58, manual-webhook: 17, poll: 400, none: 208
 
 ## webhook-api (58)
 
@@ -95,26 +95,25 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (401)
+## poll (400)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
-| apps/acculynx | job-invoices-list | new-job-invoices-list | no | scan | list action job-invoices-list has pagination and order/since params |
-| apps/actionnetwork | person-list | new-person-list | no | scan | list action person-list has pagination and order/since params |
-| apps/addevent | event-template-list | new-event-template-list | no | scan | list action event-template-list has pagination and order/since params |
-| apps/agencyzoom | lead-list | new-lead-list | no | scan | list action lead-list has pagination and order/since params |
-| apps/ahrefs | anchor-list | new-anchor-list | no | scan | list action anchor-list has pagination and order/since params |
-| apps/aidbase | ticket-list | new-ticket-list | no | scan | list action ticket-list has pagination and order/since params |
-| apps/airbyte | destination-list | new-destination-list | no | scan | list action destination-list has pagination and order/since params |
-| apps/aircall | call-list | new-call-list | no | scan | list action call-list has pagination and order/since params |
+| apps/acculynx | job-list | new-job, new-or-updated-job | apps/acculynx/README.md Triggers section (verified 2026-11-09) | hand | Job list supports documented CreatedDate and ModifiedDate descending order (https://apidocs.acculynx.com/reference/getjobs). |
+| apps/actionnetwork | person-list | new-person, new-or-updated-person | apps/actionnetwork/README.md Triggers section (verified 2026-11-09) | hand | People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/). |
+| apps/addevent | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
+| apps/agencyzoom | lead-list | new-lead | apps/agencyzoom/README.md Triggers section (verified 2026-11-09) | hand | Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml). |
+| apps/ahrefs | project-list | new-project | apps/ahrefs/README.md Triggers section (verified 2026-11-09) | hand | Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects). |
+| apps/aidbase | ticket-list | new-ticket | apps/aidbase/README.md Triggers section (verified 2026-11-09) | hand | Ticket-form list has a documented created_after filter, used with a rolling cursor (https://docs.aidbase.ai/apis/ticket-form-api/reference/). |
+| apps/aircall | call-list | new-call | apps/aircall/README.md Triggers section (verified 2026-11-09) | hand | Call list supports documented descending order (https://developer.aircall.io/api-references/). |
 | apps/airtable | search-records | new-record | apps/airtable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-records |
-| apps/alegra | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/algolia | search-multi | new-multi | no | scan | list action search-multi has pagination and order/since params |
-| apps/anchor | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
+| apps/alegra | contact-list | new-contact | apps/alegra/README.md Triggers section (verified 2026-11-09) | hand | Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1). |
+| apps/algolia | index-list | new-index | apps/algolia/README.md Triggers section (verified 2026-11-09) | hand | Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices). |
+| apps/anchor | invoice-list | new-invoice | apps/anchor/README.md Triggers section (verified 2026-11-09) | hand | Invoice list supports descending issue-date order (https://docs.sayanchor.com/reference/listinvoices-1). |
 | apps/apify | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
-| apps/apollo | deal-list | new-deal-list | no | scan | list action deal-list has pagination and order/since params |
-| apps/ashby | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/atlassian/confluence | page-child-list | new-page-child-list | no | scan | list action page-child-list has pagination and order/since params |
+| apps/apollo | contact-search | new-contact, new-or-updated-contact | apps/apollo/README.md Triggers section (verified 2026-11-09) | hand | Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts). |
+| apps/ashby | candidate-list | new-candidate | apps/ashby/README.md Triggers section (verified 2026-11-09) | hand | Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist). |
+| apps/atlassian/confluence | page-list | new-page, new-or-updated-page | apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09) | hand | Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). |
 | apps/atlassian/jira | issue-search | new-issue | apps/atlassian/jira/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-search |
 | apps/atlassian/jira-data-center | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
 | apps/attio | list-tasks | new-task | apps/attio/README.md Triggers section (verified 2026-11-09) | hand | list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks) |
@@ -501,7 +500,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (207)
+## none (208)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -510,6 +509,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/acumbamail |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/adalo |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/adyen |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/airbyte | new-destination | no | hand | List destinations documents pagination but no creation order, update filter, or bounded collection size (https://reference.airbyte.com/reference/listdestinations) |
 | apps/airparser |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/airtop |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/amplitude |  | no | scan | no newest-first list action found by scan; vendor events not researched |

@@ -21,23 +21,25 @@
     "path": "apps/acculynx",
     "mechanism": "poll",
     "candidates": [
-      "new-job-invoices-list"
+      "new-job",
+      "new-or-updated-job"
     ],
-    "pollAction": "job-invoices-list",
-    "reason": "list action job-invoices-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "job-list",
+    "reason": "Job list supports documented CreatedDate and ModifiedDate descending order (https://apidocs.acculynx.com/reference/getjobs).",
+    "verified": "apps/acculynx/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/actionnetwork",
     "mechanism": "poll",
     "candidates": [
-      "new-person-list"
+      "new-person",
+      "new-or-updated-person"
     ],
     "pollAction": "person-list",
-    "reason": "list action person-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/).",
+    "verified": "apps/actionnetwork/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/activecampaign",
@@ -85,12 +87,12 @@
     "path": "apps/addevent",
     "mechanism": "poll",
     "candidates": [
-      "new-event-template-list"
+      "new-event-template"
     ],
     "pollAction": "event-template-list",
-    "reason": "list action event-template-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates).",
+    "verified": "apps/addevent/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/adyen",
@@ -116,56 +118,56 @@
     "path": "apps/agencyzoom",
     "mechanism": "poll",
     "candidates": [
-      "new-lead-list"
+      "new-lead"
     ],
     "pollAction": "lead-list",
-    "reason": "list action lead-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Lead list supports the documented startDate creation-date filter with a rolling cursor (https://app.agencyzoom.com/openapi/agencyzoom.yaml).",
+    "verified": "apps/agencyzoom/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ahrefs",
     "mechanism": "poll",
     "candidates": [
-      "new-anchor-list"
+      "new-project"
     ],
-    "pollAction": "anchor-list",
-    "reason": "list action anchor-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "project-list",
+    "reason": "Project list is the bounded management-project collection, keyed by project_id (https://docs.ahrefs.com/en/api/reference/management/get-projects).",
+    "verified": "apps/ahrefs/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/aidbase",
     "mechanism": "poll",
     "candidates": [
-      "new-ticket-list"
+      "new-ticket"
     ],
     "pollAction": "ticket-list",
-    "reason": "list action ticket-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Ticket-form list has a documented created_after filter, used with a rolling cursor (https://docs.aidbase.ai/apis/ticket-form-api/reference/).",
+    "verified": "apps/aidbase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/airbyte",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-destination-list"
+      "new-destination"
     ],
-    "pollAction": "destination-list",
-    "reason": "list action destination-list has pagination and order/since params",
+    "pollAction": null,
+    "reason": "List destinations documents pagination but no creation order, update filter, or bounded collection size (https://reference.airbyte.com/reference/listdestinations)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/aircall",
     "mechanism": "poll",
     "candidates": [
-      "new-call-list"
+      "new-call"
     ],
     "pollAction": "call-list",
-    "reason": "list action call-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Call list supports documented descending order (https://developer.aircall.io/api-references/).",
+    "verified": "apps/aircall/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/airparser",
@@ -200,23 +202,23 @@
     "path": "apps/alegra",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Contact list supports descending ID order (https://developer.alegra.com/reference/listcontacts-1).",
+    "verified": "apps/alegra/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/algolia",
     "mechanism": "poll",
     "candidates": [
-      "new-multi"
+      "new-index"
     ],
-    "pollAction": "search-multi",
-    "reason": "list action search-multi has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "index-list",
+    "reason": "Index list is a bounded account collection keyed by index name (https://www.algolia.com/doc/rest-api/search/list-indices).",
+    "verified": "apps/algolia/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/amplitude",
@@ -231,12 +233,12 @@
     "path": "apps/anchor",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice-list"
+      "new-invoice"
     ],
     "pollAction": "invoice-list",
-    "reason": "list action invoice-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Invoice list supports descending issue-date order (https://docs.sayanchor.com/reference/listinvoices-1).",
+    "verified": "apps/anchor/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/anthropic",
@@ -271,12 +273,13 @@
     "path": "apps/apollo",
     "mechanism": "poll",
     "candidates": [
-      "new-deal-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
-    "pollAction": "deal-list",
-    "reason": "list action deal-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "contact-search",
+    "reason": "Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts).",
+    "verified": "apps/apollo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/asana",
@@ -294,12 +297,12 @@
     "path": "apps/ashby",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-candidate"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "candidate-list",
+    "reason": "Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist).",
+    "verified": "apps/ashby/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/assemblyai",
@@ -331,12 +334,13 @@
     "path": "apps/atlassian/confluence",
     "mechanism": "poll",
     "candidates": [
-      "new-page-child-list"
+      "new-page",
+      "new-or-updated-page"
     ],
-    "pollAction": "page-child-list",
-    "reason": "list action page-child-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "page-list",
+    "reason": "Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json).",
+    "verified": "apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/jira",
