@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/housecallpro",
   "version": "0.3.0",
-  "description": "Housecall Pro field-service management: customers, jobs, estimates, leads, invoices, scheduling and dispatch over the Housecall v1 public API, with poll triggers for new records and selected job or estimate children.",
+  "description": "Housecall Pro field-service management with poll triggers for operational records and selected job or estimate children.",
   "license": "MIT",
   "author": {
     "name": "w6w"
