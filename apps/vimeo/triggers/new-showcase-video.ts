@@ -31,13 +31,11 @@ export default pollFromListAction({
   output: [
     { key: "uri", type: "string", label: "URI" },
     { key: "name", type: "string", label: "Name" },
-    { key: "link", type: "string", label: "Link" },
     { key: "created_time", type: "string", label: "Created" },
   ],
   sample: {
     uri: "/videos/258684937",
     name: "Launch day",
-    link: "https://vimeo.com/258684937",
     created_time: "2026-11-09T12:00:00+00:00",
   },
   maxPages: 1,

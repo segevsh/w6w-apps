@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wakatime",
   "version": "0.3.0",
-  "description": "Read coding-time stats, summaries, durations, projects, goals and leaderboards from WakaTime, and send heartbeats and external durations. Poll triggers start a workflow on each new project, goal, private leaderboard, organization, dashboard or data export.",
+  "description": "Read WakaTime coding stats, summaries, durations, projects, goals and leaderboards; send heartbeats. Poll triggers for new projects, goals, leaderboards, organizations, dashboards and exports.",
   "license": "MIT",
   "author": {
     "name": "w6w"

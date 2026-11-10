@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vimeo",
   "version": "0.3.0",
-  "description": "Manage Vimeo videos, folders, showcases, comments and likes: list, edit, delete and pull-upload videos, organise folders. Poll triggers for new videos, folders, showcases, folder and showcase contents, comments and video search matches.",
+  "description": "Manage Vimeo videos, folders, showcases, comments and likes. Poll triggers for new videos, folders, showcases, their contents, comments and search matches.",
   "license": "MIT",
   "author": {
     "name": "w6w"

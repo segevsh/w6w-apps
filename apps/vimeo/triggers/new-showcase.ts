@@ -16,13 +16,11 @@ export default pollFromListAction({
   output: [
     { key: "uri", type: "string", label: "Showcase URI" },
     { key: "name", type: "string", label: "Name" },
-    { key: "link", type: "string", label: "Link" },
     { key: "created_time", type: "string", label: "Created" },
   ],
   sample: {
     uri: "/users/1/albums/12345",
     name: "Best of 2026",
-    link: "https://vimeo.com/showcase/12345",
     created_time: "2026-11-09T12:00:00+00:00",
   },
   maxPages: 1,
