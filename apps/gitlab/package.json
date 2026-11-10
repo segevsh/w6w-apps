@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gitlab",
   "version": "0.4.0",
-  "description": "Manage GitLab projects, issues, merge requests, files and releases on GitLab.com or a self-managed instance, and start workflows on pushes, tags, merge requests, issues, comments, pipelines, jobs, deployments, wiki pages, milestones and releases, or on any project webhook kind.",
+  "description": "Manage GitLab projects, issues, merge requests, files and releases, with triggers on pushes, tags, merge requests, issues, pipelines, jobs, deployments and releases, or any project webhook kind.",
   "license": "MIT",
   "author": {
     "name": "w6w"

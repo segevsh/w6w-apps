@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/github",
   "version": "0.4.0",
-  "description": "Manage GitHub issues, pull requests, releases, files, repositories and Actions workflows, and start workflows on pushes, pull requests and their reviews, issues, comments, releases, workflow runs and jobs, branch and tag changes, repository changes, stars, forks, or any GitHub webhook event.",
+  "description": "Manage GitHub issues, pull requests, releases, files, repositories and Actions workflows, with triggers on pushes, pull requests, issues, releases, workflow runs, stars and forks, or any event.",
   "license": "MIT",
   "author": {
     "name": "w6w"
