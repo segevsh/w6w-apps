@@ -97,7 +97,7 @@ test("new-transcript: seeding reads nothing, and records that predate the seed n
   const OLD = "2026-11-10T00:00:00Z";
   const NEW = "2026-11-10T00:33:00Z";
   const rec = (id: string, at: string) => ({ id, title: `Meeting ${id}`, dateString: at });
-  const full = (n: number, last: boolean) => ({
+  const full = (n: number, _last: boolean) => ({
     body: {
       data: { transcripts: Array.from({ length: 50 }, (_, i) => rec(`p${n}-${i}`, OLD)) },
     },

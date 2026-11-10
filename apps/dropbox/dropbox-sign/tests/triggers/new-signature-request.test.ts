@@ -114,7 +114,7 @@ test("new-signature-request: seeding reads nothing, and records that predate the
     title: `T ${id}`,
     created_at: Date.parse(at) / 1000,
   });
-  const full = (n: number, last: boolean) => ({
+  const full = (n: number, _last: boolean) => ({
     status: 200,
     body: {
       list_info: { num_pages: 6 },

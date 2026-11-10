@@ -60,7 +60,7 @@ test("new-event: a window of maxPages + 1 full pages drains across checks, each 
   const ctx = {
     log: () => {},
     connection: { display: {} },
-    fetch: (_input: RequestInfo | URL, init?: RequestInit) => {
+    fetch: (_input: RequestInfo | URL, _init?: RequestInit) => {
       const url = typeof _input === "string"
         ? _input
         : _input instanceof URL
@@ -120,7 +120,7 @@ test("new-event: a seed emits nothing, a pre-seed window of more than maxPages p
   const ctx = {
     log: () => {},
     connection: { display: {} },
-    fetch: (_input: RequestInfo | URL, init?: RequestInit) => {
+    fetch: (_input: RequestInfo | URL, _init?: RequestInit) => {
       const url = typeof _input === "string"
         ? _input
         : _input instanceof URL

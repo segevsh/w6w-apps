@@ -3,7 +3,7 @@ import { assert, assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-or-updated-contact.ts";
 
-const COLUMN = "last_modified_time";
+const _COLUMN = "last_modified_time";
 const BASE = Date.parse("2026-10-01T00:00:00.000Z");
 const stampAt = (n: number) => new Date(BASE + n * 60_000).toISOString().replace(".000Z", "+0000");
 

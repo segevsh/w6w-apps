@@ -99,7 +99,7 @@ export function contactFeed(o: {
           }
           // strictly oldest-first: page 1 holds only the oldest, which never matter
           const items = a < b ? [] : [...first.items];
-          if (lo > 2) items.push(...(await read(lo - 1)).items);
+          if (lo > 1 && !(lo === 2 && a === b)) items.push(...(await read(lo - 1)).items); // page 1 already held when stamps tie
           if (lo > 1) items.push(...(await read(lo)).items);
           return { items };
         },

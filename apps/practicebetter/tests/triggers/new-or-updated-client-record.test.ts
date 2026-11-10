@@ -122,7 +122,7 @@ test("new-or-updated-client-record never emits a pre-seed record (floor), then e
     dateCreated: "2026-11-01T09:00:00Z",
     dateModified: stamp,
   });
-  const pageReply = (n: number, items: unknown[], more: boolean) => ({
+  const pageReply = (_n: number, items: unknown[], more: boolean) => ({
     body: { count: items.length, hasMore: more, items },
   });
   const oldPage = (n: number) =>
