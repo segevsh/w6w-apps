@@ -5,7 +5,7 @@ Read and write Google Sheets: manage spreadsheets, sheets, rows and cells.
 - **Categories** — spreadsheets, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 12
-- **Triggers** — 3 (poll)
+- **Triggers** — 4 (poll)
 - **Egress allowlist** — `sheets.googleapis.com`, `www.googleapis.com`
 - **Website** — https://sheets.google.com
 - **API docs** — https://developers.google.com/workspace/sheets
@@ -21,8 +21,16 @@ previous check. The first check only records what is already there; it starts no
 | `row-added` | New Row | poll | a row appears below the header | `change`, the row's cells by header, and `rowNumber` (or `key`) |
 | `row-updated` | Updated Row | poll | a known row's cells change | the same, with the new cells |
 | `row-added-or-updated` | New or Updated Row | poll | either | the same, `change` says which |
+| `new-sheet` | New Sheet | poll | a tab is added to the spreadsheet (`list-sheets` request, `sheets.properties`) | the tab's `sheetId`, `title`, `index`, `sheetType` and `gridProperties` |
 
-Parameters: `spreadsheetId`, `sheetName` (the tab; row 1 must be its header row) and an optional
+`new-sheet` takes only `spreadsheetId`; it reads the tab list (a small, bounded collection), keeps only
+tab ids between checks, and does not report renames or removed tabs.
+
+Not covered: Google's push channels (Drive `files.watch`) say only that the file changed, never which
+rows, and the channel expires with nothing in the trigger lifecycle to renew it; the row triggers poll
+instead.
+
+Row-trigger parameters: `spreadsheetId`, `sheetName` (the tab; row 1 must be its header row) and an optional
 `keyColumn` (a header name).
 
 - **Use a key column.** Without one, rows are identified by row number, so inserting or deleting a row
@@ -37,7 +45,8 @@ Parameters: `spreadsheetId`, `sheetName` (the tab; row 1 must be its header row)
   nothing is received from Google.
 
 Vendor docs: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/get
-(verified 2026-11-09).
+(verified 2026-11-10); tab list https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/get
+(verified 2026-11-10); push limits https://developers.google.com/workspace/drive/api/guides/push (verified 2026-11-10).
 
 ## Health check
 
