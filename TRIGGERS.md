@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1572 triggers, 2837 unaccounted list actions in 569 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -22,9 +22,6 @@ depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-p
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
 | apps/copper | 7 | 13 | 13 |
-| apps/tapfiliate | 1 | 14 | 13 |
-| apps/apollo | 2 | 13 | 12 |
-| apps/attio | 1 | 13 | 12 |
 | apps/chatbase | 0 | 12 | 12 |
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
@@ -592,10 +589,12 @@ depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-p
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/airtable | 3 | 2 | 0 |
+| apps/apollo | 6 | 13 | 0 |
 | apps/asana | 9 | 5 | 0 |
 | apps/ashby | 8 | 16 | 0 |
 | apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
+| apps/attio | 4 | 13 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bigcommerce | 11 | 17 | 0 |
 | apps/bubble | 2 | 1 | 0 |
@@ -665,6 +664,7 @@ depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-p
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/superchat | 11 | 17 | 0 |
+| apps/tapfiliate | 9 | 14 | 0 |
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
@@ -817,13 +817,13 @@ depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-p
 | apps/anthropic | 1 | batch-list | new-batch | apps/anthropic/README.md Triggers section (verified 2026-11-10) | hand | batch-list returns 'Most recently created batches first' (https://platform.claude.com/docs/en/api/python/messages/batches/list); the API offers no batch webhook |
 | apps/apify | 1 | actor-list | new-actor | apps/apify/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action actor-list |
 | apps/apitemplateio | 1 | list-objects | new-object | apps/apitemplateio/README.md Triggers section (verified 2026-11-09) | hand | list-objects is documented by the existing action as a most-recent-first generated-object feed |
-| apps/apollo | 2 | contact-search | new-contact, new-or-updated-contact | apps/apollo/README.md Triggers section (verified 2026-11-09) | hand | Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts). |
+| apps/apollo | 6 | contact-search | new-contact, new-or-updated-contact, new-account, new-list, new-sequence, new-sequence-activity | apps/apollo/README.md Triggers section (verified 2026-11-10) | hand | contact-search and account-search document newest-created order (new-or-updated for contacts only: accounts carry no update stamp); lists and sequences are small bounded collections (snapshot); a contact's activity feed is documented newest-first (https://docs.apollo.io/reference/search-for-accounts) |
 | apps/ashby | 8 | candidate-list | new-candidate, new-application, new-application-feedback, new-interview-schedule, new-job, new-job-posting, new-offer, new-user | apps/ashby/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over createdAfter-filtered list actions (https://developers.ashbyhq.com/reference/candidatelist) plus whole-collection snapshots for users and job postings |
 | apps/assemblyai | 1 | transcript-list | new-transcript | apps/assemblyai/README.md Triggers section (verified 2026-11-09) | hand | AssemblyAI documents transcript-list as newest-to-oldest |
 | apps/atlassian/confluence | 2 | page-list | new-page, new-or-updated-page | apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09) | hand | Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). |
 | apps/atlassian/jira-data-center | 1 | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
 | apps/atlassian/jira-service-management | 2 | servicedesk-get-many | new-service-desk, new-organization | apps/atlassian/jira-service-management/README.md Triggers section (verified 2026-11-10) | hand | servicedesk-get-many (GET /servicedesk, all service desks the user can access) and organization-get-many (GET /organization) are bounded id-keyed paged collections, polled as snapshots (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/, .../api-group-organization/); request-search stays unpolled: ordered by latest activity, no created-since filter |
-| apps/attio | 1 | list-tasks | new-task | apps/attio/README.md Triggers section (verified 2026-11-09) | hand | list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks) |
+| apps/attio | 4 | list-tasks | new-task, new-record, new-list, new-workspace-member | apps/attio/README.md Triggers section (verified 2026-11-10) | hand | list-tasks sorts created_at:desc; list-records is queried with an explicit sorts created_at desc; lists and workspace members are small bounded collections (snapshot) (https://docs.attio.com/rest-api/endpoint-reference/records/list-records) |
 | apps/auth0 | 1 | log-list | new-log | apps/auth0/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-list |
 | apps/authorize-net | 1 | list-customer-transactions | new-customer-transaction | apps/authorize-net/README.md Triggers section (verified 2026-11-09) | hand | Customer transaction list explicitly sorts by submit time descending. |
 | apps/autotask | 2 | entity-query | new-ticket, new-or-updated-ticket | apps/autotask/README.md Triggers section (verified 2026-11-10) | hand | entity-query (POST /Tickets/query) takes a JSON filter, so createDate > cursor (new-ticket) and lastActivityDate > cursor (new-or-updated-ticket, keyed id:lastActivityDate) are documented since-filters over Tickets datetime fields (https://autotask.net/help/developerhelp/Content/APIs/REST/Entities/TicketsEntity.htm) |
@@ -1207,7 +1207,7 @@ depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-p
 | apps/tableau | 2 | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
 | apps/tailscale | 1 | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |
 | apps/tally | 1 | submission-get-many | new-submission | apps/tally/README.md Triggers section (verified 2026-11-09) | hand | since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list) |
-| apps/tapfiliate | 1 | conversion-list | new-conversion | apps/tapfiliate/README.md Triggers section (verified 2026-11-10) | hand | conversion-list takes date_from/date_to (days in UTC, no sort order) and each conversion carries created_at; no update stamp, so no new-or-updated trigger; click-list is Enterprise-plan only and not polled: since-filter poll widened one day and filtered by created_at (https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions) |
+| apps/tapfiliate | 9 | conversion-list | new-conversion, new-customer, new-click, new-program, new-affiliate-group, new-affiliate-payment, new-affiliate-program, new-program-affiliate, new-affiliate | apps/tapfiliate/README.md Triggers section (verified 2026-11-10) | hand | conversion-list, customer-list and click-list take day-granular date_from/date_to with no sort (since-filter polls filtered by created_at); programs, affiliates, affiliate groups, one program's affiliates and one affiliate's payments/programs have no usable order or date filter and are read in full and diffed (snapshot); webhook triggers (dashboard-set, unsigned) are queued (https://developers.tapfiliate.com/automation/webhooks) |
 | apps/teachable | 1 | transaction-list | new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-09) | hand | since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions) |
 | apps/teamleader | 2 | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
 | apps/teamup | 1 | invoices-list | new-invoice | apps/teamup/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): invoices-list sort=-id (documented enum id\|-id\|due_date\|-due_date, https://docs.goteamup.com/llms.txt) |

@@ -316,12 +316,26 @@
     "mechanism": "poll",
     "candidates": [
       "new-contact",
-      "new-or-updated-contact"
+      "new-or-updated-contact",
+      "new-account",
+      "new-list",
+      "new-sequence",
+      "new-sequence-activity"
     ],
     "pollAction": "contact-search",
-    "reason": "Contact search supports documented newest-created and newest-updated order (https://docs.apollo.io/reference/search-for-contacts).",
-    "verified": "apps/apollo/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "contact-search and account-search document newest-created order (new-or-updated for contacts only: accounts carry no update stamp); lists and sequences are small bounded collections (snapshot); a contact's activity feed is documented newest-first (https://docs.apollo.io/reference/search-for-accounts)",
+    "verified": "apps/apollo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "account-stage-list": "reference data: account stages configured for the team",
+      "contact-stage-list": "reference data: contact stages configured for the team",
+      "deal-stage-list": "reference data: deal stages of the pipeline",
+      "deal-list": "sorts only by amount, is_closed or is_won: no created/updated order and no date filter (https://docs.apollo.io/reference/list-all-deals)",
+      "organization-job-postings-list": "credit-consuming: 1 Apollo credit per page (https://docs.apollo.io/reference/organization-jobs-postings)",
+      "organization-search": "credit-consuming: 1 credit per page, and a search of the vendor-wide company database (https://docs.apollo.io/reference/organization-search)",
+      "people-search": "searches the vendor-wide 240M-person database, not records of the account; no created order, so nothing is 'new' to the user",
+      "task-search": "sorts only by task_due_at or task_priority: no created/updated order and no date filter, up to 50,000 records (https://docs.apollo.io/reference/search-tasks)"
+    }
   },
   {
     "path": "apps/asana",
@@ -744,12 +758,28 @@
     "path": "apps/attio",
     "mechanism": "poll",
     "candidates": [
-      "new-task"
+      "new-task",
+      "new-record",
+      "new-list",
+      "new-workspace-member"
     ],
     "pollAction": "list-tasks",
-    "reason": "list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks)",
-    "verified": "apps/attio/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "list-tasks sorts created_at:desc; list-records is queried with an explicit sorts created_at desc; lists and workspace members are small bounded collections (snapshot) (https://docs.attio.com/rest-api/endpoint-reference/records/list-records)",
+    "verified": "apps/attio/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "search-records": "new-record"
+    },
+    "skipped": {
+      "list-attributes": "reference data: attribute definitions of an object or list",
+      "list-objects": "reference data: object definitions of the workspace",
+      "list-select-options": "reference data: select options of an attribute",
+      "list-statuses": "reference data: statuses of an attribute",
+      "list-record-attribute-values": "no stable id: the (historic) values of one attribute of one record",
+      "list-notes": "no sort parameter and no documented order, 10 per page (max 50), unbounded (https://docs.attio.com/rest-api/endpoint-reference/notes/list-notes)",
+      "list-entries": "no documented creation sort for list entries: the entries query takes sorts[].attribute as a slug or ID and no page names a creation attribute of a list (https://docs.attio.com/rest-api/endpoint-reference/entries/list-entries)",
+      "list-record-entries": "no documented creation sort for list entries: the entries query takes sorts[].attribute as a slug or ID and no page names a creation attribute of a list (https://docs.attio.com/rest-api/endpoint-reference/entries/list-entries)"
+    }
   },
   {
     "path": "apps/auth0",
@@ -9114,12 +9144,27 @@
     "path": "apps/tapfiliate",
     "mechanism": "poll",
     "candidates": [
-      "new-conversion"
+      "new-conversion",
+      "new-customer",
+      "new-click",
+      "new-program",
+      "new-affiliate-group",
+      "new-affiliate-payment",
+      "new-affiliate-program",
+      "new-program-affiliate",
+      "new-affiliate"
     ],
     "pollAction": "conversion-list",
-    "reason": "conversion-list takes date_from/date_to (days in UTC, no sort order) and each conversion carries created_at; no update stamp, so no new-or-updated trigger; click-list is Enterprise-plan only and not polled: since-filter poll widened one day and filtered by created_at (https://developers.tapfiliate.com/api-reference/conversions/list-all-conversions)",
+    "reason": "conversion-list, customer-list and click-list take day-granular date_from/date_to with no sort (since-filter polls filtered by created_at); programs, affiliates, affiliate groups, one program's affiliates and one affiliate's payments/programs have no usable order or date filter and are read in full and diffed (snapshot); webhook triggers (dashboard-set, unsigned) are queued (https://developers.tapfiliate.com/automation/webhooks)",
     "verified": "apps/tapfiliate/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "affiliate-prospect-list": "no sort order and no date filter, 25 per page, unbounded (https://developers.tapfiliate.com/api-reference/affiliate-prospects/list-all-affiliate-prospects); webhook queued",
+      "balance-list": "report: non-zero affiliate balances, rate-limited to 10 per minute (https://developers.tapfiliate.com/api-reference/payments/list-all-balances)",
+      "commission-list": "returns commissions in no guaranteed order, no date filter, unbounded (https://developers.tapfiliate.com/api-reference/introduction); webhook queued",
+      "payment-list": "no sort order and no date filter, 25 per page, unbounded (https://developers.tapfiliate.com/api-reference/payments/list-all-payments); webhook queued",
+      "program-commission-types-list": "reference data: a program's commission-type rules"
+    }
   },
   {
     "path": "apps/taskade",
