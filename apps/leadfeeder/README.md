@@ -3,7 +3,7 @@
 Identify the companies visiting your website, search and match companies and contacts, and manage
 lists and tags through the **current** Leadfeeder API (`https://api.leadfeeder.com/v1/*`).
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - Reference: the vendor's OpenAPI document, <https://api.leadfeeder.com/openapi.yaml> (linked from
   <https://docs.leadfeeder.com/api/public>). Every path, parameter and body below was read from it
   on 2026-10-06.
@@ -87,7 +87,16 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-visitor-company` | poll | `visitor-company-list` | Each company that newly shows up as a website visitor (yesterday to today) |
+| `new-campaign` | poll (snapshot) | `campaign-list` | Each advertising campaign newly created in the chosen account |
+| `new-custom-feed` | poll (snapshot) | `custom-feed-list` | Each custom feed newly created in the chosen account |
+| `new-tag` | poll (snapshot) | `tag-list` | Each company tag newly created in the chosen account |
+| `new-list` | poll (snapshot) | `list-list` | Each company or contact list newly created in the chosen account (`scope` param) |
+| `new-list-item` | poll (snapshot) | `list-items` | Each company or contact newly added to the chosen list (`listId` param) |
 
 `GET /v1/web-visits/companies` takes a required date range and, with no `sort[...]` parameter, "the companies that visited most recently come first" (vendor OpenAPI, `getWebVisitsCompanies`). The trigger requests yesterday-to-today, 100 per page, and emits a company id it has not seen in its last 200; a company that returns after leaving that memory fires again.
 
-Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.leadfeeder.com/openapi.yaml (verified 2026-11-09).
+Campaigns, custom feeds, tags, lists and one list's items are small account collections with no sort or since filter in the OpenAPI document, so each check reads all of them through the matching list action (following `nextPage` / `nextCursor`, at most 5000 rows) and emits only ids it has not seen before; the first check records what exists without firing.
+
+Not covered: `account-list` (the accounts the key can reach: account administration, not a record feed), `company-search` and `contact-search` (each call consumes credits), `web-visit-search` (`POST /v1/web-visits` documents no sort order, and the visiting companies are already delivered by `new-visitor-company`).
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.leadfeeder.com/openapi.yaml (verified 2026-11-10).
