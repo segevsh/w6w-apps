@@ -1,8 +1,14 @@
 import type { ActionDefinition } from "@w6w/types";
 import { SenderClient, type SenderListPage } from "../lib/client.ts";
+import { paginationParams, paginationQuery } from "../lib/params.ts";
 
 /** `GET /v2/groups` — all groups in the account. */
-type Input = Record<string, never>;
+interface Input {
+  page?: number;
+  limit?: number;
+  order?: string;
+  direction?: string;
+}
 
 const groupList: ActionDefinition<Input> = {
   key: "group-list",
@@ -10,13 +16,16 @@ const groupList: ActionDefinition<Input> = {
   resource: "group",
   title: "List Groups",
   description: "List all groups in the account.",
+  params: paginationParams(),
   output: [
     { key: "data", type: "array", label: "Groups" },
     { key: "meta", type: "object", label: "Pagination metadata" },
   ],
 
-  execute(_input, ctx) {
-    return new SenderClient(ctx).json<SenderListPage<unknown>>("/groups");
+  execute(input, ctx) {
+    return new SenderClient(ctx).json<SenderListPage<unknown>>("/groups", {
+      query: paginationQuery(input),
+    });
   },
 };
 

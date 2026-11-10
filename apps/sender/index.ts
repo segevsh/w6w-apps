@@ -86,6 +86,14 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
+import newGroup from "./triggers/new-group.ts";
+import newOrUpdatedGroup from "./triggers/new-or-updated-group.ts";
+import newSegment from "./triggers/new-segment.ts";
+import newOrUpdatedSegment from "./triggers/new-or-updated-segment.ts";
+import newGroupSubscriber from "./triggers/new-group-subscriber.ts";
+import newSegmentSubscriber from "./triggers/new-segment-subscriber.ts";
 import newSubscriber from "./triggers/new-subscriber.ts";
 import newOrUpdatedSubscriber from "./triggers/new-or-updated-subscriber.ts";
 
@@ -142,5 +150,16 @@ export default {
   // docs the token "carries full access to your account" — no scoping.
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newSubscriber, newOrUpdatedSubscriber],
+  triggers: [
+    newSubscriber,
+    newOrUpdatedSubscriber,
+    newCampaign,
+    newOrUpdatedCampaign,
+    newGroup,
+    newOrUpdatedGroup,
+    newSegment,
+    newOrUpdatedSegment,
+    newGroupSubscriber,
+    newSegmentSubscriber,
+  ],
 } satisfies AppDefinition;

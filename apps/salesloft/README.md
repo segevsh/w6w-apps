@@ -3,7 +3,7 @@
 Manage Salesloft people, accounts, cadences, cadence enrollment, calls, notes, tasks and users
 through the v2 REST API.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 13 (poll)
 - **Categories** — crm, communication
 - **Auth methods** — api-key, oauth2
 - **Actions** — 26
@@ -146,6 +146,18 @@ re-check with `_tools/audit.ts` conventions in mind if a probe starts failing fo
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
 | `new-person` — New Person | poll (every 5 minutes at most) | `person-list`, ordered `created_at` descending | each newly created person |
+| `new-account` — New Account | poll (every 5 minutes at most) | `account-list`, ordered `created_at` descending | each newly created account |
+| `new-or-updated-account` — New or Updated Account | poll (every 5 minutes at most) | `account-list`, ordered `updated_at` descending | each account when created or updated |
+| `new-cadence` — New Cadence | poll (every 5 minutes at most) | `cadence-list`, ordered `created_at` descending | each newly created cadence |
+| `new-or-updated-cadence` — New or Updated Cadence | poll (every 5 minutes at most) | `cadence-list`, ordered `updated_at` descending | each cadence when created or updated |
+| `new-cadence-membership` — New Cadence Membership | poll (every 5 minutes at most) | `cadence-membership-list`, ordered `added_at` descending | each person newly added to a cadence |
+| `new-or-updated-cadence-membership` — New or Updated Cadence Membership | poll (every 5 minutes at most) | `cadence-membership-list`, ordered `updated_at` descending | each membership when created or changed |
+| `new-call` — New Call | poll (every 5 minutes at most) | `call-list`, ordered `created_at` descending | each newly logged call |
+| `new-or-updated-call` — New or Updated Call | poll (every 5 minutes at most) | `call-list`, ordered `updated_at` descending | each call when logged or updated |
+| `new-note` — New Note | poll (every 5 minutes at most) | `note-list`, ordered `created_at` descending | each newly created note |
+| `new-or-updated-note` — New or Updated Note | poll (every 5 minutes at most) | `note-list`, ordered `updated_at` descending | each note when created or edited |
+| `new-or-updated-task` — New or Updated Task | poll (every 5 minutes at most) | `task-list`, ordered `updated_at` descending | each task when created or updated (no created-at sort exists, so no separate "new" trigger) |
+| `new-user` — New User | poll (every 5 minutes at most) | `user-list`, ordered `id` descending | each team member newly added (highest id first) |
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `person-list` through the connection's own
@@ -155,4 +167,6 @@ No webhook is registered and nothing is delivered to a callback URL, so there is
 verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
 the connection.
 
-Vendor docs: <https://developers.salesloft.com/docs/api/> (verified 2026-11-09).
+Each list documents `sort_by` / `sort_direction` (accounts, cadences, cadence memberships, calls, notes, tasks and users on their own "List …" pages under the vendor docs below); the triggers send them explicitly.
+
+Vendor docs: <https://developers.salesloft.com/docs/api/> (verified 2026-11-10).
