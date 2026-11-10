@@ -37,6 +37,9 @@ import accountInfoGet from "./actions/account-info-get.ts";
 import userList from "./actions/user-list.ts";
 import connectorTypeList from "./actions/connector-type-list.ts";
 import newConnection from "./triggers/new-connection.ts";
+import syncStarted from "./triggers/sync-started.ts";
+import syncEnded from "./triggers/sync-ended.ts";
+import connectionFailure from "./triggers/connection-failure.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -63,7 +66,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, connectionsHealth, quota],
-  triggers: [newConnection],
+  triggers: [newConnection, syncStarted, syncEnded, connectionFailure],
 };
 
 export default app;

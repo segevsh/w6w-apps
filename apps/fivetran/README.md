@@ -7,6 +7,7 @@ models, and read the destinations behind it all.
 - **Categories** — data-warehousing, devops, analytics
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 4 (1 poll, 3 webhook)
 - **Egress allowlist** — `api.fivetran.com` (the `service` health check adds
   `status.fivetran.com`)
 - **Website** — https://www.fivetran.com
@@ -237,14 +238,37 @@ kinds of key, since they reach different things.
 
 ## Triggers
 
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-connection` — New Connection | Poll | `connection-list` | Each connection newly created in the account |
+| trigger — title | mechanism | vendor event or wrapped action | what the run gets |
+|---|---|---|---|
+| `new-connection` — New Connection | poll | `connection-list` | each connection newly created in the account |
+| `sync-started` — Sync Started | webhook (API-registered) | `sync_start` | the connection, its type and destination, the sync id and the event time |
+| `sync-ended` — Sync Ended | webhook (API-registered) | `sync_end` | the same, with the outcome in `data.status` |
+| `connection-failure` — Connection Failure | webhook (API-registered) | `connection_failure` | the same, with the vendor's details in `data` |
+
+### New Connection (poll)
 
 Connections are an account-inventory collection (hundreds at most). Each check lists them through
 `connection-list` (cursor-paginated at `limit` 1000, up to six pages; an account beyond 5000
 connections fails the check with an error naming the cap), diffs them against the previous check and
-emits only additions. The first check only records what exists. Fivetran also offers a Webhook API
-(`sync_start`, `sync_end`, …) that is a separate, not yet shipped path. Sources:
-[List all connections](https://fivetran.com/docs/rest-api/api-reference/connections/list-connections)
-and [Webhooks](https://fivetran.com/docs/rest-api/webhooks) (verified 2026-11-09).
+emits only additions. The first check only records what exists.
+
+### Webhook triggers
+
+**Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks/account` (or
+`POST /v1/webhooks/group/{groupId}` when the optional `Destination (group) ID` parameter is set)
+with the one event, the host's callback URL and a random per-subscription `secret` that is kept in
+the subscription's state; unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone
+counts as deleted). The API key must be allowed to manage webhooks. Fivetran sends one test `POST`
+to the URL when a webhook is created and only creates it if the URL answers with a success status.
+
+**Trust model.** Fivetran signs a webhook when it was created with a secret: the
+`X-Fivetran-Signature-256` header is the hex HMAC-SHA256 of the exact request body, keyed by that
+secret. Every delivery is verified before the body is parsed (compared in constant time,
+case-insensitively as Fivetran's own examples do). A missing or wrong signature, an absent raw body
+or an unset secret refuses the delivery (one failed row, no run). Fivetran's scheme carries no
+timestamp, so there is no replay window; retries (up to five over 24 hours) repeat the same payload.
+
+Docs (verified 2026-11-10): https://fivetran.com/docs/developer-resources/webhooks ,
+https://fivetran.com/docs/developer-resources/rest-api/api-reference/webhooks/create-account-webhook ,
+https://fivetran.com/docs/developer-resources/rest-api/api-reference/connections/list-connections ,
+https://github.com/fivetran/fivetran-webhook-example-express-js
