@@ -562,12 +562,27 @@
     "mechanism": "poll",
     "candidates": [
       "new-page",
-      "new-or-updated-page"
+      "new-or-updated-page",
+      "new-blogpost",
+      "new-or-updated-blogpost",
+      "new-page-attachment",
+      "new-page-comment",
+      "new-page-label",
+      "new-space",
+      "new-task"
     ],
     "pollAction": "page-list",
-    "reason": "Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json).",
-    "verified": "apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "v2 list endpoints with a created/modified-date sort (pages, blog posts, attachments, footer comments) are polled newest-first; labels and spaces (no creation sort) as snapshots (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). tasks (getTasks) have a created-at-from filter (epoch ms), polled as a since-filter window.",
+    "verified": "apps/atlassian/confluence/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "page-child-list": "new-page",
+      "space-page-list": "new-page",
+      "task-list": "new-task"
+    },
+    "skipped": {
+      "content-search": "free-form CQL query supplied per call with no fixed record set or order; the pages and blog posts it can match are delivered by new-page and new-blogpost (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json has no search path; v1 /search is relevance-ordered)"
+    }
   },
   {
     "path": "apps/atlassian/jira",
@@ -901,23 +916,46 @@
     "path": "apps/avoma",
     "mechanism": "poll",
     "candidates": [
-      "new-meeting"
+      "new-meeting",
+      "new-call",
+      "new-user"
     ],
     "pollAction": "meeting-list",
-    "reason": "meeting-list with o=-start_at, page_size=100 and a rolling from/to window; late-synced older meetings are a documented residual (https://dev.avoma.com/openapi.yml)",
-    "verified": "apps/avoma/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "meeting-list newest-first in a rolling window; calls via a since-filter window with seed floor; user directory as a snapshot (https://dev.avoma.com/openapi.yml)",
+    "verified": "apps/avoma/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "note-list": "the documented note object has only created, modified and data - no stable id to dedupe on (https://dev.avoma.com/openapi.yml GET /v1/notes/)",
+      "transcription-list": "filters by the meeting's start time with no sort order and a transcript appears only after the meeting is processed, so no newest-first or creation-time read exists (https://dev.avoma.com/openapi.yml GET /v1/transcriptions/)",
+      "scorecard-evaluation-list": "filters by meeting date with no sort order; evaluations are added to old meetings after the fact, so no creation-time read exists (https://dev.avoma.com/openapi.yml GET /v1/scorecard_evaluations/)",
+      "scorecard-list": "scorecard templates: organization configuration (definitions), not a record feed",
+      "smart-category-list": "smart categories: organization configuration (keywords and prompts), not a record feed",
+      "meeting-segment-list": "per-meeting AI analysis output (topic time ranges) derived from a meeting the trigger new-meeting already delivers",
+      "meeting-sentiment-list": "per-meeting AI analysis output (sentiment scores) derived from a meeting the trigger new-meeting already delivers"
+    }
   },
   {
     "path": "apps/aweber",
     "mechanism": "poll",
     "candidates": [
-      "new-subscriber"
+      "new-subscriber",
+      "new-list",
+      "new-segment",
+      "new-tag",
+      "new-broadcast"
     ],
     "pollAction": "subscriber-find",
-    "reason": "subscriber-find with sort_key=subscribed_at, sort_order=desc pinned (https://api.aweber.com/)",
-    "verified": "apps/aweber/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "subscribers newest-first via sort_key/sort_order; lists, segments and tags are small collections polled as snapshots (https://api.aweber.com/); sent broadcasts per list (status=sent) are polled as a bounded snapshot because no sort direction is documented",
+    "verified": "apps/aweber/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "subscriber-list": "new-subscriber",
+      "list-find": "new-list"
+    },
+    "skipped": {
+      "account-list": "reference data: a developer connection sees one account, whose id every other call needs (https://api.aweber.com/)",
+      "custom-field-list": "custom field definitions of a list (field/property definitions), not a record feed (https://api.aweber.com/)"
+    }
   },
   {
     "path": "apps/aws/s3",
@@ -1095,12 +1133,27 @@
     "path": "apps/bexio",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-or-updated-contact",
+      "new-invoice",
+      "new-or-updated-invoice",
+      "new-order",
+      "new-or-updated-order",
+      "new-quote",
+      "new-or-updated-quote",
+      "new-project",
+      "new-article",
+      "new-timesheet"
     ],
     "pollAction": "contact-list",
-    "reason": "shipped poll trigger(s) over list action contact-list",
-    "verified": "apps/bexio/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "every list endpoint documents order_by with an _desc suffix (id, updated_at); polled newest-first (https://docs.bexio.com)",
+    "verified": "apps/bexio/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-search": "new-contact",
+      "invoice-search": "new-invoice",
+      "article-search": "new-article"
+    }
   },
   {
     "path": "apps/bigcommerce",
@@ -1546,12 +1599,24 @@
     "path": "apps/canny",
     "mechanism": "poll",
     "candidates": [
-      "new-post"
+      "new-post",
+      "new-comment",
+      "new-vote",
+      "new-status-change",
+      "new-tag",
+      "new-category",
+      "new-board",
+      "new-changelog-entry",
+      "new-or-updated-changelog-entry"
     ],
     "pollAction": "post-list",
-    "reason": "post-list sort=newest; no updated-time sort",
-    "verified": "apps/canny/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "posts via sort=newest; comments, votes, status changes, tags and categories are documented 'Sorted by newest'; entries have created/lastSaved sorts; boards are a bounded snapshot (https://developers.canny.io/api-reference)",
+    "verified": "apps/canny/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "company-list": "the reference says companies are 'ordered by created date' without a direction and offers no sort or since filter, so newest-first cannot be relied on (https://developers.canny.io/api-reference List companies)",
+      "user-list": "the reference documents no order, sort or since filter for users/list, so no newest-first read exists (https://developers.canny.io/api-reference List users)"
+    }
   },
   {
     "path": "apps/canva",
