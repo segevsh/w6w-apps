@@ -6,7 +6,7 @@ Manage**, the legal practice management platform, on the **Clio Manage API v4**.
 - **Categories** — legal, crm, productivity
 - **Auth methods** — `oauth2` (US), `oauth2-eu`, `oauth2-ca`, `oauth2-au` — one per Clio region
 - **Actions** — 25
-- **Triggers** — 2 (poll)
+- **Triggers** — 14 (poll)
 - **Health checks** — 2 (`service`, `quota`) + 4 derived `auth:oauth2*` checks
 - **Egress allowlist** — `app.clio.com`, `eu.app.clio.com`, `ca.app.clio.com`, `au.app.clio.com`
   (the `service` check adds `status.clio.com` to its own hook allowlist, never to the app's)
@@ -206,14 +206,28 @@ exposed by this app — cursor pagination has no ceiling and is the vendor's own
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-contact` — New Contact | Poll | `contact-list` | Each contact created since the last check |
-| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-list` | Each contact created or edited (id + updated_at) |
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each contact created or edited |
+| `new-matter` — New Matter | poll | `matter-list` | Each newly created matter |
+| `new-or-updated-matter` — New or Updated Matter | poll | `matter-list` | Each matter created or edited |
+| `new-task` — New Task | poll | `task-list` | Each newly created task |
+| `new-or-updated-task` — New or Updated Task | poll | `task-list` | Each task created or edited |
+| `new-note` — New Note | poll | `note-list` | Each newly created note |
+| `new-or-updated-note` — New or Updated Note | poll | `note-list` | Each note created or edited |
+| `new-document` — New Document | poll | `document-list` | Each newly created document |
+| `new-or-updated-document` — New or Updated Document | poll | `document-list` | Each document created or edited |
+| `new-activity` — New Activity | poll | `activity-list` | Each newly created activity |
+| `new-or-updated-activity` — New or Updated Activity | poll | `activity-list` | Each activity created or edited |
+| `new-calendar-entry` — New Calendar Entry | poll | `calendar-entry-list` | Each newly created calendar entry |
+| `new-or-updated-calendar-entry` — New or Updated Calendar Entry | poll | `calendar-entry-list` | Each calendar entry created or edited |
+
+Every Clio index endpoint takes `created_since` / `updated_since` (ISO-8601) and lists by `id(asc)`: each check reads the window since the last check (minus a 120 s overlap), resumes a longer window page by page, and ignores records that existed before the first check. `created_since` / `updated_since` were added (optional) to the task, note, document, activity and calendar-entry list actions. Source: [Clio Manage OpenAPI](https://docs.developers.clio.com/openapi.json) (verified 2026-11-10).
 
 `contact-list` takes `created_since` / `updated_since` and lists by `id(asc)`, so each check pages (up to 5 pages of 100) with the filter set to last check − 120 s and de-duplicates by id (`id:updated_at` for the second trigger). Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://app.clio.com/api/v4/documentation) (verified 2026-11-09).
+Source: [vendor docs](https://app.clio.com/api/v4/documentation) (verified 2026-11-10).
 
 ## Health checks
 
