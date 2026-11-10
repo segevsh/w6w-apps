@@ -247,3 +247,5 @@ limit, so the first time a workflow hits it the error says why.
   compliance semantics.
 - **Group profiles** — they need a group key configured on the project before
   any of it means anything.
+
+Triggers: not shipped — activity-list is a per-user analytics query rather than a record feed (https://developer.mixpanel.com/reference/query-stream-query).
