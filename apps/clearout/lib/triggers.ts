@@ -31,6 +31,8 @@ import {
 
 export interface TriggerParams {
   signingSecret?: string;
+  /** Any-event trigger only: comma-separated Clearout `event_type` names; empty = all. */
+  events?: string;
 }
 
 /** The run's `trigger.event`: one Clearout webhook event. */
@@ -53,6 +55,19 @@ const SIGNING_SECRET_PARAM: Param = {
   hint:
     "Clearout app, Developers, Webhook, Secret Token (generated once per account and shown only when generated or rotated). Clearout signs every delivery with it; a delivery that does not verify is refused.",
 };
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Clearout event types to react to, e.g. `email_verifier.instant.completed, form_guard.phone_validation.completed`. Leave empty for every event the webhook sends.",
+};
+
+/** `a, b ,c` → `["a","b","c"]` (empty entries dropped). */
+export function parseEvents(v: unknown): string[] {
+  return typeof v === "string" ? v.split(",").map((e) => e.trim()).filter((e) => e !== "") : [];
+}
 
 const OUTPUT: OutputField[] = [
   { key: "eventId", type: "string", label: "Event ID" },
@@ -145,8 +160,10 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** The Clearout `event_type` this trigger fires on. */
-  eventType: string;
+  /** The Clearout `event_type` this trigger fires on; omit for the Any-event trigger. */
+  eventType?: string;
+  /** Any-event trigger: adds the `events` param and keeps only the event types it lists. */
+  anyEvent?: boolean;
   sample: ClearoutEvent;
 }
 
@@ -158,7 +175,7 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [SIGNING_SECRET_PARAM],
+    params: spec.anyEvent ? [SIGNING_SECRET_PARAM, EVENTS_PARAM] : [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
 
@@ -182,7 +199,11 @@ export function webhookTrigger(
       const event = normalizeDelivery(parsed);
       // Other event types (and Clearout's dashboard test events of another type) are acknowledged
       // without a run.
-      if (event.eventType !== spec.eventType) return [];
+      if (spec.eventType !== undefined && event.eventType !== spec.eventType) return [];
+      if (spec.anyEvent) {
+        const wanted = parseEvents(params?.events);
+        if (wanted.length > 0 && !wanted.includes(event.eventType)) return [];
+      }
       return [event];
     },
   };
