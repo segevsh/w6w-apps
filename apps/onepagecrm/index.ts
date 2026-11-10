@@ -34,6 +34,13 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newCompany from "./triggers/new-company.ts";
+import newDeal from "./triggers/new-deal.ts";
+import newNote from "./triggers/new-note.ts";
+import newAction from "./triggers/new-action.ts";
+import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newOrUpdatedDeal from "./triggers/new-or-updated-deal.ts";
 
 export default {
   actions: [
@@ -69,5 +76,14 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, api, quota],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newCompany,
+    newDeal,
+    newNote,
+    newAction,
+    newOrUpdatedCompany,
+    newOrUpdatedContact,
+    newOrUpdatedDeal,
+  ],
 } satisfies AppDefinition;
