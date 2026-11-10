@@ -46,7 +46,12 @@ export function listTrigger(spec: {
       const total = Number((await run({ limit: 1 }, ctx)).total);
       if (!(total > 0)) return 0;
       const newest = await run({ limit: 1, sort: "id", offset: total - 1 }, ctx);
-      return lastId(newest.data ?? []) ?? 0;
+      const id = lastId(newest.data ?? []);
+      // The newest row vanished between the two reads: storing 0 would flood, so retry next check.
+      if (id === undefined) {
+        throw new Error("Upsales seed: newest row not found, retrying next check");
+      }
+      return id;
     },
     items: (result) => (result as { data?: unknown[] }).data ?? [],
     idOf: (item) => String((item as RecordItem).id ?? ""),

@@ -14,6 +14,7 @@ import user from "../../triggers/new-user.ts";
 import orUpdActivity from "../../triggers/new-or-updated-activity.ts";
 import orUpdAppointment from "../../triggers/new-or-updated-appointment.ts";
 import orUpdCompany from "../../triggers/new-or-updated-company.ts";
+import orUpdContact from "../../triggers/new-or-updated-contact.ts";
 import orUpdOrder from "../../triggers/new-or-updated-order.ts";
 import orUpdSubscription from "../../triggers/new-or-updated-subscription.ts";
 import { clock } from "../../lib/walk.ts";
@@ -113,12 +114,25 @@ for (const [name, trigger] of cases) {
     assertEquals(empty.calls.length, 1);
     assertEquals((seed.nextState as { mark?: unknown }).mark, 0);
   });
+
+  test(`new-${name} seed fails and stores nothing when the newest row vanished between reads`, async () => {
+    clock.now = () => NOW;
+    const raced = mockCtx([{ body: listEnvelope([{ id: 1 }], 3) }, { body: listEnvelope([], 3) }]);
+    let failed = false;
+    try {
+      await trigger.poll!({ params: {}, state: {}, subscriptionId: "test-sub" }, raced.ctx);
+    } catch {
+      failed = true;
+    }
+    assertEquals(failed, true);
+  });
 }
 
 const updated = [
   ["activity", orUpdActivity, "/api/v2/activities"],
   ["appointment", orUpdAppointment, "/api/v2/appointments"],
   ["company", orUpdCompany, "/api/v2/accounts"],
+  ["contact", orUpdContact, "/api/v2/contacts"],
   ["order", orUpdOrder, "/api/v2/orders"],
   ["subscription", orUpdSubscription, "/api/v2/agreements"],
 ] as const;

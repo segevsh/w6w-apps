@@ -85,6 +85,7 @@ import newUser from "./triggers/new-user.ts";
 import newOrUpdatedActivity from "./triggers/new-or-updated-activity.ts";
 import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
 import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
 import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
 
@@ -176,6 +177,7 @@ export default {
     newOrUpdatedActivity,
     newOrUpdatedAppointment,
     newOrUpdatedCompany,
+    newOrUpdatedContact,
     newOrUpdatedOrder,
     newOrUpdatedSubscription,
   ],
