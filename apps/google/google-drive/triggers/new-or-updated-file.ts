@@ -27,8 +27,10 @@ const base = pollFromListAction<Params>({
   action: fileList as ActionDefinition,
   input: (params) => {
     const folder = idParam(params.folderId, "Folder ID");
-    const q = [params.q?.trim(), folder ? `'${folder}' in parents` : undefined]
-      .filter(Boolean).join(" and ");
+    // The user's own query is parenthesised so an `or` inside it cannot widen past the folder clause.
+    const userQ = params.q?.trim();
+    const inFolder = folder ? `'${folder}' in parents` : undefined;
+    const q = userQ && inFolder ? `(${userQ}) and ${inFolder}` : userQ || inFolder;
     return {
       q: q || undefined,
       driveId: params.driveId,

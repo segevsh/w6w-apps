@@ -73,11 +73,23 @@ describe("new-or-updated-file", () => {
     await poll({ q: "name contains 'x'", folderId: "F_1-a", driveId: "D1" }, {}, f.ctx);
     assertEquals(req(f.calls[0]).query, {
       ...LIST_QS,
-      q: "name contains 'x' and 'F_1-a' in parents and trashed = false",
+      q: "(name contains 'x') and 'F_1-a' in parents and trashed = false",
       orderBy: "modifiedTime desc",
       driveId: "D1",
       corpora: "drive",
     });
+  });
+
+  test("the user's q is parenthesised before the folder clause, so an `or` in it cannot escape the folder", async () => {
+    const m = mockCtx([{ body: { files: [] } }]);
+    await poll({ q: "name contains 'a' or name contains 'b'", folderId: "F_1-a" }, {}, m.ctx);
+    assertEquals(
+      req(m.calls[0]).query.q,
+      "(name contains 'a' or name contains 'b') and 'F_1-a' in parents and trashed = false",
+    );
+    const only = mockCtx([{ body: { files: [] } }]);
+    await poll({ folderId: "F_1-a" }, {}, only.ctx);
+    assertEquals(req(only.calls[0]).query.q, "'F_1-a' in parents and trashed = false");
   });
 
   test("fileId keeps only that file's changes; a bad id is refused before any request", async () => {
