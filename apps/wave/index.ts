@@ -76,6 +76,8 @@ import moneyTransactionCreate from "./actions/money-transaction-create.ts";
 import graphqlQuery from "./actions/graphql-query.ts";
 
 import service from "./health/service.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
 
 export default {
   actions: [
@@ -110,4 +112,5 @@ export default {
   ],
   auth: [oauth2, fullAccessToken],
   healthChecks: [service],
+  triggers: [newCustomer, newOrUpdatedCustomer],
 } satisfies AppDefinition;

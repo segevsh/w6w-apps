@@ -1,5 +1,15 @@
 # Grok by xAI (`io.w6w.xai`)
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-file` — New File | Poll | `list-files` | Each newly created file |
+
+Polled newest-first by `created_at` through `list-files`. Source: https://docs.x.ai/docs/api-reference#files (verified 2026-11-09).
+
 Triggers: not shipped — the files endpoint does not document that descending order is creation-time order, so newest-first delivery cannot be guaranteed (https://docs.x.ai/docs/api-reference#files).
 
 Grok chat, Responses and Messages calls, embeddings, image generation, tokenization, model

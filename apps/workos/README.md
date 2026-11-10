@@ -1,5 +1,15 @@
 # WorkOS
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | Poll | `event-list` | Each new WorkOS event |
+
+Polled through the resumable event feed. Source: https://workos.com/docs/reference/events/list-events (verified 2026-11-09).
+
 Triggers: not shipped — the organization action follows cursors internally rather than exposing one bounded newest-first page (https://workos.com/docs/reference/organization/list-organizations).
 
 Manage the enterprise features a B2B product has to ship before an enterprise

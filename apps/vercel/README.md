@@ -1,5 +1,15 @@
 # Vercel
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-deployment` — New Deployment | Poll | `deployment-list` | Each newly created deployment |
+
+Polled through `deployment-list`. Source: https://vercel.com/docs/rest-api/reference/endpoints/deployments/get-deployments (verified 2026-11-09).
+
 Triggers: not shipped — deployment events are build-log sub-resources and require a deployment ID, not a primary new-record feed (https://vercel.com/docs/rest-api/endpoints/deployments/get-deployment-events).
 
 Ship and inspect Vercel deployments — projects, aliases, env vars, domains and

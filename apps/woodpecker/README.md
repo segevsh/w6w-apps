@@ -1,5 +1,7 @@
 # Woodpecker
 
+Triggers: not shipped — existing lists do not document a creation-ordered feed or created-since filter (https://developers.woodpecker.co/) (verified 2026-11-09).
+
 Cold email and multichannel outreach through [Woodpecker](https://woodpecker.co) (30 actions).
 API reference: <https://developers.woodpecker.co>. Base URL `https://api.woodpecker.co/rest`.
 

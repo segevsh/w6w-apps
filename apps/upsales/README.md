@@ -1,5 +1,15 @@
 # Upsales
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled newest-first by id through `contact-list`. Source: https://www.upsales.com/api/ (verified 2026-11-09).
+
 Manage the core objects of **Upsales**, the Nordic sales and marketing CRM, over the Upsales API v2.
 
 - **Categories** — crm, marketing

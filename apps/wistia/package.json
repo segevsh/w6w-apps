@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wistia",
-  "version": "0.1.0",
-  "description": "Manage Wistia media and folders, read captions, and pull video and account stats.",
+  "version": "0.2.0",
+  "description": "Manage Wistia media and trigger workflows on new media.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.wistia.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

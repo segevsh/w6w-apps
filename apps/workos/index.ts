@@ -15,6 +15,7 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import environment from "./health/environment.ts";
 import quota from "./health/quota.ts";
+import newEvent from "./triggers/new-event.ts";
 
 import organizationList from "./actions/organization-list.ts";
 import organizationGet from "./actions/organization-get.ts";
@@ -68,6 +69,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, environment, quota],
+  triggers: [newEvent],
 };
 
 export default app;

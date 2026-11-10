@@ -1,5 +1,16 @@
 # Wealthbox
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `list-contacts` | Each created or edited contact |
+
+Polled through Wealthbox contact ordering. Source: https://dev.wealthbox.com/ (verified 2026-11-09).
+
 Wealthbox CRM contacts, tasks, events, opportunities and notes, on the **Wealthbox API v1**.
 
 - **Categories** — crm
