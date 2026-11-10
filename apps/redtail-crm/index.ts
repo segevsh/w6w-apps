@@ -46,6 +46,9 @@ import opportunityStageList from "./actions/opportunity-stage-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import newContactNote from "./triggers/new-contact-note.ts";
+import newContactAddress from "./triggers/new-contact-address.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
@@ -78,5 +81,5 @@ export default {
   ],
   auth: [databaseCredentials],
   healthChecks: [service, quota],
-  triggers: [newOrUpdatedContact],
+  triggers: [newOrUpdatedContact, newOpportunity, newContactNote, newContactAddress],
 } satisfies AppDefinition;

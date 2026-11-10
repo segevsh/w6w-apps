@@ -1,13 +1,16 @@
 import type { ActionDefinition } from "@w6w/types";
-import { RedtailClient } from "../lib/client.ts";
+import { RedtailClient, type RedtailMeta } from "../lib/client.ts";
+import { pageParams } from "../lib/params.ts";
 import type { RedtailNote } from "../lib/types.ts";
 
 interface Input {
   contactId: number;
+  page?: number;
 }
 
 interface Output {
   notes: RedtailNote[];
+  meta?: RedtailMeta;
 }
 
 const noteList: ActionDefinition<Input, Output> = {
@@ -18,12 +21,15 @@ const noteList: ActionDefinition<Input, Output> = {
   description: "List the notes logged against a contact.",
   params: [
     { key: "contactId", label: "Contact ID", type: "number", required: true },
+    ...pageParams,
   ],
   output: [{ key: "notes", type: "array", label: "Notes" }],
 
   async execute(input, ctx) {
-    const res = await new RedtailClient(ctx).request<Output>(`/contacts/${input.contactId}/notes`);
-    return { notes: res.data.notes ?? [] };
+    const res = await new RedtailClient(ctx).request<Output>(`/contacts/${input.contactId}/notes`, {
+      query: { page: input.page },
+    });
+    return { notes: res.data.notes ?? [], ...(res.meta ? { meta: res.meta } : {}) };
   },
 };
 
