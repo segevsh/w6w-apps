@@ -1,12 +1,30 @@
 # Vanta
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 15 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-issue` — New Issue | Poll | `issue-list` | Newly created Vanta issues |
+| `new-issue` — New Issue | Poll | `issue-list` | Newly created issues, newest-first (`orderBy=createdDate&orderDirection=desc`) |
+| `new-control` — New Control | Poll (snapshot) | `control-list` | Controls newly added to the program (also covers `framework-control-list`) |
+| `new-document` — New Document | Poll (snapshot) | `document-list` | Evidence documents newly added |
+| `new-framework` — New Framework | Poll (snapshot) | `framework-list` | Frameworks newly added to the program |
+| `new-integration` — New Integration | Poll (snapshot) | `integration-list` | Integrations newly connected |
+| `new-monitored-computer` — New Monitored Computer | Poll (snapshot) | `monitored-computer-list` | Computers newly reporting to Vanta |
+| `new-person` — New Person | Poll (snapshot) | `person-list` | Current people newly added to the program |
+| `new-policy` — New Policy | Poll (snapshot) | `policy-list` | Policies newly added |
+| `new-risk-scenario` — New Risk Scenario | Poll (snapshot) | `risk-scenario-list` | Risk scenarios newly added to the register |
+| `new-test` — New Test | Poll (snapshot) | `test-list` | Tests newly added, of any status |
+| `new-test-entity` — New Test Entity | Poll (snapshot) | `test-entity-list` | Resources newly tested by the test you pick |
+| `new-user` — New User | Poll (snapshot) | `user-list` | Users newly added to the Vanta account |
+| `new-vendor` — New Vendor | Poll (snapshot) | `vendor-list` | Vendors newly added to the inventory |
+| `new-vulnerability` — New Vulnerability | Poll (since-filter) | `vulnerability-list` | Newly detected vulnerabilities that carry an SLA deadline (`slaDeadlineAfterDate` window) |
+| `new-vulnerability-remediation` — New Vulnerability Remediation | Poll (since-filter) | `vulnerability-remediation-list` | Vulnerabilities newly recorded as remediated (`remediatedAfterDate` window) |
+
+Every trigger reads the same endpoint as the action it wraps (https://developer.vanta.com/reference/manage-vanta, verified 2026-11-10). `GET /v1/issues` sorts by created date; `/vulnerabilities` and `/vulnerability-remediations` take `slaDeadlineAfterDate` / `remediatedAfterDate`; the other lists have no sort order or created-since filter, so each is read whole (at most 5000 rows) and diffed for additions. `new-vulnerability` only sees findings with an SLA deadline, and `new-person` follows `person-list`'s default of current employees; `new-test` watches tests of any status.
+
+Not covered: `event-log-list` (an audit log of what users did in Vanta, not a record feed); `framework-control-list` is delivered by `new-control`.
 
 Vanta API docs: https://developer.vanta.com/ (verified 2026-11-10).
 

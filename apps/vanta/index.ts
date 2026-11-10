@@ -42,6 +42,20 @@ import integrationList from "./actions/integration-list.ts";
 import monitoredComputerList from "./actions/monitored-computer-list.ts";
 import eventLogList from "./actions/event-log-list.ts";
 import newIssue from "./triggers/new-issue.ts";
+import newControl from "./triggers/new-control.ts";
+import newDocument from "./triggers/new-document.ts";
+import newFramework from "./triggers/new-framework.ts";
+import newIntegration from "./triggers/new-integration.ts";
+import newMonitoredComputer from "./triggers/new-monitored-computer.ts";
+import newPerson from "./triggers/new-person.ts";
+import newPolicy from "./triggers/new-policy.ts";
+import newRiskScenario from "./triggers/new-risk-scenario.ts";
+import newTest from "./triggers/new-test.ts";
+import newTestEntity from "./triggers/new-test-entity.ts";
+import newUser from "./triggers/new-user.ts";
+import newVendor from "./triggers/new-vendor.ts";
+import newVulnerability from "./triggers/new-vulnerability.ts";
+import newVulnerabilityRemediation from "./triggers/new-vulnerability-remediation.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -71,7 +85,23 @@ const app: AppDefinition = {
     monitoredComputerList,
     eventLogList,
   ],
-  triggers: [newIssue],
+  triggers: [
+    newIssue,
+    newControl,
+    newDocument,
+    newFramework,
+    newIntegration,
+    newMonitoredComputer,
+    newPerson,
+    newPolicy,
+    newRiskScenario,
+    newTest,
+    newTestEntity,
+    newUser,
+    newVendor,
+    newVulnerability,
+    newVulnerabilityRemediation,
+  ],
   auth: [clientCredentials],
   healthChecks: [service, tenant, quota],
 };

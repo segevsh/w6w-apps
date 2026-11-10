@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vanta",
   "version": "0.3.0",
-  "description": "Read a Vanta compliance program — failing tests and the resources causing them, controls, frameworks, issues, vulnerabilities against their SLAs, people's overdue tasks and the vendor inventory.",
+  "description": "Read a Vanta compliance program — failing tests and the resources causing them, controls, frameworks, issues, vulnerabilities against their SLAs, people's overdue tasks and the vendor inventory — with triggers that fire on new issues, vulnerabilities, remediations, controls, tests, people, vendors and more.",
   "license": "MIT",
   "author": {
     "name": "w6w"
