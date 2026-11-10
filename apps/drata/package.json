@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/drata",
-  "version": "0.2.0",
-  "description": "Drata compliance automation: workspaces, controls, monitoring tests, evidence, personnel, vendors, risks, policies, devices and assets, and trigger workflows on new event.",
+  "version": "0.3.0",
+  "description": "Drata compliance automation: workspaces, controls, monitoring tests, evidence, personnel, vendors, risks, policies, devices and assets, with poll triggers for new or updated records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
