@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/aweber",
-  "version": "0.2.0",
-  "description": "Manage AWeber email lists, subscribers and broadcasts — add and update subscribers, read and schedule broadcast newsletters, and manage tags and custom fields. Adds a poll trigger for new subscribers.",
+  "version": "0.3.0",
+  "description": "Manage AWeber email lists, subscribers and broadcasts — add and update subscribers, read and schedule broadcast newsletters, and manage tags and custom fields. Triggers: new subscribers, lists, tags.",
   "license": "MIT",
   "author": {
     "name": "w6w"
