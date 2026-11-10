@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lokalise",
-  "version": "0.1.1",
-  "description": "Manage Lokalise projects, keys, translations, languages, files, contributors, tasks and webhooks.",
+  "version": "0.2.0",
+  "description": "Manage Lokalise projects, keys, translations, languages, files, contributors, tasks and webhooks, plus webhook triggers for new and changed keys, updated translations and created or closed tasks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.lokalise.com/reference/lokalise-rest-api"
     ],
-    "longDescription": "Lokalise is a translation and localization management platform: strings live as keys with per-language translations, organized into projects, exported as files in the format each platform (iOS, Android, web, ...) expects.\n\nThis app covers the path a workflow actually needs around that: manage projects and their languages, create and update keys and translations, upload a source file for Lokalise to parse and queue for translation, and export a project's current translations as a downloadable bundle. Beyond the core content, it covers contributors (who can translate what), comments (in-context notes on a key), tasks (assigning translation work with a due date) and webhooks (reacting to a translation event instead of polling for it).\n\nA structural fact shapes every 'create' action here: Lokalise's create endpoints are bulk-only — even creating one key, language, contributor or comment means POSTing an array of one, and a 200 response can still carry a per-item 'errors' array for partial failure. Every bulk action in this app surfaces that array rather than assuming HTTP success means every item succeeded.",
+    "longDescription": "Lokalise is a translation and localization management platform: strings live as keys with per-language translations, organized into projects, exported as files in the format each platform (iOS, Android, web, ...) expects.\n\nThis app covers the path a workflow actually needs around that: manage projects and their languages, create and update keys and translations, upload a source file for Lokalise to parse and queue for translation, and export a project's current translations as a downloadable bundle. Beyond the core content, it covers contributors (who can translate what), comments (in-context notes on a key), tasks (assigning translation work with a due date) and webhooks (reacting to a translation event instead of polling for it).\n\nA structural fact shapes every 'create' action here: Lokalise's create endpoints are bulk-only — even creating one key, language, contributor or comment means POSTing an array of one, and a 200 response can still carry a per-item 'errors' array for partial failure. Every bulk action in this app surfaces that array rather than assuming HTTP success means every item succeeded.\n\nWebhook triggers start a workflow when a key is added or modified, a translation is updated, or a task is created or closed; the trigger registers its own webhook in the project and verifies each delivery with the webhook's secret.",
     "categories": [
       "developer-tools",
       "cms"
@@ -39,7 +39,12 @@
         "api.lokalise.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
