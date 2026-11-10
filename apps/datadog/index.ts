@@ -81,6 +81,12 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newLog from "./triggers/new-log.ts";
+import newEvent from "./triggers/new-event.ts";
+import newMonitor from "./triggers/new-monitor.ts";
+import newDashboard from "./triggers/new-dashboard.ts";
+import newDowntime from "./triggers/new-downtime.ts";
+import newHost from "./triggers/new-host.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -122,6 +128,6 @@ export default {
   // *client*, which is a published-integration programme rather than something a
   // user can configure — so keys are the whole authentication story here.
   auth: [apiKey],
-  triggers: [newLog],
+  triggers: [newLog, newEvent, newMonitor, newDashboard, newDowntime, newHost, newUser],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

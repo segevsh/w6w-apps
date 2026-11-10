@@ -1,12 +1,30 @@
 # Hubstaff
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | `new-project` — New Project | poll | `project-list` | Each new project |
+| `new-client` — New Client | poll (snapshot) | `client-list` (`status=all`) | Each new client |
+| `new-member` — New Member | poll (snapshot) | `member-list` | Each person newly added to the organization |
+| `new-task` — New Task | poll (snapshot) | `task-list` | Each new task |
+| `new-team` — New Team | poll (snapshot) | `team-list` | Each new team |
+| `new-organization` — New Organization | poll (snapshot) | `organization-list` | Each organization the member newly joins |
+| `new-timesheet` — New Timesheet | poll (snapshot) | `timesheet-list`, last 90 days | Each new timesheet |
+
+None of these lists documents a sort or created-after filter (https://api.hubstaff.com/v2/docs), so each check
+walks every page (`page_limit=100`, cursor `pagination.next_page_start_id`) through the same action and diffs the
+ids; members are keyed by `user_id`. The first check only records; a list past the 5000-row snapshot cap fails
+loudly. `new-timesheet` reads the timesheets of the last 90 days (`date[start]` .. inclusive `date[stop]`).
+
+Not covered: `activity-list` and `project-activity-list` — tracked activity blocks are high-volume 10-minute
+telemetry slots that sync from desktop clients after the fact, so neither a created-order poll nor a snapshot can
+deliver them without flooding or missing late syncs (the vendor's change feed is `/activities/updates`, which no
+action wraps).
+
+Vendor reference (verified 2026-11-10): <https://api.hubstaff.com/v2/docs> (OpenAPI 2.0).
 
 Hubstaff's OpenAPI document (https://api.hubstaff.com/v2/docs, verified 2026-11-09) lists `GET /v2/organizations/{organization_id}/projects` with `status`, `project_ids`, `page_start_id` and `page_limit` and no sort parameter, so the trigger is a snapshot: it walks every page of the organization's projects (`status=all`, 100 per page, cursor `pagination.next_page_start_id`) and diffs the project ids. An organization's project list is the bounded collection; a walk past the 5000-row snapshot cap fails loudly.
 

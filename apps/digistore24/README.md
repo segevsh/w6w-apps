@@ -6,7 +6,7 @@ IPN connections on the **Digistore24 API** (vendor view).
 - **Categories** — commerce
 - **Auth methods** — api-key (`X-DS-API-KEY` header)
 - **Actions** — 36
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `www.digistore24.com` (the `service` check adds `status.digistore24.com` to
   its own hook allowlist, never to the app's)
@@ -137,5 +137,23 @@ flattening, the auth probe and its rejection classification, and all three healt
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-purchase` — New Purchase | poll | `list-purchases` | Each newly recorded purchase |
+| `new-transaction` — New Transaction | poll | `list-transactions`, `sort_by=date&sort_order=desc` | Each new payment, refund or chargeback |
+| `new-product` — New Product | poll (snapshot) | `list-products` | Each product newly created |
+| `new-voucher` — New Voucher | poll (snapshot) | `list-vouchers` | Each voucher code newly created |
+| `new-delivery` — New Delivery | poll (snapshot) | `list-deliveries`, last 30 days | Each physical-goods delivery newly recorded |
+
+`new-transaction` sends the descending order explicitly: the vendor's own default for `listTransactions` is
+ascending. With no `from` Digistore24 lists the last 24 hours, which one check interval covers. Products,
+vouchers and deliveries have no paging; each check requests the whole list (deliveries: `search[from]` = 30 days
+ago) and diffs the ids.
+
+Not covered: `list-purchases-of-email` (a lookup of one buyer's purchases; purchases are delivered by
+`new-purchase`), `list-buyers` (paginated, no sort and no filter, so unbounded and unordered; each buyer arrives
+with their purchase), `list-commissions` (commission amounts per period — a finance report over the same payments
+`new-transaction` delivers), `list-invoices` (the invoices of one purchase id, not a feed).
+
+Vendor references (verified 2026-11-10): <https://digistore24.com/api/docs/index.html>, with the per-function
+paths under <https://digistore24.com/api/docs/paths/> (`listTransactions`, `listProducts`, `listVouchers`,
+`listDeliveries`).
 
 The poll requests date order descending. Source: https://digistore24.com/api/docs/index.html (verified 2026-11-09).

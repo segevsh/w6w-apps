@@ -6,7 +6,7 @@ logs, hosts and users — on any of Datadog's nine sites.
 - **App id:** `io.w6w.datadog`
 - **Auth:** API key, plus an optional application key, plus the site (`api-key`)
 - **Actions:** 22
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks:** `service` · `api` · ~~`quota`~~ · 1 derived (`auth:api-key`)
 - **Egress:** the nine `api.<site>` hosts. Status hosts belong to the `service` check's own
   allowlist, not the app's.
@@ -329,6 +329,29 @@ step that un-mutes production. Nothing else in this app has an idempotency key o
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-log` — New Log | poll | `log-search`, newest-first by timestamp | Each newly observed log event |
+| `new-event` — New Event | poll | `event-search`, newest-first (`sort=-timestamp`) | Each new event on the event stream matching a query |
+| `new-monitor` — New Monitor | poll (snapshot) | `monitor-list` (`monitor-search` is covered) | Each newly created monitor |
+| `new-dashboard` — New Dashboard | poll (snapshot) | `dashboard-list` | Each newly created custom or cloned dashboard |
+| `new-downtime` — New Downtime | poll (snapshot) | `downtime-list` | Each newly scheduled downtime |
+| `new-host` — New Host | poll (snapshot) | `host-list`, last 7 days | Each host that newly starts reporting |
+| `new-user` — New User | poll (snapshot) | `user-list`, ordered by name | Each user newly added to the organization |
+
+`new-event` reads the newest 100 events per check (`GET /api/v2/events`, `sort=-timestamp`) and emits ids it has
+not seen. The other five have no created-after filter or sort on creation, so each check walks the whole
+list through the same action (`monitor-list` 1000 per page, `dashboard-list` and `downtime-list` and
+`user-list` 100, `host-list` 1000 over a 7-day window) and diffs the ids: the first check only records, a
+list larger than 5000 records fails the check with an error naming the cap instead of dropping records.
+
+Not covered: `metric-list` — a bare list of metric names (reference data with no id or timestamp, thousands of
+names; metrics are queried, not "created"). `monitor-search` returns the same monitors as `monitor-list` and is
+delivered by `new-monitor`.
+
+Vendor references (verified 2026-11-10): <https://docs.datadoghq.com/api/latest/events/#search-events>,
+<https://docs.datadoghq.com/api/latest/monitors/#get-all-monitor-details>,
+<https://docs.datadoghq.com/api/latest/dashboards/#get-all-dashboards>,
+<https://docs.datadoghq.com/api/latest/downtimes/#get-all-downtimes>,
+<https://docs.datadoghq.com/api/latest/hosts/#get-all-hosts-for-your-organization>,
+<https://docs.datadoghq.com/api/latest/users/#list-all-users>.
 
 Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
 it accepts no inbound webhook delivery.
