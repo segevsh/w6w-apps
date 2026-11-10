@@ -59,6 +59,7 @@ import templateMessagesSend from "./actions/template-messages-send.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import tenant from "./health/tenant.ts";
+import newTemplate from "./triggers/new-template.ts";
 
 export default {
   actions: [
@@ -81,4 +82,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota, tenant],
+  triggers: [newTemplate],
 } satisfies AppDefinition;

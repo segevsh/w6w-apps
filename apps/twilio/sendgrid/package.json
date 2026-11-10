@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sendgrid",
-  "version": "0.3.3",
-  "description": "Consume SendGrid API",
+  "version": "0.4.0",
+  "description": "Consume SendGrid API. A poll trigger starts a workflow on each new list.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.sendgrid.com/api-reference"
     ],
-    "longDescription": "SendGrid sends email and manages marketing contacts from a workflow — sending mail directly through the API, and creating, reading, updating and deleting the lists a marketing send targets.\n\nContacts are upserted rather than requiring a workflow to check existence first — a single action creates a contact if it doesn't exist yet or updates it if it does — and contacts can be fetched individually or listed in bulk to check current state before acting on them.\n\nA fit for sending transactional email straight from a workflow, growing and maintaining a marketing list as people sign up or opt out elsewhere, or keeping SendGrid's contact data in sync with a CRM.",
+    "longDescription": "SendGrid sends email and manages marketing contacts from a workflow — sending mail directly through the API, and creating, reading, updating and deleting the lists a marketing send targets.\n\nContacts are upserted rather than requiring a workflow to check existence first — a single action creates a contact if it doesn't exist yet or updates it if it does — and contacts can be fetched individually or listed in bulk to check current state before acting on them.\n\nA fit for sending transactional email straight from a workflow, growing and maintaining a marketing list as people sign up or opt out elsewhere, or keeping SendGrid's contact data in sync with a CRM. A poll trigger starts a workflow on each new list.",
     "categories": [
       "email",
       "communication"
@@ -33,7 +33,8 @@
         "api.sendgrid.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

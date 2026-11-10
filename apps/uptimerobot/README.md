@@ -5,10 +5,28 @@ Manage monitors and alert contacts, and check account status, via the UptimeRobo
 - **Categories** — monitoring
 - **Auth method** — api-key (`apiKey`, body-located)
 - **Actions** — 8
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.uptimerobot.com`
 - **Website** — https://uptimerobot.com
 - **API docs** — https://uptimerobot.com/api/legacy/ (the v2 API; UptimeRobot's newer v3 REST
   API exists but was not used here — see "Why v2" below)
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-monitor` | poll (5 min) | `monitor-list` | each monitor newly added to the account |
+| `new-alert-contact` | poll (5 min) | `alert-contact-list` | each alert contact newly added to the account |
+
+`getMonitors` and `getAlertContacts` document `offset`/`limit` paging (max 50) but no sort order or
+since filter, so each trigger reads the whole collection page by page (a plan-limited account
+collection; more than 5000 rows throws) and snapshot-diffs it, emitting additions only. The first
+check only records the collection.
+
+UptimeRobot can also notify a `web-hook` alert contact on monitor alerts (configured in the
+dashboard, unsigned); it is not wired here (webhook candidate recorded for a webhook node).
+
+Source: https://uptimerobot.com/api/legacy/ (verified 2026-11-09).
 
 ## Actions
 

@@ -6,6 +6,7 @@ opt-ins — for Yelp advertising and listing-management reseller partners, on th
 - **Categories** — marketing, crm
 - **Auth methods** — oauth2
 - **Actions** — 7
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 declared absences (`service`, `quota`) + the derived `auth:oauth2`
 - **Egress allowlist** — `api.yelp.com`, `partner-api.yelp.com` (`biz.yelp.com`, the browser
   authorization host, is allowed implicitly as the OAuth `authorizationUrl` host)
@@ -18,6 +19,26 @@ opt-ins — for Yelp advertising and listing-management reseller partners, on th
 > page's own React-hydration payload, not a third-party integration directory), cross-checked
 > against that page's rendered "server URL" and its prose worked example, plus live probes of
 > `status.yelp.com` and `yelp.statuspage.io`.
+
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-lead` | poll (5 min) | `get-lead-ids-for-business` | the ID of each lead a business newly receives |
+
+`GET /v3/businesses/{business_id}/lead_ids` documents `created_after` ("only leads created at or
+after this timestamp (inclusive)") and that "time filters are applied first, then results are
+paginated with `after_lead_id` within the filtered window". The trigger asks for
+`created_after = max(cursor − 2 min, seed time)`, pages the window with `after_lead_id` (resuming on
+the next check when a window holds more than one 20-id page), and dedupes by lead id. The first
+check only records the start time: leads created before it are never requested. Yelp documents no
+sort order, so none is assumed.
+
+Yelp also delivers Leads webhooks (Ed25519-signed) to a subscribed partner; they are not wired here
+(webhook candidate recorded for a webhook node).
+
+Sources: https://docs.developer.yelp.com/reference/get-lead-ids-for-business,
+https://docs.developer.yelp.com/docs/leads-webhooks (verified 2026-11-09).
 
 ## Access to this API is restricted
 

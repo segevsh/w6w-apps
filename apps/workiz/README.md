@@ -1,5 +1,7 @@
 # Workiz
 
+Triggers: not shipped — lead-list orders and filters by the scheduled `LeadDateTime` ("start_date until today"), not by creation, so a lead scheduled outside the window never appears and nothing here is created-ordered (http://developer.workiz.com/api.json, verified 2026-11-09).
+
 Manage the team, leads and jobs of a home-service business — and the payments
 recorded against a job — through Workiz's public API.
 

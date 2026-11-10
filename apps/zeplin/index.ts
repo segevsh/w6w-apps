@@ -36,6 +36,7 @@ import updateScreenNote from "./actions/update-screen-note.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newScreen from "./triggers/new-screen.ts";
 
 export default {
   actions: [
@@ -70,4 +71,5 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, api, quota],
+  triggers: [newScreen],
 } satisfies AppDefinition;

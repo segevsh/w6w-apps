@@ -1,5 +1,7 @@
 # Vero
 
+Triggers: not shipped — the Vero API is write-only (identify, track, alias, tags, unsubscribe): there is no list endpoint to poll and no existing list action; email-event webhooks (sent, delivered, opened, clicked, bounced, unsubscribed, ...) are a queued webhook candidate (https://help.getvero.com/vero-1/integrations/setting-up-webhooks, verified 2026-11-09).
+
 Identify, track, tag, alias, delete, and subscribe/unsubscribe users via Vero's write-side Track
 API.
 

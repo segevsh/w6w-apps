@@ -57,6 +57,7 @@ import listsDelete from "./actions/lists-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newLeadList from "./triggers/new-lead-list.ts";
 
 export default {
   actions: [
@@ -79,4 +80,5 @@ export default {
   // the key is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newLeadList],
 } satisfies AppDefinition;
