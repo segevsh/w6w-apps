@@ -72,7 +72,8 @@ export async function pollSince<T>(o: {
   const stamp = (i: T) => o.stampOf(i) ?? NaN;
   const fresh = page.items.filter((i) => {
     const t = stamp(i);
-    return !(t < s.floor! || t < win.since || t > win.until);
+    // `win.since >= floor` always, so this also drops everything that existed before the seed (§9.9).
+    return !(t < win.since || t > win.until);
   });
   const newestFirst = [...fresh].sort((a, b) => (stamp(b) || 0) - (stamp(a) || 0));
   const { events, nextState } = await pollNewItems<T>({
