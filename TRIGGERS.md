@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1557 triggers, 2874 unaccounted list actions in 572 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -28,9 +28,6 @@ depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-p
 | apps/chatbase | 0 | 12 | 12 |
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
-| apps/pylon | 1 | 13 | 12 |
-| apps/rootly | 1 | 13 | 12 |
-| apps/shortcut | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
 | apps/teamup | 1 | 13 | 12 |
 | apps/affinity | 1 | 11 | 11 |
@@ -655,10 +652,13 @@ depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-p
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
 | apps/productive | 2 | 17 | 0 |
+| apps/pylon | 8 | 13 | 0 |
+| apps/rootly | 13 | 13 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
 | apps/seamlessai | 11 | 16 | 0 |
 | apps/shopify | 18 | 4 | 0 |
+| apps/shortcut | 12 | 13 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
@@ -1126,7 +1126,7 @@ depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-p
 | apps/productboard | 12 | note-list | new-entity, new-entity-relationship, new-jira-integration-connection, new-member, new-note, new-note-relationship, new-or-updated-entity, new-or-updated-note, new-or-updated-team, new-plugin-integration-connection, new-team, new-team-member | apps/productboard/README.md Triggers section (verified 2026-11-10) | hand | 12 poll triggers: since-filter notes (createdFrom/updatedFrom) and entities (entity-search filter.createdAt/updatedAt), plus bounded snapshots of teams, members, team members and entity/note relationships and Jira/plugin integration connections (https://developer.productboard.com/openapi/entities.yaml) |
 | apps/productive | 2 | deal-list | new-deal, new-booking, new-comment, new-company, new-deal-status, new-invoice, new-page, new-person, new-project, new-task, new-or-updated-booking, new-or-updated-page, new-or-updated-task, new-or-updated-time-entry | apps/productive/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers use a vendor-documented creation/update sort (pages, tasks, time entries) or a documented created_at/updated_at date filter (bookings, people); lists with no creation order or filter are skipped with the OpenAPI premise. |
 | apps/pushbullet | 2 | chat-list | new-chat, new-or-updated-chat | apps/pushbullet/README.md Triggers section (verified 2026-11-09) | hand | chat-list is modified-first (docs.pushbullet.com): new-or-updated-chat reads it; new-chat is a snapshot diff, added only |
-| apps/pylon | 1 | issue-list | new-issue | apps/pylon/README.md Triggers section (verified 2026-11-09) | hand | GET /issues lists issues created inside start_time..end_time; polled over a short window per check |
+| apps/pylon | 8 | issue-list | new-account, new-contact, new-issue, new-issue-message, new-issue-thread, new-tag, new-team, new-user | apps/pylon/README.md Triggers section (verified 2026-11-10) | hand | issue-list since-filter plus id-diff snapshots of the account, contact, user, team, tag lists and of one issue's messages and threads |
 | apps/qdrant | 1 | collection-list | new-collection | apps/qdrant/README.md Triggers section (verified 2026-11-09) | hand | the complete collection directory is returned in one bounded GET /collections response |
 | apps/quaderno | 1 | invoice-list | new-invoice | apps/quaderno/README.md Triggers section (verified 2026-11-09) | hand | invoice-list is documented newest first |
 | apps/quickbase | 1 | list-tables | new-table | apps/quickbase/README.md Triggers section (verified 2026-11-09) | hand | poll snapshot: list-tables returns the bounded whole set as one array; added only |
@@ -1155,7 +1155,7 @@ depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-p
 | apps/ringover | 1 | call-list | new-call | apps/ringover/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
 | apps/rippling | 2 | user-list | new-user, new-or-updated-user | apps/rippling/README.md Triggers section (verified 2026-11-09) | hand | user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users) |
 | apps/rocketchat | 2 | list-users | new-user, new-or-updated-user | apps/rocketchat/README.md Triggers section (verified 2026-11-09) | hand | list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list) |
-| apps/rootly | 1 | incident-list | new-incident | apps/rootly/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
+| apps/rootly | 13 | incident-list | new-alert, new-environment, new-functionality, new-incident, new-incident-action-item, new-incident-event, new-or-updated-alert, new-or-updated-user, new-schedule, new-service, new-severity, new-team, new-user | apps/rootly/README.md Triggers section (verified 2026-11-10) | hand | newest-first sort=-created_at on incidents, services, teams, users, functionalities, environments, severities; created/updated since-filter on alerts; id-diff snapshots of schedules and one incident's events and action items |
 | apps/salesforce | 2 | query | new-record, new-or-updated-record | apps/salesforce/README.md Triggers section (verified 2026-11-10) | hand | poll over query (SOQL ORDER BY CreatedDate / LastModifiedDate DESC, any object); no webhook: Salesforce streams record changes (Change Data Capture) only to CometD and Pub/Sub API subscribers, not to a callback URL |
 | apps/salesloft | 1 | person-list | new-person | apps/salesloft/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action person-list |
 | apps/salesmate | 2 | contact-search | new-contact, new-or-updated-contact | apps/salesmate/README.md Triggers section (verified 2026-11-09) | hand | contact search supports documented createdAt and lastModifiedAt descending sort (the contact.-prefixed field names are unverified without a live request) |
@@ -1179,7 +1179,7 @@ depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-p
 | apps/shippo | 1 | shipment-list | new-shipment | apps/shippo/README.md Triggers section (verified 2026-11-09) | hand | shipment-list takes object_created_gte (documented, https://docs.goshippo.com/api-reference/shipments/list-all-shipments); no documented list order and no updated-since filter, so only new-shipment ships (since-filter with page resume and floor) |
 | apps/shipstation | 2 | shipment-list | new-shipment, new-or-updated-shipment | apps/shipstation/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/shipments with documented sort_by=created_at\|modified_at&sort_dir=desc (additive sortBy/sortDir action params) |
 | apps/short-io | 1 | link-list | new-link | apps/short-io/README.md Triggers section (verified 2026-11-09) | hand | GET /api/links with documented dateSortOrder=desc; links carry no update stamp |
-| apps/shortcut | 2 | story-search | new-story, new-or-updated-story | apps/shortcut/README.md Triggers section (verified 2026-11-09) | hand | POST /stories/search documents created_at_start and updated_at_start (https://developer.shortcut.com/api/rest/v3); polled as since-filter with oldest-first sort, floor and resume; a Payload-Signature webhook is also available and queued as an upgrade |
+| apps/shortcut | 12 | story-search | new-epic, new-epic-comment, new-epic-story, new-iteration, new-iteration-story, new-label, new-label-story, new-member, new-or-updated-story, new-project, new-story, new-story-comment | apps/shortcut/README.md Triggers section (verified 2026-11-10) | hand | story-search since-filter (created_at_start/updated_at_start) plus id-diff snapshots of epics, iterations, labels, members, projects, comments and the stories of an epic, iteration or label |
 | apps/signrequest | 1 | document-search | new-document | apps/signrequest/README.md Triggers section (verified 2026-11-09) | hand | documents-search is documented ordered by created, newest first, when q/autocomplete/name are not used (OpenAPI); document-list documents no order so it is not used |
 | apps/simplero | 2 | contact-list | new-contact, new-or-updated-contact | apps/simplero/README.md Triggers section (verified 2026-11-09) | hand | GET /api/v2/customers documents created_at/updated_at DateFilter (custom from/to dates); date-window poll with after-cursor resume (https://simplero.com/api/v2/docs/openapi.json) |
 | apps/simpletexting | 2 | contact-list | new-contact, new-or-updated-contact | apps/simpletexting/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /api/contacts (vendor sorts/filters by updated, no created filter): new-contact keeps created in window; resumes by page |

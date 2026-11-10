@@ -6872,12 +6872,28 @@
     "path": "apps/pylon",
     "mechanism": "poll",
     "candidates": [
-      "new-issue"
+      "new-account",
+      "new-contact",
+      "new-issue",
+      "new-issue-message",
+      "new-issue-thread",
+      "new-tag",
+      "new-team",
+      "new-user"
     ],
     "pollAction": "issue-list",
-    "reason": "GET /issues lists issues created inside start_time..end_time; polled over a short window per check",
-    "verified": "apps/pylon/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "issue-list since-filter plus id-diff snapshots of the account, contact, user, team, tag lists and of one issue's messages and threads",
+    "verified": "apps/pylon/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "account-search": "new-account",
+      "contact-search": "new-contact",
+      "user-search": "new-user",
+      "issue-search": "new-issue"
+    },
+    "skipped": {
+      "issue-status-list": "reference data: the organization's configured issue statuses (slug, label, category)"
+    }
   },
   {
     "path": "apps/qdrant",
@@ -7273,12 +7289,28 @@
     "path": "apps/rootly",
     "mechanism": "poll",
     "candidates": [
-      "new-incident"
+      "new-alert",
+      "new-environment",
+      "new-functionality",
+      "new-incident",
+      "new-incident-action-item",
+      "new-incident-event",
+      "new-or-updated-alert",
+      "new-or-updated-user",
+      "new-schedule",
+      "new-service",
+      "new-severity",
+      "new-team",
+      "new-user"
     ],
     "pollAction": "incident-list",
-    "reason": "shipped poll trigger(s) over list action incident-list",
-    "verified": "apps/rootly/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first sort=-created_at on incidents, services, teams, users, functionalities, environments, severities; created/updated since-filter on alerts; id-diff snapshots of schedules and one incident's events and action items",
+    "verified": "apps/rootly/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "oncall-list": "point-in-time view of who is on call now (a roster, not records with their own creation)",
+      "shift-list": "from/to bound the shift's time range, not its creation: no created order or filter, and future shifts are listed"
+    }
   },
   {
     "path": "apps/runway",
@@ -7953,13 +7985,27 @@
     "path": "apps/shortcut",
     "mechanism": "poll",
     "candidates": [
+      "new-epic",
+      "new-epic-comment",
+      "new-epic-story",
+      "new-iteration",
+      "new-iteration-story",
+      "new-label",
+      "new-label-story",
+      "new-member",
+      "new-or-updated-story",
+      "new-project",
       "new-story",
-      "new-or-updated-story"
+      "new-story-comment"
     ],
     "pollAction": "story-search",
-    "reason": "POST /stories/search documents created_at_start and updated_at_start (https://developer.shortcut.com/api/rest/v3); polled as since-filter with oldest-first sort, floor and resume; a Payload-Signature webhook is also available and queued as an upgrade",
-    "verified": "apps/shortcut/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "story-search since-filter (created_at_start/updated_at_start) plus id-diff snapshots of epics, iterations, labels, members, projects, comments and the stories of an epic, iteration or label",
+    "verified": "apps/shortcut/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "workflow-list": "reference data: workflows and their states",
+      "search": "free-text search over stories, epics, iterations and objectives; stories, epics and iterations have their own triggers"
+    }
   },
   {
     "path": "apps/sierrainteractive",
