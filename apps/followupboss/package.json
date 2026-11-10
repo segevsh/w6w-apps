@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/followupboss",
-  "version": "0.1.1",
-  "description": "Manage Follow Up Boss real-estate CRM people, lead events, notes, calls, tasks, appointments, deals and account metadata via the Follow Up Boss API v1.",
+  "version": "0.2.0",
+  "description": "Manage Follow Up Boss real-estate CRM people, lead events, notes, calls, tasks, appointments, deals and account metadata via the Follow Up Boss API v1. Poll triggers fire on new people.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://api.followupboss.com/api-documentation/"
     ],
-    "longDescription": "Follow Up Boss is a CRM built specifically for real-estate teams, and this app lets a workflow act on the same data the sales side works from every day: people (buyer and seller leads), deals with earnest-money and possession dates, and everything logged against them.\n\nSend a lead in as an event so Follow Up Boss actually runs its follow-up machine — de-duplicating against existing contacts, notifying the assigned agent, and applying action plans — rather than creating a bare contact record with none of that. Log calls, add notes, create and update tasks and appointments, and create, update and search deals through the account's own pipelines and stages.\n\nLook up and search people, check for a duplicate before creating a new one, and read the account's own custom fields, smart lists and users, so a workflow can work with the exact picklists and stages a given Follow Up Boss account actually has.",
+    "longDescription": "Follow Up Boss is a CRM built specifically for real-estate teams, and this app lets a workflow act on the same data the sales side works from every day: people (buyer and seller leads), deals with earnest-money and possession dates, and everything logged against them.\n\nSend a lead in as an event so Follow Up Boss actually runs its follow-up machine — de-duplicating against existing contacts, notifying the assigned agent, and applying action plans — rather than creating a bare contact record with none of that. Log calls, add notes, create and update tasks and appointments, and create, update and search deals through the account's own pipelines and stages.\n\nLook up and search people, check for a duplicate before creating a new one, and read the account's own custom fields, smart lists and users, so a workflow can work with the exact picklists and stages a given Follow Up Boss account actually has. Poll triggers fire on new people.",
     "categories": [
       "crm"
     ],
@@ -32,7 +32,10 @@
         "api.followupboss.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
