@@ -7,6 +7,8 @@ interface Input {
   pipelineId?: number;
   name?: string;
   email?: string;
+  sortField?: string;
+  sortDirection?: string;
 }
 
 /**
@@ -40,6 +42,24 @@ const action: ActionDefinition<Input> = {
       type: "number",
       hint: "Restrict to one pipeline. From `pipelines-list`.",
     },
+    {
+      key: "sortField",
+      label: "Sort by",
+      type: "select",
+      options: [
+        { value: "createdAt", label: "Created at" },
+        { value: "updatedAt", label: "Updated at" },
+      ],
+      hint: "Vendor default: created at, ascending.",
+      advanced: true,
+    },
+    {
+      key: "sortDirection",
+      label: "Sort direction",
+      type: "select",
+      options: [{ value: "asc", label: "Ascending" }, { value: "desc", label: "Descending" }],
+      advanced: true,
+    },
     { key: "name", label: "Deal name contains", type: "string" },
     { key: "email", label: "Contact email", type: "string", hint: "Find deals for this contact." },
   ],
@@ -55,6 +75,9 @@ const action: ActionDefinition<Input> = {
       pipelineIds: input.pipelineId !== undefined ? [input.pipelineId] : undefined,
       name: input.name,
       email: input.email,
+      sortBy: input.sortField !== undefined
+        ? { fieldName: input.sortField, direction: input.sortDirection ?? "asc" }
+        : undefined,
     });
     return await new SendPulseClient(ctx).crm("/deals/get-list", { method: "POST", body });
   },

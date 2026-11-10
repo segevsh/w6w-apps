@@ -46,6 +46,15 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMailingList from "./triggers/new-mailing-list.ts";
 import newPipeline from "./triggers/new-pipeline.ts";
+import newDeal from "./triggers/new-deal.ts";
+import newOrUpdatedDeal from "./triggers/new-or-updated-deal.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newContactTag from "./triggers/new-contact-tag.ts";
+import newSender from "./triggers/new-sender.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
+import newPipelineStep from "./triggers/new-pipeline-step.ts";
 
 export default {
   actions: [
@@ -76,5 +85,17 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newPipeline, newMailingList],
+  triggers: [
+    newPipeline,
+    newMailingList,
+    newDeal,
+    newOrUpdatedDeal,
+    newContact,
+    newOrUpdatedContact,
+    newCampaign,
+    newContactTag,
+    newSender,
+    newTeamMember,
+    newPipelineStep,
+  ],
 } satisfies AppDefinition;

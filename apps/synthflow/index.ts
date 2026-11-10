@@ -24,6 +24,11 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newCall from "./triggers/new-call.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newBatchCall from "./triggers/new-batch-call.ts";
+import newBatchCallRecipient from "./triggers/new-batch-call-recipient.ts";
+import newKnowledgeBase from "./triggers/new-knowledge-base.ts";
+import newPhoneNumber from "./triggers/new-phone-number.ts";
 import apiKey from "./auth/api-key.ts";
 
 import assistantList from "./actions/assistant-list.ts";
@@ -87,5 +92,12 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newCall],
+  triggers: [
+    newCall,
+    newAgent,
+    newBatchCall,
+    newBatchCallRecipient,
+    newKnowledgeBase,
+    newPhoneNumber,
+  ],
 } satisfies AppDefinition;

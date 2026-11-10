@@ -42,6 +42,11 @@
 import type { AppDefinition } from "@w6w/types";
 import newBox from "./triggers/new-box.ts";
 import newOrUpdatedBox from "./triggers/new-or-updated-box.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
+import newOrUpdatedPipeline from "./triggers/new-or-updated-pipeline.ts";
+import newStage from "./triggers/new-stage.ts";
+import newTask from "./triggers/new-task.ts";
+import newTeam from "./triggers/new-team.ts";
 import apiKey from "./auth/api-key.ts";
 
 import userGetCurrent from "./actions/user-get-current.ts";
@@ -153,5 +158,13 @@ export default {
   // authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newBox, newOrUpdatedBox],
+  triggers: [
+    newBox,
+    newOrUpdatedBox,
+    newPipeline,
+    newOrUpdatedPipeline,
+    newStage,
+    newTask,
+    newTeam,
+  ],
 } satisfies AppDefinition;
