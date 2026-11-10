@@ -110,6 +110,13 @@ import userGet from "./actions/user-get.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 import newOrUpdatedPullRequest from "./triggers/new-or-updated-pull-request.ts";
+import newIssue from "./triggers/new-issue.ts";
+import newOrUpdatedIssue from "./triggers/new-or-updated-issue.ts";
+import newCommit from "./triggers/new-commit.ts";
+import newBranch from "./triggers/new-branch.ts";
+import newTag from "./triggers/new-tag.ts";
+import newRelease from "./triggers/new-release.ts";
+import newRepo from "./triggers/new-repo.ts";
 
 export default {
   actions: [
@@ -147,7 +154,16 @@ export default {
     // who this is
     userGet,
   ],
-  triggers: [newOrUpdatedPullRequest],
+  triggers: [
+    newOrUpdatedPullRequest,
+    newIssue,
+    newOrUpdatedIssue,
+    newCommit,
+    newBranch,
+    newTag,
+    newRelease,
+    newRepo,
+  ],
   auth: [token],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

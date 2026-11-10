@@ -15,7 +15,18 @@ const action: ActionDefinition = {
   resource: "commit",
   title: "List commits",
   description: "List commits on a branch.",
-  params: [REPO_PARAM, OWNER_PARAM, ...LIST_PARAMS],
+  params: [
+    REPO_PARAM,
+    OWNER_PARAM,
+    {
+      key: "since",
+      label: "Since",
+      type: "string",
+      default: "",
+      hint: "ISO 8601 timestamp; only commits after it.",
+    },
+    ...LIST_PARAMS,
+  ],
 
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
@@ -27,7 +38,7 @@ const action: ActionDefinition = {
 
     return await new GiteaClient(ctx).requestAll(
       `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits`,
-      {},
+      { query: { since: (p.since as string) || undefined } },
       returnAll ? Infinity : limit,
     );
   },
