@@ -100,6 +100,15 @@ import getDocument from "./actions/get-document.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import userJoined from "./triggers/user-joined.ts";
+import userUpdated from "./triggers/user-updated.ts";
+import threadCreated from "./triggers/thread-created.ts";
+import groupJoined from "./triggers/group-joined.ts";
+import eventCreated from "./triggers/event-created.ts";
+import eventRsvp from "./triggers/event-rsvp.ts";
+import courseCompleted from "./triggers/course-completed.ts";
+import documentCreated from "./triggers/document-created.ts";
+
 export default {
   actions: [
     // Users
@@ -170,6 +179,16 @@ export default {
     getDocument,
   ],
   // API key only. Heartbeat publishes no OAuth surface for third-party apps.
+  triggers: [
+    userJoined,
+    userUpdated,
+    threadCreated,
+    groupJoined,
+    eventCreated,
+    eventRsvp,
+    courseCompleted,
+    documentCreated,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
