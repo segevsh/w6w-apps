@@ -78,6 +78,15 @@ import smsInvalidPhoneNumberList from "./actions/sms-invalid-phone-number-list.t
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
+import newCanvas from "./triggers/new-canvas.ts";
+import newCatalog from "./triggers/new-catalog.ts";
+import newContentBlock from "./triggers/new-content-block.ts";
+import newEmailHardBounce from "./triggers/new-email-hard-bounce.ts";
+import newEmailUnsubscribe from "./triggers/new-email-unsubscribe.ts";
+import newInvalidPhoneNumber from "./triggers/new-invalid-phone-number.ts";
+import newOrUpdatedCanvas from "./triggers/new-or-updated-canvas.ts";
+import newOrUpdatedContentBlock from "./triggers/new-or-updated-content-block.ts";
+import newSegment from "./triggers/new-segment.ts";
 
 export default {
   actions: [
@@ -113,7 +122,18 @@ export default {
     // SMS
     smsInvalidPhoneNumberList,
   ],
-  triggers: [newOrUpdatedCampaign],
+  triggers: [
+    newOrUpdatedCampaign,
+    newCanvas,
+    newOrUpdatedCanvas,
+    newSegment,
+    newCatalog,
+    newContentBlock,
+    newOrUpdatedContentBlock,
+    newEmailUnsubscribe,
+    newEmailHardBounce,
+    newInvalidPhoneNumber,
+  ],
   // REST API key only. Braze's fetched spec declares exactly one security
   // scheme (BearerAuth) for every operation.
   auth: [apiKey],

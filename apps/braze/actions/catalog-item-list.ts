@@ -3,9 +3,9 @@ import { BrazeClient } from "../lib/client.ts";
 
 /**
  * `GET /catalogs/{catalog_name}/items` — verified against the fetched spec.
- * The spec declares no query parameters for this operation (no `limit`,
- * `offset`, or cursor), so none are exposed here; Braze's response paging (if
- * any) is left to the raw JSON output.
+ * The community spec declares no query parameters for this operation (no `limit`,
+ * `offset`, or cursor), so none are exposed here. The vendor page documents 50 items
+ * per call and a `Link`-header cursor, which `BrazeClient.get` does not surface.
  */
 const action: ActionDefinition = {
   key: "catalog-item-list",

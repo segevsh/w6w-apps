@@ -6,7 +6,7 @@ subscriptions and charges held in Baremetrics' API source, over the **Baremetric
 - **Categories** — analytics, finance
 - **Auth methods** — api-key (`Authorization: Bearer <key>`)
 - **Actions** — 30
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — `quota` (hourly request headroom), `service` (declared unavailable) + the
   derived `auth:api-key`
 - **Egress allowlist** — `api.baremetrics.com`
@@ -67,5 +67,14 @@ takes an API key). The sandbox host `api-sandbox.baremetrics.com` is not on the 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer in the selected source |
+| `new-subscription` — New Subscription | Poll | `subscription-list` | Each newly created subscription in the selected source |
+| `new-charge` — New Charge | Poll | `charge-list` | Each charge created in the selected source |
+| `new-refund` — New Refund | Poll | `refund-list` | Each refund created in the selected source |
+| `new-plan` — New Plan | Poll | `plan-list` | Each newly created plan in the selected source |
+| `new-goal` — New Goal | Poll | `goals-list` | Each newly created revenue goal |
+| `new-source` — New Source | Poll | `sources-list` | Each newly connected source |
+| `new-customer-event` — New Customer Event | Poll | `customer-events-list` | Each newly recorded event of the chosen customer (customer picked as a parameter) |
 
-Polled newest-first through the `customer-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developers.baremetrics.com/reference/list-customers) (verified 2026-11-09).
+Customers and subscriptions are polled newest-first (`sort=created&order=desc`, `order=desc`; the subscription docs state "Defaults to desc … newest to oldest"); the first check records what exists without firing, later checks emit only unseen items. Charges and refunds use the documented `start` unix-timestamp filter (`start = last check − 120 s`), page through `per_page=200` pages and resume from the saved page when a window is longer than five pages; the first check stores a floor and later checks drop anything created before it. Plans, goals and sources are small collections read whole and diffed by id.
+
+Customer events take the customer as a parameter and read the first five pages (1,000 events) of that customer's log, diffed by event id, because the [reference](https://developers.baremetrics.com/reference/list-customer-events) lists only `per_page`/`page` (no order or date filter); events beyond that window are not seen. Not covered: `annotations-list` (the docs list no sort or date filter, so there is no way to read only the newest entries). Sources: [customers](https://developers.baremetrics.com/reference/list-customers), [subscriptions](https://developers.baremetrics.com/reference/list-subscriptions), [charges](https://developers.baremetrics.com/reference/list-charges), [refunds](https://developers.baremetrics.com/reference/list-refunds), [plans](https://developers.baremetrics.com/reference/list-plans), [pagination](https://developers.baremetrics.com/reference/pagination) (verified 2026-11-10).

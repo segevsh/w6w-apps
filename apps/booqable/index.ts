@@ -38,6 +38,16 @@ import service from "./health/service.ts";
 import companyDomain from "./health/company-domain.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newOrUpdatedProduct from "./triggers/new-or-updated-product.ts";
+import newOrUpdatedProductGroup from "./triggers/new-or-updated-product-group.ts";
+import newOrUpdatedStockItem from "./triggers/new-or-updated-stock-item.ts";
+import newOrder from "./triggers/new-order.ts";
+import newPlanning from "./triggers/new-planning.ts";
+import newProduct from "./triggers/new-product.ts";
+import newProductGroup from "./triggers/new-product-group.ts";
+import newStockItem from "./triggers/new-stock-item.ts";
 
 export default {
   actions: [
@@ -68,7 +78,19 @@ export default {
     planningList,
     planningGet,
   ],
-  triggers: [newCustomer],
+  triggers: [
+    newCustomer,
+    newOrder,
+    newOrUpdatedOrder,
+    newProduct,
+    newOrUpdatedProduct,
+    newProductGroup,
+    newOrUpdatedProductGroup,
+    newStockItem,
+    newOrUpdatedStockItem,
+    newOrUpdatedCustomer,
+    newPlanning,
+  ],
   auth: [accessToken],
   healthChecks: [service, companyDomain, quota],
 } satisfies AppDefinition;
