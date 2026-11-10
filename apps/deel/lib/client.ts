@@ -205,4 +205,33 @@ export class DeelClient {
     }
     return items;
   }
+
+  /**
+   * Follow the **`next`** token pagination of `GET /time_offs/profile/{id}` (Deel's HRIS
+   * OpenAPI: query `page_size` 5-200 and `next`; response `{ data, next, count, page_size,
+   * has_next_page }`, no offset). Stops when `has_next_page` is not true or no `next` comes
+   * back; a repeated token or more than `max` rows fails loudly instead of looping.
+   */
+  async requestAllNext<T = unknown>(
+    path: string,
+    options: RequestOptions = {},
+    max = 5000,
+  ): Promise<T[]> {
+    const items: T[] = [];
+    const seen = new Set<string>();
+    let next: string | undefined;
+    while (true) {
+      const page = await this.request<
+        { data?: T[]; next?: string; has_next_page?: boolean }
+      >(path, { ...options, query: { ...options.query, page_size: 100, next } });
+      const chunk = page?.data ?? [];
+      items.push(...chunk);
+      if (items.length > max) throw new Error(`Deel ${path}: more than ${max} rows`);
+      next = page?.next;
+      if (page?.has_next_page !== true || !next || chunk.length === 0) break;
+      if (seen.has(next)) throw new Error(`Deel ${path}: next token "${next}" repeated`);
+      seen.add(next);
+    }
+    return items;
+  }
 }

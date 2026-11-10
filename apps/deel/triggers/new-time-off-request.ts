@@ -1,5 +1,5 @@
 import { snapshotList } from "../lib/snapshot.ts";
-import timeOffList from "../actions/time-off-list.ts";
+import { DeelClient } from "../lib/client.ts";
 
 export default snapshotList<{ hrisProfileId: string }>({
   key: "new-time-off-request",
@@ -12,8 +12,12 @@ export default snapshotList<{ hrisProfileId: string }>({
     required: true,
     default: "",
   }],
-  action: timeOffList,
-  input: (p) => ({ hrisProfileId: p.hrisProfileId }),
+  // Vendor pager: `page_size` + `next` token (the list action sends limit/offset).
+  list: (p, ctx) => {
+    const id = String(p.hrisProfileId ?? "").trim();
+    if (!id) throw new Error("`hrisProfileId` is required");
+    return new DeelClient(ctx).requestAllNext(`/time_offs/profile/${encodeURIComponent(id)}`);
+  },
   output: [
     { key: "id", type: "string", label: "Request ID" },
     { key: "status", type: "string", label: "Status" },

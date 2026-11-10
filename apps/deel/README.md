@@ -11,7 +11,7 @@
 | `new-legal-entity` | poll (snapshot) | `legal-entity-list` | Each newly added legal entity |
 | `new-webhook` | poll (snapshot) | `webhook-list` | Each newly registered webhook |
 | `new-contract-milestone` | poll (snapshot) | `contract-milestone-list` | Each new milestone on the chosen contract (`contractId`) |
-| `new-time-off-request` | poll (snapshot) | `time-off-list` | Each new time-off request of the chosen worker (`hrisProfileId`) |
+| `new-time-off-request` | poll (snapshot) | `GET /time_offs/profile/{id}` (same endpoint as `time-off-list`) | Each new time-off request of the chosen worker (`hrisProfileId`) |
 | `new-timesheet` | poll (snapshot) | `timesheet-list` | Each timesheet newly appearing with a watched status (`statuses`, default `pending`) |
 | `new-invoice-adjustment` | poll (snapshot) | `invoice-adjustment-list` | Each invoice adjustment newly appearing with a watched status (`statuses`, default `pending`) |
 
@@ -19,7 +19,7 @@
 
 The seven snapshot triggers read the whole collection 100 rows a page (the list action with
 `returnAll`, except `new-timesheet` and `new-invoice-adjustment`, which page with `limit` + `offset`
-and `page.total_rows`, and `new-webhook` and `new-legal-entity`, which page with the `cursor` query
+and `page.total_rows`, `new-time-off-request`, which pages with `page_size` + the `next` token while `has_next_page` is true (a repeated token throws), and `new-webhook` and `new-legal-entity`, which page with the `cursor` query
 parameter and the next cursor from the response's `cursor` / `page.cursor`, as Deel's OpenAPI
 documents; a repeated cursor throws), diff ids with the poll kit and emit the added ones; the first check records
 the ids and emits nothing, and a collection of more than 5000 rows fails the check with an error naming

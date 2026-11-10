@@ -17,6 +17,15 @@ const cursorPage = (items: unknown[], cursor?: string) => ({
 const topCursorPage = (items: unknown[], cursor?: string) => ({
   body: cursor ? { data: items, cursor } : { data: items },
 });
+const nextPage = (items: unknown[], next?: string) => ({
+  body: {
+    data: items,
+    page_size: 100,
+    count: 250,
+    has_next_page: next !== undefined,
+    ...(next ? { next } : {}),
+  },
+});
 const offsetPage = (items: unknown[], total: number) => ({
   body: { data: items, page: { total_rows: total } },
 });
@@ -55,8 +64,8 @@ const cases = [
     name: "new-time-off-request",
     t: newTimeOffRequest,
     params: { hrisProfileId: "h1" },
-    url: `${R}/time_offs/profile/h1?limit=100&offset=0`,
-    page: (items: unknown[]) => offsetPage(items, items.length),
+    url: `${R}/time_offs/profile/h1?page_size=100`,
+    page: (items: unknown[]) => nextPage(items),
   },
   {
     name: "new-timesheet",
@@ -194,6 +203,61 @@ describe("defaults and paging", () => {
       await assertRejects(() => run(t, {}, {}, m) as Promise<unknown>, Error, "repeated");
     });
   }
+
+  // Vendor shape: `page_size` + `next` token, `has_next_page`; no offset or total_rows.
+  test("new-time-off-request follows the vendor next token across 250 rows", async () => {
+    const pages = (last: unknown[]) => [
+      nextPage(rows(0, 100), "tok-1"),
+      nextPage(rows(100, 100), "tok-2"),
+      nextPage(last),
+    ];
+    const params = { hrisProfileId: "h1" };
+    const m = mockCtx(pages(rows(200, 50)));
+    const seeded = await run(newTimeOffRequest, params, {}, m) as {
+      events: unknown[];
+      nextState: unknown;
+    };
+    assertEquals(seeded.events, []);
+    assertEquals(m.calls.map((c) => c.url), [
+      `${R}/time_offs/profile/h1?page_size=100`,
+      `${R}/time_offs/profile/h1?page_size=100&next=tok-1`,
+      `${R}/time_offs/profile/h1?page_size=100&next=tok-2`,
+    ]);
+    const later = await run(
+      newTimeOffRequest,
+      params,
+      seeded.nextState,
+      mockCtx(pages([...rows(200, 50), rec("new")])),
+    );
+    assertEquals((later as { events: unknown[] }).events, [rec("new")]);
+  });
+
+  test("new-time-off-request stops after a single vendor page (no offset loop)", async () => {
+    const m = mockCtx([nextPage([rec("1"), rec("2")])]);
+    await run(newTimeOffRequest, { hrisProfileId: "h1" }, {}, m);
+    assertEquals(m.calls.length, 1);
+  });
+
+  test("new-time-off-request fails loudly on a repeated next token", async () => {
+    const m = mockCtx([nextPage(rows(0, 100), "tok-1"), nextPage(rows(100, 100), "tok-1")]);
+    await assertRejects(
+      () => run(newTimeOffRequest, { hrisProfileId: "h1" }, {}, m) as Promise<unknown>,
+      Error,
+      "repeated",
+    );
+  });
+
+  test("new-time-off-request refuses more than 5000 rows", async () => {
+    const pages = Array.from(
+      { length: 51 },
+      (_, p) => nextPage(rows(p * 100, 100), p < 50 ? `tok-${p}` : undefined),
+    );
+    await assertRejects(
+      () => run(newTimeOffRequest, { hrisProfileId: "h1" }, {}, mockCtx(pages)) as Promise<unknown>,
+      Error,
+      "5000",
+    );
+  });
 
   test("refuses more than 5000 rows instead of truncating", async () => {
     const pages = Array.from({ length: 51 }, (_, p) =>
