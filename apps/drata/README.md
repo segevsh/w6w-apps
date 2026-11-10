@@ -6,7 +6,7 @@ on the **Drata public API v2**.
 - **Categories** — legal, security
 - **Auth methods** — api-key (bearer)
 - **Actions** — 27 (14 lists, 8 reads, 5 writes)
-- **Triggers** — 14 (poll)
+- **Triggers** — 1 (poll)
 - **Health checks** — `service`, `quota` (declared unavailable, `informational`) + the derived
   `auth:api-key`
 - **Egress allowlist** — `public-api.drata.com`, `public-api.eu.drata.com`,
@@ -109,24 +109,7 @@ error formatting), `lib/params.ts` (shared inputs and enums), `tests/` (mocked `
 | Trigger — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each new audit event |
-| `new-asset` — New or Updated Asset | Poll | `asset-list` | Asset snapshot changes |
-| `new-control` — New or Updated Control | Poll | `control-list` | Control snapshot changes in a chosen workspace |
-| `new-device` — New or Updated Device | Poll | `device-list` | Device snapshot changes |
-| `new-evidence` — New or Updated Evidence | Poll | `evidence-list` | Evidence snapshot changes in a chosen workspace |
-| `new-monitoring-test` — New or Updated Monitoring Test | Poll | `monitoring-test-list` | Monitoring-test snapshot changes in a chosen workspace |
-| `new-monitoring-test-failure` — New or Updated Monitoring Test Failure | Poll | `monitoring-test-failures-list` | Failure-resource snapshot changes for a chosen test |
-| `new-personnel` — New or Updated Personnel | Poll | `personnel-list` | Personnel snapshot changes |
-| `new-policy` — New or Updated Policy | Poll | `policy-list` | Policy snapshot changes |
-| `new-risk` — New or Updated Risk | Poll | `risk-list` | Risk snapshot changes in a chosen risk register |
-| `new-risk-register` — New or Updated Risk Register | Poll | `risk-register-list` | Risk-register snapshot changes |
-| `new-user` — New or Updated User | Poll | `user-list` | User snapshot changes |
-| `new-vendor` — New or Updated Vendor | Poll | `vendor-list` | Vendor snapshot changes |
-| `new-workspace` — New or Updated Workspace | Poll | `workspace-list` | Workspace snapshot changes |
 
 Each check calls `event-list` with `createdAtStartDate` set two minutes before the previous check and de-duplicates by event id; the first check reads nothing and stores the instant it ran; later checks drop any record created before that instant, so existing records are never emitted. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
 
-The snapshot triggers page through the existing cursor list actions at `size=500`, preserve a baseline on
-their first check, and emit added or changed rows thereafter. They reject collections above the shared
-5,000-row safety cap instead of silently truncating them.
-
-Source: [Drata API v2](https://developers.drata.com/openapi/reference/v2/overview/) (verified 2026-11-10).
+Source: [Drata API v2](https://developers.drata.com/openapi/reference/v2/overview/) (verified 2026-11-09).
