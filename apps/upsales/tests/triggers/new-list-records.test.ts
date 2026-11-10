@@ -49,7 +49,7 @@ for (const [name, trigger, path] of cases) {
     assertEquals((seed.nextState as { seeded?: boolean }).seeded, true);
     assertEquals(seedCtx.calls.map((c) => c.url), [
       `https://integration.upsales.com${path}?limit=1`,
-      `https://integration.upsales.com${path}?limit=1&sort=id&offset=2`,
+      `https://integration.upsales.com${path}?limit=1&offset=2&sort=id`,
     ]);
     const firstCtx = mockCtx([{ body: listEnvelope([row]) }]);
     const first = await trigger.poll!({
@@ -79,7 +79,7 @@ for (const [name, trigger, path] of cases) {
   });
 }
 
-for (const [name, trigger, path] of cases) {
+for (const [name, trigger] of cases) {
   test(`new-${name} never emits rows that existed at the seed, even with no creation stamp`, async () => {
     clock.now = () => NOW;
     const seed = await trigger.poll!(
