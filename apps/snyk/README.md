@@ -4,7 +4,7 @@ Read Snyk issues, projects, targets and SBOMs, and audit an organization's
 security posture.
 
 - **Categories** — security, developer-tools
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 - **Auth methods** — api-token
 - **Actions** — 20
 - **Egress allowlist** — `api.snyk.io`
@@ -240,6 +240,17 @@ response shapes.
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-issue` — New Issue | poll | `issue-list` | Each newly created issue. |
+| `new-issue` — New Issue | poll | `issue-list` | Each issue Snyk newly finds in the organization. |
+| `new-or-updated-issue` — New or Updated Issue | poll | `issue-list` | Each issue that is newly found or updated (an edit is a new event). |
 
-Vendor documentation: https://docs.snyk.io/snyk-api/reference/orgs-v1 (verified 2026-11-09).
+Snyk documents no sort on `GET /rest/orgs/{org_id}/issues`, so these are **since-filter** polls, not
+newest-first reads. Each check calls the `issue-list` action (with Return All, which pages the
+vendor's `starting_after` cursor itself) with the documented filter `created_after` (`new-issue`) or
+`updated_after` (`new-or-updated-issue`) set to the previous check minus two minutes, and de-duplicates
+by issue id (`new-or-updated-issue`: id plus `attributes.updated_at`). The window is drained inside
+the one action call, so nothing is left to resume; the first check only records the cursor. The
+OpenAPI document describes the filters as "A filter to select issues created after this date" and
+"A filter to select issues updated after this date" and caps `limit` at 100.
+
+Vendor documentation: https://api.snyk.io/rest/openapi/2026-03-25 (`listOrgIssues`) and
+https://docs.snyk.io/snyk-api (verified 2026-11-09).
