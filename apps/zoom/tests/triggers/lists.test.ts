@@ -68,13 +68,21 @@ for (const c of CASES) {
     assertEquals(again, first);
   });
 
-  test(`${c.name}: a removal does not emit, a re-added row is not new`, async () => {
+  test(`${c.name}: a removal or an edit of an existing row does not emit`, async () => {
     const seeded = await c.trigger.poll({ ...input, state: {} }, mockCtx([page([1, 2])]).ctx);
-    const next = await c.trigger.poll(
+    const removed = await c.trigger.poll(
       { ...input, state: seeded.nextState },
       mockCtx([page([1])]).ctx,
     );
-    assertEquals(next.events, []);
+    assertEquals(removed.events, []);
+    const edited = page([1, 2]);
+    (edited.body[c.key] as Array<Record<string, unknown>>)[0].topic = "renamed";
+    (edited.body[c.key] as Array<Record<string, unknown>>)[0].email = "renamed@example.com";
+    const after = await c.trigger.poll(
+      { ...input, state: seeded.nextState },
+      mockCtx([edited]).ctx,
+    );
+    assertEquals(after.events, []);
   });
 
   test(`${c.name}: the request is the wrapped list endpoint (literal), 300 rows a page`, async () => {
