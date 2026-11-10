@@ -38,8 +38,7 @@
  *
  * ## Two credentials, and Mixpanel does not let you pick
  *
- * Query, raw export and event import newCohort from "./triggers/new-cohort.ts";
-import authenticate with the **service account**.
+ * Query, raw export and event import authenticate with the **service account**.
  * Profile writes do not: measured, `/engage` with a valid-shaped Basic
  * credential *and* `project_id` still answers
  * `{"error":"$token, missing or empty","status":0}` — the project token has to
@@ -104,6 +103,7 @@ import eventExport from "./actions/event-export.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCohort from "./triggers/new-cohort.ts";
 
 export default {
   actions: [
