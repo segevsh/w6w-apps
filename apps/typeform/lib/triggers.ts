@@ -18,8 +18,9 @@ import { TypeformClient } from "./client.ts";
  *   - `handleIngest` verifies `Typeform-Signature` (`sha256=` + base64 HMAC-SHA256 of the exact
  *     request body under the secret) BEFORE it parses anything, then emits one event.
  *
- * Docs (verified 2026-11-09): https://www.typeform.com/developers/webhooks/ and
- * https://www.typeform.com/developers/webhooks/secure-your-webhooks/
+ * Docs (verified 2026-11-10): https://www.typeform.com/developers/webhooks/,
+ * https://www.typeform.com/developers/webhooks/secure-your-webhooks/ and
+ * https://www.typeform.com/developers/webhooks/reference/create-or-update-webhook/
  */
 
 export interface TriggerParams {
@@ -203,6 +204,121 @@ export function webhookTrigger(
       const event = normalizeDelivery(parsed);
       if (state?.formId && event.formId && event.formId !== state.formId) return [];
       return [event];
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Round 3: Typeform's webhook catalog has two events, `form_response` (a submitted response) and
+// `form_response_partial` (a started-but-not-submitted response). `new-response` above keeps the
+// vendor default; the builder below registers an explicit `event_types` object.
+// ---------------------------------------------------------------------------------------------
+
+/** Every key of the webhook `event_types` object (create-or-update-webhook, 2026-11-10). */
+export const EVENT_TYPES = ["form_response", "form_response_partial"] as const;
+
+export interface EventTriggerParams extends TriggerParams {
+  events?: string;
+}
+
+/** `onSubscribe` state of an `eventTrigger` (a superset of `TriggerState`). */
+export interface EventTriggerState extends TriggerState {
+  events: string[];
+}
+
+/** `form_response, form_response_partial` → the validated list; empty = both. */
+export function parseEventTypes(input: unknown): string[] {
+  if (input === undefined || input === null || input === "") return [...EVENT_TYPES];
+  if (typeof input !== "string") {
+    throw new Error("Typeform events must be a comma-separated list of event names.");
+  }
+  const names = [...new Set(input.split(/[\s,]+/).filter((n) => n !== ""))];
+  if (names.length === 0) return [...EVENT_TYPES];
+  const known: readonly string[] = EVENT_TYPES;
+  const unknown = names.filter((n) => !known.includes(n));
+  if (unknown.length > 0) {
+    throw new Error(
+      `Typeform has no webhook event named ${unknown.join(", ")}. Known events: ${
+        EVENT_TYPES.join(", ")
+      }.`,
+    );
+  }
+  return names;
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Typeform events: form_response (a submitted response), form_response_partial (a started, unsubmitted response). Empty = both.",
+};
+
+export interface EventTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  /** Fixed events, or `null` for the Any-event trigger that reads the `events` param. */
+  events: string[] | null;
+  sample?: ResponseEvent;
+}
+
+/** A webhook trigger that registers an explicit `event_types` list. */
+export function eventTrigger(
+  spec: EventTriggerSpec,
+): TriggerDefinition<EventTriggerParams, ResponseEvent, EventTriggerState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.events === null ? [FORM_PARAM, EVENTS_PARAM] : [FORM_PARAM],
+    output: OUTPUT,
+    sample: spec.sample ?? SAMPLE,
+
+    async onSubscribe({ params, subscriptionId, callbackUrl }, ctx: HookContext) {
+      const formId = params.formId?.trim();
+      if (!formId) throw new Error("Choose the Typeform form to watch.");
+      const events = spec.events ?? parseEventTypes(params.events);
+      const tag = tagFor(subscriptionId);
+      const secret = randomSecret();
+      await new TypeformClient(ctx).request(webhookPath(formId, tag), {
+        method: "PUT",
+        body: {
+          url: callbackUrl,
+          enabled: true,
+          secret,
+          verify_ssl: true,
+          event_types: Object.fromEntries(EVENT_TYPES.map((e) => [e, events.includes(e)])),
+        },
+      });
+      return { formId, tag, secret, events };
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      const s = state as Partial<EventTriggerState> | undefined;
+      if (!s?.formId || !s.tag) return;
+      try {
+        await new TypeformClient(ctx).request(webhookPath(s.formId, s.tag), { method: "DELETE" });
+      } catch (err) {
+        if (!isGone(err)) throw err;
+      }
+    },
+
+    async handleIngest({ raw, params, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Typeform delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const body = await verifySignature(raw, state?.secret);
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(body);
+      } catch {
+        throw new Error("Typeform delivery refused: the body is not JSON.");
+      }
+      const event = normalizeDelivery(parsed);
+      if (state?.formId && event.formId && event.formId !== state.formId) return [];
+      const wanted = state?.events ?? spec.events ?? parseEventTypes(params?.events);
+      return wanted.includes(event.eventType) ? [event] : [];
     },
   };
 }
