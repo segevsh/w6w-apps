@@ -219,12 +219,21 @@ account or network access required.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-article` — New Article | Poll | `articles-collect` | Each new article collected into one stream (folder, board or AI Feed) |
+| `new-search-article` — New Article Matching a Search | Poll | `articles-search` (param `query` = the saved-search JSON) | Each new article matching that search |
+| `new-board` — New Board | Poll | `boards-list` (snapshot) | Each team board newly created |
+| `new-folder` — New Folder | Poll | `folders-list` (snapshot) | Each team folder newly created |
+| `new-ai-feed` — New AI Feed | Poll | `ai-feeds-list` (snapshot of the team's `enterpriseAlerts`) | Each team AI Feed newly created |
+| `new-enterprise-user` — New Team User | Poll | `enterprise-users-list` (snapshot; team admin token) | Each user newly added to the account |
 
-Each check calls `GET /v3/streams/contents` with `newerThan` set to the previous check's time minus a
+`new-search-article` works the same way over `POST /v3/search/contents` with your query body: the Search reference documents `newerThan` only as a millisecond timestamp (not which article time it compares), so the trigger assumes crawl time as the stream endpoint does and drops articles crawled before the first check. The board, folder, AI Feed and user triggers diff the ids of one whole response (the references list no paging); the first check only records.
+
+Not covered by a trigger: `webhooks-list` (webhook subscription configuration, whose entries carry the configured webhook URLs; admin configuration, not records).
+
+`new-article`: each check calls `GET /v3/streams/contents` with `newerThan` set to the previous check's time minus a
 two-minute overlap (never older than Feedly's 31-day limit) and dedupes by article `id`. A check reads up to five pages of 100; a longer window keeps its
 `continuation` token and the next check continues from it, advancing the check time only once the
 window is drained. The first
 check only records what exists. Feedly's enterprise trigger webhooks are a separate, not yet shipped
 webhook path. Sources:
 [Collect articles from streamId](https://developers.feedly.com/reference/collect-articles.md) and
-[webhooks reference](https://developers.feedly.com/reference/get-the-list-of-webhooks.md) (verified 2026-11-09).
+[webhooks reference](https://developers.feedly.com/reference/get-the-list-of-webhooks.md), [Search](https://developers.feedly.com/reference/search.md) (verified 2026-11-10).

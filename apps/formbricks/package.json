@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/formbricks",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage Formbricks surveys, responses, contacts, action classes and webhooks through the Management API on Formbricks Cloud, and trigger workflows on new surveys.",
   "license": "MIT",
   "author": {

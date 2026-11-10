@@ -2,18 +2,26 @@
 
 ## Triggers
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 8 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-employee` | poll | `employee-search` | Each newly created employee (sorted by `Id` descending) |
 | `new-or-updated-employee` | poll | `employee-search` | Each employee created or edited since the last check (sorted by `Modified` descending, id + `Modified`) |
+| `new-timesheet` | poll | `timesheet-search` | Each newly created timesheet (sorted by `Id` descending) |
+| `new-or-updated-timesheet` | poll | `timesheet-search` | Each timesheet created or edited since the last check (sorted by `Modified` descending, id + `Modified`) |
+| `new-leave-request` | poll | `POST /resource/Leave/QUERY` | Each newly created leave request (sorted by `Id` descending) |
+| `new-or-updated-leave-request` | poll | `POST /resource/Leave/QUERY` | Each leave request created or edited, e.g. approved (sorted by `Modified` descending) |
+| `new-location` | poll | `location-list` (snapshot) | Each Location (`Company`) newly created |
+| `new-area` | poll | `operational-unit-list` (snapshot) | Each Area (`OperationalUnit`) newly created |
 
 `employee-search` is Deputy's `POST /resource/Employee/QUERY`, which takes an explicit `sort`; the first 100 rows are read each check.
 
+`employee-list` and `timesheet-list` return the same records as the employee and timesheet triggers (covered by them). `leave-list` returns the first 500 leave records in id order and cannot be sorted, so the leave triggers read the same resource through its QUERY endpoint instead. Locations and Areas are small collections, so those two triggers diff the ids of the whole list; the first check only records.
+
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Vendor reference: <https://developer.deputy.com/> (Employee resource QUERY, verified 2026-11-09).
+Vendor reference: <https://developer.deputy.com/> (Employee, Timesheet, Leave resource QUERY and Company / OperationalUnit listing, verified 2026-11-10).
 
 ## Setup
 

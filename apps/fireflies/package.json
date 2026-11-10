@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/fireflies",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Read Fireflies.ai transcripts, summaries, soundbites, contacts and channels, upload audio, drive the notetaker in live meetings, ask AskFred, and trigger on new transcripts.",
   "license": "MIT",
   "author": {

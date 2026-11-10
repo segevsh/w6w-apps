@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/feedly",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Read team AI Feeds, folders and boards, search across them, and manage Feedly's enterprise webhooks, and trigger workflows for new articles in a stream.",
   "license": "MIT",
   "author": {

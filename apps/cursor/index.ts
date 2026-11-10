@@ -79,7 +79,9 @@ import modelAccessModelUpdate from "./actions/model-access-model-update.ts";
 
 import service from "./health/service.ts";
 
+import newGroup from "./triggers/new-group.ts";
 import newMember from "./triggers/new-member.ts";
+import newRepoBlocklist from "./triggers/new-repo-blocklist.ts";
 
 export default {
   actions: [
@@ -115,7 +117,7 @@ export default {
   ],
   // Basic auth only. Cursor publishes no OAuth flow for the Admin API; the
   // key IS the whole authentication story.
-  triggers: [newMember],
+  triggers: [newMember, newGroup, newRepoBlocklist],
   auth: [basicAuth],
   healthChecks: [service],
 } satisfies AppDefinition;

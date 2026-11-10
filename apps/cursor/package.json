@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/cursor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage Cursor team members, usage, spend, repo blocklists, billing groups and model access via the Admin API, and trigger workflows on new team member.",
   "license": "MIT",
   "author": {

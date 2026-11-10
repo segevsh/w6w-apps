@@ -7,7 +7,7 @@ URLs that are the point of all of it.
 - **Categories** — storage, documents, developer-tools
 - **Auth methods** — basic
 - **Actions** — 21
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Egress allowlist** — `api.cloudinary.com`, `api-eu.cloudinary.com`,
   `api-ap.cloudinary.com`
 - **Website** — https://cloudinary.com
@@ -233,14 +233,23 @@ else is skipped rather than guessed at.
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-asset` — New Asset | poll | `asset-search`, newest-first by `created_at` | Each newly observed Cloudinary asset |
+| `new-folder` — New Folder | poll | `folder-list` (snapshot; param `path` = parent folder) | Each folder newly created under the parent |
+| `new-tag` — New Tag | poll | `tag-list` (snapshot; params resource type, prefix) | Each tag that starts being used |
+| `new-transformation` — New Transformation | poll | `transformation-list` (snapshot; named only by default) | Each newly seen transformation |
+| `new-upload-preset` — New Upload Preset | poll | `upload-preset-list` (snapshot) | Each newly created upload preset |
 
 With no expression, the trigger searches `resource_type:image`; supply an expression for video or
 raw assets.
 
-Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
-it accepts no inbound webhook delivery.
+`asset-list` returns the same assets as `new-asset` (covered by it). The four snapshot triggers diff
+the whole bounded list (paged at 500 by `next_cursor`) against the previous check; the first check
+seeds and emits nothing. Not covered: `metadata-field-list` (structured-metadata schema
+definitions, not records).
 
-Vendor reference: <https://cloudinary.com/documentation/admin_api#search_assets> (verified 2026-11-09).
+Trust model: these poll triggers make authenticated outbound API requests with the app connection;
+they accept no inbound webhook delivery.
+
+Vendor reference: <https://cloudinary.com/documentation/admin_api#search_assets>, <https://cloudinary.com/documentation/admin_api> (verified 2026-11-10).
 
 - **Signed delivery URLs and signed uploads.** Both need the API secret to sign
   a string that is not a request, and only the auth hook may touch a credential.

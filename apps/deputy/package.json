@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/deputy",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage Deputy employees, timesheets, leave, areas and locations, with New Employee and New or Updated Employee triggers.",
   "license": "MIT",
   "author": {
