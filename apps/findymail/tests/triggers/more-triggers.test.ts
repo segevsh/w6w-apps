@@ -161,6 +161,20 @@ describe("new-signal", () => {
     }
   });
 
+  test("9.9: a record created inside the overlap window but before the seed never fires", async () => {
+    try {
+      at(T0);
+      const seed = await run({}, [pageOf([sig("a", OLD)], 1, 1)]);
+      at(T0 + 60_000);
+      const r = await run(seed.nextState, [
+        pageOf([sig("after", T0 + 30_000), sig("just-before", T0 - 60_000)], 1, 1),
+      ]);
+      assertEquals(r.events.map((e) => (e as { id: string }).id), ["after"]);
+    } finally {
+      clock.now = realNow;
+    }
+  });
+
   test("9.8: a window of maxPages + 1 pages is emitted once across checks; cursor advances after the drain", async () => {
     try {
       at(T0);
