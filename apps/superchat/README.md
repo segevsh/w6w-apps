@@ -7,6 +7,7 @@ subscriptions around them, on Superchat's public REST API.
 - **Categories** — communication, crm
 - **Auth methods** — api-key (`X-API-KEY`, workspace-wide read + write)
 - **Actions** — 53
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.superchat.com` (the `service` check adds `status.superchat.de` to its own
   hook allowlist, never to the app's)
@@ -97,4 +98,8 @@ wordmark paths dropped, only the `viewBox`/size changed).
 
 ## Triggers
 
-- New Conversation Message (new-conversation-message) — poll; wraps conversation-messages-list; the run gets each new record. Vendor API reference: https://docs.superchat.com/api-reference/messages/list-messages (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll (newest first) | `contact-list` | Each newly created contact in the workspace |
+
+Polled newest-first through the `contact-list` action; the first check records what exists without firing. Source: "Lists all contacts in workspace … Objects are sorted descendingly by their created_at value." ([List all contacts](https://developers.superchat.com/reference/get_contacts), verified 2026-11-09). Conversations and messages were not used: the conversation list documents no sort order.

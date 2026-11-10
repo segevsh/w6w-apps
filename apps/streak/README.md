@@ -6,6 +6,7 @@ organizations and tasks — built directly on Gmail, over the **Streak API v1**.
 - **Categories** — crm
 - **Auth methods** — api-key (HTTP Basic, key as username, no password)
 - **Actions** — 40
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.streak.com` (the `service` check adds `status.streak.com` to its own
   hook allowlist, never to the app's)
@@ -76,12 +77,6 @@ callers of this app's `task-create` action supply `boxKey` exactly once.
 ### 5. Two different 401 bodies for two different auth failures — checked live
 
 ```
-
-## Triggers
-
-- New Box (new-box) — poll; wraps box-list; the run gets each new record. Vendor API reference: https://streak.readme.io/reference/list-boxes (verified 2026-11-09).
-
-Triggers: not shipped — `box-list` accepts `sortBy=creationTimestamp` but neither the action nor Streak's published reference (https://streak.readme.io/, JS-rendered, unreadable 2026-11-09) states the sort direction, and a poll needs newest-first guaranteed (https://streak.readme.io/).
 $ curl -s https://api.streak.com/api/v1/users/me
 {"error":"Authentication required"}
 
@@ -312,3 +307,12 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-box` — New Box | Poll (newest first) | `box-list` | Each newly created box in a pipeline |
+| `new-or-updated-box` — New or Updated Box | Poll (last updated first) | `box-list` | Each box that is new or was just edited |
+
+Polled through the `box-list` action with `sortBy=creationTimestamp` (new) and `sortBy=lastUpdatedTimestamp` (new or updated; the id includes `lastUpdatedTimestamp`). The first check records what exists without firing. Source: the reference says "What order to sort the boxes by. There are two valid sorts: creationTimestamp and lastUpdatedTimestamp. Both are in descending order." ([List all boxes in pipeline](https://streak.readme.io/reference/list-all-boxes-in-pipeline), verified 2026-11-09).

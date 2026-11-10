@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/supabase",
   "version": "0.2.1",
-  "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API. Includes a poll trigger for new records.",
+  "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API. Trigger for new rows.",
   "license": "MIT",
   "author": {
     "name": "w6w"

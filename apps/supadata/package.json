@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/supadata",
-  "version": "0.2.0",
-  "description": "Fetch video transcripts and metadata, extract structured data from video, search YouTube, and scrape or crawl the web through Supadata. Includes a poll trigger for new records.",
+  "version": "0.1.0",
+  "description": "Fetch video transcripts and metadata, extract structured data from video, search YouTube, and scrape or crawl the web through Supadata.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,8 +34,7 @@
         "api.supadata.ai"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

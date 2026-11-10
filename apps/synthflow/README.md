@@ -7,6 +7,7 @@ agent platform.
 - **Categories** — ai, communication
 - **Auth methods** — api-key (Bearer, plus a region field)
 - **Actions** — 26
+- **Triggers** — 1 (poll)
 - **Health checks** — `service`, ~~`quota`~~ + the derived `auth:api-key`
 - **Egress allowlist** — `api.synthflow.ai`, `api.us.synthflow.ai`, `api.eu.synthflow.ai` (the
   `service` check adds `status.synthflow.ai` to its own hook allowlist only)
@@ -78,4 +79,8 @@ surface and can be added in a follow-up.
 
 ## Triggers
 
-- New Call (new-call) — poll; wraps call-list; the run gets each new record. Vendor API reference: https://docs.synthflow.ai/api-reference/calls/list-calls (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-call` — New Call | Poll (since filter) | `call-list` | Each new call handled by the chosen agent |
+
+Polled through the `call-list` action with `from_date` set to the last check minus a two-minute overlap, paging with `limit`/`offset` (a window longer than three pages resumes on the next check), deduped by `call_id`. The first check reads nothing and emits nothing; calls that started before it are never emitted. Source: `GET /calls` takes `from_date` ("Begin timestamp (milliseconds since epoch) of the call") and `offset` ([List calls](https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls), verified 2026-11-09).

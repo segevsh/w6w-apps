@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/systemeio",
   "version": "0.2.0",
-  "description": "Manage contacts, tags, funnels, email campaigns and newsletters, courses and communities, and webhooks on systeme.io. Includes a poll trigger for new records.",
+  "description": "Manage contacts, tags, funnels, email campaigns and newsletters, courses and communities, and webhooks on systeme.io. Trigger for new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"

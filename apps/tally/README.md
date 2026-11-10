@@ -6,6 +6,7 @@ webhooks and organization members via the Tally API.
 - **Categories** — forms, productivity
 - **Auth methods** — api-key
 - **Actions** — 38
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.tally.so`
 - **Website** — https://tally.so
 - **API docs** — https://developers.tally.so
@@ -330,4 +331,8 @@ everyone at once.
 
 ## Triggers
 
-- New Submission (new-submission) — poll; wraps submission-get-many; the run gets each new record. Vendor API reference: https://developers.tally.so/api-reference/submissions/get-submissions (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-submission` — New Submission | Poll (since filter) | `submission-get-many` | Each newly completed submission of a form |
+
+Polled through the `submission-get-many` action with `filter=completed` and `startDate` set to the last check minus a two-minute overlap, paging with `page`/`limit` (a window longer than three pages resumes on the next check), deduped by submission id. The first check reads nothing and emits nothing; submissions from before it are never emitted. Source: `startDate` — "Filter submissions submitted on or after this date (ISO 8601 format)" ([Listing submissions](https://developers.tally.so/api-reference/endpoint/forms/submissions/list), verified 2026-11-09). Tally recommends a webhook for real-time delivery.

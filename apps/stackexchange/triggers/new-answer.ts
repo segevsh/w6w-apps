@@ -18,7 +18,12 @@ export default pollFromListAction<{ site?: string; userIds: string }>({
   params: (action.params ?? []).filter((p) => p.key === "site" || p.key === "userIds"),
   items: (result) => (result as { items?: unknown[] }).items ?? [],
   idOf: (item) => String((item as { answer_id?: unknown }).answer_id ?? ""),
-  output: [{ key: "answer_id", type: "number", label: "Answer ID" }],
-  sample: { answer_id: 101, creation_date: 1762646400 },
+  output: [
+    { key: "answer_id", type: "number", label: "Answer ID" },
+    { key: "question_id", type: "number", label: "Question ID" },
+    { key: "creation_date", type: "number", label: "Created (unix seconds)" },
+    { key: "score", type: "number", label: "Score" },
+  ],
+  sample: { answer_id: 101, question_id: 55, creation_date: 1762646400, score: 3 },
   maxPages: 1,
 });

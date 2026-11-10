@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/stackexchange",
   "version": "0.2.0",
-  "description": "Search and read questions, answers, comments, users, tags and badges across Stack Overflow and the 170+ other Stack Exchange sites. Includes a poll trigger for new records.",
+  "description": "Search and read questions, answers, comments, users, tags and badges across Stack Overflow and the 170+ other Stack Exchange sites. Triggers for new and updated answers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

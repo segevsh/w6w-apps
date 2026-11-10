@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teachable",
   "version": "0.2.0",
-  "description": "Manage courses, students, enrollments, pricing plans and transactions on a Teachable school. Includes a poll trigger for new records.",
+  "description": "Manage courses, students, enrollments, pricing plans and transactions on a Teachable school. Trigger for new transactions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
