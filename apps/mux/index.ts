@@ -94,7 +94,6 @@ import videoViewList from "./actions/video-view-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-import newAsset from "./triggers/new-asset.ts";
 
 export default {
   actions: [
@@ -121,5 +120,4 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
-  triggers: [newAsset],
 } satisfies AppDefinition;

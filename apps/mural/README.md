@@ -55,6 +55,14 @@ comment, area, arrow, file, image and shape; assets.
 
 ## Triggers
 
-- **new-mural** — poll; wraps the existing list action and emits each newly created mural.
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-mural` — New Mural | poll | `mural-list` | each newly created mural in the chosen workspace (`sortBy=lastCreated`, most recent first) |
 
-Vendor API reference: https://app.mural.co/developers/apps (verified 2026-11-09)
+Setup: set the **Workspace ID** trigger parameter. Each check lists the 99 newest murals and emits those not seen before; the first check only records what exists.
+
+Trust model: Poll only: nothing is registered with Mural and no inbound URL exists. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developers.mural.co/public/reference/getworkspacemurals (verified 2026-11-09)

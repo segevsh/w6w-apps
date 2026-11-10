@@ -39,6 +39,7 @@ import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -72,5 +73,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, instance, quota],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;

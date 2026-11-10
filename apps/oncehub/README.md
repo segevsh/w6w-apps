@@ -6,6 +6,7 @@ over the OnceHub API v2.
 - **Categories** — calendar
 - **Auth methods** — api-key
 - **Actions** — 30
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.oncehub.com`
 - **Website** — https://www.oncehub.com
 - **API docs** — https://help.oncehub.com/developers/overview/introduction/
@@ -170,6 +171,15 @@ if a probe starts failing for everyone at once.
 
 ## Triggers
 
-- **new-sms-notification** — poll; wraps the existing list action and emits each newly created sms notification.
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-sms-notification` — New SMS Notification | poll | `sms-notification-list` | each SMS notification OnceHub sends from the account |
 
-Vendor API reference: https://help.oncehub.com/developers/overview/introduction/ (verified 2026-11-09)
+Each check lists the 100 newest notifications. OnceHub's pagination guide states list requests return objects in reverse chronological order, and SMS notifications are stamped by `creation_time`.
+
+Trust model: Poll only: nothing is registered with OnceHub. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://help.oncehub.com/developers/overview/pagination/ (verified 2026-11-09)
+- https://help.oncehub.com/developers/api/ (verified 2026-11-09)

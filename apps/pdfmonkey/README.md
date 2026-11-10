@@ -1,16 +1,11 @@
 # PDFMonkey
 
-## Triggers
-
-- **new-document** — poll; wraps the existing list action and emits each newly created document.
-
-Vendor API reference: https://pdfmonkey.io/docs/api/ (verified 2026-11-09)
-
 Generate PDFs and images from PDFMonkey templates.
 
 - **Categories** — documents, developer-tools
 - **Auth methods** — bearer-token
 - **Actions** — 13
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.pdfmonkey.io`
 - **Website** — https://pdfmonkey.io
 - **API docs** — https://pdfmonkey.io/docs/api/
@@ -155,3 +150,18 @@ Researched and endpoint-verified 2026-09-05 against `pdfmonkey.io/docs/api/authe
 `/docs/api/documents`, `/docs/api/templates`, and `/docs/pricing-and-billing/our-plans`
 (all dated "Last updated August 20, 2026" at time of writing). Re-verify before wiring a
 machine-readable status feed if PDFMonkey ever adds one.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | poll | `list-documents` | each document first seen in the `updated_since` window |
+| `new-or-updated-document` — New or Updated Document | poll | `list-documents` | each document created or changed (for example finished generating); the dedupe id includes `updated_at` |
+
+Mechanism: **since-filter**. PDFMonkey documents no sort order for `GET /document_cards` (24 per page), so each check lists documents with `q[updated_since]` set to the last check minus a 120-second overlap and dedupes by id (up to 5 pages). The first check only records the cursor.
+
+Trust model: Poll only: nothing is registered with PDFMonkey. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://docs.pdfmonkey.io/references/api/documents (verified 2026-11-09)

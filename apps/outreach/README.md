@@ -6,6 +6,7 @@ engagement platform) over its **REST API v2**, a JSON:API 1.0 service.
 - **Categories** — crm, marketing
 - **Auth methods** — oauth2 (authorization code)
 - **Actions** — 30
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`quota` live, ~~`service`~~ declared absence) + the derived `auth:oauth2`
 - **Egress allowlist** — `api.outreach.io` only
 - **API docs** — https://developers.outreach.io/api/ · reference https://developers.outreach.io/api/reference/
@@ -145,6 +146,15 @@ undocumented-in-the-spec `POST /webhooks/cleanup` endpoint are not used.
 
 ## Triggers
 
-- **new-account** — poll; wraps the existing list action and emits each newly created account.
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-account` — New Account | poll | `account-list` | each newly created account (`sort=-createdAt`) |
+| `new-or-updated-account` — New or Updated Account | poll | `account-list` | each account created or edited since the last check (`sort=-updatedAt`; the dedupe id includes `updatedAt`) |
 
-Vendor API reference: https://developers.outreach.io/api/ (verified 2026-11-09)
+Each check lists the 100 newest accounts. Outreach documents `sort` with a `-` prefix for descending; its docs note that not every attribute is sortable, and `createdAt`/`updatedAt` are the standard account timestamps.
+
+Trust model: Poll only: nothing is registered with Outreach. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developers.outreach.io/api/making-requests/ (verified 2026-11-09)

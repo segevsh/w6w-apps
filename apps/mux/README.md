@@ -1,5 +1,7 @@
 # Mux
 
+Triggers: not shipped — asset-list has no documented sort order or created-since filter (its parameters are only limit, page, live_stream_id and upload_id: https://github.com/muxinc/mux-node-sdk/blob/master/src/resources/video/assets.ts, AssetListParams; reference https://www.mux.com/docs/api-reference/video/assets/list-assets, verified 2026-11-09).
+
 Manage video from a workflow — create assets from a URL, run live streams, mint
 playback IDs, build delivery URLs and read how it all performed for viewers.
 
@@ -211,9 +213,3 @@ endpoint group with no usage endpoint to consult.
   platforms' stream keys — a credential decision of its own.
 - **Real-time (spaces) and Mux Player configuration.** A front-end concern, not a
   workflow step.
-
-## Triggers
-
-- **new-asset** — poll; wraps the existing list action and emits each newly created asset.
-
-Vendor API reference: https://docs.mux.com/api-reference (verified 2026-11-09)

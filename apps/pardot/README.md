@@ -7,6 +7,7 @@ Engagement** (still called Pardot in its API, hostnames and error messages), on 
 - **Auth methods** — `oauth2` (login.salesforce.com), `oauth2-sandbox` (test.salesforce.com),
   `access-token` (pasted Salesforce access token)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:*` checks
 - **Egress allowlist** — `pi.pardot.com`, `pi.demo.pardot.com` (a connection uses exactly one;
   the `service` check adds `api.status.salesforce.com` to its own hook allowlist, never to the app's)
@@ -141,6 +142,14 @@ never bare `deno fmt`, which rewrites the SVG.
 
 ## Triggers
 
-- **new-landing-page** — poll; wraps the existing list action and emits each newly created landing page.
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-landing-page` — New Landing Page | poll | `landing-page-list` | each newly created landing page (`orderBy=id DESC`) |
 
-Vendor API reference: https://developer.salesforce.com/docs/marketing/pardot/guide/version5overview.html (verified 2026-11-09)
+Each check queries the 200 highest-id landing pages. Pardot's v5 `orderBy` for landing pages accepts `id` with ASC/DESC; ids are assigned in creation order. (The Salesforce developer site refused automated fetches on 2026-11-09, so the `orderBy` fields are taken from the action's own source, which cites that guide.)
+
+Trust model: Poll only: nothing is registered with Pardot. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developer.salesforce.com/docs/marketing/pardot/guide/landing-pages-v5.html (verified 2026-11-09)

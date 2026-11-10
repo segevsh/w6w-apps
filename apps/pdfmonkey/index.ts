@@ -16,6 +16,7 @@ import listEngines from "./actions/list-engines.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newDocument from "./triggers/new-document.ts";
+import newOrUpdatedDocument from "./triggers/new-or-updated-document.ts";
 
 export default {
   actions: [
@@ -35,5 +36,5 @@ export default {
   ],
   auth: [bearerToken],
   healthChecks: [service, quota],
-  triggers: [newDocument],
+  triggers: [newDocument, newOrUpdatedDocument],
 } satisfies AppDefinition;

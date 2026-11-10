@@ -6,6 +6,7 @@ Catalog products and prices, customers, subscriptions, transactions, invoice PDF
 - **Categories** — commerce, finance
 - **Auth methods** — api-key
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.paddle.com`, `sandbox-api.paddle.com`
 - **Website** — https://www.paddle.com/
@@ -60,11 +61,6 @@ This is the single most common way to write a broken Paddle workflow:
 
 ```
 
-## Triggers
-
-- **new-customer** — poll; wraps the existing list action and emits each newly created customer.
-
-Vendor API reference: https://developer.paddle.com/api-reference/overview (verified 2026-11-09)
 POST /subscriptions/sub_…/cancel     → 200, status: "active", scheduled_change: { action: "cancel" }
 ```
 
@@ -268,3 +264,17 @@ deno task check    # typecheck
 deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-list` | each newly created customer (`order_by=id[DESC]`) |
+
+Each check lists the 100 newest customers. Paddle's reference documents `order_by` as accepting only `id` and defaulting to `id[DESC]`; Paddle ids sort in creation order. Only `active` customers are returned unless the action's status filter is widened, so archived customers are not reported.
+
+Trust model: Poll only: nothing is registered with Paddle. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developer.paddle.com/api-reference/customers/list-customers (verified 2026-11-09)

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/paddle",
   "version": "0.2.0",
-  "description": "Manage the Paddle Billing catalog, customers, subscriptions, transactions and refunds — products, prices, subscription pause/resume/cancel, invoice PDFs and adjustments. Includes poll triggers for new records.",
+  "description": "Manage the Paddle Billing catalog, customers, subscriptions, transactions and refunds — products, prices, subscription pause/resume/cancel, invoice PDFs, adjustments. Poll trigger: new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
