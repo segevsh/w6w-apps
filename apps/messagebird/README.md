@@ -130,4 +130,4 @@ Researched and endpoint-verified 2026-09-01, including the MessageBird→Bird re
 host, icon, and status page. Status surfaces move; re-check with `_tools/audit.ts` conventions in
 mind if a probe starts failing for everyone at once.
 
-Triggers: not shipped — `message-list` exposes pagination but no documented server-side newest-first ordering parameter (https://developers.messagebird.com/api/sms-messaging/#list-messages).
+Triggers: not shipped — webhook candidate queued for a webhook node: inbound and message-status events (https://developers.messagebird.com/api/sms-messaging/#webhooks).

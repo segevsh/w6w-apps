@@ -1,5 +1,7 @@
 # Mailcheck
 
+Triggers: not shipped — the API validates submitted addresses and lists batch-operation jobs, not a durable created-record feed (https://mailcheck.co/docs).
+
 Verify single or bulk email addresses via the [Mailcheck](https://mailcheck.co) API.
 
 - **Categories** — email, marketing

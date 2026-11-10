@@ -1,5 +1,7 @@
 # MillionVerifier
 
+Triggers: not shipped — bulk file filters accept timestamps but their values are silently ignored when malformed, so this app needs a dedicated validated cursor action before safe polling (https://developer.millionverifier.com/).
+
 Verify email addresses in real time, verify whole lists in bulk and check credits with
 [MillionVerifier](https://www.millionverifier.com). 8 actions.
 

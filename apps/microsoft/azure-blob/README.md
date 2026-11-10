@@ -1,5 +1,7 @@
 # Azure Blob Storage
 
+Triggers: not shipped — webhook candidate queued for a webhook node: BlobCreated and BlobDeleted Event Grid events (https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage).
+
 Containers and blobs, uploads and downloads, tiers, leases and metadata —
 completing the pack's object-storage set alongside `apps/aws/s3` and `apps/gcs`.
 

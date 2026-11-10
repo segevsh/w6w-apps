@@ -1,5 +1,7 @@
 # Azure DevOps
 
+Triggers: not shipped — webhook candidate queued for a webhook node: build, pull-request and work-item service hooks (https://learn.microsoft.com/en-us/azure/devops/service-hooks/overview).
+
 Work an Azure DevOps organization — repositories and pull requests, pipeline
 runs and their artifacts, and work items queried with WIQL.
 

@@ -1,5 +1,7 @@
 # Mandrill
 
+Triggers: not shipped — webhook candidate queued for a webhook node: send, bounce, open, click and reject events (https://mandrillapp.com/api/docs/webhooks.JSON.html).
+
 Send transactional email and manage templates, tags, rejects, and whitelist entries via
 Mandrill (Mailchimp Transactional).
 

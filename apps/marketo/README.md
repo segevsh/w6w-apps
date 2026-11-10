@@ -1,5 +1,7 @@
 # Marketo
 
+Triggers: not shipped — webhook candidate queued for a webhook node: Smart Campaign-triggered lead events (https://experienceleague.adobe.com/en/docs/marketo/using/product-docs/administration/additional-integrations/webhooks).
+
 Manage Marketo (Adobe Marketo Engage) leads, static lists, companies and
 smart campaigns.
 

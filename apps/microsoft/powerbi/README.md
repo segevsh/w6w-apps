@@ -1,5 +1,7 @@
 # Microsoft Power BI
 
+Triggers: not shipped — dashboard, dataset, report and workspace lists are inventory resources without a documented newest-first order, since filter, or bounded collection guarantee (https://learn.microsoft.com/en-us/rest/api/power-bi/).
+
 List, refresh and export Power BI workspaces, reports and datasets through the **Power BI REST
 API** (`api.powerbi.com`) — a separate surface from Microsoft Graph, with its own Azure AD
 resource and its own error contract.

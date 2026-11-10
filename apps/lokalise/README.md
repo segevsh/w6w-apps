@@ -1,5 +1,7 @@
 # Lokalise
 
+Triggers: not shipped — webhook candidate queued for a webhook node: project, key, translation and task events (https://developers.lokalise.com/docs/webhooks).
+
 Manage Lokalise projects, keys, translations, languages, files, contributors, tasks and webhooks,
 on the **Lokalise REST API v2**.
 
