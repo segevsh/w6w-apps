@@ -8,7 +8,12 @@
 |---|---|---|---|
 | `new-event` — New Event | poll | `event-list` | Each new account event |
 
-Gusto's Events API (https://docs.gusto.com/app-integrations/docs/events, verified 2026-11-09) takes `sort_order` (`asc` or `desc` chronological) and returns up to 30 days of events; the trigger sends `sort_order=desc` through `event-list`, so page 1 is the newest events.
+Gusto's Events API (https://docs.gusto.com/app-integrations/docs/events, verified 2026-11-10) takes `sort_order` (`asc` or `desc` chronological) and returns up to 30 days of events; the trigger sends `sort_order=desc` through `event-list`, so page 1 is the newest events.
+
+Not covered: roster, payroll, payment, leave and per-person history endpoints are paged or
+date-scoped reads without a documented newest-first or created/updated-since cursor; organization
+and schedule endpoints are configuration. Polling any of those as a “new” feed would be unsafe.
+Source: https://docs.gusto.com/app-integrations (verified 2026-11-10).
 
 Read and update a Gusto payroll account from a workflow — employees,
 contractors, compensation, payrolls, pay schedules, time off and departments.

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/hibob",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Read and manage HiBob (Bob) employees, time off, tasks, reports and attendance over the Bob public API with a service user, and poll for new tasks.",
   "license": "MIT",
   "author": {

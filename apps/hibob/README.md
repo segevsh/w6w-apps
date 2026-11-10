@@ -78,4 +78,9 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 
 ## Triggers
 
-`new-task` snapshots Bob's documented 5,000-open-task response every five minutes and emits added tasks after its baseline poll. Source: https://apidocs.hibob.com/reference (verified 2026-11-09). The 5,000-row bound is this trigger's own snapshot cap (not a figure Bob documents); a response above it makes the check fail with a cap error instead of emitting partial results.
+`new-task` snapshots Bob's documented 5,000-open-task response every five minutes and emits added tasks after its baseline poll. Source: https://apidocs.hibob.com/reference (verified 2026-11-10). The 5,000-row bound is this trigger's own snapshot cap (not a figure Bob documents); a response above it makes the check fail with a cap error instead of emitting partial results.
+
+Not covered: fields, policy types, lists, wizards and reports are reference/admin output; employee
+history and attendance endpoints are per-person/date-window reads without a documented new-record
+ordering or change cursor. Bob's people search is an unpaginated unordered bulk read, so it is not
+a safe incremental feed. Source: https://apidocs.hibob.com/reference (verified 2026-11-10).

@@ -107,4 +107,10 @@ on) and dedupes by `pk`, so a booking created just before midnight is still deli
 only records what exists. Fetch the full booking with `booking-get`. FareHarbor's support-configured
 booking notifications are a separate, not yet shipped webhook path. Source:
 [FareHarbor External API](https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home)
-(`get-bookings-by-create-date`, verified 2026-11-09).
+(`get-bookings-by-create-date`, verified 2026-11-10).
+
+Not covered: the remaining list actions are configuration/reference collections, relation/history
+collections, or date-scoped availability searches. The External API does not provide a documented
+newest-first or created/updated-since feed for them, so polling them would either miss records or
+turn ordinary schedule changes into false “new” events. Source: [FareHarbor External
+API](https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home) (verified 2026-11-10).
