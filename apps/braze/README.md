@@ -1,6 +1,6 @@
 # Braze
 
-- **Triggers** — 11 (poll)
+- **Triggers** — 10 (poll)
 
 ## Triggers
 
@@ -11,7 +11,6 @@
 | `new-or-updated-canvas` — New or Updated Canvas | poll | `canvas-list`, `last_edit.time[gt]` | Each Canvas created or edited |
 | `new-segment` — New Segment | poll | `segment-list`, `sort_direction=desc` | Each newly created segment |
 | `new-catalog` — New Catalog | poll | `catalog-list` | Each newly created catalog |
-| `new-catalog-item` — New Catalog Item | poll | `catalog-item-list` | Each item newly added to the chosen catalog (catalog picked as a parameter) |
 | `new-content-block` — New Content Block | poll | `content-block-list`, `modified_after` | Each newly created Content Block |
 | `new-or-updated-content-block` — New or Updated Content Block | poll | `content-block-list`, `modified_after` | Each Content Block created or edited |
 | `new-email-unsubscribe` — New Email Unsubscribe | poll | `email-unsubscribes-list` | Each email address that unsubscribes |
@@ -20,7 +19,7 @@
 
 Newest-first triggers (`new-canvas`, `new-segment`) and the first check of every trigger record what exists without firing. The edited-since and date-range triggers ask for `last check - 120 s`, resume from the saved page/offset when a window is longer than five pages, and store a floor on the first check so anything older than it never fires. Catalogs are the workspace's few catalogs read whole.
 
-Catalog items take the catalog name as a parameter and are diffed by item id from one request ([vendor docs](https://www.braze.com/docs/api/endpoints/catalogs/catalog_items/synchronous/get_multiple_catalog_items/), no sort or filter), so a very large catalog is read whole on every check.
+Not covered: `catalog-item-list` (Braze pages catalog items 50 per call through a `Link`-header cursor, with no order and no since filter, and a catalog can hold millions of items, so the newest items cannot be read; see the [vendor docs](https://www.braze.com/docs/api/endpoints/catalogs/catalog_items/synchronous/get_catalog_items_details_bulk/)).
 
 Vendor reference: [canvas list](https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases/), [segment list](https://www.braze.com/docs/api/endpoints/export/segments/get_segment/), [campaign list](https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns/), [hard bounces](https://www.braze.com/docs/api/endpoints/email/get_list_hard_bounces/), [unsubscribes](https://www.braze.com/docs/api/endpoints/email/get_query_unsubscribed_email_addresses), [invalid phone numbers](https://www.braze.com/docs/api/endpoints/sms/get_query_invalid_numbers) (verified 2026-11-10).
 

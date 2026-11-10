@@ -20,7 +20,10 @@ let seq = 0;
 const meta = (more: boolean) => ({ pagination: { has_more: more, page: 0, per_page: PAGE } });
 const run = (trigger: typeof newCharge, state: unknown, responses: MockResponse[]) => {
   const m = mockCtx(responses);
-  return trigger.poll!({ ...input, state }, m.ctx).then((r) => ({ ...r, calls: m.calls }));
+  return Promise.resolve(trigger.poll!({ ...input, state }, m.ctx)).then((r) => ({
+    ...r,
+    calls: m.calls,
+  }));
 };
 
 describe("new-charge / new-refund (since-filter)", () => {
@@ -175,11 +178,13 @@ describe("new-customer-event (snapshot, parameterised by customer)", () => {
   test("seeds, emits only the added event, requests the chosen customer's log, retries idempotently", async () => {
     const params = { sourceId: "src1", customerOid: "cus_1" };
     const wrap = (ids: string[]) => ({
-      body: { events: ids.map((id) => ({ id, type: "t" })), meta: meta(false) },
+      body: { events: ids.map((id) => ({ id, event_type: "t" })), meta: meta(false) },
     });
     const runIt = (state: unknown, ids: string[]) => {
       const m = mockCtx([wrap(ids)]);
-      return newCustomerEvent.poll!({ params, subscriptionId: "sub-1", state }, m.ctx).then((
+      return Promise.resolve(
+        newCustomerEvent.poll!({ params, subscriptionId: "sub-1", state }, m.ctx),
+      ).then((
         r,
       ) => ({ ...r, calls: m.calls }));
     };
@@ -191,7 +196,7 @@ describe("new-customer-event (snapshot, parameterised by customer)", () => {
     );
     const first = await runIt(seed.nextState, ["a", "b"]);
     const retry = await runIt(seed.nextState, ["a", "b"]);
-    assertEquals(first.events, [{ id: "b", type: "t" }]);
+    assertEquals(first.events, [{ id: "b", event_type: "t" }]);
     assertEquals(retry.events, first.events);
   });
 });

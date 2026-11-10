@@ -229,10 +229,10 @@ export const newCustomerEvent: TriggerDefinition<{ sourceId: string; customerOid
   }],
   output: [
     { key: "id", type: "string", label: "Event ID" },
-    { key: "type", type: "string", label: "Type" },
+    { key: "event_type", type: "string", label: "Event type" },
     { key: "timestamp", type: "number", label: "Timestamp" },
   ],
-  sample: { id: "evt_1", type: "subscription_started", timestamp: 1788000000 },
+  sample: { id: "evt_1", event_type: "new_customer", timestamp: 1788000000 },
   minIntervalMs: 300_000,
   poll({ params, state }, ctx) {
     return snapshot<{ id?: string }>(state, "id", async (page) => {

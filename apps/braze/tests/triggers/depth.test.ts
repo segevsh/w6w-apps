@@ -7,7 +7,6 @@ import newCanvas from "../../triggers/new-canvas.ts";
 import newSegment from "../../triggers/new-segment.ts";
 import newCatalog from "../../triggers/new-catalog.ts";
 import updatedCanvas from "../../triggers/new-or-updated-canvas.ts";
-import newCatalogItem from "../../triggers/new-catalog-item.ts";
 import newContentBlock from "../../triggers/new-content-block.ts";
 import updatedContentBlock from "../../triggers/new-or-updated-content-block.ts";
 import newUnsubscribe from "../../triggers/new-email-unsubscribe.ts";
@@ -26,7 +25,10 @@ let seq = 0;
 type Trigger = typeof newCanvas;
 const run = (trigger: Trigger, state: unknown, responses: MockResponse[]) => {
   const m = mockCtx(responses, opts);
-  return trigger.poll!({ ...input, state }, m.ctx).then((r) => ({ ...r, calls: m.calls }));
+  return Promise.resolve(trigger.poll!({ ...input, state }, m.ctx)).then((r) => ({
+    ...r,
+    calls: m.calls,
+  }));
 };
 
 describe("newest-first lists", () => {
@@ -58,25 +60,6 @@ describe("newest-first lists", () => {
       assertEquals(retry.events, first.events);
     });
   }
-});
-
-describe("new-catalog-item (snapshot, parameterised by catalog)", () => {
-  test("seeds, emits only the added item, requests the chosen catalog, retries idempotently", async () => {
-    const go = (state: unknown, ids: string[]) => {
-      const m = mockCtx([{ body: { items: ids.map((id) => ({ id })) } }], opts);
-      return newCatalogItem.poll!(
-        { params: { catalogName: "shops 1" }, subscriptionId: "sub-1", state },
-        m.ctx,
-      ).then((r) => ({ ...r, calls: m.calls }));
-    };
-    const seed = await go({}, ["a"]);
-    assertEquals(seed.events, []);
-    assertEquals(seed.calls[0].url, `${HOST}/catalogs/shops%201/items`);
-    const first = await go(seed.nextState, ["a", "b"]);
-    const retry = await go(seed.nextState, ["a", "b"]);
-    assertEquals(first.events, [{ id: "b" }]);
-    assertEquals(retry.events, first.events);
-  });
 });
 
 describe("new-catalog (snapshot)", () => {
