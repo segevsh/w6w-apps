@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/printavo",
   "version": "0.3.0",
-  "description": "Manage customers, contacts, quotes, invoices, tasks, inquiries and payments in Printavo, the print-shop management system, via its GraphQL API v2. Includes poll triggers for new tasks, quotes, invoices, orders and open payment requests.",
+  "description": "Manage customers, contacts, quotes, invoices, tasks, inquiries and payments in Printavo via its GraphQL API v2. Poll triggers for new tasks, quotes, invoices, orders and open payment requests.",
   "license": "MIT",
   "author": {
     "name": "w6w"

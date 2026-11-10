@@ -29,8 +29,8 @@ const trigger: TriggerDefinition<{ igUserId: string }> = {
   sample: {
     id: "17900000000000002",
     media_type: "IMAGE",
-    media_url: "https://example.test/story.jpg",
-    permalink: "https://www.instagram.com/stories/sample_user/17900000000000002/",
+    media_url: "https://graph.facebook.com/story-sample.jpg",
+    permalink: "https://graph.facebook.com/story-sample-permalink",
     timestamp: "2026-11-10T09:00:00+0000",
   },
   minIntervalMs: 300_000,
