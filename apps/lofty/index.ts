@@ -53,6 +53,10 @@ import appointmentList from "./actions/appointment-list.ts";
 import orgGet from "./actions/org-get.ts";
 
 import newLead from "./triggers/new-lead.ts";
+import newTask from "./triggers/new-task.ts";
+import newAppointment from "./triggers/new-appointment.ts";
+import newNote from "./triggers/new-note.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -99,7 +103,13 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newLead],
+  triggers: [
+    newLead,
+    newTask,
+    newAppointment,
+    newNote,
+    newTeamMember,
+  ],
 };
 
 export default app;
