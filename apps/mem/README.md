@@ -60,3 +60,7 @@ event types; the agent message endpoint; the MCP/ChatGPT helper routes; Set Note
 - **~~`quota`~~** — declared unavailable (informational): headroom is reported only in headers of
   authenticated calls and there is no usage endpoint, so a probe would spend what it measures.
 - **`auth:api-key`** — derived from the auth `test` hook above.
+
+## Triggers
+
+- **New Task** wraps `task-list` with `order_by=created_at` to poll the newest derived tasks. [Mem task list API](https://docs.mem.ai/api-reference/tasks/list-tasks), verified 2026-11-09.
