@@ -98,4 +98,4 @@ size to reach further channels, and confirm paging on an account with many.
 
 ## Triggers
 
-- **New Message** polls the message-history feed. Source: https://developers.solapi.com/references/messages/list-messages (verified 2026-11-09).
+- **New Message** and **New or Updated Message** poll the message-history feed. Source: https://developers.solapi.com/references/messages/list-messages (verified 2026-11-09).

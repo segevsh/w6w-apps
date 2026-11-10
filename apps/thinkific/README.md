@@ -301,4 +301,4 @@ deno task test
 
 ## Triggers
 
-- **New Enrollment** polls the enrollment list. Source: https://developers.thinkific.com/api/api-documentation/ (verified 2026-11-09).
+- **New Enrollment** and **New or Updated Enrollment** poll the enrollment list. Source: https://developers.thinkific.com/api/api-documentation/ (verified 2026-11-09).
