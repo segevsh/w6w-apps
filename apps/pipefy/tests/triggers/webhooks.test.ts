@@ -187,7 +187,7 @@ test("handleIngest accepts the registered header, in any header-name case", asyn
 
 test("handleIngest refuses a missing or wrong header before parsing, without echoing it", async () => {
   for (
-    const headers of [{}, { "X-W6W-Webhook-Secret": "nope" }, { "X-W6W-Webhook-Secret": SECRET }]
+    const headers of [{}, { "X-W6W-Webhook-Secret": "nope" }, { "X-Other": SECRET }]
   ) {
     await assert.rejects(
       async () => await ingest(post(undefined, headers)),
@@ -206,7 +206,7 @@ test("handleIngest refuses a missing or wrong header before parsing, without ech
 
 test("handleIngest refuses when no secret is stored (empty, unset, non-string)", async () => {
   for (
-    const state of [{ webhookId: "1", secret: "" }, { webhookId: "1" }, undefined, { secret: 5 }]
+    const state of [{ webhookId: "1", secret: "" }, { webhookId: "1" }, null, { secret: 5 }]
   ) {
     await assert.rejects(
       async () => await ingest(post(ok, { "X-W6W-Webhook-Secret": "" }), state),
