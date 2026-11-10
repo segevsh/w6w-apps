@@ -34,3 +34,17 @@ test("repo-search: the topic and private switches reach the wire", async () => {
   assertEquals(q.get("private"), "false");
   assert(action.type === "read");
 });
+
+test("repo-search: sort and order reach the wire, and are absent by default", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }, {
+    status: 200,
+    body: { data: [] },
+  }], conn);
+  await action.execute!({ sort: "created", order: "desc" }, ctx);
+  await action.execute!({}, ctx);
+  const first = new URL(calls[0].url).searchParams;
+  assertEquals(first.get("sort"), "created");
+  assertEquals(first.get("order"), "desc");
+  assertEquals(new URL(calls[1].url).searchParams.get("sort"), null);
+  assertEquals(new URL(calls[1].url).searchParams.get("order"), null);
+});

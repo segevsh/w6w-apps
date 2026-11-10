@@ -76,6 +76,15 @@ import taskUpdate from "./actions/task-update.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newShift from "./triggers/new-shift.ts";
+import newUser from "./triggers/new-user.ts";
+import newForm from "./triggers/new-form.ts";
+import newFormSubmission from "./triggers/new-form-submission.ts";
+import newJob from "./triggers/new-job.ts";
+import newTask from "./triggers/new-task.ts";
+import newSchedule from "./triggers/new-schedule.ts";
+import newTaskBoard from "./triggers/new-task-board.ts";
+import newTimeClock from "./triggers/new-time-clock.ts";
+import newTimeActivity from "./triggers/new-time-activity.ts";
 
 export default {
   actions: [
@@ -117,6 +126,17 @@ export default {
   // API key only. See the module docs above for why the documented OAuth2
   // client-credentials flow is not also implemented.
   auth: [apiKey],
-  triggers: [newShift],
+  triggers: [
+    newShift,
+    newUser,
+    newForm,
+    newFormSubmission,
+    newJob,
+    newTask,
+    newSchedule,
+    newTaskBoard,
+    newTimeClock,
+    newTimeActivity,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

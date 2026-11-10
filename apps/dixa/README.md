@@ -85,7 +85,15 @@ on `docs.dixa.io` is the same mark at lower resolution.
 | Trigger — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-agent` — New Agent | Poll | `agent-list` | Each agent or admin newly added to the organisation |
+| `new-queue` — New Queue | Poll | `queue-list` | Each queue newly created in the organisation |
+| `new-tag` — New Tag | Poll | `tag-list` | Each tag newly created (active tags only) |
+| `new-conversation-message` — New Conversation Message | Poll | `message-list` | Each message newly added to one conversation (`conversationId`) |
+| `new-conversation-note` — New Conversation Note | Poll | `note-list` | Each internal note newly added to one conversation (`conversationId`) |
+| `new-conversation-tag` — New Conversation Tag | Poll | `conversation-tag-list` | Each tag newly put on one conversation (`conversationId`) |
+| `new-end-user-conversation` — New End User Conversation | Poll | `conversation-list-by-end-user` | Each conversation newly opened by one end user (`userId`) |
 
-Each check reads the whole agent roster (following `pageKey`, at most 20 pages) and emits ids that were not there at the previous check. The first check only records.
+Each check reads the whole list (following `pageKey`, at most 20 pages, for the end-user list; the others come back in one response) and emits ids that were not there at the previous check. The first check only records. Dixa documents no order or created-since filter on these lists, so nothing is polled newest-first.
 
-Source: [Dixa API: agents](https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) (verified 2026-11-09).
+Not covered: `end-user-list` (no documented order or filter, and unbounded across the whole customer base), `conversation-search` (the deprecated GET search, replaced by a POST search), `custom-attribute-list` (attribute definitions).
+
+Source: [Dixa API](https://docs.dixa.io/openapi/dixa-api/v1/) (verified 2026-11-10).

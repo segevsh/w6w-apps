@@ -18,3 +18,12 @@ test("user-list: defaults to an empty users array and offset 0 when the API send
   const out = await userList.execute({}, ctx);
   assertEquals(out, { users: [], offset: 0 });
 });
+
+test("user-list: sort and order are sent when set and left out otherwise", async () => {
+  const sorted = mockCtx([{ body: pagedEnvelope({ users: [] }) }]);
+  await userList.execute({ sort: "created_at", order: "desc", limit: 5 }, sorted.ctx);
+  assertEquals(queryOf(sorted.calls[0].url), { sort: "created_at", order: "desc", limit: "5" });
+  const plain = mockCtx([{ body: pagedEnvelope({ users: [] }) }]);
+  await userList.execute({ limit: 5 }, plain.ctx);
+  assertEquals(queryOf(plain.calls[0].url), { limit: "5" });
+});
