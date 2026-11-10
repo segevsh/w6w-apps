@@ -131,9 +131,11 @@ for (const c of cases) {
 test("new-task: a missing task board is refused before any request", async () => {
   const { ctx, calls } = mockCtx();
   let message = "";
-  await newTask.poll!({ params: {}, subscriptionId: "s", state: {} }, ctx).catch((e: Error) => {
-    message = e.message;
-  });
+  try {
+    await newTask.poll!({ params: {}, subscriptionId: "s", state: {} }, ctx);
+  } catch (e) {
+    message = (e as Error).message;
+  }
   assertEquals(message, "Set Task board ID to the board to watch.");
   assertEquals(calls.length, 0);
 });
