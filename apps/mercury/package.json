@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mercury",
-  "version": "0.1.1",
-  "description": "Manage Mercury business banking accounts, cards, recipients, invoices and money movement.",
+  "version": "0.2.0",
+  "description": "Manage Mercury business banking accounts, cards, recipients, invoices and money movement, and trigger workflows on new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,7 +38,12 @@
         "api.mercury.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

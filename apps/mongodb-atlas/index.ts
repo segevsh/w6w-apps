@@ -36,6 +36,7 @@ import accessListDelete from "./actions/access-list-delete.ts";
 import alertList from "./actions/alert-list.ts";
 import eventList from "./actions/event-list.ts";
 import processList from "./actions/process-list.ts";
+import newEvent from "./triggers/new-event.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -59,6 +60,7 @@ const app: AppDefinition = {
     eventList,
     processList,
   ],
+  triggers: [newEvent],
   auth: [serviceAccount],
   healthChecks: [service, credential, quota],
 };

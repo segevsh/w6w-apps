@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/miro",
-  "version": "0.1.0",
-  "description": "Create and read Miro boards, sticky notes, cards, shapes, connectors and tags.",
+  "version": "0.2.0",
+  "description": "Create and read Miro boards and canvas items, and trigger workflows on new boards.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,12 @@
         "api.miro.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

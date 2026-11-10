@@ -33,6 +33,7 @@ import restoreDeletedItem from "./actions/restore-deleted-item.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newDeletedItem from "./triggers/new-deleted-item.ts";
 
 export default {
   actions: [
@@ -65,6 +66,7 @@ export default {
     listDeletedItems,
     restoreDeletedItem,
   ],
+  triggers: [newDeletedItem],
   auth: [oauth2],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

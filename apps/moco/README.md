@@ -115,3 +115,7 @@ nothing to probe.
   180×180, the largest served), fetched live from the vendor's homepage and embedded as a raster
   image inside `assets/icon.svg` (same technique as `apps/bloomerang`, `apps/bannerbear`) —
   simple-icons has no MOCO entry (`cdn.simpleicons.org/moco` → 404, checked first).
+
+## Triggers
+
+- **New or Updated Contact** (poll) calls `contact-list` with `updated_after` set to the previous check minus a 2-minute overlap (MOCO documents it as returning entities created or updated after that time) and dedupes by `id` plus `updated_at`, so an edit is a new event. The first check only records the cursor. [MOCO API v1 spec](https://docs.mocoapp.com/api/docs/v1.yaml), verified 2026-11-09.

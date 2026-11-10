@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/instagram-for-business",
-  "version": "0.1.0",
-  "description": "Manage an Instagram professional account via the Instagram Graph API: profile, media, publishing, comments, mentions, hashtag search and insights.",
+  "version": "0.2.0",
+  "description": "Manage an Instagram professional account via the Instagram Graph API and trigger workflows on new media.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,12 @@
         "graph.facebook.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
