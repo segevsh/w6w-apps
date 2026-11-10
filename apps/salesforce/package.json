@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/salesforce",
-  "version": "0.2.1",
-  "description": "Create, read, update and query any Salesforce object with SOQL and SOSL.",
+  "version": "0.3.0",
+  "description": "Create, read, update and query any Salesforce object with SOQL and SOSL, and start workflows on new or updated records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.salesforce.com/docs"
     ],
-    "longDescription": "Salesforce runs SOQL and SOSL directly from a workflow — querying any object with SOQL, paging through large result sets with a dedicated query-more action, or searching across multiple object types at once with SOSL, and reading, creating, updating, upserting or bulk-creating records on any object by name.\n\nObject structure is discoverable rather than assumed: every sobject in an org can be listed, and any one of them described in full — its fields, types and relationships — so a workflow can adapt to a custom object or a customized standard one instead of hardcoding field names that may not exist in a given org.\n\nA fit for syncing any Salesforce object with an external system, running reporting queries against CRM data, or writing records into Salesforce as part of a larger process — because the actions work against any object, not a fixed set of standard ones.",
+    "longDescription": "Salesforce runs SOQL and SOSL directly from a workflow — querying any object with SOQL, paging through large result sets with a dedicated query-more action, or searching across multiple object types at once with SOSL, and reading, creating, updating, upserting or bulk-creating records on any object by name.\n\nObject structure is discoverable rather than assumed: every sobject in an org can be listed, and any one of them described in full — its fields, types and relationships — so a workflow can adapt to a custom object or a customized standard one instead of hardcoding field names that may not exist in a given org.\n\nA fit for syncing any Salesforce object with an external system, running reporting queries against CRM data, or writing records into Salesforce as part of a larger process — because the actions work against any object, not a fixed set of standard ones.\n\nTriggers poll any object for new records and for new or edited records (ordered by CreatedDate and LastModifiedDate), since Salesforce streams changes only to CometD and Pub/Sub clients, not to a callback URL.",
     "categories": [
       "crm"
     ],
