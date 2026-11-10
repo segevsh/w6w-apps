@@ -986,12 +986,22 @@
     "mechanism": "poll",
     "candidates": [
       "new-invoice",
-      "new-or-updated-invoice"
+      "new-or-updated-invoice",
+      "new-company",
+      "new-employee",
+      "new-product",
+      "new-opportunity",
+      "new-project",
+      "new-task",
+      "new-quotation"
     ],
     "pollAction": "invoice-list",
-    "reason": "Invoice list has creation_date_after and updated_after filters (DD/MM/YYYY, date-only); triggers filter with a one-day overlap and dedupe by id (https://axonaut.com/api/v2/doc).",
-    "verified": "apps/axonaut/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Invoice since-filter polls plus whole-list snapshot polls (page header, ids diffed) of companies, contacts, products, opportunities, projects, tasks and a 31-day quotation window; the spec has no usable sort or date filter for them (https://axonaut.com/api/v2/doc).",
+    "verified": "apps/axonaut/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "company-invoice-list": "new-invoice"
+    }
   },
   {
     "path": "apps/balena",
@@ -10843,12 +10853,27 @@
     "path": "apps/vercel",
     "mechanism": "poll",
     "candidates": [
-      "new-deployment"
+      "new-deployment",
+      "new-alias",
+      "new-project",
+      "new-or-updated-project",
+      "new-domain",
+      "new-project-domain",
+      "new-env-var",
+      "new-or-updated-env-var"
     ],
     "pollAction": "deployment-list",
-    "reason": "Documented since-filter poll trigger on deployment-list (since + until paging), resume position + seed floor.",
-    "verified": "apps/vercel/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter deployment and alias polls plus bounded snapshots of projects, domains and env vars; no webhook polling needed for these records (https://vercel.com/docs/rest-api).",
+    "verified": "apps/vercel/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "deployment-alias-list": "new-alias"
+    },
+    "skipped": {
+      "deployment-event-list": "build-log output of one deployment, not a record feed (https://vercel.com/docs/rest-api/deployments/get-deployment-events)",
+      "runtime-log-list": "function runtime log output, not a record feed (https://vercel.com/docs/rest-api)",
+      "team-list": "account administration: only used to find the teamId other actions take"
+    }
   },
   {
     "path": "apps/vero",
@@ -10876,23 +10901,49 @@
     "path": "apps/vimeo",
     "mechanism": "poll",
     "candidates": [
-      "new-video"
+      "new-video",
+      "new-folder",
+      "new-or-updated-folder",
+      "new-showcase",
+      "new-or-updated-showcase",
+      "new-folder-video",
+      "new-folder-item",
+      "new-showcase-video",
+      "new-comment",
+      "new-search-video",
+      "new-comment-reply"
     ],
     "pollAction": "video-list",
-    "reason": "Newest-first video-list poll trigger.",
-    "verified": "apps/vimeo/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Newest-first polls (sort=date/modified, direction=desc) on videos, folders, showcases, their contents, comments and search (https://developer.vimeo.com/api/reference). new-comment-reply is a bounded pollSnapshot (replies endpoint documents only page/per_page, no sort or direction) with required videoId and commentId.",
+    "verified": "apps/vimeo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "like-list": "GET /me/likes documents sort=date with no direction parameter and no since filter, so newest likes cannot be read reliably (https://developer.vimeo.com/api/reference/videos)"
+    }
   },
   {
     "path": "apps/wakatime",
     "mechanism": "poll",
     "candidates": [
-      "new-project"
+      "new-project",
+      "new-goal",
+      "new-or-updated-goal",
+      "new-leaderboard",
+      "new-organization",
+      "new-dashboard",
+      "new-data-dump"
     ],
     "pollAction": "project-list",
-    "reason": "projects endpoint lists the user's projects with no paging or order documented: snapshot-diffed; commit-list is per project with no documented order; no webhooks (https://wakatime.com/developers)",
-    "verified": "apps/wakatime/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Bounded snapshot polls of projects, goals, private leaderboards, orgs, org dashboards and data exports; WakaTime documents no webhooks (https://wakatime.com/developers).",
+    "verified": "apps/wakatime/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "all-time-get": "running coding-time total: metrics output, no records",
+      "commit-list": "per-project commit feed with no documented order or since filter and unbounded history (https://wakatime.com/developers#commits)",
+      "durations-list": "per-day coding analytics output that needs a date, not a record feed",
+      "external-durations-list": "per-day coding analytics output that needs a date, not a record feed",
+      "heartbeats-list": "per-day raw activity stream that needs a date: analytics output, not a record feed"
+    }
   },
   {
     "path": "apps/wappalyzer",
@@ -11600,12 +11651,23 @@
     "path": "apps/zoho/zohodesk",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-ticket",
+      "new-account",
+      "new-agent",
+      "new-department",
+      "new-ticket-thread",
+      "new-ticket-comment",
+      "new-ticket-attachment"
     ],
     "pollAction": "contact-list",
-    "reason": "contacts sortBy=-createdTime documented; list items carry no modified stamp",
-    "verified": "apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Newest-first (sortBy=-createdTime) polls of contacts, tickets and accounts plus bounded snapshots of agents and departments; contact, ticket and account lists document no modified-time sort (https://desk.zoho.com/DeskAPIDocument). Per-ticket child triggers (thread, comment, attachment) take a required ticketId; comments and attachments request sortBy=-commentedTime / -createdTime, threads default to newest first.",
+    "verified": "apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "organization-list": "setup discovery list of the user's own Desk organizations, used only to find the orgId",
+      "search-records": "free-text search across modules, relevance-ranked: the same tickets, contacts and accounts are delivered by new-ticket, new-contact and new-account"
+    }
   },
   {
     "path": "apps/zoho/zohomail",
