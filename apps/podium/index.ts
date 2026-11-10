@@ -64,23 +64,16 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newConversation from "./triggers/new-conversation.ts";
-import {
-  newAppointment,
-  newCall,
-  newCampaign,
-  newContact,
-  newContactAttribute,
-  newContactTag,
-  newFeedback,
-  newLocation,
-  newMessage,
-  newReview,
-  newReviewInvite,
-  newReviewSummary,
-  newTemplate,
-  newUser,
-  newWebhook,
-} from "./triggers/new-records.ts";
+import newFeedback from "./triggers/new-feedback.ts";
+import newLocation from "./triggers/new-location.ts";
+import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
+import newOrUpdatedCall from "./triggers/new-or-updated-call.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newOrUpdatedReview from "./triggers/new-or-updated-review.ts";
+import newReviewInvite from "./triggers/new-review-invite.ts";
+import newReview from "./triggers/new-review.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -138,20 +131,15 @@ export default {
   healthChecks: [service, quota],
   triggers: [
     newConversation,
-    newAppointment,
-    newCall,
-    newCampaign,
-    newContactAttribute,
-    newContact,
-    newContactTag,
     newFeedback,
     newLocation,
-    newMessage,
+    newOrUpdatedAppointment,
+    newOrUpdatedCall,
+    newOrUpdatedCampaign,
+    newOrUpdatedContact,
+    newOrUpdatedReview,
     newReviewInvite,
     newReview,
-    newReviewSummary,
-    newTemplate,
     newUser,
-    newWebhook,
   ],
 } satisfies AppDefinition;

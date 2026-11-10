@@ -12,7 +12,7 @@ stages, read interviews, feedback and offers, and sync all of it incrementally.
 - **API docs** — https://developers.ashbyhq.com/reference/introduction ·
   per-endpoint OpenAPI at `developers.ashbyhq.com/reference/<endpoint>.md`,
   index at `developers.ashbyhq.com/llms.txt`
-- **Triggers** — 16 (poll)
+- **Triggers** — 8 (poll)
 
 Every endpoint this app calls was checked against those documents on
 2026-08-18.
@@ -288,20 +288,16 @@ is granted in the Ashby app rather than here.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-candidate` — New Candidate | Poll | `candidate-list` | Each candidate created since the prior check |
-| `new-application-feedback` — New Application Feedback | Poll | `application-feedback-list` | Newly listed feedback |
-| `new-application` — New Application | Poll | `application-list` | Newly listed applications |
-| `new-archive-reason` — New Archive Reason | Poll | `archive-reason-list` | Newly listed archive reasons |
-| `new-candidate-note` — New Candidate Note | Poll | `candidate-note-list` | Newly listed notes |
-| `new-candidate-search-result` — New Candidate Search Result | Poll | `candidate-search` | Newly listed candidates |
-| `new-department` — New Department | Poll | `department-list` | Newly listed departments |
-| `new-interview-event` — New Interview Event | Poll | `interview-event-list` | Newly listed interview events |
-| `new-interview-schedule` — New Interview Schedule | Poll | `interview-schedule-list` | Newly listed interview schedules |
-| `new-interview-stage` — New Interview Stage | Poll | `interview-stage-list` | Newly listed interview stages |
-| `new-job` — New Job | Poll | `job-list` | Newly listed jobs |
-| `new-job-posting` — New Job Posting | Poll | `job-posting-list` | Newly listed job postings |
-| `new-location` — New Location | Poll | `location-list` | Newly listed locations |
-| `new-offer` — New Offer | Poll | `offer-list` | Newly listed offers |
-| `new-source` — New Source | Poll | `source-list` | Newly listed sources |
-| `new-user` — New User | Poll | `user-list` | Newly listed users |
+| `new-application` — New Application | Poll | `application-list` | Each application (Active, Hired or Archived; not Leads) created since the prior check; optional `jobId` |
+| `new-application-feedback` — New Application Feedback | Poll | `application-feedback-list` | Each interview feedback submission since the prior check |
+| `new-interview-schedule` — New Interview Schedule | Poll | `interview-schedule-list` | Each interview schedule created since the prior check |
+| `new-job` — New Job | Poll | `job-list` | Each job created since the prior check, any status |
+| `new-offer` — New Offer | Poll | `offer-list` | Each offer created since the prior check |
+| `new-user` — New User | Poll | `user-list` | Each user added to the organisation (small collection, diffed by id) |
+| `new-job-posting` — New Job Posting | Poll | `job-posting-list` | Each listed job posting that appears (bounded collection, diffed by id) |
 
-`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check reads its whole window in one request of up to 50 pages (5000 candidates); the action has no page cursor, so a window longer than 5000 fires the first 5000 and the surplus past that is not guaranteed (the trigger logs a warning). Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-10).
+The list triggers use the documented `createdAfter` filter (Unix milliseconds) with a rolling cursor, a 120 s overlap and id deduplication. Each check reads its whole window in one request of up to 10 pages (1000 records); a longer window logs a warning and the surplus is not guaranteed. The first check records `floor = now`, so nothing that existed before the trigger was created ever fires. Ashby documents no update filter or sort on these lists, so there are no `new-or-updated-*` triggers.
+
+`candidate-search` returns the same candidates as `candidate-list` and is covered by `new-candidate`. Not covered, by reason: reference data that changes rarely and is not an event stream — `archive-reason-list`, `department-list`, `interview-stage-list`, `location-list`, `source-list`; lists scoped to one parent a user would not pick — `candidate-note-list` (one candidate), `interview-event-list` (one interview schedule).
+
+Sources (verified 2026-11-10): [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist), [Application List](https://developers.ashbyhq.com/reference/applicationlist), [Application Feedback List](https://developers.ashbyhq.com/reference/applicationfeedbacklist), [Interview Schedule List](https://developers.ashbyhq.com/reference/interviewschedulelist), [Job List](https://developers.ashbyhq.com/reference/joblist), [Offer List](https://developers.ashbyhq.com/reference/offerlist), [User List](https://developers.ashbyhq.com/reference/userlist), [Job Posting List](https://developers.ashbyhq.com/reference/jobpostinglist).

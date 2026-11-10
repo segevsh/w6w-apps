@@ -475,26 +475,39 @@ Use **`deno task fmt`**, never bare `deno fmt` — the task is scoped to
 
 ## Triggers
 
-- **Triggers** — 16 (poll)
+- **Triggers** — 17 (poll)
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-contact` — New Contact | poll | `contact-list` (`GET /rest/v2/contacts`, `order_by=create_time desc`, `page_size=50`) | Each contact not seen on an earlier check |
-| `new-campaign` — New Campaign | poll | `campaign-list` | Newly listed campaigns |
-| `new-campaign-sequence` — New Campaign Sequence | poll | `campaign-sequence-list` | Newly listed sequences |
-| `new-company` — New Company | poll | `company-list` | Newly listed companies |
-| `new-contact-note` — New Contact Note | poll | `contact-notes-list` | Newly listed notes |
-| `new-contact-tag` — New Contact Tag | poll | `contact-tags-list` | Newly listed tags |
-| `new-email` — New Email | poll | `email-list` | Newly listed emails |
-| `new-opportunity` — New Opportunity | poll | `opportunity-list` | Newly listed opportunities |
-| `new-opportunity-stage` — New Opportunity Stage | poll | `opportunity-stage-list` | Newly listed stages |
-| `new-order` — New Order | poll | `order-list` | Newly listed orders |
-| `new-product` — New Product | poll | `product-list` | Newly listed products |
-| `new-subscription` — New Subscription | poll | `subscription-list` | Newly listed subscriptions |
-| `new-tag-contact` — New Tag Contact | poll | `tag-contacts-list` | Newly listed tagged contacts |
-| `new-tag` — New Tag | poll | `tag-list` | Newly listed tags |
-| `new-task` — New Task | poll | `task-list` | Newly listed tasks |
-| `new-user` — New User | poll | `user-list` | Newly listed users |
+| `new-campaign` — New Campaign | poll | `campaign-list` (`order_by=datecreated desc`) | Each new campaign |
+| `new-company` — New Company | poll | `company-list` (`order_by=create_time desc`) | Each new company |
+| `new-email` — New Email | poll | `email-list` (`order_by=created_time desc`) | Each new email record |
+| `new-opportunity` — New Opportunity | poll | `opportunity-list` (`order_by=created_time desc`) | Each new opportunity |
+| `new-or-updated-opportunity` — New or Updated Opportunity | poll | `opportunity-list` (`order_by=update_time desc`) | Each opportunity that is new or was edited |
+| `new-order` — New Order | poll | `order-list` (`order_by=order_time desc`) | Each new order |
+| `new-or-updated-order` — New or Updated Order | poll | `order-list` (`order_by=modification_time desc`) | Each order that is new or was modified |
+| `new-or-updated-product` — New or Updated Product | poll | `product-list` (`order_by=last_updated_time desc`) | Each product that is new or was edited |
+| `new-or-updated-subscription` — New or Updated Subscription | poll | `subscription-list` (`order_by=modification_time desc`) | Each subscription that is new or was modified |
+| `new-tag` — New Tag | poll | `tag-list` (`order_by=create_time desc`) | Each new tag |
+| `new-or-updated-tag` — New or Updated Tag | poll | `tag-list` (`order_by=update_time desc`) | Each tag that is new or was edited |
+| `new-task` — New Task | poll | `task-list` (`order_by=create_time desc`) | Each new task |
+| `new-or-updated-task` — New or Updated Task | poll | `task-list` (`order_by=update_time desc`) | Each task that is new or was edited (completing it counts) |
+| `new-user` — New User | poll | `user-list` (`order_by=create_time desc`) | Each new user |
+| `new-tagged-contact` — Contact Tagged | poll | `tag-contacts-list` (`order_by=applied_time desc`, required `tagId`) | Each contact newly given the chosen tag |
+| `new-campaign-sequence` — New Campaign Sequence | poll | `campaign-sequence-list` (required `campaignId`; whole list diffed by id) | Each sequence newly added to the chosen campaign |
+
+Every list trigger runs the existing action (same client, endpoint and auth) with Keap's own
+`order_by` so the newest record is first, one page of 100 per check; the first check records what
+exists and emits nothing. The `new-or-updated-*` triggers key each event on `<id>:<edit stamp>`, so an
+edit fires again; Keap has no created-time sort for products or subscriptions, so those two are
+new-or-updated only. Companies, emails, campaigns and users carry no sortable edit stamp, so they have
+no `new-or-updated-*` twin. `order_by` spellings, `page_size` limits (1000; 100 for users) and the
+response fields were read from Keap's v2 OpenAPI document, <https://crm.infusionsoft.com/app/v3/api-docs/V2>
+(verified 2026-11-10).
+
+Not covered, by reason: lists scoped to one contact that a user would not pick — `contact-notes-list`,
+`contact-tags-list`; pipeline configuration, not an event stream — `opportunity-stage-list`.
 
 The first check records the contacts that already exist and emits nothing; later checks emit the
 contacts that appeared since (oldest first). It runs the existing `contact-list` action — same

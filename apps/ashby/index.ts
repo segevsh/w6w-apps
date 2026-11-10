@@ -10,23 +10,13 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newCandidate from "./triggers/new-candidate.ts";
-import {
-  newApplication,
-  newApplicationFeedback,
-  newArchiveReason,
-  newCandidateNote,
-  newCandidateSearch,
-  newDepartment,
-  newInterviewEvent,
-  newInterviewSchedule,
-  newInterviewStage,
-  newJob,
-  newJobPosting,
-  newLocation,
-  newOffer,
-  newSource,
-  newUser,
-} from "./triggers/new-records.ts";
+import newApplication from "./triggers/new-application.ts";
+import newApplicationFeedback from "./triggers/new-application-feedback.ts";
+import newInterviewSchedule from "./triggers/new-interview-schedule.ts";
+import newJob from "./triggers/new-job.ts";
+import newOffer from "./triggers/new-offer.ts";
+import newUser from "./triggers/new-user.ts";
+import newJobPosting from "./triggers/new-job-posting.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -96,21 +86,13 @@ const app: AppDefinition = {
   healthChecks: [service, permissions, quota],
   triggers: [
     newCandidate,
-    newApplicationFeedback,
     newApplication,
-    newArchiveReason,
-    newCandidateNote,
-    newCandidateSearch,
-    newDepartment,
-    newInterviewEvent,
+    newApplicationFeedback,
     newInterviewSchedule,
-    newInterviewStage,
     newJob,
-    newJobPosting,
-    newLocation,
     newOffer,
-    newSource,
     newUser,
+    newJobPosting,
   ],
 };
 

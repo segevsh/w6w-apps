@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ashby",
   "version": "0.3.0",
-  "description": "Work an Ashby hiring pipeline, from candidates to offers, and poll newly created candidates.",
+  "description": "Work an Ashby hiring pipeline, from candidates to offers, and poll new candidates, applications, jobs, offers and feedback.",
   "license": "MIT",
   "author": {
     "name": "w6w"
