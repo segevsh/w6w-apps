@@ -370,10 +370,18 @@ export function webhookTrigger(
 /**
  * The event types the Any Event trigger can deliver, and where each one's SIGNED body names the
  * profile (docs.wise.com/api-reference/webhook-event/*, verified 2026-11-10). An event type that
- * is not listed (`incoming-transfer#credited` carries only an incoming transfer id,
- * `recipients#state-change` documents no profile field, the card and partner events are
- * application-level) cannot be tied to the user's own account, so it is refused at subscribe time
- * and never delivered: a valid Wise signature proves "Wise sent this", not "this is your account".
+ * is not listed cannot be tied to the user's own account, so it is refused at subscribe time and
+ * never delivered: a valid Wise signature proves "Wise sent this", not "this is your account".
+ *
+ * Selection rule: an event is listed when Wise delivers it on a PROFILE-level subscription (each
+ * event page states "Profile level subscriptions: Supported") AND its signed body documents the
+ * profile id. That is every profile-level event except `incoming-transfer#credited` (its body
+ * carries only an incoming-transfer id). The two `profiles#*` events are the exception: Wise
+ * offers them at application level only, but they are kept because `profile-state-changed` has
+ * always shipped and the body names the profile (`resource.id`, `resource.type: profile`). The
+ * other application-level events (cards, balance account state, batch payments, KYC reviews,
+ * disputes, account-details orders, partner, settlement) need a Wise Platform application
+ * subscription and are not listed, even where their payload carries a profile id.
  */
 export const EVENT_BINDINGS: Readonly<Record<string, ProfileBinding>> = {
   "transfers#state-change": { path: ["resource", "profile_id"] },
@@ -387,6 +395,7 @@ export const EVENT_BINDINGS: Readonly<Record<string, ProfileBinding>> = {
   "account-details-payment#state-change": { path: ["resource", "profile_id"] },
   "swift-in#credit": { path: ["action", "profile_id"] },
   "swift#message-received": { path: ["action", "profile_id"] },
+  "recipients#state-change": { path: ["resource", "data", "profileId"] },
 };
 
 const EVENTS_PARAM: Param = {

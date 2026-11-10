@@ -7,6 +7,7 @@ import { API_ROOT, mockCtx } from "../_helpers.ts";
 import { spec as anyEventSpec } from "../../triggers/any-event.ts";
 import { spec as creditedSpec } from "../../triggers/balance-credited.ts";
 import { spec as activeCasesSpec } from "../../triggers/transfer-active-cases.ts";
+import { spec as recipientSpec } from "../../triggers/recipient-changed.ts";
 import { spec as refundSpec } from "../../triggers/transfer-refunded.ts";
 import {
   anyEventTrigger,
@@ -59,7 +60,7 @@ const run = (
 
 // ---- the whole trigger set, pinned ----------------------------------------------------------
 
-test("the app ships exactly these twelve triggers, each with output and a sample", () => {
+test("the app ships exactly these thirteen triggers, each with output and a sample", () => {
   const keys = (app.triggers ?? []).map((t) => t.key).sort();
   assertEquals(keys, [
     "any-event",
@@ -70,6 +71,7 @@ test("the app ships exactly these twelve triggers, each with output and a sample
     "new-recipient",
     "new-transfer",
     "profile-state-changed",
+    "recipient-changed",
     "transfer-active-cases",
     "transfer-payout-failed",
     "transfer-refunded",
@@ -108,6 +110,7 @@ test("balance-credited: a credit is delivered, a debit is acknowledged with none
 const refunds = webhookTrigger(refundSpec, KEYS);
 const cases = webhookTrigger(activeCasesSpec, KEYS);
 const anyEvent = anyEventTrigger(anyEventSpec, KEYS);
+const recipients = webhookTrigger(recipientSpec, KEYS);
 const REFUND = envelope(
   "transfers#refund",
   `{ "resource": { "type": "transfer", "id": 111, "profile_id": 222, "account_id": 333,
@@ -119,10 +122,19 @@ const CASES = envelope(
   "active_cases": [ "deposit_amount_less_invoice" ] }`,
 );
 
+const RECIPIENT = (state: string, profileId = 222) =>
+  envelope(
+    "recipients#state-change",
+    `{ "resource": { "id": "700525176", "occurred_at": "2026-11-10T10:12:50Z",
+    "data": { "recipientId": 700525176, "profileId": ${profileId}, "currency": "EUR",
+    "state": "${state}", "clientId": "sample-client" } } }`,
+  );
+
 const SIGNED: Array<[string, { handleIngest?: unknown }, string]> = [
   ["transfer-refunded", refunds, REFUND],
   ["transfer-active-cases", cases, CASES],
   ["balance-credited", balances, BAL("credit")],
+  ["recipient-changed", recipients, RECIPIENT("CREATE")],
   ["any-event", anyEvent, REFUND],
 ];
 
@@ -198,6 +210,10 @@ test("any-event: delivers each bindable event type (profile read from its docume
       `{ "action": { "id": 1, "profile_id": 222 }, "resource": { "id": "a" } }`,
     ],
     [
+      "recipients#state-change",
+      `{ "resource": { "id": "1", "data": { "recipientId": 1, "profileId": 222, "state": "UPDATE" } } }`,
+    ],
+    [
       "account-details-payment#state-change",
       `{ "resource": { "id": 12345, "profile_id": 222, "type": "balance-account" } }`,
     ],
@@ -257,8 +273,9 @@ test("any-event: the events list is a filter; unbindable or unknown names are re
   for (
     const events of [
       "incoming-transfer#credited",
-      "recipients#state-change",
+      "profiles#cdd-check-state-change",
       "cards#card-status-change",
+      "kyc-reviews#state-change",
       "nope",
     ]
   ) {
@@ -487,4 +504,69 @@ test("new-transfer: events come oldest first; a transfer with no parseable time 
     T0 + 300_000,
   );
   assertEquals(ids(out.events), [1, 2, 3]);
+});
+
+// ---- recipient-changed: recipients#state-change, profile at data.resource.data.profileId ----------
+
+test("recipient-changed: every documented state is delivered with the recipient, currency and state; the profile is read from data.resource.data.profileId", async () => {
+  for (const state of ["CREATE", "UPDATE", "DEACTIVATE", "OBFUSCATE", "DELETE"]) {
+    const out = evs(await run(recipients, signed(RECIPIENT(state), { "x-delivery-id": "d9" })));
+    assertEquals(out.length, 1);
+    const e = out[0] as {
+      eventType: string;
+      deliveryId: string;
+      data: {
+        resource: { id: string; data: { recipientId: number; currency: string; state: string } };
+      };
+    };
+    assertEquals(e.eventType, "recipients#state-change");
+    assertEquals(e.deliveryId, "d9");
+    assertEquals(e.data.resource.data.state, state);
+    assertEquals(e.data.resource.data.recipientId, 700525176);
+    assertEquals(e.data.resource.data.currency, "EUR");
+  }
+  assertEquals(EVENT_BINDINGS["recipients#state-change"].path, ["resource", "data", "profileId"]);
+});
+
+test("recipient-changed: a validly signed event about ANOTHER profile is refused; a body without the field is refused; a test notification starts no run", async () => {
+  await assertRejects(
+    async () => await run(recipients, signed(RECIPIENT("CREATE", 999))),
+    Error,
+    "not for the configured Wise profile",
+  );
+  await assertRejects(
+    async () =>
+      await run(
+        recipients,
+        signed(envelope("recipients#state-change", `{ "resource": { "id": "1", "data": {} } }`)),
+      ),
+    Error,
+    "not for the configured Wise profile",
+  );
+  assertEquals(
+    evs(await run(recipients, signed(RECIPIENT("CREATE"), { "x-test-notification": "true" }))),
+    [],
+  );
+});
+
+test("recipient-changed: flipping the first, a middle and the last full-data character of the SIGNATURE (not the body) is refused", async () => {
+  const body = RECIPIENT("UPDATE");
+  const good = sign(body);
+  assertEquals(good.length, 344);
+  for (const i of [0, 171, 340]) {
+    const flipped = good.slice(0, i) + (good[i] === "A" ? "B" : "A") + good.slice(i + 1);
+    await assertRejects(
+      async () => await run(recipients, delivery(body, { "x-signature-sha256": flipped })),
+      Error,
+      "signature does not match",
+    );
+  }
+  assertEquals(
+    evs(await run(recipients, delivery(body, { "x-signature-sha256": good }))).length,
+    1,
+  );
+});
+
+test("recipient-changed: another event type on the same URL starts nothing", async () => {
+  assertEquals(evs(await run(recipients, signed(REFUND))), []);
 });

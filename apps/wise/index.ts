@@ -83,6 +83,7 @@ import profileStateChangedTrigger from "./triggers/profile-state-changed.ts";
 import transferActiveCasesTrigger from "./triggers/transfer-active-cases.ts";
 import transferRefundedTrigger from "./triggers/transfer-refunded.ts";
 import balanceCreditedTrigger from "./triggers/balance-credited.ts";
+import recipientChangedTrigger from "./triggers/recipient-changed.ts";
 import anyEventTrigger from "./triggers/any-event.ts";
 import newTransferTrigger from "./triggers/new-transfer.ts";
 import newBalanceTrigger from "./triggers/new-balance.ts";
@@ -129,6 +130,7 @@ export default {
     transferActiveCasesTrigger,
     transferRefundedTrigger,
     balanceCreditedTrigger,
+    recipientChangedTrigger,
     anyEventTrigger,
     newTransferTrigger,
     newBalanceTrigger,

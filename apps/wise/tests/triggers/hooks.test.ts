@@ -13,6 +13,7 @@ import { spec as profileSpec } from "../../triggers/profile-state-changed.ts";
 import { spec as activeCasesSpec } from "../../triggers/transfer-active-cases.ts";
 import { spec as refundSpec } from "../../triggers/transfer-refunded.ts";
 import { spec as creditedSpec } from "../../triggers/balance-credited.ts";
+import { spec as recipientSpec } from "../../triggers/recipient-changed.ts";
 import {
   type PublicKeys,
   verifyRsaSha256,
@@ -318,9 +319,9 @@ test("handleIngest: a validly signed body that is not an event throws", async ()
 
 // ---- Declarations and the manual-webhook lifecycle ----------------------------------------------
 
-test("the app declares eight webhook triggers, each with output and a sample", () => {
+test("the app declares nine webhook triggers, each with output and a sample", () => {
   const triggers = webhookTriggers();
-  assertEquals(triggers.length, 8);
+  assertEquals(triggers.length, 9);
   for (const t of triggers) {
     assertEquals(typeof t.handleIngest, "function", t.key);
     assertEquals(typeof t.onSubscribe, "function", t.key);
@@ -501,6 +502,33 @@ const SHIPPED: Shipped[] = [
       amount: 70,
       currency: "GBP",
       transaction_type: "credit",
+    },
+  },
+  {
+    name: "recipient-changed",
+    trigger: webhookTrigger(recipientSpec, KEYS),
+    eventType: "recipients#state-change",
+    body: (p) =>
+      SIGNED_ENVELOPE(
+        "recipients#state-change",
+        `{ "resource": { "id": "700525176", "occurred_at": "2026-11-10T10:12:50Z",
+          "data": { "recipientId": 700525176${
+          p === null ? "" : `, "profileId": ${p}`
+        }, "currency": "EUR", "state": "CREATE", "clientId": "sample-client" } } }`,
+        "4.0.0",
+      ),
+    data: {
+      resource: {
+        id: "700525176",
+        occurred_at: "2026-11-10T10:12:50Z",
+        data: {
+          recipientId: 700525176,
+          profileId: 222,
+          currency: "EUR",
+          state: "CREATE",
+          clientId: "sample-client",
+        },
+      },
     },
   },
 ];
@@ -750,7 +778,7 @@ test("handleIngest: a signed delivery of ANOTHER event type is acknowledged with
 });
 
 test("no Wise trigger declares a subscriptionId param; every one declares a required string profileId", () => {
-  assertEquals(webhookTriggers().length, 8);
+  assertEquals(webhookTriggers().length, 9);
   for (const t of webhookTriggers()) {
     assertEquals((t.params ?? []).some((x) => x.key === "subscriptionId"), false, t.key);
     const p = (t.params ?? []).find((x) => x.key === "profileId");

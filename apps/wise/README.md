@@ -6,7 +6,7 @@ and multi-currency balances, over the **Wise Platform API**.
 - **Categories** — finance, commerce
 - **Auth methods** — api-token (bearer)
 - **Actions** — 19
-- **Triggers** — 12 (8 manual webhook, 4 poll)
+- **Triggers** — 13 (9 manual webhook, 4 poll)
 - **Health checks** — 2 (`service`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.wise.com` (the `service` check adds `status.wise.com` to its own hook
   allowlist, never to the app's)
@@ -223,6 +223,7 @@ any delivery and starts no run.
 | `transfer-active-cases` | manual webhook | `transfers#active-cases`, 4.0.0 | `data.resource.profile_id` | the transfer and its current active cases |
 | `transfer-refunded` | manual webhook | `transfers#refund`, 4.0.0 | `data.resource.profile_id` | the transfer, the refund amount and currency |
 | `balance-credited` | manual webhook | `balances#update`, 4.0.0 (credits only) | `data.resource.profile_id` | the balance and the amount that arrived; a debit is acknowledged with no run |
+| `recipient-changed` | manual webhook | `recipients#state-change`, 4.0.0 | `data.resource.data.profileId` | the recipient id, its currency and the new state (`CREATE`, `UPDATE`, `DEACTIVATE`, `OBFUSCATE` or `DELETE`) |
 | `any-event` | manual webhook | the `events` you list (default: all of the table below) | per event type, see the Any Event table | the event type, delivery and subscription ids and the full event data |
 | `new-transfer` | poll | `transfer-list` (`GET /transfers`, since-filter on `createdDateStart`) | n/a (the connection's own profile) | each transfer created after the trigger was set up |
 | `new-balance` | poll | `balance-list` (`GET /profiles/{id}/balances`) | n/a | each balance (currency account or savings jar) newly opened on the profile |
@@ -230,8 +231,7 @@ any delivery and starts no run.
 | `new-recipient` | poll | `recipient-list` (`GET /accounts?sort=id,desc&size=20`, newest first) | n/a | each recipient account newly created on the profile |
 
 `profiles#state-change` supports application-level subscriptions only (Wise: "Profile level
-subscriptions: Not Supported"), which need a Wise Platform application; the other three support
-both. Use the schema version in the table: an older schema's payload is not the one documented
+subscriptions: Not Supported"), which need a Wise Platform application; the other event types in this table support both. Use the schema version in the table: an older schema's payload is not the one documented
 above, and a delivery whose profile field is not where the table says is refused, never guessed at.
 
 **Any Event.** `any-event` verifies the signature exactly like the others, then reads the profile
@@ -244,12 +244,27 @@ profile. Events it delivers (Wise: docs.wise.com/api-reference/webhook-event/*, 
 | `transfers#payout-failure` | `data.profile_id` |
 | `profiles#state-change`, `profiles#verification-state-change` | `data.resource.id`, when `data.resource.type` is `profile` |
 | `swift-in#credit`, `swift#message-received` | `data.action.profile_id` |
+| `recipients#state-change` | `data.resource.data.profileId` |
 
-Events whose payload names no profile cannot be tied to your account and are refused when you
-subscribe the trigger (`incoming-transfer#credited` carries only an incoming-transfer id,
-`recipients#state-change` documents no profile field, and the card, settlement, batch, allocation,
-KYC and partner events are application-level); a signed delivery of one of them is acknowledged
-with no run. `events` is a comma-separated list; empty means all of the table.
+**Which events are covered.** An event is in the table when Wise delivers it on a profile-level
+subscription (each Wise event page states "Profile level subscriptions: Supported") and its signed
+body documents the profile id. That is every profile-level event except `incoming-transfer#credited`,
+whose body carries only an incoming-transfer id and so cannot be tied to your account. The two
+`profiles#*` events are the one exception: Wise offers them at application level only, but they
+are kept because `profile-state-changed` has always shipped and the body names the profile
+(`data.resource.id`, `data.resource.type` is `profile`). Everything else is application-level (it
+needs a Wise Platform application subscription, not a personal token's profile subscription) and is
+not covered, even where its payload carries a profile field. Excluded events (verified 2026-11-10 against
+docs.wise.com/api-reference/webhook-event/*, 19 of the 31 in the catalog):
+`incoming-transfer#credited` (no profile field), and the application-level
+`account-details-order#order-state-change`, `allocations#state-changed`, `cards#card-status-change`,
+`cards#card-production-status-change`, `cards#3ds-challenge`, `cards#card-order-status-change`,
+`cards#transaction-state-change`, `cards#manual-provisioning-verification`,
+`profiles#cdd-check-state-change`, `profiles#overdraft-limit-threshold`, `kyc-reviews#state-change`,
+`users#state-change`, `balances#account-state-change`, `batch-payment-initiations#state-change`,
+`partner-support#case-changed`, `settlement#funds-received`, `transaction-disputes#update` and
+`bulk-settlement#payment-received`. Subscribing `any-event` to one of these is refused; a signed
+delivery of one that reaches the URL anyway is acknowledged with no run. `events` is a comma-separated list; empty means all of the table.
 
 **Polls and list actions.** `transfer-list` has no documented sort order, so `new-transfer` lists
 the window since the last check (`createdDateStart` / `createdDateEnd`), skips any transfer created
@@ -317,6 +332,7 @@ event's page: [`transfers#active-cases`](https://docs.wise.com/api-reference/web
 [`account-details-payment#state-change`](https://docs.wise.com/api-reference/webhook-event/eventaccountdetailspaymentstatechange),
 [`swift-in#credit`](https://docs.wise.com/api-reference/webhook-event/eventswiftincredit),
 [`swift#message-received`](https://docs.wise.com/api-reference/webhook-event/eventswiftmessagereceived),
+[`recipients#state-change`](https://docs.wise.com/api-reference/webhook-event/eventrecipientsstatechange),
 [`profiles#verification-state-change`](https://docs.wise.com/api-reference/webhook-event/eventprofilesverificationstatechange);
 the poll triggers read [`GET /transfers`](https://docs.wise.com/api-reference/transfer) and
 [`GET /accounts` (`sort=id,desc`)](https://docs.wise.com/api-reference/recipient/recipientlist)).
