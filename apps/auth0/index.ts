@@ -103,6 +103,13 @@ import connectionList from "./actions/connection-list.ts";
 import clientList from "./actions/client-list.ts";
 import logList from "./actions/log-list.ts";
 import newLog from "./triggers/new-log.ts";
+import newUser from "./triggers/new-user.ts";
+import newClient from "./triggers/new-client.ts";
+import newConnection from "./triggers/new-connection.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newRole from "./triggers/new-role.ts";
+import newOrganizationMember from "./triggers/new-organization-member.ts";
+import newUserRole from "./triggers/new-user-role.ts";
 
 import service from "./health/service.ts";
 import tenant from "./health/tenant.ts";
@@ -136,5 +143,14 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, tenant],
-  triggers: [newLog],
+  triggers: [
+    newLog,
+    newUser,
+    newClient,
+    newConnection,
+    newOrganization,
+    newRole,
+    newOrganizationMember,
+    newUserRole,
+  ],
 } satisfies AppDefinition;
