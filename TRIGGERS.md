@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2232 triggers, 2005 unaccounted list actions in 476 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -38,11 +38,6 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/close | 1 | 9 | 8 |
 | apps/coingecko | 0 | 8 | 8 |
 | apps/google/google-analytics | 0 | 8 | 8 |
-| apps/ninox | 1 | 9 | 8 |
-| apps/onepagecrm | 1 | 9 | 8 |
-| apps/outseta | 5 | 13 | 8 |
-| apps/pennylane | 1 | 9 | 8 |
-| apps/podio | 1 | 9 | 8 |
 | apps/quo | 2 | 9 | 8 |
 | apps/respondio | 0 | 8 | 8 |
 | apps/sendblue | 1 | 9 | 8 |
@@ -621,16 +616,21 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/mollie | 9 | 15 | 0 |
 | apps/mongodb-atlas | 7 | 8 | 0 |
 | apps/mural | 9 | 12 | 0 |
+| apps/ninox | 3 | 9 | 0 |
 | apps/notion | 42 | 30 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
+| apps/onepagecrm | 8 | 9 | 0 |
 | apps/onesignal | 1 | 0 | 0 |
 | apps/openai | 2 | 2 | 0 |
 | apps/outreach | 2 | 0 | 0 |
+| apps/outseta | 10 | 13 | 0 |
 | apps/pardot | 2 | 0 | 0 |
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
+| apps/pennylane | 6 | 9 | 0 |
 | apps/phrase | 11 | 10 | 0 |
 | apps/pipedrive | 13 | 3 | 0 |
+| apps/podio | 8 | 9 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/practicebetter | 9 | 11 | 0 |
@@ -1080,7 +1080,7 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/moonclerk | 1 | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
 | apps/mural | 9 | mural-list | new-mural, new-or-updated-mural, new-workspace, new-room, new-room-folder, new-room-member, new-mural-user, new-mural-tag, new-widget | apps/mural/README.md Triggers section (verified 2026-11-10) | hand | new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn; workspaces, rooms, folders, members, mural users, tags and widgets are compared as bounded lists (next-token paging). |
 | apps/nationbuilder | 2 | person-list | new-person, new-or-updated-person | apps/nationbuilder/README.md Triggers section (verified 2026-11-09) | hand | wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit |
-| apps/ninox | 1 | record-list | new-or-updated-record | apps/ninox/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action record-list |
+| apps/ninox | 3 | record-list | new-or-updated-record, record-changes, schema-changes | apps/ninox/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/nocodb | 1 | record-list | new-record | apps/nocodb/README.md Triggers section (verified 2026-11-09) | hand | wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table |
 | apps/nocrm | 1 | lead-get-many | new-lead | apps/nocrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action lead-get-many |
 | apps/nutshell | 1 | find-leads | new-lead | apps/nutshell/README.md Triggers section (verified 2026-11-10) | hand | Find Leads takes documented $orderBy/$orderDirection/$limit (https://developers-rpc.nutshell.com/detail/class_core.html); trigger reads one id-descending page of 100 with stable lead IDs |
@@ -1088,13 +1088,13 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/okta | 2 | user-list | new-user, new-or-updated-user | apps/okta/README.md Triggers section (verified 2026-11-10) | hand | user-list passes SCIM search over documented top-level created/lastUpdated (Okta Management OpenAPI listUsers); search is eventually consistent so a 30-minute overlap plus id dedupe is used; group-list exposes only q so groups stay event-hook-only |
 | apps/omnisend | 1 | list-contacts | new-contact | apps/omnisend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
 | apps/oncehub | 1 | sms-notification-list | new-sms-notification | apps/oncehub/README.md Triggers section (verified 2026-11-09) | hand | OnceHub pagination guide: list requests return objects in reverse chronological order |
-| apps/onepagecrm | 1 | list-contacts | new-contact | apps/onepagecrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
+| apps/onepagecrm | 8 | list-contacts | new-action, new-company, new-contact, new-deal, new-note, new-or-updated-company, new-or-updated-contact, new-or-updated-deal | apps/onepagecrm/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/onesignal | 1 | view-messages | new-message | apps/onesignal/README.md Triggers section (verified 2026-11-10) | hand | view-messages (GET /notifications) is documented 'sorted by queued_at in descending order' (https://documentation.onesignal.com/reference/view-messages); webhook upgrade (delivery/click events) stays queued |
 | apps/ontraport | 4 | contact-list | new-contact, new-or-updated-contact, new-purchase, new-or-updated-order | apps/ontraport/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorts by date (Date Added) / dlm (Date Modified) with sortDir=desc (api.ontraport.com/doc/); purchase-list sorts by date, order-list by dlm; task-list not wrapped (sort on date_assigned not documented as accepted); Subscribe-to-a-webhook API recorded in webhooks file. |
 | apps/openai | 2 | files-list | new-file, new-model | apps/openai/README.md Triggers section (verified 2026-11-09) | hand | files-list gained additive limit/order inputs; /files documents order=created_at default desc (listFiles in openai-openapi); list-models snapshot (one unpaginated request) emits added models only. |
 | apps/otter | 1 | conversation-list | new-conversation | apps/otter/README.md Triggers section (verified 2026-11-09) | hand | conversation-list is documented most recent first (limit 1-20 per the same article); stable conversation ids; request uses limit=20. |
 | apps/outreach | 2 | account-list | new-account, new-or-updated-account | apps/outreach/README.md Triggers section (verified 2026-11-09) | hand | wraps account-list with sort=-createdAt / -updatedAt (sort syntax documented; per-attribute sortability not spelled out) |
-| apps/outseta | 5 | list-accounts | new-account, new-person, new-deal, new-case, new-invoice | apps/outseta/README.md Triggers section (verified 2026-11-09) | hand | list endpoints take orderBy=PropertyName+DESC and Created__gt (docs.outseta.com/api-reference/overview); triggers sort by Created DESC on accounts, people, deals, cases and invoices; Activity Notifications webhooks recorded in webhooks file. |
+| apps/outseta | 10 | list-accounts | new-account, new-activity, new-article, new-case, new-deal, new-email-subscriber, new-invoice, new-person, new-subscription, new-transaction | apps/outseta/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/paddle | 1 | customer-list | new-customer | apps/paddle/README.md Triggers section (verified 2026-11-09) | hand | order_by documents only id, default id[DESC] |
 | apps/pagerduty | 1 | incident-list | new-incident | apps/pagerduty/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
 | apps/pandadoc | 2 | document-get-many | new-document, new-or-updated-document | apps/pandadoc/README.md Triggers section (verified 2026-11-09) | hand | order_by documents -date_created / -date_modified |
@@ -1105,7 +1105,7 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/paystack | 3 | transaction-list | new-transaction, new-customer, new-refund | apps/paystack/README.md Triggers section (verified 2026-11-09) | hand | transaction-list, customer-list and refund-list take documented from/to date filters (since-filter shape, dedupe by id); charge.success webhook upgrade queued. |
 | apps/pdfmonkey | 2 | list-documents | new-document, new-or-updated-document | apps/pdfmonkey/README.md Triggers section (verified 2026-11-09) | hand | since-filter: q[updated_since]=cursor-120s with id dedupe (no documented sort order); new-document ignores cards whose created_at is older than the since window; page-2 loss mode disclosed in README |
 | apps/pendo | 1 | list-guides | new-guide | apps/pendo/README.md Triggers section (verified 2026-11-09) | hand | GET /api/v1/guide returns the whole hand-authored guide list in one response (snapshot, additions only); list-features/list-pages not wrapped (auto-discovered, no documented cap, can pass the 5000-row snapshot limit); no webhook offering found on developers.pendo.io. |
-| apps/pennylane | 1 | list-customer-invoices | new-customer-invoice | apps/pennylane/README.md Triggers section (verified 2026-11-09) | hand | sort documented, default -id; trigger sorts -id explicitly |
+| apps/pennylane | 6 | list-customer-invoices | new-customer, new-customer-invoice, new-product, new-supplier, new-supplier-invoice, new-transaction | apps/pennylane/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/perplexity | 1 | list-models | new-model | apps/perplexity/README.md Triggers section (verified 2026-11-09) | hand | Snapshots the short vendor-wide Agent API model catalog (GET /v1/models, one request) and emits additions only; web-search is an ad-hoc ranked search, not a record feed (https://docs.perplexity.ai/api-reference/models-get) |
 | apps/personio | 2 | list-employees | new-employee, new-or-updated-employee | apps/personio/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-employees updatedSince = cursor-10min, id dedupe; new-employee keeps created_at in window (https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml) |
 | apps/perspective | 1 | contact-list | new-contact | apps/perspective/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
@@ -1115,7 +1115,7 @@ depth: 682 apps, 2206 triggers, 2045 unaccounted list actions in 481 apps, n8n-p
 | apps/plaid | 1 | transaction-sync | new-transaction | apps/plaid/README.md Triggers section (verified 2026-11-10) | hand | transaction-sync (POST /transactions/sync) is a documented cursor change feed (added/modified/removed + next_cursor, https://plaid.com/docs/api/products/transactions/#transactionssync): new-transaction stores the cursor (pollToken) and emits added; institution-list stays unwrapped (catalog with no sort or created filter) |
 | apps/planningcenter | 2 | list-event-instances | new-event-instance, new-or-updated-event-instance | apps/planningcenter/README.md Triggers section (verified 2026-11-09) | hand | list-event-instances order=-created_at / -updated_at (orderable per https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) |
 | apps/plivo | 2 | list-messages | new-message, new-call | apps/plivo/README.md Triggers section (verified 2026-11-09) | hand | list-messages (message_time__gt) and list-calls (end_time__gte) take documented time filters (since-filter shape, dedupe by uuid); signed message/call callbacks recorded in webhooks file. |
-| apps/podio | 1 | task-list | new-task | apps/podio/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by created_on descending. |
+| apps/podio | 8 | task-list | new-app, new-comment, new-item, new-or-updated-item, new-organization, new-search-hit, new-space, new-task | apps/podio/README.md Triggers section (verified 2026-11-10) | hand | shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons |
 | apps/podium | 11 | conversation-list | new-conversation, new-feedback, new-location, new-or-updated-appointment, new-or-updated-call, new-or-updated-campaign, new-or-updated-contact, new-or-updated-review, new-review, new-review-invite, new-user | apps/podium/README.md Triggers section (verified 2026-11-10) | hand | newest-first and updated-since poll triggers over /v4 list actions plus whole-collection snapshots for locations and users |
 | apps/postgres | 1 | query | new-row | no | hand | shipped poll trigger(s) over list action query |
 | apps/postmark | 1 | list-outbound-messages | new-outbound-message | apps/postmark/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-outbound-messages |

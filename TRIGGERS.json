@@ -7278,12 +7278,24 @@
     "path": "apps/ninox",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-record"
+      "new-or-updated-record",
+      "record-changes",
+      "schema-changes"
     ],
     "pollAction": "record-list",
-    "reason": "shipped poll trigger(s) over list action record-list",
-    "verified": "apps/ninox/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons",
+    "verified": "apps/ninox/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "module-list": "schema-changes",
+      "table-list": "schema-changes",
+      "field-list": "schema-changes"
+    },
+    "skipped": {
+      "function-list": "reference/static data: global function script definitions, not records",
+      "view-list": "reference/static data: view definitions of a table, not records",
+      "report-list": "admin/report output: report definitions, not records"
+    }
   },
   {
     "path": "apps/nocodb",
@@ -7494,12 +7506,25 @@
     "path": "apps/onepagecrm",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-action",
+      "new-company",
+      "new-contact",
+      "new-deal",
+      "new-note",
+      "new-or-updated-company",
+      "new-or-updated-contact",
+      "new-or-updated-deal"
     ],
     "pollAction": "list-contacts",
-    "reason": "shipped poll trigger(s) over list action list-contacts",
-    "verified": "apps/onepagecrm/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons",
+    "verified": "apps/onepagecrm/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-lead-sources": "reference/static data: account lead-source definitions",
+      "list-statuses": "reference/static data: account contact-status definitions",
+      "list-pipelines": "reference/static data: deal pipeline and stage definitions",
+      "list-users": "reference/static data: account user directory used as owner/assignee ids (unpaginated, no created stamp)"
+    }
   },
   {
     "path": "apps/onepassword",
@@ -7622,15 +7647,25 @@
     "mechanism": "poll",
     "candidates": [
       "new-account",
-      "new-person",
-      "new-deal",
+      "new-activity",
+      "new-article",
       "new-case",
-      "new-invoice"
+      "new-deal",
+      "new-email-subscriber",
+      "new-invoice",
+      "new-person",
+      "new-subscription",
+      "new-transaction"
     ],
     "pollAction": "list-accounts",
-    "reason": "list endpoints take orderBy=PropertyName+DESC and Created__gt (docs.outseta.com/api-reference/overview); triggers sort by Created DESC on accounts, people, deals, cases and invoices; Activity Notifications webhooks recorded in webhooks file.",
-    "verified": "apps/outseta/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons",
+    "verified": "apps/outseta/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-plans": "reference/static data: subscription plan catalogue",
+      "list-plan-families": "reference/static data: plan family groupings",
+      "list-email-lists": "reference/static data: email list definitions; the list is the required parent param of new-email-subscriber"
+    }
   },
   {
     "path": "apps/paddle",
@@ -7803,12 +7838,22 @@
     "path": "apps/pennylane",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-invoice"
+      "new-customer",
+      "new-customer-invoice",
+      "new-product",
+      "new-supplier",
+      "new-supplier-invoice",
+      "new-transaction"
     ],
     "pollAction": "list-customer-invoices",
-    "reason": "sort documented, default -id; trigger sorts -id explicitly",
-    "verified": "apps/pennylane/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons",
+    "verified": "apps/pennylane/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-categories": "reference/static data: analytic category definitions",
+      "list-journals": "reference/static data: accounting journal definitions",
+      "list-ledger-accounts": "reference/static data: chart of accounts"
+    }
   },
   {
     "path": "apps/peopledatalabs",
@@ -8080,12 +8125,24 @@
     "path": "apps/podio",
     "mechanism": "poll",
     "candidates": [
+      "new-app",
+      "new-comment",
+      "new-item",
+      "new-or-updated-item",
+      "new-organization",
+      "new-search-hit",
+      "new-space",
       "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "Polls tasks sorted by created_on descending.",
-    "verified": "apps/podio/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped poll triggers over the app's list actions; remaining list actions are covered or skipped with reasons",
+    "verified": "apps/podio/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "app-fields-list": "reference/static data: field schema of one app (definitions, not records)",
+      "hook-list": "admin output: webhook administration of one app or workspace",
+      "search-app": "no documented result order for app search (ranked hits, 20 per call), so newest cannot be determined; search-space is the shipped search trigger"
+    }
   },
   {
     "path": "apps/podium",
