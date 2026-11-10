@@ -11,7 +11,7 @@ update or block chats, emails and tickets.
   form) plus the introduction and get-started guides, fetched 2026-10-06. Aidbase publishes no
   OpenAPI document and no `llms.txt` (both 404). No deprecated endpoints are documented; the
   API is labelled beta.
-- **Triggers** — 1 (poll)
+- **Triggers** — 12 (poll)
 
 ## Actions (43)
 
@@ -87,5 +87,18 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-ticket` — New Ticket | Poll | `ticket-list` | Each newly created ticket |
+| `new-chat` — New Chat | Poll (since-filter) | `chatbot-chat-list` | Each new chat of the chatbot you pick |
+| `new-email` — New Email | Poll (since-filter) | `email-list` | Each new email in the inbox you pick (optional status filter) |
+| `new-chatbot` — New Chatbot | Poll (snapshot) | `chatbot-list` | Each chatbot newly created in the account |
+| `new-email-inbox` — New Email Inbox | Poll (snapshot) | `email-inbox-list` | Each email inbox newly created |
+| `new-ticket-form` — New Ticket Form | Poll (snapshot) | `ticket-form-list` | Each ticket form newly created |
+| `new-knowledge-item` — New Knowledge Item | Poll (snapshot) | `knowledge-list` | Each knowledge item newly added to the account |
+| `new-chatbot-knowledge` — New Chatbot Knowledge | Poll (snapshot) | `chatbot-knowledge-list` | Each knowledge item newly attached to the chatbot you pick |
+| `new-email-inbox-knowledge` — New Email Inbox Knowledge | Poll (snapshot) | `email-inbox-knowledge-list` | Each knowledge item newly attached to the inbox you pick |
+| `new-ticket-form-knowledge` — New Ticket Form Knowledge | Poll (snapshot) | `ticket-form-knowledge-list` | Each knowledge item newly attached to the form you pick |
+| `new-knowledge-sub-page` — New Knowledge Sub-Page | Poll (snapshot) | `knowledge-sub-page-list` | Each sub-page newly crawled under the website knowledge item you pick |
+| `new-faq-item` — New FAQ Item | Poll (snapshot) | `knowledge-faq-item-list` | Each question/answer newly added to the FAQ knowledge item you pick |
 
 Polled through `ticket-list` with the documented `created_after` filter and a two-minute overlap. Source: [Aidbase Ticket Form API reference](https://docs.aidbase.ai/apis/ticket-form-api/reference/) (verified 2026-11-09).
+
+`new-chat` and `new-email` use the documented `created_after` filter on [chat](https://docs.aidbase.ai/apis/chatbot-api/reference) and [email](https://docs.aidbase.ai/apis/email-inbox-api/reference) lists with a two-minute overlap, follow the documented `next_cursor` page token, and never send a page-size. The snapshot triggers read the whole list (chatbots, inboxes and forms are unpaginated; the rest follow `next_cursor`) and emit only ids not seen before; Aidbase documents no order or date filter on them. Sub-pages are keyed by `page_url`. Sources: the [Chatbot](https://docs.aidbase.ai/apis/chatbot-api/reference), [Email Inbox](https://docs.aidbase.ai/apis/email-inbox-api/reference) and [Knowledge](https://docs.aidbase.ai/apis/knowledge-api/reference) API references (verified 2026-11-10).

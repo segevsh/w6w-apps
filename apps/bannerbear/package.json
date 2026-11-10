@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bannerbear",
-  "version": "0.2.0",
-  "description": "Generate images and videos from Bannerbear templates, and trigger workflows on new image renders.",
+  "version": "0.3.0",
+  "description": "Generate images and videos from Bannerbear templates, and trigger workflows on new renders, batches, workflow runs, tool jobs, templates, assets, Instant URLs and publications.",
   "license": "MIT",
   "author": {
     "name": "w6w"

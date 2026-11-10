@@ -6,6 +6,7 @@ assets, and multi-step workflows, on the **Bannerbear V5 API**.
 - **Categories** — marketing, video, developer-tools
 - **Auth methods** — bearer-token
 - **Actions** — 61
+- **Triggers** — 11 (poll)
 - **Health checks** — 2 (`quota`, ~~`service`~~) + the derived `auth:bearer-token`
 - **Egress allowlist** — `api.bannerbear.com`, `sync.api.bannerbear.com`
 - **Website** — https://www.bannerbear.com/
@@ -166,8 +167,20 @@ steps individually would."* To process many rows, start one run per row.
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-image` | poll | `image-list` | Each newly requested image render. |
+| `new-animation` | poll | `animation-list` | Each newly requested animation render. |
+| `new-batch` | poll | `batch-list` | Each newly submitted batch. |
+| `new-workflow-run` | poll | `workflow-run-list` | Each newly started workflow run. |
+| `new-tool-job` | poll | `tool-job-list` | Each newly created tool job (any tool or status). |
+| `new-image-template` | poll | `image-template-list` | Each newly created image template. |
+| `new-animation-template` | poll | `animation-template-list` | Each newly created animation template. |
+| `new-workflow` | poll | `workflow-list` | Each newly created workflow. |
+| `new-asset` | poll | `asset-list` | Each newly uploaded asset. |
+| `new-instant-url` | poll | `instant-url-list` | Each newly created Instant URL. |
+| `new-publication` | poll | `publication-list` | Each newly created publication. |
 
 Bannerbear's V5 list-image reference is at https://developers.bannerbear.com/v5/ (verified 2026-11-09).
+
+The ten new triggers read page 1 of their list endpoint (25 items per page, no page-size sent) and emit unseen `uid`s. The reference says the tool-job list is "newest first, 20 per page" and "uses the same polling shape as the other list endpoints, so integration triggers … can dedupe by uid and stop once they reach a job they've already seen" (https://developers.bannerbear.com/v5/, verified 2026-11-10). Not covered: `webhook-list` — webhook registrations are the account's own delivery plumbing (admin configuration), not records a workflow builds on.
 
 **`bearer-token`** — `Authorization: Bearer <api key>`. Bannerbear publishes no OAuth surface for
 third-party apps; the key is the whole story. Keys are creatable/scopeable/restrictable at
