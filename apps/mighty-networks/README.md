@@ -1,11 +1,25 @@
 # Mighty Networks
 
-Triggers: not shipped — webhook candidate queued for a webhook node: member, post and event activity (https://docs.mightynetworks.com/api/webhooks.md).
-
 Run a [Mighty Networks](https://www.mightynetworks.com) community — members, spaces, posts,
 comments, events and RSVPs, invitations, tags, plans and course content — through the **Admin API**.
 
 31 actions · 1 auth method · 2 declared health checks (+1 derived) · 217 unit tests.
+
+## Triggers
+
+3 webhook triggers (manual setup, shared-secret bearer token).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `member-joined` — Member Joined | webhook (manual) | `MemberJoined` | event id, type and time; the payload (member, space id, network id) |
+| `post-created` — Post Created | webhook (manual) | `PostCreated` | event id, type and time; the payload (post id, title, summary, type, status, space, creator, permalink) |
+| `network-event` — Network Event | webhook (manual) | any event the webhook sends, optionally narrowed with the `events` param | event id, type and time; the full payload |
+
+**Setup (manual).** Mighty Networks has no API to register a webhook. Subscribe the trigger in w6w, copy its callback URL, then in your Network settings add a webhook endpoint with that URL, pick the events (for example `MemberJoined`, `PostCreated`) and set an API key for it. Paste the same key into the trigger's `webhookKey` param. The webhook endpoint must be HTTPS, and Mighty Networks retries any non-2xx answer and pauses delivery to an endpoint that keeps failing, so keep the trigger subscribed.
+
+**Trust model.** Mighty Networks does not sign the body. Every delivery carries `Authorization: Bearer <the API key configured on the webhook>`; the trigger refuses a delivery whose key is unset, whose bearer token is missing, or that does not match the pasted key (constant-time compare), before it parses the body. The key proves the sender knows it; it does not bind the event data, and a captured delivery could be replayed with another body, so keep both the key and the callback URL private. The vendor's prose example names the event `PostCreatedHook`, its event schemas name it `PostCreated`; both spellings are accepted, and a delivery with no `event_type` is refused by the two specific triggers (the generic one passes it through).
+
+Docs (verified 2026-11-10): https://docs.mightynetworks.com/api/webhooks.md, event schemas https://api.mn.co/webhooks/v1/spec.json?format=json and https://docs.mightynetworks.com/api-reference/webhooks/postcreated.md
 
 ## Links
 
@@ -14,7 +28,7 @@ comments, events and RSVPs, invitations, tags, plans and course content — thro
 | **Website** | <https://www.mightynetworks.com> |
 | **API docs** | <https://docs.mightynetworks.com> (index: [`llms.txt`](https://docs.mightynetworks.com/llms.txt)) |
 | **OpenAPI (Admin v1)** | <https://api.mn.co/admin/v1/spec/rest.json> — 3.1, 61 paths / 137 operations; every action was built from it |
-| **Webhooks spec** | <https://api.mn.co/webhooks/v1/spec.json?format=json> — read for context only; no triggers are shipped |
+| **Webhooks spec** | <https://api.mn.co/webhooks/v1/spec.json?format=json> — the event schemas the triggers follow |
 | **Status page** | <https://status.mightynetworks.com> |
 
 ## Plan requirement
