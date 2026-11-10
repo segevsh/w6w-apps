@@ -58,3 +58,32 @@ test("new-or-updated-book: seeds, emits new rows, retries idempotently, and requ
   );
   assertEquals(edited.events.length, 1);
 });
+
+test("new-or-updated-book: a window over 3 pages is drained across successive checks, each item once", async () => {
+  const all = Array.from(
+    { length: 450 },
+    (_, i) => ({ id: i, title: "b", updated: "2026-11-09T10:00:00Z" }),
+  );
+  const c = {
+    log() {},
+    fetch: (u: string | URL | Request) => {
+      const q = new URL(String(u)).searchParams;
+      const page = Number(q.get("page")), size = Number(q.get("page_size"));
+      const results = all.slice((page - 1) * size, page * size);
+      return Promise.resolve(
+        new Response(JSON.stringify({ results, next: page * size < all.length ? "more" : null }), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    },
+  } as unknown as Parameters<NonNullable<typeof trigger.poll>>[1];
+  let state: unknown = (await atNow(() => trigger.poll!({ ...input, state: {} }, c))).nextState;
+  const emitted: string[] = [];
+  for (let check = 0; check < 8; check++) {
+    const r = await atNow(() => trigger.poll!({ ...input, state }, c));
+    for (const e of r.events as Array<{ id: unknown }>) emitted.push(String(e.id));
+    state = r.nextState;
+  }
+  assertEquals(emitted.length, 450);
+  assertEquals(new Set(emitted).size, 450);
+});

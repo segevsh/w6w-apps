@@ -52,3 +52,36 @@ test("new-candidate: seeds, emits new rows, retries idempotently, and requests t
   );
   assertEquals(again.events, []);
 });
+
+test("new-candidate: a window over 3 pages is drained across successive checks, each item once", async () => {
+  const all = Array.from(
+    { length: 1300 },
+    (_, i) => ({ id: i + 1, name: "n", created: NOW + 60_000 + i }),
+  );
+  const c = {
+    ...ctx({}).ctx,
+    fetch: (u: string | URL | Request) => {
+      const q = new URL(String(u)).searchParams;
+      const off = Number(q.get("offset") ?? 0), lim = Number(q.get("limit"));
+      const after = Date.parse(q.get("created_after") ?? "");
+      const candidates = all.filter((x) => x.created > after).slice(off, off + lim);
+      return Promise.resolve(
+        new Response(JSON.stringify({ candidates }), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    },
+  } as unknown as Parameters<NonNullable<typeof trigger.poll>>[1];
+  let state: unknown = (await atNow(() => trigger.poll!({ ...input, state: {} }, c))).nextState;
+  const emitted: string[] = [];
+  for (let check = 0; check < 8; check++) {
+    // the clock advances per check; the vendor honours created_after, so a finished window is not re-listed
+    const real = Date.now;
+    Date.now = () => NOW + 600_000 * (check + 1);
+    const r = await trigger.poll!({ ...input, state }, c).finally(() => (Date.now = real));
+    for (const e of r.events as Array<{ id: unknown }>) emitted.push(String(e.id));
+    state = r.nextState;
+  }
+  assertEquals(emitted.length, 1300);
+  assertEquals(new Set(emitted).size, 1300);
+});

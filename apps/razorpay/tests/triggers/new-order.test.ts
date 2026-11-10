@@ -52,3 +52,29 @@ test("new-order: seeds, emits new rows, retries idempotently, and requests the l
   );
   assertEquals(again.events, []);
 });
+
+test("new-order: a window over 3 pages is drained across successive checks, each item once", async () => {
+  const all = Array.from({ length: 450 }, (_, i) => ({ id: "o" + i, created_at: 1700000001 + i }));
+  const c = {
+    log() {},
+    fetch: (u: string | URL | Request) => {
+      const q = new URL(String(u)).searchParams;
+      const skip = Number(q.get("skip")), count = Number(q.get("count"));
+      const items = all.slice(skip, skip + count);
+      return Promise.resolve(
+        new Response(JSON.stringify({ entity: "collection", count: items.length, items }), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    },
+  } as unknown as Parameters<NonNullable<typeof trigger.poll>>[1];
+  let state: unknown = (await atNow(() => trigger.poll!({ ...input, state: {} }, c))).nextState;
+  const emitted: string[] = [];
+  for (let check = 0; check < 8; check++) {
+    const r = await atNow(() => trigger.poll!({ ...input, state }, c));
+    for (const e of r.events as Array<{ id: unknown }>) emitted.push(String(e.id));
+    state = r.nextState;
+  }
+  assertEquals(emitted.length, 450);
+  assertEquals(new Set(emitted).size, 450);
+});

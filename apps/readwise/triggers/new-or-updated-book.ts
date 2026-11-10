@@ -14,6 +14,8 @@ interface State {
   ids: string[];
   /** Epoch ms of the last complete check. */
   cursor: number;
+  /** Next page request while a window larger than MAX_PAGES pages is being drained. */
+  resume?: Record<string, unknown>;
 }
 
 const items = (result: unknown): unknown[] => (result as { results?: unknown[] }).results ?? [];
@@ -56,7 +58,7 @@ const trigger: TriggerDefinition = {
     }
     const seen = new Set(s.ids);
     const events: unknown[] = [];
-    let input: Record<string, unknown> | undefined = first(s.cursor - OVERLAP_MS);
+    let input: Record<string, unknown> | undefined = s.resume ?? first(s.cursor - OVERLAP_MS);
     let truncated = false;
     for (let page = 0; input; page++) {
       if (page === MAX_PAGES) {
@@ -73,14 +75,15 @@ const trigger: TriggerDefinition = {
       }
       input = next(input, result);
     }
-    // A window larger than MAX_PAGES pages is not fully read: hold the cursor so the rest is
-    // fetched next check instead of being skipped.
+    // A window larger than MAX_PAGES pages is not fully read: hold the cursor and store the next
+    // page request, so the following check resumes there (not at page 1) until the window is read.
     const nextState: State = {
       v: 1,
       kind: "ids",
       seeded: true,
       ids: [...seen].slice(-SEEN_WINDOW),
       cursor: truncated ? s.cursor : now,
+      ...(truncated && input ? { resume: input } : {}),
     };
     return { events, nextState };
   },
