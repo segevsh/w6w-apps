@@ -4,8 +4,8 @@ import { mockCtx } from "../_helpers.ts";
 import trigger, { clock } from "../../triggers/new-recording.ts";
 
 const params = {};
-const A = { id: "rec-a" };
-const B = { id: "rec-b" };
+const A = { id: "rec-a", start_datetime: "2026-11-09T11:00:00Z" };
+const B = { id: "rec-b", start_datetime: "2026-11-09T12:02:00Z" };
 const ctxFor = (items: unknown[]) => {
   const r = [{ body: { recordings: items, cursor: null } }];
   return mockCtx(r);

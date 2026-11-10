@@ -1,5 +1,5 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import recordingList from "../actions/recording-list.ts";
 
 /**
@@ -8,11 +8,13 @@ import recordingList from "../actions/recording-list.ts";
  */
 export const OVERLAP_MS = 24 * 3_600_000;
 const MAX_PAGES = 5;
-const MAX_EVENTS = 500;
+const PAGE_SIZE = 100;
 const SEEN_WINDOW = 1000;
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
+
+type Rec = { id?: unknown; start_datetime?: unknown };
 
 interface Page {
   recordings?: unknown[];
@@ -29,32 +31,28 @@ const trigger: TriggerDefinition = {
   ],
   sample: { id: "recording-1", start_datetime: "2026-11-09T09:30:00Z" },
   minIntervalMs: 300_000,
-  async poll({ state }, ctx) {
-    const checkedAt = clock.now();
-    const prior = (state ?? {}) as { cursor?: unknown };
-    const since = typeof prior.cursor === "number" ? prior.cursor : checkedAt;
-    const filterAfterDatetime = new Date(since - OVERLAP_MS).toISOString();
-    let complete = true;
-    const { events, nextState } = await pollNewItems<unknown>({
+  poll({ state }, ctx) {
+    return pollWindow<Rec, string>({
       state,
+      now: clock.now(),
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
       seenWindow: SEEN_WINDOW,
-      maxEvents: MAX_EVENTS,
-      idOf: (r) => String((r as { id?: unknown }).id ?? ""),
-      // No order is documented, so every page of the window is read and the id dedupe decides.
-      async fetchPage() {
-        const all: unknown[] = [];
-        let cursor: string | undefined;
-        for (let page = 0; page < MAX_PAGES; page++) {
-          const res = await recordingList.execute({ filterAfterDatetime, cursor }, ctx) as Page;
-          all.push(...(res.recordings ?? []));
-          if (!res.cursor) return { items: all.reverse() };
-          cursor = res.cursor;
-        }
-        complete = false;
-        return { items: all.reverse() };
+      idOf: (r) => String(r.id ?? ""),
+      // The meeting's start time is the only timestamp a recording carries (see README).
+      tsOf: (r) => {
+        const ms = Date.parse(String(r.start_datetime ?? ""));
+        return Number.isNaN(ms) ? undefined : ms;
+      },
+      async load(since, cursor) {
+        const res = await recordingList.execute({
+          filterAfterDatetime: new Date(since).toISOString(),
+          cursor,
+        }, ctx) as Page;
+        return { items: (res.recordings ?? []) as Rec[], next: res.cursor || undefined };
       },
     });
-    return { events, nextState: { ...nextState, cursor: complete ? checkedAt : since } };
   },
 };
 
