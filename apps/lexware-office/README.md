@@ -129,4 +129,13 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 
 ## Triggers
 
-- **New Voucher** wraps the existing `voucher-list` action and polls its newest-first feed. Vendor documentation: https://developers.lexware.io/docs/ (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Voucher (`new-voucher`) | poll | `voucher-list` — by `createdDate` descending (`sort=createdDate,DESC`) | each newly created voucher |
+| New or Updated Voucher (`new-or-updated-voucher`) | poll | `voucher-list` — by `updatedDate` descending (`sort=updatedDate,DESC`) | each voucher that is new or edited (one event per edit) |
+
+Both triggers poll every 5 minutes, read one page of 100 from the app's existing `voucher-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://developers.lexware.io/docs/ (verified 2026-11-09). Its Voucherlist "Sorting Parameters" section: "Possible values are voucherDate, voucherNumber, createdDate and updatedDate. The sort direction can be added separated by a comma" (`ASC` or `DESC`).
