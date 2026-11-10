@@ -237,9 +237,11 @@ arrived, and *"Unauthorized api key"* means it did and was wrong.
 | --- | --- | --- | --- |
 | `new-signature-request` — New Signature Request | Poll | `signature-request-list` | Each newly created signature request of the account |
 
-Each check runs the list action with Dropbox Sign's search filter `created:[<yesterday> TO <today>]`
+Each check runs the list endpoint (the action's own request) with Dropbox Sign's search filter `created:[<yesterday> TO <today>]`
 (UTC days, inclusive) and dedupes by `signature_request_id`; the one-day lookback also covers the
-search index's documented minor delay. The first check only records what exists. Signature events
+search index's documented minor delay. A check reads up to five pages of 100; a longer window keeps its
+page number and the next check continues from it, advancing the check time only once the window is
+drained. The first check only records what exists. Signature events
 (sent, viewed, signed, declined) are a separate, not yet shipped webhook path. Sources:
 [search syntax](https://developers.hellosign.com/api/manual-reference-pages/search.md) and
 [events and callbacks](https://developers.hellosign.com/docs/guides/events-and-callbacks) (verified 2026-11-09).

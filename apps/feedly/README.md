@@ -221,7 +221,9 @@ account or network access required.
 | `new-article` — New Article | Poll | `articles-collect` | Each new article collected into one stream (folder, board or AI Feed) |
 
 Each check calls `GET /v3/streams/contents` with `newerThan` set to the previous check's time minus a
-two-minute overlap (never older than Feedly's 31-day limit) and dedupes by article `id`. The first
+two-minute overlap (never older than Feedly's 31-day limit) and dedupes by article `id`. A check reads up to five pages of 100; a longer window keeps its
+`continuation` token and the next check continues from it, advancing the check time only once the
+window is drained. The first
 check only records what exists. Feedly's enterprise trigger webhooks are a separate, not yet shipped
 webhook path. Sources:
 [Collect articles from streamId](https://developers.feedly.com/reference/collect-articles.md) and

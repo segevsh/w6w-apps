@@ -1,18 +1,23 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
-import signatureRequestList from "../actions/signature-request-list.ts";
+import { DropboxSignClient } from "../lib/client.ts";
+import { pollWindow } from "../lib/window.ts";
 
 interface SignatureRequest {
   signature_request_id?: unknown;
 }
 
 const DAY_MS = 86_400_000;
+const PAGE_SIZE = 100;
+/** Pages read per check; a larger window resumes at the saved page number on the next check. */
+const MAX_PAGES = 5;
 const utcDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
 /**
  * Dropbox Sign's search grammar takes `created:[YYYY-MM-DD TO YYYY-MM-DD]` (inclusive days). Each
  * check searches yesterday through today (UTC) — a lookback that also covers the search index's
- * documented minor delay — and dedupes by `signature_request_id` through the kit.
+ * documented minor delay — and dedupes by `signature_request_id` through the kit. Each page is the action's own
+ * `GET /signature_request/list` call; a window longer than five pages resumes at the saved page
+ * number on the next check and the cursor advances only once it drains.
  */
 const trigger: TriggerDefinition = {
   key: "new-signature-request",
@@ -35,16 +40,30 @@ const trigger: TriggerDefinition = {
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
     const now = Date.now();
-    const query = `created:[${utcDay(now - DAY_MS)} TO ${utcDay(now)}]`;
-    return await pollNewItems<SignatureRequest>({
+    return await pollWindow<SignatureRequest, number>({
       state,
-      maxPages: 1,
-      maxEvents: 100,
+      now,
+      overlapMs: DAY_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
       seenWindow: 1000,
       idOf: (item) => String(item.signature_request_id ?? ""),
-      async fetchPage() {
-        const items = await signatureRequestList.execute!({ query, limit: 500 }, ctx);
-        return { items: Array.isArray(items) ? items as SignatureRequest[] : [] };
+      async load(since, page = 1) {
+        const body = await new DropboxSignClient(ctx).request<{
+          signature_requests?: SignatureRequest[];
+          list_info?: { num_pages?: number };
+        }>("/signature_request/list", {
+          query: {
+            query: `created:[${utcDay(since)} TO ${utcDay(now)}]`,
+            page,
+            page_size: PAGE_SIZE,
+          },
+        });
+        const items = Array.isArray(body?.signature_requests) ? body.signature_requests : [];
+        return {
+          items,
+          next: page < Number(body?.list_info?.num_pages ?? 1) ? page + 1 : undefined,
+        };
       },
     });
   },

@@ -351,10 +351,9 @@ incident.io still serves the Statuspage v2 shape before touching anything else.
 
 The contact triggers use the documented `created_at.gte` / `last_updated_at.gte` filters with a
 two-minute overlap and ID dedupe (`new-or-updated-contact` dedupes on `id:last_updated_at`, so an edit
-is a new event). A check follows `paging.next.starting_after` for up to five pages of 100, so a burst
-of up to 500 contacts in one interval is delivered; past that the cursor advances only to the newest
-contact fetched, so the remainder is requested again (EmailOctopus documents no sort order, so a
-larger burst is a best effort). `new-list` diffs the whole cursor-paginated list collection (a handful
+is a new event). A check follows `paging.next.starting_after` for up to five pages of 100; a larger
+window keeps its `starting_after` token in the trigger state and the next check continues from it, and
+the cursor advances only once the window is drained, so every contact is delivered once. `new-list` diffs the whole cursor-paginated list collection (a handful
 of lists; a check fails with an error naming the cap past 1000). The first check only records what
 exists. EmailOctopus's v2 API publishes no webhooks. Source:
 [EmailOctopus v2 API documentation](https://emailoctopus.com/api-documentation/v2) (verified 2026-11-09).

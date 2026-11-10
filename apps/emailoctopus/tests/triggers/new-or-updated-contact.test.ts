@@ -39,3 +39,51 @@ test("new-or-updated-contact: seeds, emits an edited contact again, retries idem
     "https://api.emailoctopus.com/lists/list_1/contacts?limit=100&last_updated_at.gte=2026-11-09T12%3A00%3A00.000Z",
   );
 });
+
+test("new-or-updated-contact: a window of six full pages is emitted exactly once across two checks and the cursor advances after the drain", async () => {
+  const state = {
+    v: 1 as const,
+    kind: "ids" as const,
+    seeded: true as const,
+    ids: ["old:x"],
+    cursor: "2026-11-09T12:00:00.000Z",
+  };
+  const full = (n: number, last: boolean) => ({
+    body: {
+      data: Array.from(
+        { length: 100 },
+        (_, i) => contact(`p${n}-${i}`, "2026-11-09T12:10:00Z"),
+      ),
+      ...(last ? {} : { paging: { next: { starting_after: `tok${n}` } } }),
+    },
+  });
+  const seen: string[] = [];
+  const clock = async <T>(iso: string, fn: () => Promise<T>) => {
+    const real = Date.now;
+    Date.now = () => Date.parse(iso);
+    try {
+      return await fn();
+    } finally {
+      Date.now = real;
+    }
+  };
+  let mid: unknown;
+  await clock("2026-11-09T12:30:00Z", async () => {
+    const { ctx } = mockCtx([1, 2, 3, 4, 5].map((n) => full(n, false)));
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    mid = result.nextState;
+    assertEquals((mid as { resume?: { pos?: string } }).resume?.pos, "tok5");
+  });
+  await clock("2026-11-09T12:35:00Z", async () => {
+    const { ctx, calls } = mockCtx([full(6, true)]);
+    const result = await trigger.poll!({ ...input, state: mid }, ctx);
+    assertEquals(new URL(calls[0].url).searchParams.get("starting_after"), "tok5");
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    const next = result.nextState as { cursor?: number; resume?: unknown };
+    assertEquals(next.cursor, Date.parse("2026-11-09T12:30:00Z"));
+    assertEquals(next.resume, undefined);
+  });
+  assertEquals(seen.length, 600);
+  assertEquals(new Set(seen).size, 600);
+});

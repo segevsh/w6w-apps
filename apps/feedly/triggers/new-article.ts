@@ -1,5 +1,5 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import articlesCollect from "../actions/articles-collect.ts";
 
 interface Article {
@@ -7,17 +7,16 @@ interface Article {
 }
 
 const OVERLAP_MS = 120_000;
+const PAGE_SIZE = 100;
+/** Pages read per check; a larger window resumes from the saved continuation token. */
+const MAX_PAGES = 5;
 /** Feedly rejects `newerThan` older than 31 days; stay inside it. */
 const MAX_LOOKBACK_MS = 30 * 86_400_000;
 
-function cursorOf(state: unknown, now: number): number {
-  const cursor = state && typeof state === "object" ? (state as { cursor?: unknown }).cursor : null;
-  return typeof cursor === "number" && Number.isFinite(cursor) ? cursor : now;
-}
-
 /**
  * `GET /v3/streams/contents` with `newerThan` = the previous check's time (Feedly's own wording:
- * "the time of your previous call") minus a two-minute overlap, deduped by article `id`.
+ * "the time of your previous call") minus a two-minute overlap, deduped by article `id`. A window longer than five pages resumes from the saved
+ * `continuation` on the next check and the cursor advances only once it drains.
  */
 const trigger: TriggerDefinition<{ streamId: string }> = {
   key: "new-article",
@@ -48,22 +47,27 @@ const trigger: TriggerDefinition<{ streamId: string }> = {
   minIntervalMs: 300_000,
   async poll({ params, state }, ctx) {
     const now = Date.now();
-    const newerThan = Math.max(cursorOf(state, now) - OVERLAP_MS, now - MAX_LOOKBACK_MS);
-    const polled = await pollNewItems<Article>({
+    return await pollWindow<Article, string>({
       state,
-      maxPages: 1,
-      maxEvents: 100,
-      seenWindow: 400,
+      now,
+      overlapMs: OVERLAP_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      seenWindow: 1000,
       idOf: (article) => String(article.id ?? ""),
-      async fetchPage() {
-        const page = await articlesCollect.execute!(
-          { streamId: params.streamId, count: 100, newerThan },
-          ctx,
-        ) as { items?: Article[] };
-        return { items: Array.isArray(page?.items) ? page.items : [] };
+      async load(since, continuation) {
+        const page = await articlesCollect.execute!({
+          streamId: params.streamId,
+          count: PAGE_SIZE,
+          newerThan: Math.max(since, now - MAX_LOOKBACK_MS),
+          continuation,
+        }, ctx) as { items?: Article[]; continuation?: string };
+        return {
+          items: Array.isArray(page?.items) ? page.items : [],
+          next: page?.continuation || undefined,
+        };
       },
     });
-    return { events: polled.events, nextState: { ...polled.nextState, cursor: now } };
   },
 };
 

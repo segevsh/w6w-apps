@@ -1,7 +1,7 @@
 import type { HookContext } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
 import listContacts from "../actions/list-contacts.ts";
 import listLists from "../actions/list-lists.ts";
+import { pollWindow } from "./window.ts";
 
 export interface Contact {
   id?: unknown;
@@ -21,67 +21,43 @@ interface Cursor<T> {
   paging?: { next?: { starting_after?: string } };
 }
 
-function cursorOf(state: unknown, now: string): string {
-  if (!state || typeof state !== "object") return now;
-  const cursor = (state as { cursor?: unknown }).cursor;
-  return typeof cursor === "string" && !Number.isNaN(Date.parse(cursor)) ? cursor : now;
-}
-
 /**
  * Poll a list's contacts through one documented date filter (`created_at.gte` or
- * `last_updated_at.gte`), following `paging.next.starting_after` for up to five pages inside ONE
- * fetch so a burst larger than a page is not lost to the kit's stop-at-first-seen-page rule.
- *
- * The cursor normally advances to "now". When the five pages did not exhaust the result (a burst of
- * more than 500 inside one interval) it advances only to the newest `stamp` actually fetched, so the
- * remainder is requested again next check instead of being skipped. EmailOctopus documents no sort
- * order for this endpoint, so that is the best bound that never jumps past an unfetched window.
+ * `last_updated_at.gte`), following `paging.next.starting_after` for up to five pages per check.
+ * A window holding more than that keeps its `starting_after` token in state (`pollWindow`) and
+ * continues from it on the next check; the cursor advances only once the window is drained, and
+ * nothing is emitted twice (ids are marked seen only when emitted).
  */
-export async function pollContacts(
+export function pollContacts(
   o: {
     state: unknown;
     listId: string;
     filter: "createdAtGte" | "lastUpdatedAtGte";
-    stamp: "created_at" | "last_updated_at";
     idOf(contact: Contact): string;
   },
   ctx: HookContext,
 ) {
-  const now = new Date(Date.now()).toISOString();
-  const since = new Date(Date.parse(cursorOf(o.state, now)) - OVERLAP_MS).toISOString();
-  let truncated = false;
-  let newest = 0;
-  const polled = await pollNewItems<Contact>({
+  return pollWindow<Contact, string>({
     state: o.state,
-    maxPages: 1,
-    maxEvents: PAGE_SIZE * MAX_PAGES,
+    now: Date.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE_SIZE,
     seenWindow: 1000,
     idOf: o.idOf,
-    async fetchPage() {
-      const items: Contact[] = [];
-      let startingAfter: string | undefined;
-      for (let page = 1; page <= MAX_PAGES; page++) {
-        const out = await listContacts.execute!({
-          listId: o.listId,
-          [o.filter]: since,
-          limit: PAGE_SIZE,
-          startingAfter,
-        }, ctx) as Cursor<Contact>;
-        const data = Array.isArray(out?.data) ? out.data : [];
-        items.push(...data);
-        for (const contact of data) {
-          const at = Date.parse(String(contact[o.stamp] ?? ""));
-          if (Number.isFinite(at)) newest = Math.max(newest, at);
-        }
-        startingAfter = out?.paging?.next?.starting_after;
-        if (!startingAfter || data.length === 0) break;
-        if (page === MAX_PAGES) truncated = true;
-      }
-      return { items };
+    async load(since, startingAfter) {
+      const out = await listContacts.execute!({
+        listId: o.listId,
+        [o.filter]: new Date(since).toISOString(),
+        limit: PAGE_SIZE,
+        startingAfter,
+      }, ctx) as Cursor<Contact>;
+      return {
+        items: Array.isArray(out?.data) ? out.data : [],
+        next: out?.paging?.next?.starting_after || undefined,
+      };
     },
   });
-  const cursor = truncated && newest > 0 ? new Date(newest).toISOString() : now;
-  return { events: polled.events, nextState: { ...polled.nextState, cursor } };
 }
 
 /** Every list of the account, following the cursor; throws instead of silently dropping the tail. */

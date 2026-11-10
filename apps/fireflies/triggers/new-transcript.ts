@@ -1,10 +1,14 @@
 import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "../lib/window.ts";
 import transcriptSearch from "../actions/transcript-search.ts";
 
 interface Transcript {
   id?: unknown;
 }
+
+const PAGE_SIZE = 50;
+/** Pages read per check; a larger window resumes at the saved `skip` offset on the next check. */
+const MAX_PAGES = 4;
 
 /** Transcripts appear after the meeting ends; a two-day window on the meeting date covers that lag. */
 const LOOKBACK_MS = 2 * 86_400_000;
@@ -12,7 +16,8 @@ const LOOKBACK_MS = 2 * 86_400_000;
 /**
  * `transcripts(fromDate: …)` filters by MEETING date (a since-filter, not a creation cursor), so
  * each check asks for meetings from the last two days and dedupes by transcript `id`. A transcript
- * for a meeting older than the window is not seen.
+ * for a meeting older than the window is not seen. A window longer than four pages resumes at the
+ * saved `skip` offset on the next check; the cursor advances only once it drains.
  */
 const trigger: TriggerDefinition = {
   key: "new-transcript",
@@ -37,18 +42,22 @@ const trigger: TriggerDefinition = {
   },
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
-    const fromDate = new Date(Date.now() - LOOKBACK_MS).toISOString();
-    return await pollNewItems<Transcript>({
+    return await pollWindow<Transcript, number>({
       state,
-      maxPages: 1,
-      maxEvents: 50,
-      seenWindow: 400,
+      now: Date.now(),
+      overlapMs: LOOKBACK_MS,
+      maxPages: MAX_PAGES,
+      pageSize: PAGE_SIZE,
+      seenWindow: 1000,
       idOf: (transcript) => String(transcript.id ?? ""),
-      async fetchPage() {
-        const out = await transcriptSearch.execute!({ fromDate, limit: 50 }, ctx) as {
-          transcripts?: Transcript[];
-        };
-        return { items: Array.isArray(out?.transcripts) ? out.transcripts : [] };
+      async load(since, skip) {
+        const out = await transcriptSearch.execute!({
+          fromDate: new Date(since).toISOString(),
+          limit: PAGE_SIZE,
+          ...(skip ? { skip } : {}),
+        }, ctx) as { transcripts?: Transcript[] };
+        const items = Array.isArray(out?.transcripts) ? out.transcripts : [];
+        return { items, next: items.length >= PAGE_SIZE ? (skip ?? 0) + PAGE_SIZE : undefined };
       },
     });
   },

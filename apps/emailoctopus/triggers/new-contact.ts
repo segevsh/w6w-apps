@@ -22,7 +22,6 @@ const trigger: TriggerDefinition<{ listId: string }> = {
       state,
       listId: params.listId,
       filter: "createdAtGte",
-      stamp: "created_at",
       idOf: (contact) => String(contact.id ?? ""),
     }, ctx);
   },

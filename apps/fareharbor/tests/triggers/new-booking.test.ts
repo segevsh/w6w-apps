@@ -49,3 +49,23 @@ test("new-booking: seeds, emits only unseen bookings, retries idempotently, poll
     );
   });
 });
+
+test("new-booking: 250 bookings in one window are emitted exactly once across successive checks", async () => {
+  await withClock("2026-11-10T00:30:00Z", async () => {
+    const pks = Array.from({ length: 250 }, (_, i) => 1000 + i);
+    // The day endpoint is not paged: every check sees the whole day; the kit emits the oldest 100
+    // unseen and only those are marked seen, so the rest arrive on the following checks.
+    let state: unknown = { v: 1, kind: "ids", seeded: true, ids: [] };
+    const seen: number[] = [];
+    for (let check = 0; check < 3; check++) {
+      const { ctx } = mockCtx([page(...pks.slice().reverse()), page()]);
+      const result = await trigger.poll!({ ...input, state }, ctx);
+      seen.push(...result.events.map((e) => (e as { pk: number }).pk));
+      state = result.nextState;
+    }
+    assertEquals(seen.length, 250);
+    assertEquals(new Set(seen).size, 250);
+    const { ctx } = mockCtx([page(...pks.slice().reverse()), page()]);
+    assertEquals((await trigger.poll!({ ...input, state }, ctx)).events, []);
+  });
+});

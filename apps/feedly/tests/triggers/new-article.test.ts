@@ -47,3 +47,46 @@ test("new-article: seeds, emits only unseen articles, retries idempotently, send
     });
   });
 });
+
+test("new-article: a window of six full pages is emitted exactly once across two checks and the cursor advances after the drain", async () => {
+  const full = (n: number, last: boolean) => ({
+    body: {
+      id: "s",
+      items: Array.from({ length: 100 }, (_, i) => article(`p${n}-${i}`)),
+      ...(last ? {} : { continuation: `tok${n}` }),
+    },
+  });
+  const state = {
+    v: 1 as const,
+    kind: "ids" as const,
+    seeded: true as const,
+    ids: ["old"],
+    cursor: Date.parse("2026-11-10T00:00:00Z"),
+  };
+  const seen: string[] = [];
+  let mid: unknown;
+  await withClock("2026-11-10T00:30:00Z", async () => {
+    const { ctx, calls } = mockCtx([1, 2, 3, 4, 5].map((n) => full(n, false)));
+    const result = await trigger.poll!({ ...input, state }, ctx);
+    assertEquals(calls.length, 5);
+    assertEquals(new URL(calls[4].url).searchParams.get("continuation"), "tok4");
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    mid = result.nextState;
+    assertEquals((mid as { resume?: { pos?: string } }).resume?.pos, "tok5");
+    assertEquals((mid as { cursor?: number }).cursor, state.cursor);
+  });
+  await withClock("2026-11-10T00:35:00Z", async () => {
+    const { ctx, calls } = mockCtx([full(6, true)]);
+    const result = await trigger.poll!({ ...input, state: mid }, ctx);
+    assertEquals(calls.length, 1);
+    const url = new URL(calls[0].url);
+    assertEquals(url.searchParams.get("continuation"), "tok5");
+    assertEquals(url.searchParams.get("newerThan"), String(Date.parse("2026-11-09T23:58:00Z")));
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    const next = result.nextState as { cursor?: number; resume?: unknown };
+    assertEquals(next.cursor, Date.parse("2026-11-10T00:30:00Z"));
+    assertEquals(next.resume, undefined);
+  });
+  assertEquals(seen.length, 600);
+  assertEquals(new Set(seen).size, 600);
+});

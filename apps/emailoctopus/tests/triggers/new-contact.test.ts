@@ -69,11 +69,14 @@ test("new-contact: a burst of 101 contacts across a page token is fully emitted 
     assertEquals(result.events.length, 101);
     assertEquals(calls.length, 2);
     assertEquals(new URL(calls[1].url).searchParams.get("starting_after"), "tok1");
-    assertEquals((result.nextState as { cursor?: string }).cursor, "2026-11-09T12:10:00.000Z");
+    assertEquals(
+      (result.nextState as { cursor?: number }).cursor,
+      Date.parse("2026-11-09T12:10:00Z"),
+    );
   });
 });
 
-test("new-contact: when five pages do not exhaust the result the cursor stops at the newest fetched contact", async () => {
+test("new-contact: a window of six full pages is emitted exactly once across two checks and the cursor advances after the drain", async () => {
   const state = {
     v: 1 as const,
     kind: "ids" as const,
@@ -81,17 +84,40 @@ test("new-contact: when five pages do not exhaust the result the cursor stops at
     ids: ["old"],
     cursor: "2026-11-09T12:00:00.000Z",
   };
-  const full = (n: number) => ({
+  const full = (n: number, last: boolean) => ({
     body: {
-      data: Array.from({ length: 100 }, (_, i) => contact(`p${n}-${i}`, `2026-11-09T12:0${n}:00Z`)),
-      paging: { next: { starting_after: `tok${n}` } },
+      data: Array.from({ length: 100 }, (_, i) => contact(`p${n}-${i}`)),
+      ...(last ? {} : { paging: { next: { starting_after: `tok${n}` } } }),
     },
   });
+  const t1 = Date.parse("2026-11-09T12:30:00Z");
+  const t2 = Date.parse("2026-11-09T12:35:00Z");
+  const seen: string[] = [];
+  let mid: unknown;
   await withClock("2026-11-09T12:30:00Z", async () => {
-    const { ctx, calls } = mockCtx([full(1), full(2), full(3), full(4), full(5)]);
+    const { ctx, calls } = mockCtx([1, 2, 3, 4, 5].map((n) => full(n, false)));
     const result = await trigger.poll!({ ...input, state }, ctx);
     assertEquals(calls.length, 5);
     assertEquals(result.events.length, 500);
-    assertEquals((result.nextState as { cursor?: string }).cursor, "2026-11-09T12:05:00.000Z");
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    mid = result.nextState;
+    const resume = (mid as { resume?: { pos?: string } }).resume;
+    assertEquals(resume?.pos, "tok5");
+    assertEquals((mid as { cursor?: number }).cursor, Date.parse("2026-11-09T12:00:00Z"));
   });
+  await withClock("2026-11-09T12:35:00Z", async () => {
+    const { ctx, calls } = mockCtx([full(6, true)]);
+    const result = await trigger.poll!({ ...input, state: mid }, ctx);
+    assertEquals(calls.length, 1);
+    const url = new URL(calls[0].url);
+    assertEquals(url.searchParams.get("starting_after"), "tok5");
+    assertEquals(url.searchParams.get("created_at.gte"), "2026-11-09T11:58:00.000Z");
+    seen.push(...result.events.map((e) => String((e as { id: string }).id)));
+    const next = result.nextState as { cursor?: number; resume?: unknown };
+    assertEquals(next.cursor, t1);
+    assertEquals(next.resume, undefined);
+    assertEquals(t2 > t1, true);
+  });
+  assertEquals(seen.length, 600);
+  assertEquals(new Set(seen).size, 600);
 });

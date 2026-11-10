@@ -275,8 +275,9 @@ bad-credential response, reused everywhere the "500 is not an outage" behaviour 
 
 `transcripts(fromDate: …)` returns transcripts created after that date
 ([transcripts query](https://docs.fireflies.ai/graphql-api/query/transcripts.md)), so each check asks
-for the last two days (limit 50, the Fireflies cap, order undocumented) and dedupes by transcript `id`;
-more than 50 new transcripts between checks could be missed. The first check only records what exists.
+for the last two days (limit 50, the Fireflies cap, order undocumented) and dedupes by transcript `id`.
+A check reads up to four pages of 50; a longer window keeps its `skip` offset and the next check
+continues from it, advancing the check time only once the window is drained. The first check only records what exists.
 Fireflies Webhooks V2 (`meeting.transcribed`, `meeting.summarized`, `meeting.bot_joined`, HMAC-SHA256
 `X-Hub-Signature`) is a separate, not yet shipped path that delivers sooner. Sources:
 [GraphQL API](https://docs.fireflies.ai/) and

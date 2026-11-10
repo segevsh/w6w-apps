@@ -24,7 +24,6 @@ const trigger: TriggerDefinition<{ listId: string }> = {
       state,
       listId: params.listId,
       filter: "lastUpdatedAtGte",
-      stamp: "last_updated_at",
       idOf: (contact) => `${String(contact.id ?? "")}:${String(contact.last_updated_at ?? "")}`,
     }, ctx);
   },
