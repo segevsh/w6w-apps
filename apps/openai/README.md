@@ -1,5 +1,7 @@
 # OpenAI
 
+Triggers: not shipped — files-list has no documented created-since filter or newest-first sort, and model lists are static catalog data (https://platform.openai.com/docs/api-reference/files/list).
+
 Call OpenAI's REST API — chat completions, images, audio, files, embeddings,
 moderations.
 

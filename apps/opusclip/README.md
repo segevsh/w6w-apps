@@ -1,5 +1,7 @@
 # OpusClip
 
+Triggers: not shipped — clip-list requires a selected project or collection and its pagination does not document a creation-order or since filter; webhook candidate queued for clip completion (https://help.opus.pro/api-reference/webhook).
+
 Turn a long-form video into short, viral, vertical clips with AI curation, on the **OpusClip Clip
 API**.
 

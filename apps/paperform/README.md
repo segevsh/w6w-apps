@@ -1,5 +1,7 @@
 # Paperform
 
+Triggers: not shipped — form submissions are paginated but the documented list endpoint provides no creation-order or since filter; webhook candidate queued for form submissions (https://paperform.readme.io/reference/getting-started-1).
+
 Manage Paperform forms, fields, submissions and webhooks over the **Paperform API v1**
 (`api.paperform.co/v1`).
 

@@ -1,5 +1,7 @@
 # Payhip
 
+Triggers: not shipped — the Public API actions only verify and manage a supplied license key; it has no list feed of changing records (https://help.payhip.com/article/317-public-api).
+
 Verify, enable, disable and count uses of Payhip **software license keys**.
 
 **Scope.** Payhip's public API covers software license keys and nothing else. It documents no

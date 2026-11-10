@@ -1,5 +1,7 @@
 # Pipefy
 
+Triggers: not shipped — card-list and table-record-list are cursor-paginated per selected pipe/table but do not expose a documented creation-order or since filter; webhook candidate queued for Pipefy events (https://developers.pipefy.com/reference/authentication).
+
 Pipefy is a no-code work-management / process-automation platform (pipes, phases, cards,
 Database Tables). This app covers organizations, pipes, phases, cards and Database Tables over
 Pipefy's **GraphQL-only** API, plus a raw-query escape hatch.

@@ -1,5 +1,7 @@
 # PhantomBuster
 
+Triggers: not shipped — container-list is scoped to an agent and lacks a documented creation-order or since filter, so it cannot safely serve as a general new-run feed (https://hub.phantombuster.com/reference).
+
 Launch and monitor PhantomBuster **Phantoms** (agents), read the containers and result data they
 produce, and check organization resource headroom, on the **PhantomBuster API v2**.
 

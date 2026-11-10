@@ -1,5 +1,7 @@
 # OpenRouter
 
+Triggers: not shipped — existing list-models is a model catalog and the remaining actions are inference, usage, or single-resource lookups rather than changing record feeds (https://openrouter.ai/docs/api_reference/overview).
+
 Chat completions, embeddings, and model/usage introspection via OpenRouter's unified LLM API.
 
 - **Categories** — ai

@@ -1,5 +1,7 @@
 # Paystack
 
+Triggers: not shipped — transaction/refund lists accept date ranges but their API reference does not state a newest-first order, so a new-record poll cannot safely rely on page order; webhook candidate queued for charge and transfer events (https://paystack.com/docs/payments/webhooks/).
+
 Take and reconcile Paystack payments from a workflow: start a checkout, verify the result by
 reference, manage customers, plans and subscriptions, create transfer recipients, send payouts, issue
 refunds, and read banks and balances. Built on the REST API (`https://api.paystack.co`), verified

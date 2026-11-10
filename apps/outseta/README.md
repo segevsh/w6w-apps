@@ -1,5 +1,7 @@
 # Outseta
 
+Triggers: not shipped — list-people, list-accounts, and the other page actions expose pagination/search but no documented created/updated ordering, since filter, or bounded collection (https://docs.outseta.com/api-reference/openapi.json).
+
 Manage an [Outseta](https://www.outseta.com/) account — people, accounts, deals, email lists,
 support cases, plans, subscriptions and invoices — from a workflow.
 

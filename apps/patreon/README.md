@@ -1,5 +1,7 @@
 # Patreon
 
+Triggers: not shipped — campaign member and post feeds are cursor-paginated without a documented newest-first order or since filter; webhook candidate queued for member and post events (https://docs.patreon.com/#tag/Webhooks).
+
 Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2.
 
 - **Categories** — commerce, crm

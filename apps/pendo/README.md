@@ -1,5 +1,7 @@
 # Pendo
 
+Triggers: not shipped — feature, guide, and page list actions are configuration/catalog reads with no documented created/updated ordering, since filter, or bounded-collection guarantee (https://developers.pendo.io/).
+
 Send Pendo track events, read back visitor/account/page/feature/guide data,
 set metadata fields, run Aggregation queries, and file GDPR/CCPA bulk
 deletions.

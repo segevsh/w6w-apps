@@ -1,5 +1,7 @@
 # Ontraport
 
+Triggers: not shipped — collection actions expose caller-selected sort fields, but the vendor does not document a creation-time sort field or a bounded collection suitable for a new-record poll (https://api.ontraport.com/doc/).
+
 CRM and marketing automation: contacts, tasks, tags, campaigns (automations), sequences,
 transactions, orders and purchases, on the **Ontraport API v1**.
 
