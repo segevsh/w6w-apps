@@ -11,7 +11,9 @@ const post = (id: string, createAt = NOW) => ({ id, create_at: createAt });
 /** `order` lists ids newest-first; the `posts` map is deliberately in a DIFFERENT key order. */
 const response = (order: string[], extra: Record<string, unknown> = {}) => {
   const posts: Record<string, unknown> = { ...extra };
-  for (const id of [...order].reverse()) posts[id] = post(id, NOW + order.indexOf(id) * -1000);
+  for (const id of [...order].reverse()) {
+    posts[id] = post(id, NOW + 10_000 - order.indexOf(id) * 1000);
+  }
   return { order, posts };
 };
 const ctx = (order: string[], extra: Record<string, unknown> = {}) =>
@@ -38,7 +40,7 @@ test("new-post: seeds, emits only new posts read through `order`, retries idempo
   const first = await trigger.poll!(later, ctx(["c", "b", "a"]).ctx);
   const retry = await trigger.poll!(later, ctx(["c", "b", "a"]).ctx);
   // Map order is a, b, c (reverse of `order`); `order` is the truth: oldest-first emit is b then c.
-  assertEquals(first.events, [post("b", NOW - 1000), post("c", NOW)]);
+  assertEquals(first.events, [post("b", NOW + 9000), post("c", NOW + 10_000)]);
   assertEquals(retry, first);
 });
 
