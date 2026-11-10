@@ -12,15 +12,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1036 triggers, 3362 unaccounted list actions in 621 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/notion | 1 | 30 | 29 |
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
-| apps/productboard | 2 | 20 | 19 |
-| apps/companycam | 2 | 20 | 18 |
 | apps/samcart | 1 | 19 | 18 |
 | apps/upsales | 1 | 18 | 17 |
 | apps/bigcommerce | 1 | 17 | 16 |
@@ -643,6 +641,7 @@ depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-p
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bubble | 2 | 1 | 0 |
+| apps/companycam | 20 | 20 | 0 |
 | apps/customerio | 4 | 0 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/ebay | 1 | 1 | 0 |
@@ -669,6 +668,7 @@ depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-p
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
 | apps/postgres | 1 | 0 | 0 |
+| apps/productboard | 12 | 20 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
 | apps/supabase | 1 | 1 | 0 |
@@ -877,7 +877,7 @@ depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-p
 | apps/cloudflare | 1 | dns-record-list | new-dns-record | apps/cloudflare/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000) |
 | apps/cloudinary | 1 | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |
 | apps/cloze | 3 | person-feed | new-or-updated-person, new-or-updated-company, new-or-updated-project | apps/cloze/README.md Triggers section (verified 2026-11-09) | hand | Change-feed polls on the cursored people/companies/projects feeds (pollToken); webhooks also exist, queued separately |
-| apps/companycam | 2 | checklist-list | new-checklist, new-or-updated-checklist | apps/companycam/README.md Triggers section (verified 2026-11-09) | hand | checklist-list returns company checklists newest-updated first (page 1 of 50) |
+| apps/companycam | 20 | checklist-list | new-checklist, new-group, new-or-updated-checklist, new-or-updated-group, new-or-updated-project, new-or-updated-tag, new-or-updated-user, new-photo, new-photo-comment, new-photo-tag, new-project, new-project-assigned-user, new-project-collaborator, new-project-comment, new-project-document, new-project-invitation, new-project-label, new-tag, new-user, new-video | apps/companycam/README.md Triggers section (verified 2026-11-10) | hand | 20 poll triggers: since-filter (project modified_since, photo/video start_date), newest-updated-first checklists, and bounded snapshots of users, tags, groups and per-project/per-photo lists (https://docs.companycam.com/reference/listprojects) |
 | apps/connecteam | 1 | shift-list | new-shift | apps/connecteam/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action shift-list |
 | apps/constantcontact | 1 | list-contact-lists | new-contact-list | apps/constantcontact/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=500 lists, no sort or date filter exists); added-only |
 | apps/contentful | 1 | list-entries | new-entry | apps/contentful/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-entries |
@@ -1122,7 +1122,7 @@ depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-p
 | apps/printavo | 1 | task-list | new-task | apps/printavo/README.md Triggers section (verified 2026-11-09) | hand | Polls tasks sorted by CREATED_AT descending. |
 | apps/printnode | 1 | printjob-list | new-printjob | apps/printnode/README.md Triggers section (verified 2026-11-09) | hand | GET /printjobs is documented newest first |
 | apps/processstreet | 1 | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
-| apps/productboard | 2 | note-list | new-note, new-or-updated-note | apps/productboard/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: note-list createdFrom / updatedFrom = cursor-10min, id dedupe (https://developer.productboard.com/reference/listnotes) |
+| apps/productboard | 12 | note-list | new-entity, new-entity-relationship, new-jira-integration-connection, new-member, new-note, new-note-relationship, new-or-updated-entity, new-or-updated-note, new-or-updated-team, new-plugin-integration-connection, new-team, new-team-member | apps/productboard/README.md Triggers section (verified 2026-11-10) | hand | 12 poll triggers: since-filter notes (createdFrom/updatedFrom) and entities (entity-search filter.createdAt/updatedAt), plus bounded snapshots of teams, members, team members and entity/note relationships and Jira/plugin integration connections (https://developer.productboard.com/openapi/entities.yaml) |
 | apps/productive | 1 | deal-list | new-deal | apps/productive/README.md Triggers section (verified 2026-11-09) | hand | poll: deal-list sorted -created_at (newest first); no honest update stamp (only -last_activity_at) |
 | apps/pushbullet | 2 | chat-list | new-chat, new-or-updated-chat | apps/pushbullet/README.md Triggers section (verified 2026-11-09) | hand | chat-list is modified-first (docs.pushbullet.com): new-or-updated-chat reads it; new-chat is a snapshot diff, added only |
 | apps/pylon | 1 | issue-list | new-issue | apps/pylon/README.md Triggers section (verified 2026-11-09) | hand | GET /issues lists issues created inside start_time..end_time; polled over a short window per check |

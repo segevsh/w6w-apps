@@ -1254,12 +1254,39 @@
     "mechanism": "poll",
     "candidates": [
       "new-checklist",
-      "new-or-updated-checklist"
+      "new-group",
+      "new-or-updated-checklist",
+      "new-or-updated-group",
+      "new-or-updated-project",
+      "new-or-updated-tag",
+      "new-or-updated-user",
+      "new-photo",
+      "new-photo-comment",
+      "new-photo-tag",
+      "new-project",
+      "new-project-assigned-user",
+      "new-project-collaborator",
+      "new-project-comment",
+      "new-project-document",
+      "new-project-invitation",
+      "new-project-label",
+      "new-tag",
+      "new-user",
+      "new-video"
     ],
     "pollAction": "checklist-list",
-    "reason": "checklist-list returns company checklists newest-updated first (page 1 of 50)",
-    "verified": "apps/companycam/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "20 poll triggers: since-filter (project modified_since, photo/video start_date), newest-updated-first checklists, and bounded snapshots of users, tags, groups and per-project/per-photo lists (https://docs.companycam.com/reference/listprojects)",
+    "verified": "apps/companycam/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "project-checklist-list": "new-checklist",
+      "project-photo-list": "new-photo",
+      "project-video-list": "new-video"
+    },
+    "skipped": {
+      "checklist-template-list": "reference/static checklist template definitions (no timestamps, rarely change)",
+      "webhook-list": "admin webhook configuration (rows carry the signing token), not an end-user record feed"
+    }
   },
   {
     "path": "apps/connecteam",
@@ -5400,13 +5427,40 @@
     "path": "apps/productboard",
     "mechanism": "poll",
     "candidates": [
+      "new-entity",
+      "new-entity-relationship",
+      "new-jira-integration-connection",
+      "new-member",
       "new-note",
-      "new-or-updated-note"
+      "new-note-relationship",
+      "new-or-updated-entity",
+      "new-or-updated-note",
+      "new-or-updated-team",
+      "new-plugin-integration-connection",
+      "new-team",
+      "new-team-member"
     ],
     "pollAction": "note-list",
-    "reason": "Since-filter poll: note-list createdFrom / updatedFrom = cursor-10min, id dedupe (https://developer.productboard.com/reference/listnotes)",
-    "verified": "apps/productboard/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "12 poll triggers: since-filter notes (createdFrom/updatedFrom) and entities (entity-search filter.createdAt/updatedAt), plus bounded snapshots of teams, members, team members and entity/note relationships and Jira/plugin integration connections (https://developer.productboard.com/openapi/entities.yaml)",
+    "verified": "apps/productboard/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "entity-list": "new-entity",
+      "note-search": "new-note",
+      "team-search": "new-team",
+      "member-search": "new-member",
+      "jira-integration-connection-list": "new-jira-integration-connection",
+      "plugin-integration-connection-list": "new-plugin-integration-connection"
+    },
+    "skipped": {
+      "entity-configuration-list": "reference/static entity type and field definitions",
+      "note-configuration-list": "reference/static note type and field definitions",
+      "entity-field-value-list": "reference/static select-field option definitions (the values a field accepts), not records",
+      "member-activity-list": "analytics output (workspace adoption data per member), not a record feed (analytics.yaml)",
+      "jira-integration-list": "admin integration configuration: the few Jira integrations set up in the Productboard UI",
+      "plugin-integration-list": "admin integration configuration: the plugin integrations registered for the workspace",
+      "webhook-list": "admin webhook subscription configuration, not an end-user record feed"
+    }
   },
   {
     "path": "apps/productive",
