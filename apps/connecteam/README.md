@@ -6,7 +6,7 @@ boards — on the **Connecteam API v1**.
 - **Categories** — hr, productivity, calendar
 - **Auth methods** — api-key
 - **Actions** — 27
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 - **Health checks** — 1 live (`service`) + 1 declared absence (~~`quota`~~) + the derived
   `auth:api-key`
 - **Egress allowlist** — `api.connecteam.com` (the `service` check adds `connecteam.statuspage.io`
@@ -238,13 +238,33 @@ connecteam/
 | --- | --- | --- | --- |
 | `new-shift` — New Shift | poll | `shift-list`, newest-first by `created_at` | Each newly observed shift |
 
+| `new-user` — New User | poll | `user-list`, newest-first (`sort=created_at&order=desc`) | Each employee newly added |
+| `new-form` — New Form | poll (snapshot) | `form-list` | Each newly created form |
+| `new-form-submission` — New Form Submission | poll (since-filter) | `form-submission-list`, `submittingStartTimestamp` | Each new submission of one form (`formId`) |
+| `new-job` — New Job | poll (snapshot) | `job-list` | Each newly created job |
+| `new-task` — New Task | poll (snapshot) | `task-list`, `status=published` | Each task newly published on one task board (`taskBoardId`) |
+| `new-schedule` — New Schedule | poll (snapshot) | `scheduler-list` | Each newly created schedule |
+| `new-task-board` — New Task Board | poll (snapshot) | `taskboard-list` | Each newly created task board |
+| `new-time-clock` — New Time Clock | poll (snapshot) | `time-clock-list` | Each newly created time clock |
+
 The trigger uses the action's fixed `startTime`/`endTime` schedule window. Shifts created outside
 that window are not discovered until the window includes them.
 
 Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
 it accepts no inbound webhook delivery.
 
-Vendor reference: <https://developer.connecteam.com/reference> (verified 2026-11-09).
+Snapshot triggers compare the whole list from check to check (the lists are small or bounded: the
+kit refuses more than 5000 rows) and emit rows that were not there before. `new-form-submission`
+asks Connecteam for submissions from two minutes before the previous check, emits at most 500 per
+check (the oldest first, holding its position until the window is drained) and ignores submissions
+made before the trigger was first checked. `new-user` needs `sort=created_at`, which `user-list`
+now accepts (`sort`, `order`; unset by default).
+
+Not covered: `time-activity-list` (grouped per user over a mandatory date range, with no created or
+updated filter and no order to page by).
+
+Vendor reference: <https://developer.connecteam.com/reference> and
+<https://developer.connecteam.com/openapi/connecteam-api-documentation.json> (verified 2026-11-10).
 
 From this directory, inside the `api` container:
 
