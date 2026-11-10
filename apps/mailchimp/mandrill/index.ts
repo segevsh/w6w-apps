@@ -27,6 +27,18 @@ import deleteTemplate from "./actions/delete-template.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import emailEvent from "./triggers/email-event.ts";
+import emailSent from "./triggers/email-sent.ts";
+import emailDelivered from "./triggers/email-delivered.ts";
+import emailDeferred from "./triggers/email-deferred.ts";
+import emailBounced from "./triggers/email-bounced.ts";
+import emailOpened from "./triggers/email-opened.ts";
+import emailLinkClicked from "./triggers/email-link-clicked.ts";
+import emailMarkedSpam from "./triggers/email-marked-spam.ts";
+import emailUnsubscribed from "./triggers/email-unsubscribed.ts";
+import emailRejected from "./triggers/email-rejected.ts";
+import rejectDenylistChanged from "./triggers/reject-denylist-changed.ts";
+import rejectAllowlistChanged from "./triggers/reject-allowlist-changed.ts";
+import newTemplate from "./triggers/new-template.ts";
 
 export default {
   actions: [
@@ -54,7 +66,21 @@ export default {
     updateTemplate,
     deleteTemplate,
   ],
-  triggers: [emailEvent],
+  triggers: [
+    emailEvent,
+    emailSent,
+    emailDelivered,
+    emailDeferred,
+    emailBounced,
+    emailOpened,
+    emailLinkClicked,
+    emailMarkedSpam,
+    emailUnsubscribed,
+    emailRejected,
+    rejectDenylistChanged,
+    rejectAllowlistChanged,
+    newTemplate,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

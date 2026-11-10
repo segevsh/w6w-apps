@@ -66,7 +66,7 @@ test("fixture has non-canonical whitespace", () => {
 });
 
 test("app declares the webhook trigger with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["email-event"]);
+  assertEquals(app.triggers[0].key, "email-event");
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(trigger.poll, undefined);
