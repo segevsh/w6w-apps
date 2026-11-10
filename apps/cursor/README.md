@@ -6,7 +6,7 @@ Enterprise billing groups, and model-access policy — over Cursor's **Admin API
 - **Categories** — developer-tools, ai, finance
 - **Auth methods** — api-key (HTTP Basic, key as username, empty password)
 - **Actions** — 24
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Health checks** — 1 (`service`, capped at `degraded`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.cursor.com` (the `service` check adds `status.cursor.com` to its own
   hook allowlist, never to the app's)
@@ -135,16 +135,23 @@ example response behind its `output` fields.
 | Trigger — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-member` — New Team Member | Poll | `members-list` | Each member newly added to the team |
+| `new-group` — New Billing Group | Poll | `group-list` | Each billing group newly created (Enterprise teams) |
+| `new-repo-blocklist` — New Repo Blocklist | Poll | `repo-blocklist-list` | Each repository blocklist newly added |
 
 `GET /teams/members` returns every team member in one response (the reference lists no paging), so
 each check compares the whole roster with the previous one and emits ids that were not there; removed
 members are left out. The first check only records.
 
-Not shipped: a trigger on `audit-logs-list`. The action sends `startDate`/`endDate`, but the
+`GET /teams/groups` and `GET /settings/repo-blocklists/repos` are likewise answered in one response, so
+those two triggers diff the ids the same way.
+
+Not covered by a trigger: `model-access-providers-list` and `model-access-provider-models-list` (the
+model catalog and policy configuration, reference data); `usage-events-list` (usage/billing analytics,
+aggregated hourly by the vendor). Not shipped: a trigger on `audit-logs-list`. The action sends `startDate`/`endDate`, but the
 reference documents the window as `startTime`/`endTime` and returns events oldest first, so its date
 range cannot serve as a since-filter without changing the action.
 
-Source: [Cursor Admin API](https://cursor.com/docs/account/teams/admin-api) (verified 2026-11-09).
+Source: [Cursor Admin API](https://cursor.com/docs/account/teams/admin-api) (verified 2026-11-10).
 
 ## Development
 
