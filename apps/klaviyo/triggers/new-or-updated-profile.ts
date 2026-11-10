@@ -14,5 +14,11 @@ export default pollFromListAction({
   },
   output: [{ key: "id", type: "string", label: "Profile ID" }],
   sample: { id: "01HXYZPROFILE" },
-  maxPages: 1,
+  nextPageInput: (input, result) => {
+    const next = (result as { links?: { next?: unknown } }).links?.next;
+    if (typeof next !== "string") return undefined;
+    const cursor = new URL(next).searchParams.get("page[cursor]");
+    return cursor ? { ...input, pageCursor: cursor } : undefined;
+  },
+  maxPages: 5,
 });

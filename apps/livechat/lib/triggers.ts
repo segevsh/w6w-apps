@@ -14,12 +14,17 @@ interface ArchiveChat {
   thread?: { id?: string };
 }
 
+/** Pages read per check; a longer window is drained over successive checks (§9.8). */
+export const MAX_PAGES = 5;
+
 export interface NewChatThreadState {
   v: 1;
   kind: "ids";
   seeded: true;
   ids: string[];
   cursor: number;
+  /** Resume position of an unfinished window: LiveChat's `next_page_id` and the window's end. */
+  drain?: { pageId: string; end: number };
 }
 
 /** LiveChat wants RFC 3339 with microseconds, e.g. `2026-11-09T12:00:00.000000+00:00`. */
@@ -30,29 +35,49 @@ export function rfc3339Micros(ms: number): string {
 /**
  * Since-filter poll over `list_archives`: threads from `filters.from` (previous check minus an
  * overlap), newest first (`sort_order: "desc"`, documented), deduped by `chat.id:thread.id`.
+ * Up to MAX_PAGES pages are read per check by following `next_page_id`; if more remain, the last
+ * `next_page_id` is kept in state (`drain`) and the next check continues from it. The cursor only
+ * moves to the window's end once a page has no `next_page_id`.
  */
 export async function checkNewChatThread(
   state: unknown,
   ctx: HookContext,
 ): Promise<{ events: ArchiveChat[]; nextState: NewChatThreadState }> {
+  const prior = state as { cursor?: unknown; drain?: NewChatThreadState["drain"] } | null;
+  const seeded = typeof prior?.cursor === "number";
   const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
+  const cursor = seeded ? prior!.cursor as number : checkedAt;
+  const drain = seeded ? prior!.drain : undefined;
+  const end = drain ? drain.end : checkedAt;
+
+  const listed: ArchiveChat[] = [];
+  let pageId: string | undefined = drain?.pageId;
+  let drained = false;
+  for (let page = 0; page < (seeded ? MAX_PAGES : 1); page++) {
+    const res = await listArchives.execute(
+      pageId
+        ? { pageId }
+        : { from: rfc3339Micros(cursor - OVERLAP_MS), sortOrder: "desc", limit: PAGE_SIZE },
+      ctx,
+    ) as { chats?: ArchiveChat[]; nextPageId?: string };
+    listed.push(...(res.chats ?? []));
+    pageId = res.nextPageId;
+    if (!pageId) {
+      drained = true;
+      break;
+    }
+  }
+
   const { events, nextState } = await pollNewItems<ArchiveChat>({
     state,
     maxPages: 1,
-    seenWindow: 400,
+    maxEvents: MAX_PAGES * PAGE_SIZE,
+    seenWindow: 1000,
     idOf: (c) => `${c.id}:${c.thread?.id ?? ""}`,
-    async fetchPage() {
-      const res = await listArchives.execute({
-        from: rfc3339Micros(cursor - OVERLAP_MS),
-        sortOrder: "desc",
-        limit: PAGE_SIZE,
-      }, ctx) as { chats?: ArchiveChat[] };
-      return { items: res.chats ?? [] };
-    },
+    fetchPage: () => Promise.resolve({ items: listed }),
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
+  if (!seeded || drained) return { events, nextState: { ...nextState, cursor: end } };
+  return { events, nextState: { ...nextState, cursor, drain: { pageId: pageId!, end } } };
 }
 
 export const newChatThreadTrigger: TriggerDefinition = {

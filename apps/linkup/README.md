@@ -84,6 +84,6 @@ streaming and the MCP server (`mcp.linkup.so`) are not part of the REST API and 
 | `new-or-updated-research-task` | poll | `research-list` | Same, for research tasks |
 | `new-or-updated-extract-task` | poll | `extract-list` | Same, for extract tasks |
 
-The task lists document `sortBy` (`createdAt` or `updatedAt`) and `sortDirection` (`asc` default, `desc`) with a page size up to 100; the `new-*` triggers request `sortBy=createdAt&sortDirection=desc&pageSize=100`; the `new-or-updated-*` triggers request `sortBy=updatedAt&sortDirection=desc&pageSize=100` (the vendor's task outputs carry an `updatedAt`) and de-duplicate on `id:updatedAt`, so a task re-fires each time its `updatedAt` changes.
+The task lists document `sortBy` (`createdAt` or `updatedAt`) and `sortDirection` (`asc` default, `desc`) with a page size up to 100; the `new-*` triggers request `sortBy=createdAt&sortDirection=desc&pageSize=100`; the `new-or-updated-*` triggers request `sortBy=updatedAt&sortDirection=desc&pageSize=100` (the vendor's task outputs carry an `updatedAt`; a check reads up to 5 pages, following `metadata.totalPages`, and stops at the first page holding a seen task) and de-duplicate on `id:updatedAt`, so a task re-fires each time its `updatedAt` changes.
 
 Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.linkup.so/v1/openapi.json (verified 2026-11-09).

@@ -107,6 +107,6 @@ Left out because the app is deliberately a focused slice, not because the API la
 | --- | --- | --- | --- |
 | `new-chat-thread` | poll | `list-archives` | Each chat thread newly started (new chat, or a new thread of a returning customer) |
 
-`list_archives` takes `filters.from` (RFC 3339 with microseconds) and `sort_order` (`desc` = newest first, documented). The trigger asks from the previous check minus a 2-minute overlap, newest first, and dedupes by `chat id:thread id`; the vendor does not state whether `from` filters by thread start or last activity, so a thread with fresh activity may surface once as a new thread.
+`list_archives` takes `filters.from` (RFC 3339 with microseconds) and `sort_order` (`desc` = newest first, documented). The trigger asks from the previous check minus a 2-minute overlap, newest first, and dedupes by `chat id:thread id`; the vendor does not state whether `from` filters by thread start or last activity, so a thread with fresh activity may surface once as a new thread. Up to 5 pages of 100 are read per check by following `next_page_id`; a longer window is resumed from the saved `next_page_id` on the next check and the cursor advances only after the last page.
 
 Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://platform.text.com/docs/messaging/agent-chat-api (verified 2026-11-09).

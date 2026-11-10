@@ -46,3 +46,30 @@ for (const { trigger, path } of cases) {
     assertEquals((await run(pending)).events, []);
   });
 }
+
+test("new-or-updated-task pages past 100 updates in one window (page 2 requested, nothing dropped)", async () => {
+  const mk = (n: number) => ({
+    id: `t${n}`,
+    status: "completed",
+    createdAt: "2026-11-09T09:00:00.000Z",
+    updatedAt: "2026-11-09T12:00:00.000Z",
+  });
+  const seeded = await newOrUpdatedTask.poll!(
+    { ...input, state: {} },
+    mockCtx([{ body: { data: [mk(0)], metadata: { page: 1, totalPages: 1 } } }]).ctx,
+  );
+  const p1 = Array.from({ length: 100 }, (_, i) => mk(200 - i));
+  const p2 = Array.from({ length: 50 }, (_, i) => mk(100 - i));
+  const m = mockCtx([
+    { body: { data: p1, metadata: { page: 1, totalPages: 2 } } },
+    { body: { data: p2, metadata: { page: 2, totalPages: 2 } } },
+  ]);
+  const out = await newOrUpdatedTask.poll!({ ...input, state: seeded.nextState }, m.ctx);
+  assertEquals(m.calls.length, 2);
+  assertEquals(
+    m.calls[1].url,
+    "https://api.linkup.so/v1/tasks?page=2&pageSize=100&sortBy=updatedAt&sortDirection=desc",
+  );
+  assertEquals(out.events.length, 100); // kit maxEvents: oldest 100 of the 150 unseen
+  assertEquals(out.events[0], p2[49]);
+});

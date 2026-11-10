@@ -81,4 +81,4 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 | `new-profile` | poll | `get-profiles` sorted `-created` | Each newly created profile |
 | `new-or-updated-profile` | poll | `get-profiles` sorted `-updated` | Each newly created or updated profile |
 
-Klaviyo profile sorting is polled every five minutes. Vendor API documentation: https://developers.klaviyo.com/en/reference/get_profiles (verified 2026-11-09).
+Klaviyo profile sorting is polled every five minutes; a check reads up to 5 pages of 100 (following `links.next`) and stops at the first page holding an already-seen profile. Vendor API documentation: https://developers.klaviyo.com/en/reference/get_profiles (verified 2026-11-09).

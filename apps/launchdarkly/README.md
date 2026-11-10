@@ -211,6 +211,6 @@ patch diagnosable.
 | `new-flag` | poll | `flag-list` | Each feature flag newly created in a project (`sort=-creationDate`) |
 | `new-audit-log-entry` | poll | `audit-log-list` | Each new audit log entry (`after` = previous check minus a 2-minute overlap, deduped by entry id) |
 
-`GET /flags/{projectKey}` documents `creationDate` as a sort field and a leading dash as descending; `flag-list` gained an optional `sort` input (blank by default, behaviour unchanged) for it. `GET /auditlog` documents `after` as epoch milliseconds and a `limit` of 1 to 20, so the trigger reads at most 20 entries per check: a burst of more than 20 entries between two checks is not fully visible.
+`GET /flags/{projectKey}` documents `creationDate` as a sort field and a leading dash as descending; `flag-list` gained an optional `sort` input (blank by default, behaviour unchanged) for it. `GET /auditlog` documents `after` as epoch milliseconds and a `limit` of 1 to 20, so the trigger reads up to 5 pages of 20 entries per check, newest first. A window holding more is drained over the next checks: the trigger moves `before` back to the oldest entry read and only advances its cursor once a short page shows the window is empty, so no entry is skipped and none repeats.
 
 Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://launchdarkly.com/docs/api/feature-flags/get-feature-flags, https://launchdarkly.com/docs/api/audit-log/get-audit-log-entries (verified 2026-11-09).

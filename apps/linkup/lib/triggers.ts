@@ -42,6 +42,15 @@ export function newTaskTrigger(spec: {
       createdAt: "2026-11-09T12:00:00.000Z",
       updatedAt: "2026-11-09T12:00:00.000Z",
     },
-    maxPages: 1,
+    nextPageInput: (input, result) => {
+      const meta = (result as { metadata?: { page?: number; totalPages?: number } }).metadata;
+      const page = Number(meta?.page);
+      return Number.isFinite(page) && page < Number(meta?.totalPages)
+        ? { ...input, page: page + 1 }
+        : undefined;
+    },
+    // Newest-first, so a check walks up to 5 pages (500 tasks) and stops at the first page that
+    // holds an already-seen id; nothing is re-read forever (no since window to drain).
+    maxPages: 5,
   });
 }
