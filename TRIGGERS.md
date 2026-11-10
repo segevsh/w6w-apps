@@ -8,15 +8,14 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 65, manual-webhook: 33, poll: 484, none: 100
+**Totals:** 682 apps — webhook-api: 65, manual-webhook: 34, poll: 483, none: 100
 
 ## Depth
 
-depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
-| apps/notion | 1 | 30 | 29 |
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
 | apps/bigcommerce | 1 | 17 | 16 |
@@ -654,6 +653,7 @@ depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-p
 | apps/linkupapi | 7 | 20 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
+| apps/notion | 42 | 30 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
 | apps/onesignal | 1 | 0 | 0 |
 | apps/openai | 2 | 2 | 0 |
@@ -754,7 +754,7 @@ depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-p
 | apps/woocommerce | 7 | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | 3 | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (33)
+## manual-webhook (34)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -780,6 +780,7 @@ depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-p
 | apps/microsoft/azure-blob | 2 | blob-created, blob-deleted | apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10) | hand | manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret |
 | apps/mighty-networks | 3 | member-joined, post-created, network-event | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings; no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time |
 | apps/netlify | 3 | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/notion | 42 | any-event, comment-created, comment-deleted, comment-updated, data-source-content-updated, data-source-created, data-source-deleted, data-source-schema-updated, database-created, database-deleted, file-upload-completed, file-upload-created, file-upload-expired, file-upload-upload-failed, new-agent, new-block, new-comment, new-data-source-template, new-database-page, new-file-upload, new-meeting-note, new-or-updated-data-source, new-or-updated-database, new-or-updated-database-page, new-or-updated-meeting-note, new-or-updated-page, new-or-updated-plugin, new-or-updated-session, new-session, new-session-event, new-view, new-workspace-user, page-content-updated, page-created, page-deleted, page-moved, page-properties-updated, page-transcript-deleted, page-undeleted, view-created, view-deleted, view-updated | apps/notion/README.md Triggers section (verified 2026-11-10) | hand | shipped 24 signed manual-webhook triggers (named created/updated/deleted-style events for page, database, data source, comment, view, file upload, page transcript + any-event, all 31 documented events mapped) and 18 poll triggers over the list actions |
 | apps/payhip | 4 | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
 | apps/peopledatalabs | 1 | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |
 | apps/phantombuster | 2 | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
@@ -792,7 +793,7 @@ depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-p
 | apps/vero | 1 | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
 | apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (484)
+## poll (483)
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
@@ -1081,7 +1082,6 @@ depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-p
 | apps/ninox | 1 | record-list | new-or-updated-record | apps/ninox/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action record-list |
 | apps/nocodb | 1 | record-list | new-record | apps/nocodb/README.md Triggers section (verified 2026-11-09) | hand | wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table |
 | apps/nocrm | 1 | lead-get-many | new-lead | apps/nocrm/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action lead-get-many |
-| apps/notion | 1 | get-many-database-pages | new-database-page | apps/notion/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action get-many-database-pages |
 | apps/nutshell | 1 | find-leads | new-lead | apps/nutshell/README.md Triggers section (verified 2026-11-10) | hand | Find Leads takes documented $orderBy/$orderDirection/$limit (https://developers-rpc.nutshell.com/detail/class_core.html); trigger reads one id-descending page of 100 with stable lead IDs |
 | apps/odoo | 2 | list-contacts | new-contact, new-or-updated-contact | apps/odoo/README.md Triggers section (verified 2026-11-09) | hand | wraps list-contacts with order=create_date desc / write_date desc (ORM log-access fields) |
 | apps/okta | 2 | user-list | new-user, new-or-updated-user | apps/okta/README.md Triggers section (verified 2026-11-10) | hand | user-list passes SCIM search over documented top-level created/lastUpdated (Okta Management OpenAPI listUsers); search is eventually consistent so a 30-minute overlap plus id dedupe is used; group-list exposes only q so groups stay event-hook-only |
