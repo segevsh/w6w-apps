@@ -48,6 +48,11 @@ import newPerson from "./triggers/new-person.ts";
 import newDeal from "./triggers/new-deal.ts";
 import newCase from "./triggers/new-case.ts";
 import newInvoice from "./triggers/new-invoice.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newArticle from "./triggers/new-article.ts";
+import newEmailSubscriber from "./triggers/new-email-subscriber.ts";
+import newTransaction from "./triggers/new-transaction.ts";
 
 /**
  * Outseta — all-in-one membership, billing, CRM, email and support for SaaS.
@@ -112,5 +117,16 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newAccount, newPerson, newDeal, newCase, newInvoice],
+  triggers: [
+    newAccount,
+    newPerson,
+    newDeal,
+    newCase,
+    newInvoice,
+    newSubscription,
+    newActivity,
+    newArticle,
+    newEmailSubscriber,
+    newTransaction,
+  ],
 } satisfies AppDefinition;

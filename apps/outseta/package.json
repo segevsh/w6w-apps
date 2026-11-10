@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/outseta",
-  "version": "0.2.0",
-  "description": "Manage Outseta people, accounts, deals, email lists, support cases, plans, subscriptions and invoices through the Outseta REST API, and poll triggers on new accounts, people, deals, cases and invoices",
+  "version": "0.3.0",
+  "description": "Manage Outseta people, accounts, deals, email lists, support cases, plans, subscriptions and invoices through the Outseta REST API, and poll triggers on new accounts, people, deals, cases, invoices, subscriptions, activities, articles, email subscribers and transactions",
   "license": "MIT",
   "author": {
     "name": "w6w"

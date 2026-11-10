@@ -10,6 +10,7 @@ support cases, plans, subscriptions and invoices — from a workflow.
   (`cdn.prod.website-files.com/663cf90ca192fe7e5bcb8bd7/66eecaacfd5fecee18b038f8_favicon.svg`),
   byte-for-byte.
 - **Actions:** 39. **Auth:** one method, `api-key`.
+- **Triggers:** 10 (poll)
 
 ## Connecting
 
@@ -132,9 +133,14 @@ OpenAPI document and the failure behaviour above is the unauthenticated/garbage-
 | `new-deal` | poll | `list-deals` (`/crm/deals`, same ordering) | Each newly created CRM deal. |
 | `new-case` | poll | `list-cases` (`/support/cases`, same ordering) | Each newly opened support case. |
 | `new-invoice` | poll | `list-invoices` (`/billing/invoices`, same ordering) | Each newly created invoice. |
+| `new-subscription` | poll | `list-subscriptions` (`/billing/subscriptions`, `orderBy=Created DESC`, `limit=100`) | Each newly created subscription. |
+| `new-activity` | poll | `list-activities` (`/activities`, same ordering) | Each new activity-feed entry, optionally for one entity or type. |
+| `new-article` | poll | `list-articles` (`/support/articles`, same ordering) | Each newly created knowledge base article. |
+| `new-email-subscriber` | poll | `list-email-subscribers` (`/email/lists/{emailListUid}/subscriptions`, same ordering) | Each person newly subscribed to the chosen email list. |
+| `new-transaction` | poll | `list-transactions` (`/billing/transactions/{accountUid}`, same ordering) | Each new invoice, payment, credit, refund or chargeback on the chosen account. |
 
-Outseta documents `?orderBy=PropertyName+DESC` sorting on list endpoints and the `Created` timestamp as a filterable property (`Created__gt=...`). Each trigger asks for `orderBy=Created DESC` explicitly, seeds on its first check without emitting, and then emits `Uid`s not seen before. The overview shows `Created__gt` on accounts and says `orderBy` "generally supports database-backed scalar properties", so `Created` on people, deals, cases and invoices relies on every Outseta entity carrying that property. Subscriptions, transactions and activities are not wrapped: they are ledgers keyed by their own start/billing dates, not by when the row was created. Outseta also sends signed Activity Notifications (SHA256 signing secret, e.g. `AccountCreated`, `AccountSubscriptionStarted`); no webhook trigger is shipped yet.
+Outseta documents `?orderBy=PropertyName+DESC` sorting on list endpoints and the `Created` timestamp as a filterable property (`Created__gt=...`). Each trigger asks for `orderBy=Created DESC` explicitly, seeds on its first check without emitting, and then emits `Uid`s not seen before. The overview shows `Created__gt` on accounts and says `orderBy` "generally supports database-backed scalar properties", so `Created` on the other entities relies on every Outseta entity carrying that property. The older five triggers request 25 rows; the newer five request 100 (the documented cap). Not covered (reference/configuration data): `list-plans`, `list-plan-families` (plan catalogue) and `list-email-lists` (list definitions; pick one for New Email List Subscriber). Outseta also sends signed Activity Notifications (SHA256 signing secret, e.g. `AccountCreated`, `AccountSubscriptionStarted`); no webhook trigger is shipped yet.
 
-Vendor documentation (verified 2026-11-09):
+Vendor documentation (verified 2026-11-10):
 
 - https://docs.outseta.com/api-reference/overview (Sorting, Filtering, Webhooks)
