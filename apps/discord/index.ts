@@ -33,6 +33,10 @@ import getGuild from "./actions/get-guild.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
+import newGuild from "./triggers/new-guild.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newRole from "./triggers/new-role.ts";
+import newMember from "./triggers/new-member.ts";
 
 export default {
   actions: [
@@ -58,5 +62,5 @@ export default {
   ],
   auth: [botToken, oauth2],
   healthChecks: [service, quota],
-  triggers: [newMessage],
+  triggers: [newMessage, newGuild, newChannel, newRole, newMember],
 } satisfies AppDefinition;

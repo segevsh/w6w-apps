@@ -5,7 +5,7 @@ Send messages, manage channels, members, and roles on Discord servers.
 - **Categories** — communication
 - **Auth methods** — bot-token, oauth2
 - **Actions** — 19
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Egress allowlist** — `discord.com`
 - **Website** — https://discord.com
 - **API docs** — https://docs.discord.com/developers/intro
@@ -80,6 +80,14 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `list-messages` | Each newly posted message in the selected channel |
+| `new-guild` — New Server | Poll (snapshot) | `list-guilds` | Each server the bot (or user) newly joined |
+| `new-channel` — New Channel | Poll (snapshot) | `list-channels` | Each channel newly created in the selected server |
+| `new-role` — New Role | Poll (snapshot) | `list-roles` | Each role newly created in the selected server |
+| `new-member` — New Member | Poll (snapshot) | `list-members` | Each member who newly joined the selected server (up to 5000 members; needs the Server Members privileged intent) |
 
 Discord returns channel messages newest-first; the first check records current messages without
-firing, and later checks emit only unseen messages. Each check reads one page (100 messages), so a burst of more than 100 new messages between two checks emits only the newest 100; the older ones are skipped. Source: [Get Channel Messages](https://discord.com/developers/docs/resources/message#get-channel-messages) (verified 2026-11-09).
+firing, and later checks emit only unseen messages. Each check reads one page (100 messages), so a burst of more than 100 new messages between two checks emits only the newest 100; the older ones are skipped. Source: [Get Channel Messages](https://discord.com/developers/docs/resources/message#get-channel-messages) (verified 2026-11-10).
+
+The four snapshot triggers read the whole collection through the same action each time (`GET /users/@me/guilds` 200 per page, `GET /guilds/{id}/channels`, `GET /guilds/{id}/roles`, `GET /guilds/{id}/members` 1000 per page by user id) and emit ids they have not seen; the first check records what exists without firing, and a rename or edit is not announced as new. Discord's HTTP API has no newest-first order or "since" filter for these lists, so a snapshot is the way to see additions. `new-member` reads at most 5000 members: a larger server makes the check fail with an error naming that cap rather than miss members silently. Sources: [Get Current User Guilds](https://discord.com/developers/docs/resources/user#get-current-user-guilds), [Get Guild Channels](https://discord.com/developers/docs/resources/guild#get-guild-channels), [Get Guild Roles](https://discord.com/developers/docs/resources/guild#get-guild-roles), [List Guild Members](https://discord.com/developers/docs/resources/guild#list-guild-members) (verified 2026-11-10).
+
+**Webhook events are not shipped.** Discord's HTTP "Webhook Events" only cover app-level events (app authorized or deauthorized, entitlements, lobby and Social SDK messages), not server, channel, role or message changes (those are Gateway-only, over a WebSocket). Discord also requires the endpoint to acknowledge its `PING` with an empty `204` and checks the `X-Signature-Ed25519` signature, and the w6w ingest route cannot answer `204`. Source: [Webhook Events](https://discord.com/developers/docs/events/webhook-events) (verified 2026-11-10).
