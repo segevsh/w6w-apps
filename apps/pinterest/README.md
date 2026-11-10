@@ -6,7 +6,6 @@ account/ad-account info via the Pinterest REST API v5.
 - **Categories** — social-media, marketing
 - **Auth methods** — oauth2
 - **Actions** — 16
-- **Triggers** — 1 (poll)
 - **Health checks** — service, quota (2, plus 1 derived `auth:oauth2`)
 - **Egress allowlist** — `api.pinterest.com`
 - **Website** — https://www.pinterest.com
@@ -14,6 +13,8 @@ account/ad-account info via the Pinterest REST API v5.
   own OpenAPI 3.0 description, `github.com/pinterest/api-description`, `v5/openapi.json`,
   `info.version` `5.28.0`, fetched 2026-08-29 — the docs SITE is a client-rendered app that
   returns no usable content to a plain fetch)
+
+Triggers: not shipped — `pin-list` and `pin-search` (`GET /v5/pins`) document no sort order and no created-after filter (none of its query parameters sorts or filters by date), so no feed can be read newest-first, and boards and ad accounts are not documented as bounded collections (https://developers.pinterest.com/docs/api/v5/pins-list/)
 
 ## Auth
 
@@ -131,12 +132,3 @@ Every Pinterest v5 error answers `{"code": <int>, "message": "...", "status": "f
 (the `status` field was observed live in addition to the two the OpenAPI description states).
 `code` has no published table, so this app's error messages lead with the HTTP status and
 Pinterest's own `message` text rather than trying to interpret `code`.
-
-
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-pin` — New Pin | Poll | `pin-list` | Each newly created record |
-
-This poll wraps the existing `pin-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.pinterest.com/docs/api/v5/) (verified 2026-11-09).

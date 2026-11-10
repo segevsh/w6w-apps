@@ -45,6 +45,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newEmployee from "./triggers/new-employee.ts";
+import newOrUpdatedEmployee from "./triggers/new-or-updated-employee.ts";
 import clientCredentials from "./auth/client-credentials.ts";
 
 import listEmployees from "./actions/list-employees.ts";
@@ -95,5 +96,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newEmployee],
+  triggers: [newEmployee, newOrUpdatedEmployee],
 } satisfies AppDefinition;

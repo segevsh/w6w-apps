@@ -7,7 +7,6 @@ over its **v1 REST API**.
 - **Auth methods** — access-token (`Authorization: Bearer <private token>`, plus an optional
   `X-PF-Store-Id` for an account-level token)
 - **Actions** — 25
-- **Triggers** — 1 (poll)
 - **Health checks** — `service` (the `API` component of the Statuspage at `www.printfulstatus.com`),
   `api` (unsigned `GET /stores`, a schema-correct 401 passes), `quota` (rate-limit headers off a
   signed `GET /stores`, informational) + the derived `auth:access-token`
@@ -19,6 +18,8 @@ over its **v1 REST API**.
 
 Verified on 2026-10-06 against the OpenAPI 3.0 document embedded in `developers.printful.com/docs/`
 and live unauthenticated probes of `api.printful.com`.
+
+Triggers: not shipped — `order-list` (`GET /orders`) takes only status, offset and limit; the v1 reference states no sort order and offers no created-after filter, so the newest orders cannot be read first (https://developers.printful.com/docs/)
 
 ## v1, not v2
 
@@ -80,12 +81,3 @@ named params; pass a `json` item/line field to include extra keys inside `items`
   rolls up ~40 components (Shopify, Etsy, eBay…, fulfillment centres), so the top-level indicator is
   not an API statement; the check pins the `API` component by id.
 - **Rate limit** is 120 calls/minute (`X-RateLimit-Limit/Remaining/Reset`, reset in seconds).
-
-
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-order` — New Order | Poll | `order-list` | Each newly created record |
-
-This poll wraps the existing `order-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.printful.com/docs/) (verified 2026-11-09).

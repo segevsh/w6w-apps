@@ -3,6 +3,8 @@
 Read and write Podio items, apps, workspaces, tasks, comments and webhooks over the Podio API
 (`api.podio.com`).
 
+- **Triggers** — 1 (poll)
+
 Podio's object model is four levels deep and the third level is the interesting one:
 
 ```

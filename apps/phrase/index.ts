@@ -26,6 +26,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newJob from "./triggers/new-job.ts";
+import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
 import accessToken from "./auth/access-token.ts";
 
 import userGet from "./actions/user-get.ts";
@@ -101,5 +102,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, quota],
-  triggers: [newJob],
+  triggers: [newJob, newOrUpdatedJob],
 } satisfies AppDefinition;

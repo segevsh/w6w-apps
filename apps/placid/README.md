@@ -10,6 +10,7 @@ reference carries no deprecation or sunset notice for the REST API.
   project-specific, so one connection is one Placid project.
 - **Rate limit**: 60 requests/minute; `X-RateLimit-Limit`, `-Remaining`, `-Reset` (epoch seconds).
 - **Icon**: Placid's own `apple-icon-180x180.png` from placid.app, unmodified.
+- **Triggers** — 2 (poll)
 
 ## Actions (26)
 

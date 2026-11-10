@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/procore",
-  "version": "0.2.0",
-  "description": "Read and manage Procore construction projects: companies, projects, users, RFIs, submittals, observations, punch items and project documents. Includes a poll trigger for newly created submittal.",
+  "version": "0.1.0",
+  "description": "Read and manage Procore construction projects: companies, projects, users, RFIs, submittals, observations, punch items and project documents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,12 +38,7 @@
         "sandbox.procore.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": [
-        "../_shared"
-      ]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -202,6 +202,9 @@ route it through the configured flow instead.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-employee` — New Employee | Poll | `list-employees` | Each newly created record |
+| `new-employee` — New Employee | Poll | `list-employees` | Each employee created since the previous check |
+| `new-or-updated-employee` — New or Updated Employee | Poll | `list-employees` | Each employee created or edited since the previous check (the id carries `last_modified_at`) |
 
-This poll wraps the existing `list-employees` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.personio.de/reference/introduction) (verified 2026-11-09).
+Personio documents `updated_since` on `GET /company/employees` (it disables pagination and returns every match) but no sort order, so both triggers call the existing `list-employees` action with `updatedSince` set to the previous check minus a 10-minute overlap and de-duplicate by id; `new-employee` also requires `created_at` inside the window, so an edited old employee is not reported as new. The first check records the current window without emitting events. The employee attributes returned depend on what the API credential may read: both triggers need `id`, and `new-employee` also needs `created_at`.
+
+Source: [`GET /company/employees`](https://github.com/personio/api-docs/blob/HEAD/personio-personnel-data-api-oa3.yaml) in Personio's OpenAPI document (`updated_since`; verified 2026-11-10).

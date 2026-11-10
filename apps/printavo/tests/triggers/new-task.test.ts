@@ -17,6 +17,12 @@ test("new-task: seeds, emits new records, retries idempotently, and requests the
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
   assertEquals(seed.calls[0].method, "POST");
   assertEquals(seed.calls[0].url, "https://www.printavo.com/api/v2");
+  const sent = JSON.parse(seed.calls[0].body ?? "{}") as {
+    query: string;
+    variables: Record<string, unknown>;
+  };
+  assertEquals(sent.variables, { first: 100, sortOn: "CREATED_AT", sortDescending: true });
+  assertEquals(sent.query.includes("tasks(first: $first"), true);
   const page = {
     data: {
       tasks: {

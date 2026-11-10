@@ -133,6 +133,9 @@ logs and previews, so this action does not surface that trio by default — see 
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-event-instance` — New Event Instance | Poll | `list-event-instances` | Each newly created record |
+| `new-event-instance` — New Event Instance | Poll | `list-event-instances` | Each event occurrence created since the previous check |
+| `new-or-updated-event-instance` — New or Updated Event Instance | Poll | `list-event-instances` | Each occurrence created or edited (the id carries `updatedAt`) |
 
-This poll wraps the existing `list-event-instances` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.planning.center/docs/) (verified 2026-11-09).
+The triggers call the existing `list-event-instances` action with its additive `order` input set to `-created_at` / `-updated_at`. Planning Center lists `created_at` and `updated_at` as orderable on `GET /calendar/v2/event_instances` and documents "prefix with a hyphen (-created_at) to reverse the order", so page 1 holds the newest rows. Without a date range the endpoint's own default scope applies. The first check records the current page without emitting events.
+
+Source: [EventInstance vertex, Calendar API 2022-07-07](https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) (`can_order`; verified 2026-11-10).

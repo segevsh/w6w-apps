@@ -4,6 +4,7 @@ import { type JsonApiCollection, PlanningCenterClient } from "../lib/client.ts";
 interface Input {
   startsAfter?: string;
   startsBefore?: string;
+  order?: string;
   perPage?: number;
   offset?: number;
 }
@@ -11,6 +12,8 @@ interface Input {
 interface EventInstanceAttributes {
   starts_at?: string;
   ends_at?: string;
+  created_at?: string;
+  updated_at?: string;
   all_day_event?: boolean;
   location?: string;
   church_center_url?: string;
@@ -23,6 +26,8 @@ interface Output {
     eventId?: string;
     startsAt?: string;
     endsAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
     allDayEvent?: boolean;
     location?: string;
     churchCenterUrl?: string;
@@ -61,6 +66,15 @@ const listEventInstances: ActionDefinition<Input, Output> = {
       hint: "ISO 8601 datetime, UTC.",
     },
     { key: "startsBefore", label: "Starting on/before", type: "datetime", row: "range" },
+    {
+      key: "order",
+      label: "Order by",
+      type: "string",
+      default: "starts_at",
+      advanced: true,
+      hint:
+        "Planning Center `order` value: starts_at, ends_at, created_at or updated_at; prefix with a hyphen to reverse (e.g. -created_at).",
+    },
     { key: "perPage", label: "Per page", type: "number", default: 25, hint: "Maximum 100." },
     { key: "offset", label: "Offset", type: "number", default: 0 },
   ],
@@ -79,7 +93,11 @@ const listEventInstances: ActionDefinition<Input, Output> = {
         where: {
           starts_at: { gte: input.startsAfter, lte: input.startsBefore },
         },
-        query: { per_page: input.perPage ?? 25, offset: input.offset ?? 0, order: "starts_at" },
+        query: {
+          per_page: input.perPage ?? 25,
+          offset: input.offset ?? 0,
+          order: input.order ?? "starts_at",
+        },
       },
     );
 
@@ -89,6 +107,8 @@ const listEventInstances: ActionDefinition<Input, Output> = {
         eventId: (e.relationships?.event?.data as { id?: string } | undefined)?.id,
         startsAt: e.attributes.starts_at,
         endsAt: e.attributes.ends_at,
+        createdAt: e.attributes.created_at,
+        updatedAt: e.attributes.updated_at,
         allDayEvent: e.attributes.all_day_event,
         location: e.attributes.location,
         churchCenterUrl: e.attributes.church_center_url,

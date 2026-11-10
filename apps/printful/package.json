@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/printful",
-  "version": "0.2.0",
-  "description": "Manage Printful print-on-demand products, orders, shipping rates, files and webhooks through the Printful API. Includes a poll trigger for newly created order.",
+  "version": "0.1.0",
+  "description": "Manage Printful print-on-demand products, orders, shipping rates, files and webhooks through the Printful API.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,12 +32,7 @@
         "api.printful.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": [
-        "../_shared"
-      ]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,5 +1,6 @@
 import type { AppDefinition } from "@w6w/types";
 import newEventInstance from "./triggers/new-event-instance.ts";
+import newOrUpdatedEventInstance from "./triggers/new-or-updated-event-instance.ts";
 import listPeople from "./actions/list-people.ts";
 import getPerson from "./actions/get-person.ts";
 import createPerson from "./actions/create-person.ts";
@@ -14,5 +15,5 @@ export default {
   actions: [listPeople, getPerson, createPerson, listDonations, listEventInstances, listCheckIns],
   auth: [personalAccessToken],
   healthChecks: [service, quota],
-  triggers: [newEventInstance],
+  triggers: [newEventInstance, newOrUpdatedEventInstance],
 } satisfies AppDefinition;

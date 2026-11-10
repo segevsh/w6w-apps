@@ -8,6 +8,7 @@ translations, file uploads and downloads, and jobs, over the Phrase Strings API 
 - Hosts: `api.phrase.com` (EU) and `api.us.app.phrase.com` (US)
 - Icon: Phrase's own favicon, `https://phrase.com/wp-content/uploads/2023/09/cropped-phrase-favicon-192x192.png`
   (PNG, 192px), embedded verbatim as a base64 data URI in an SVG wrapper.
+- **Triggers** — 2 (poll)
 
 ## Verified against
 
@@ -127,6 +128,9 @@ not because they are unavailable.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-job` — New Job | Poll | `job-list` | Each newly created record |
+| `new-job` — New Job | Poll | `job-list` | Each job created since the previous check, in the chosen project |
+| `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each job created or edited since the previous check (the id carries `updated_at`) |
 
-This poll wraps the existing `job-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.phrase.com/en/api/strings/introduction) (verified 2026-11-09).
+Pick the **Project ID** in the trigger's settings. Phrase documents `updated_since` on `GET /projects/{project_id}/jobs` but no sort order, so both triggers call the existing `job-list` action with `updated_since` set to the previous check minus a 10-minute overlap and de-duplicate by id; `new-job` also requires `created_at` inside the window, so an edited old job is not reported as new. The first check records the current window without emitting events.
+
+Source: [`GET /projects/{project_id}/jobs`](https://developers.phrase.com/en/api/strings/jobs/list-jobs) and the compiled OpenAPI [`doc/compiled.json`](https://github.com/phrase/openapi/blob/master/doc/compiled.json) (parameter `updated_since`; verified 2026-11-10).

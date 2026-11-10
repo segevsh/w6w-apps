@@ -4,32 +4,36 @@ import { mockCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-event-instance.ts";
 
 const input = { params: {}, subscriptionId: "sub-1" };
-test("new-event-instance: seeds, emits new records, retries idempotently, and requests the feed", async () => {
-  const seed = mockCtx([{
-    body: { data: [{ id: "instance-1", attributes: { starts_at: "2026-01-01T00:00:00Z" } }] },
-  }]);
+const inst = (id: string, updated = "2026-11-10T09:00:00Z") => ({
+  id,
+  attributes: {
+    starts_at: "2026-12-01T00:00:00Z",
+    created_at: "2026-11-10T09:00:00Z",
+    updated_at: updated,
+  },
+});
+
+test("new-event-instance: seeds without emitting and requests the created_at-descending feed", async () => {
+  const seed = mockCtx([{ body: { data: [inst("instance-1")] } }]);
   const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
   assertEquals(seed.calls[0].method, "GET");
   assertEquals(
     seed.calls[0].url,
-    "https://api.planningcenteronline.com/calendar/v2/event_instances?per_page=100&offset=0&order=starts_at&where%5Bstarts_at%5D%5Bgte%5D=2026-01-01T00%3A00%3A00Z",
+    "https://api.planningcenteronline.com/calendar/v2/event_instances?per_page=100&offset=0&order=-created_at",
   );
-  const page = {
-    data: [{ id: "instance-2", attributes: { starts_at: "2026-01-02T00:00:00Z" } }, {
-      id: "instance-1",
-      attributes: { starts_at: "2026-01-01T00:00:00Z" },
-    }],
-  };
-  const first = await trigger.poll!(
-    { ...input, state: seeded.nextState },
-    mockCtx([{ body: page }]).ctx,
+});
+
+test("new-event-instance: emits only the unseen occurrence; retry is idempotent", async () => {
+  const seeded = await trigger.poll!(
+    { ...input, state: {} },
+    mockCtx([{ body: { data: [inst("instance-1")] } }]).ctx,
   );
-  const retry = await trigger.poll!(
-    { ...input, state: seeded.nextState },
-    mockCtx([{ body: page }]).ctx,
-  );
+  const page = { data: [inst("instance-2"), inst("instance-1")] };
+  const run = () =>
+    trigger.poll!({ ...input, state: seeded.nextState }, mockCtx([{ body: page }]).ctx);
+  const first = await run();
   assertEquals(first.events.length, 1);
-  assertEquals(retry, first);
+  assertEquals(await run(), first);
 });

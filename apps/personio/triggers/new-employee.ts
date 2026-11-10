@@ -1,15 +1,29 @@
-import { pollFromListAction } from "../../_shared/poll/mod.ts";
-import action from "../actions/list-employees.ts";
+import type { ActionDefinition } from "@w6w/types";
+import listEmployees from "../actions/list-employees.ts";
+import { type Employee, employeesSince, sinceFilterTrigger } from "../lib/triggers.ts";
 
-export default pollFromListAction({
+// Personio documents `updated_since` on GET /company/employees (no sort order), so this is a
+// since-filter poll (brief 9.1b); the created_at test keeps edited old employees out.
+export default sinceFilterTrigger<Employee, Record<string, never>>({
   key: "new-employee",
   title: "New Employee",
   description: "The run gets each newly created employee.",
-  action,
-  input: () => ({ limit: 100, offset: 0 }),
-  items: (r) => (r as { employees?: unknown[] }).employees ?? [],
-  idOf: (x) => String((x as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Employee ID" }],
-  sample: { id: "employee-2" },
-  maxPages: 1,
+  load: employeesSince(listEmployees as unknown as ActionDefinition),
+  idOf: (e) => String(e.id ?? ""),
+  keep: (e, from) =>
+    typeof e.created_at === "string" && Date.parse(e.created_at) >= Date.parse(from),
+  output: [
+    { key: "id", type: "number", label: "Employee ID" },
+    { key: "first_name", type: "string", label: "First name" },
+    { key: "last_name", type: "string", label: "Last name" },
+    { key: "email", type: "string", label: "Email" },
+    { key: "created_at", type: "string", label: "Created at" },
+  ],
+  sample: {
+    id: 2,
+    first_name: "Ada",
+    last_name: "Lovelace",
+    email: "ada@example.com",
+    created_at: "2026-11-10T09:00:00+00:00",
+  },
 });

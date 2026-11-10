@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/pinterest",
-  "version": "0.2.0",
-  "description": "Create and manage Pinterest boards and Pins, save content, and read account info via the Pinterest REST API v5. Includes a poll trigger for newly created pin.",
+  "version": "0.1.1",
+  "description": "Create and manage Pinterest boards and Pins, save content, and read account info via the Pinterest REST API v5.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,12 +39,7 @@
         "api.pinterest.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": [
-        "../_shared"
-      ]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

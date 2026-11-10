@@ -8,6 +8,7 @@ teams and members, and manage webhook subscriptions — over the **Productboard 
   checks** (plus 1 derived `auth:*`)
 - **Egress** `api.productboard.com` only. The status host is on the `service` check's own
   allowlist, never the app's.
+- **Triggers** — 2 (poll)
 
 ## Which source this was built from
 
@@ -395,9 +396,9 @@ whole v2 surface. These are scope decisions, stated so nobody has to rediscover 
 - **Entity field-value writes** (`POST`/`PATCH`/`DELETE /entities/fields/{id}/values`), which edit
   the workspace's select-option vocabulary rather than any record. The read (`entity-field-value-list`)
   is exposed so a write can pick a real option instead of guessing.
-- **Triggers.** This app declares actions and health checks only. Productboard's webhook
-  subscriptions are managed here as ordinary actions; wiring them into a w6w `TriggerDefinition`
-  needs the trigger RFC and was not asked for.
+- **Webhook triggers.** The two poll triggers are listed under Triggers. Productboard's webhook
+  subscriptions are managed here as ordinary actions; wiring them into a w6w webhook
+  `TriggerDefinition` was not done.
 - **`GET /v2/teams` writes** (`POST`/`PATCH`/`DELETE /teams`): team lifecycle is org administration,
   not workflow. `team-list` / `team-get` / `team-search` / `team-member-list` cover reading.
 
@@ -425,6 +426,9 @@ deno task test       # 221 unit tests, mocked HookContext, no network
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-note` — New Note | Poll | `note-list` | Each newly created record |
+| `new-note` — New Note | Poll | `note-list` | Each note created since the previous check |
+| `new-or-updated-note` — New or Updated Note | Poll | `note-list` | Each note created or edited since the previous check (the id carries `updatedAt`) |
 
-This poll wraps the existing `note-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.productboard.com/v2/openapi) (verified 2026-11-09).
+Productboard documents `createdFrom` / `updatedFrom` on `GET /v2/notes` (inclusive bounds) but no sort order, so the triggers call the existing `note-list` action with the filter set to the previous check minus a 10-minute overlap and de-duplicate by id. The first check records the current window without emitting events.
+
+Source: [List notes](https://developer.productboard.com/reference/listnotes) (verified 2026-11-10).

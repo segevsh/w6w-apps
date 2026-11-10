@@ -50,6 +50,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newNote from "./triggers/new-note.ts";
+import newOrUpdatedNote from "./triggers/new-or-updated-note.ts";
 import apiToken from "./auth/api-token.ts";
 
 // Entities — the unified product-hierarchy surface
@@ -164,5 +165,5 @@ export default {
   // the write scope). See `auth/api-token.ts` for the measurement.
   auth: [apiToken],
   healthChecks: [service, api, quota],
-  triggers: [newNote],
+  triggers: [newNote, newOrUpdatedNote],
 } satisfies AppDefinition;

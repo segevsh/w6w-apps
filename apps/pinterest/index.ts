@@ -48,7 +48,6 @@
  *     `user-account-get` to keep those two simple reads simple.
  */
 import type { AppDefinition } from "@w6w/types";
-import newPin from "./triggers/new-pin.ts";
 import oauth2 from "./auth/oauth2.ts";
 
 import boardCreate from "./actions/board-create.ts";
@@ -99,5 +98,4 @@ export default {
     adAccountGet,
   ],
   healthChecks: [service, quota],
-  triggers: [newPin],
 } satisfies AppDefinition;
