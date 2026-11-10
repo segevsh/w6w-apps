@@ -6,7 +6,7 @@ instance.
 - **Categories** — developer-tools, version-control
 - **Auth methods** — access-token, oauth2
 - **Actions** — 16
-- **Triggers** — 12 (webhook)
+- **Triggers** — 13 (12 webhook, 1 poll)
 - **Egress allowlist** — `gitlab.com`
 - **Website** — https://about.gitlab.com
 - **API docs** — https://docs.gitlab.com/ee/api/
@@ -34,7 +34,7 @@ self-hostable apps in this pack carry.
 
 ## Triggers
 
-Every trigger is a webhook trigger, signed on GitLab 19.0 or later (see the trust model below)
+Every trigger but `new-project` is a webhook trigger, signed on GitLab 19.0 or later (see the trust model below)
 ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)). Activating one
 registers a project webhook on GitLab for you (`POST /projects/:id/hooks`) and removes it when the
 trigger is deactivated. The token needs the `api` scope and the Maintainer role on the project.
@@ -52,6 +52,7 @@ trigger is deactivated. The token needs the `api` scope and the Maintainer role 
 | `deployment` — Deployment Event       | webhook   | Deployment events                | status, environment               |
 | `wiki-page` — Wiki Page Event         | webhook   | Wiki page events                 | action, page                      |
 | `milestone` — Milestone Event         | webhook   | Milestone events                 | action, milestone                 |
+| `new-project` — New Project           | poll      | `GET /projects` (membership)     | project                           |
 | `any-event` — Any Event               | webhook   | the kinds you list (blank = all) | kind, action, payload             |
 
 Every run also gets `kind` (GitLab's `object_kind`), `action`, `deliveryId` (`webhook-id`),
@@ -60,12 +61,15 @@ milestone triggers take an optional **Only these actions** list such as `open,me
 takes an **Events** list of GitLab webhook kinds (the payload's `object_kind`: `push`, `tag_push`,
 `issue`, `note`, `merge_request`, `wiki_page`, `pipeline`, `build`, `deployment`, `release`,
 `milestone`, `feature_flag`, `emoji`, `access_token`, `deploy_token`) and switches on exactly the
-matching project-hook flags (issues and comments also turn on their confidential flag); blank
+matching project-hook flags (issues and comments also turn on their confidential flag; the `emoji` flag is named only in the webhooks reference's test-trigger list, so an instance that ignores it delivers no emoji events); blank
 switches on all of them. Kinds the project hooks API has no flag for (vulnerability, work item,
 GitLab Duo flow) and the group-only kinds (group member, project, subgroup) cannot be registered
-this way and are not covered. Project, group and user lists (`project-get-many`, `issue-get-many`,
-`merge-request-get-many`, `release-get-many`) are not polled; the triggers above deliver the same
-records as they change.
+this way and are not covered. `new-project` is the one poll trigger: GitLab announces a created
+project only to group and system hooks, never to a project hook, so it reads the newest page of
+`project-get-many` (membership projects, newest first by default) and emits each project it has not
+seen; the first check records a baseline and emits nothing. `issue-get-many`,
+`merge-request-get-many` and `release-get-many` return the same records the `issue`, `merge-request`
+and `release` webhook triggers deliver as they change, so they are not polled.
 
 **Trust model.** On activation the app asks the instance `GET /api/v4/version` (same connection,
 same base URL as the actions) and picks one of two modes, stored on the subscription.

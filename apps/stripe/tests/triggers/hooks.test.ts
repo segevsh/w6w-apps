@@ -74,9 +74,9 @@ test("fixture: the body is not canonical JSON, so re-serialising would break the
   assertEquals(JSON.stringify(JSON.parse(BODY)) !== BODY, true);
 });
 
-test("the app declares twenty-nine webhook triggers, each with output and a sample", () => {
+test("the app declares thirty-three webhook triggers, each with output and a sample", () => {
   const triggers = app.triggers ?? [];
-  assertEquals(triggers.length, 29);
+  assertEquals(triggers.length, 33);
   for (const t of triggers) {
     assertEquals(typeof t.handleIngest, "function", t.key);
     assertEquals(typeof t.onSubscribe, "function", t.key);

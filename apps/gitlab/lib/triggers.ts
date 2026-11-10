@@ -90,6 +90,11 @@ export const KIND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   release: ["releases_events"],
   milestone: ["milestone_events"],
   feature_flag: ["feature_flag_events"],
+  // `emoji_events` is named by the project webhooks reference only in the "test a project webhook"
+  // trigger list (https://docs.gitlab.com/api/project_webhooks/, 2026-11-10), not in the add-hook
+  // attribute table, and no live instance was available to confirm the add endpoint takes it. It is
+  // kept so a named `emoji` kind or a blank Any Event asks for it; if an instance ignores the
+  // attribute, emoji events simply do not arrive (the README says so).
   emoji: ["emoji_events"],
   access_token: ["resource_access_token_events"],
   deploy_token: ["resource_deploy_token_events"],

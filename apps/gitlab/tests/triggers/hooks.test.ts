@@ -62,7 +62,7 @@ function ingest(
   );
 }
 
-test("app: twelve webhook triggers, each with output and sample", () => {
+test("app: twelve webhook triggers plus the new-project poll, each with output and sample", () => {
   assertEquals(app.triggers.map((t) => t.key), [
     "push",
     "merge-request",
@@ -75,11 +75,16 @@ test("app: twelve webhook triggers, each with output and sample", () => {
     "deployment",
     "wiki-page",
     "milestone",
+    "new-project",
     "any-event",
   ]);
   for (const t of app.triggers) {
     assert(t.output!.length > 0, `${t.key} output`);
     assert(t.sample !== undefined, `${t.key} sample`);
+    if (t.key === "new-project") {
+      assertEquals(typeof (t as { poll?: unknown }).poll, "function");
+      continue;
+    }
     assert(typeof t.onSubscribe === "function" && typeof t.onUnsubscribe === "function");
     assert(typeof t.handleIngest === "function");
     assertEquals(typeof (t as { poll?: unknown }).poll, "undefined");

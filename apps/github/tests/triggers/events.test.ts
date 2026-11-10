@@ -319,3 +319,26 @@ test("any-event: signature failures are refused before the event filter", async 
     );
   }
 });
+
+test("a signature differing from the right one in ONE character, at any position, is refused", async () => {
+  const sig = sign(BODY);
+  assertEquals(sig.length, "sha256=".length + 64);
+  for (const key of ["push", "any-event"]) {
+    let refused = 0;
+    for (let i = 0; i < sig.length; i++) {
+      const forged = sig.slice(0, i) + (sig[i] === "a" ? "b" : "a") + sig.slice(i + 1);
+      await assertRejects(
+        async () =>
+          await ingest(
+            key,
+            call(BODY, { ...headersFor("push"), "x-hub-signature-256": forged }),
+            stateFor("push"),
+          ),
+        Error,
+        "signature",
+      );
+      refused++;
+    }
+    assertEquals(refused, sig.length);
+  }
+});

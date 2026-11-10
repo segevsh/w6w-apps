@@ -410,3 +410,24 @@ test("any-event: token mode (a server before 19.0) still gates on X-Gitlab-Token
     [],
   );
 });
+
+test("a signature differing from the right one in ONE character, at any position, is refused", async () => {
+  const body = bodyFor("tag_push");
+  const good = headersFor(body);
+  const sig = good["webhook-signature"];
+  assertEquals(sig.length, "v1,".length + 44);
+  for (const [key, kind] of [["tag-push", "tag_push"], ["any-event", "any"]]) {
+    let refused = 0;
+    for (let i = 0; i < sig.length; i++) {
+      const forged = sig.slice(0, i) + (sig[i] === "A" ? "B" : "A") + sig.slice(i + 1);
+      await assertRejects(
+        async () =>
+          await ingest(key, call(body, { ...good, "webhook-signature": forged }), stateFor(kind)),
+        Error,
+        "signature",
+      );
+      refused++;
+    }
+    assertEquals(refused, sig.length);
+  }
+});

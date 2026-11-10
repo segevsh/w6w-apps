@@ -52,6 +52,10 @@ import paymentIntentCreatedTrigger from "./triggers/payment-intent-created.ts";
 import paymentIntentCanceledTrigger from "./triggers/payment-intent-canceled.ts";
 import chargeSucceededTrigger from "./triggers/charge-succeeded.ts";
 import chargeFailedTrigger from "./triggers/charge-failed.ts";
+import chargeUpdatedTrigger from "./triggers/charge-updated.ts";
+import chargeCapturedTrigger from "./triggers/charge-captured.ts";
+import invoiceUpdatedTrigger from "./triggers/invoice-updated.ts";
+import invoiceDeletedTrigger from "./triggers/invoice-deleted.ts";
 import refundCreatedTrigger from "./triggers/refund-created.ts";
 import refundUpdatedTrigger from "./triggers/refund-updated.ts";
 import productCreatedTrigger from "./triggers/product-created.ts";
@@ -147,6 +151,10 @@ export default {
     paymentIntentCanceledTrigger,
     chargeSucceededTrigger,
     chargeFailedTrigger,
+    chargeUpdatedTrigger,
+    chargeCapturedTrigger,
+    invoiceUpdatedTrigger,
+    invoiceDeletedTrigger,
     refundCreatedTrigger,
     refundUpdatedTrigger,
     productCreatedTrigger,

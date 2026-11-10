@@ -10,7 +10,7 @@ const wikiPage = webhookTrigger({
   flag: "wiki_page_events",
   hasActions: true,
   output: [
-    { key: "payload.wiki_page", type: "object", label: "Wiki page" },
+    { key: "payload.wiki", type: "object", label: "Wiki page" },
     { key: "payload.object_attributes", type: "object", label: "Page attributes" },
     { key: "payload.object_attributes.title", type: "string", label: "Title" },
     { key: "payload.object_attributes.url", type: "string", label: "URL" },
@@ -19,6 +19,10 @@ const wikiPage = webhookTrigger({
     object_kind: "wiki_page",
     user: { username: "jsmith" },
     project: { path_with_namespace: "gitlab-org/gitlab-test" },
+    wiki: {
+      web_url: "https://example.com/gitlab-org/gitlab-test/-/wikis/home",
+      path_with_namespace: "gitlab-org/gitlab-test.wiki",
+    },
     object_attributes: {
       title: "Awesome",
       slug: "awesome",

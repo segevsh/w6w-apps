@@ -45,12 +45,18 @@ actions** list such as `opened,closed`. **Any Event** takes an **Events** list o
 registers it for every event (`["*"]`, which GitHub documents for organization webhooks — the
 repository webhooks reference is silent on it, so an unusual repository may refuse it with GitHub's
 own message). Events that only an organization, enterprise or GitHub App can receive
-(`installation`, `organization`, `team`, `membership`, `marketplace_purchase`, and similar) cannot
-come from a repository webhook and are not covered.
+(`installation`, `organization`, `team`, `membership`, `marketplace_purchase`, `projects_v2`,
+`projects_v2_item`, `projects_v2_status_update`, and similar) cannot come from a repository webhook
+and are not covered.
 
-Not covered as a list feed: `release-get-many`, `pull-request-get-many`, `repository-get-issues`,
-`organization-get-repositories`, `user-get-repositories` and `workflow-get-many` are not polled; the
-webhook triggers above deliver the same records as they change.
+Lists and triggers: `pull-request-get-many` and `release-get-many` return the same records the
+`pull-request` and `release` triggers deliver as they change, so they are not polled.
+`workflow-get-many` lists the workflow definition files under `.github/workflows` (configuration,
+not an event feed); GitHub sends no event when one is added, so it is not covered and a change to
+one arrives as a `push`. `repository-get-issues` is the `issue` trigger's records;
+`organization-get-repositories` and `user-get-repositories` list an account's repositories, which a
+repository webhook cannot announce (a repository event comes from an organization or app webhook),
+so they are not covered by a trigger.
 
 **Trust model.** On activation a random 256-bit secret is generated per subscription and given to
 GitHub as the webhook's secret; it is kept in the subscription's state next to the webhook id. Each
@@ -59,7 +65,10 @@ checked, in constant time, before the body is read; a delivery with no signature
 no secret on record is refused and starts no run. GitHub's `ping` is acknowledged without a run.
 Only `X-Hub-Signature-256` is accepted (never the legacy SHA-1 header). GitHub sends no signed
 timestamp, so a captured delivery is replayable; the per-subscription secret and callback URL limit
-who could capture one.
+who could capture one. The `X-GitHub-Event` header is outside GitHub's body signature, so a captured
+delivery could also be replayed under another event name that the subscription accepts (an Any
+Event trigger with several events or blank); the signed body, not the header, is what GitHub vouches
+for.
 
 Vendor docs (verified 2026-11-10):
 [webhook events and payloads](https://docs.github.com/en/webhooks/webhook-events-and-payloads),

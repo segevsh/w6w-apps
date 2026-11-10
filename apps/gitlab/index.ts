@@ -45,6 +45,7 @@ import job from "./triggers/job.ts";
 import deployment from "./triggers/deployment.ts";
 import wikiPage from "./triggers/wiki-page.ts";
 import milestone from "./triggers/milestone.ts";
+import newProject from "./triggers/new-project.ts";
 import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -86,6 +87,7 @@ export default {
     deployment,
     wikiPage,
     milestone,
+    newProject,
     anyEvent,
   ],
   auth: [accessToken, oauth2],

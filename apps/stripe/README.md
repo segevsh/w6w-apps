@@ -5,7 +5,7 @@ Manage Stripe customers, payments, refunds, invoices, subscriptions, catalogue a
 - **Categories** — commerce, finance
 - **Auth methods** — api-key
 - **Actions** — 25
-- **Triggers** — 29 (webhook)
+- **Triggers** — 33 (webhook)
 - **Egress allowlist** — `api.stripe.com`
 - **Website** — https://stripe.com
 - **API docs** — https://docs.stripe.com/api
@@ -33,10 +33,14 @@ Stripe no longer has counts as deleted). Nothing to configure by hand.
 | `invoice-created` | webhook | `invoice.created` | the event and the Invoice |
 | `invoice-finalized` | webhook | `invoice.finalized` | the event and the Invoice |
 | `invoice-voided` | webhook | `invoice.voided` | the event and the Invoice |
+| `invoice-updated` | webhook | `invoice.updated` | the event and the Invoice after the change, and previousAttributes holds the old values |
+| `invoice-deleted` | webhook | `invoice.deleted` | the event and the deleted Invoice |
 | `payment-intent-created` | webhook | `payment_intent.created` | the event and the PaymentIntent |
 | `payment-intent-canceled` | webhook | `payment_intent.canceled` | the event and the PaymentIntent with its cancellation reason |
 | `charge-succeeded` | webhook | `charge.succeeded` | the event and the Charge |
 | `charge-failed` | webhook | `charge.failed` | the event and the Charge with its failure code and message |
+| `charge-updated` | webhook | `charge.updated` | the event and the Charge after the change, and previousAttributes holds the old values |
+| `charge-captured` | webhook | `charge.captured` | the event and the Charge |
 | `refund-created` | webhook | `refund.created` | the event and the Refund |
 | `refund-updated` | webhook | `refund.updated` | the event and the Refund |
 | `product-created` | webhook | `product.created` | the event and the Product |
