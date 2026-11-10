@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/missive",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage Missive conversations and contacts, and trigger workflows on new or updated contacts.",
   "license": "MIT",
   "author": {

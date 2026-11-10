@@ -102,6 +102,14 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newComment from "./triggers/new-comment.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newDraft from "./triggers/new-draft.ts";
+import newMessage from "./triggers/new-message.ts";
+import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newPost from "./triggers/new-post.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -161,7 +169,17 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
-  triggers: [newOrUpdatedContact],
+  triggers: [
+    newOrUpdatedContact,
+    newComment,
+    newConversation,
+    newDraft,
+    newMessage,
+    newOrUpdatedConversation,
+    newOrUpdatedTask,
+    newPost,
+    newTask,
+  ],
   // API token only. Missive publishes no OAuth surface for third-party apps.
   auth: [apiToken],
   healthChecks: [service, quota],

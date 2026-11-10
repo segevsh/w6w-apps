@@ -6,6 +6,7 @@ labels, teams, and canned responses, on the **Missive REST API v1**.
 - **Categories** — communication, support, productivity
 - **Auth methods** — api-token
 - **Actions** — 42
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 (~~`service`~~, ~~`quota`~~), both declared absences, plus the derived
   `auth:api-token`
 - **Egress allowlist** — `public.missiveapp.com`
@@ -267,4 +268,16 @@ cd ../../_tools && deno run --no-check -A audit.ts missive
 
 ## Triggers
 
-- **New or Updated Contact** wraps `contact-list` with `order=last_modified`. [Missive contacts](https://missiveapp.com/docs/developers/rest-api/endpoints), verified 2026-11-09.
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-or-updated-contact` | New or Updated Contact | Poll | `contact-list` (`order=last_modified`) | Each new or modified contact |
+| `new-conversation` | New Conversation | Poll | `conversation-list` (newest activity first) | Each new conversation in a mailbox |
+| `new-or-updated-conversation` | New or Updated Conversation | Poll | `conversation-list` (newest activity first) | Each newly active conversation in a mailbox |
+| `new-comment` | New Conversation Comment | Poll | `conversation-comments-list` | Each new comment in a conversation |
+| `new-draft` | New Conversation Draft | Poll | `conversation-drafts-list` | Each new draft in a conversation |
+| `new-message` | New Conversation Message | Poll | `conversation-messages-list` | Each new message in a conversation |
+| `new-post` | New Conversation Post | Poll | `conversation-posts-list` | Each new post in a conversation |
+| `new-task` | New Task | Poll | `task-list` (newest activity first) | Each new task |
+| `new-or-updated-task` | New or Updated Task | Poll | `task-list` (newest activity first) | Each newly active task |
+
+All poll triggers use the vendor's newest-first list order and a one-page seen-ID window. [Missive REST API endpoints](https://missiveapp.com/docs/developers/rest-api/endpoints), verified 2026-11-10.
