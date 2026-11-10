@@ -71,6 +71,7 @@ const basic: AuthDefinition = {
   fields: [
     {
       key: "email",
+      credentialRole: "username",
       label: "Email",
       type: "string",
       required: true,
@@ -80,6 +81,7 @@ const basic: AuthDefinition = {
     },
     {
       key: "apiKey",
+      credentialRole: "password",
       label: "API Key",
       type: "secret",
       required: true,

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/nutshell",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Nutshell CRM leads, accounts (companies) and contacts (people), and log notes, over Nutshell's JSON-RPC API.",
   "license": "MIT",
   "author": {
