@@ -77,4 +77,4 @@ Files and discovery: `file-list`, `file-delete` (by ids only), `features-list`, 
 - Decisions, collections and the Management API
 - The EU host `api.eu.edenai.run` (single allowlisted host kept deliberately)
 
-Triggers: not shipped — async-job and file lists hold only the caller's own submitted jobs and uploads, with no documented order or since filter; job-completion callbacks are a per-request `webhook_receiver` on each job start, not an account subscription (https://www.edenai.co/docs/v3/expert-models/webhooks.md).
+Triggers: not shipped — async-job and file lists hold only the caller's own submitted jobs and uploads, and Eden AI's webhook is a per-request `webhook_receiver` completion callback for a job the caller starts (an `async_job_completed` event, not an account subscription), signed with an RSA key (the public key comes from Eden AI support) over a canonical re-serialisation of the payload (sorted keys, 2-space indent), not over the raw body (https://www.edenai.co/docs/v3/expert-models/webhooks.md, checked 2026-11-10).

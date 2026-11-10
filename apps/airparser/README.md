@@ -1,13 +1,12 @@
 # Airparser
 
-Triggers: not shipped — document-list has from/to date filters, but Airparser's API reference documents `GET /inboxes/<id>/docs` (page, per_page, from, to, q, status) with no response body or result order, and `inbox-list` has the same undocumented envelope, so neither can be identified or ordered reliably; the action's own header records that the envelope is undocumented (https://help.airparser.com/public-api/public-api).
-
 Parse emails and documents — PDF, DOCX, XLSX, CSV, HTML, images and more — into structured JSON
 using an AI extraction schema, on Airparser's **Public API**.
 
 - **Categories** — ai, documents
 - **Auth methods** — api-key
 - **Actions** — 11
+- **Triggers** — 1 (webhook)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.airparser.com` (the `service` check adds `status.airparser.com` to its
   own hook allowlist, never to the app's)
@@ -95,6 +94,24 @@ there is no such trap to avoid here. `GET /inboxes` was chosen instead because i
   stand in for one, and
 - **needs no id the caller might not have yet**, unlike every document/inbox/schema action here,
   every one of which needs an inbox or document id.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `document-parsed` — Document Parsed | webhook (manual, signed) | Airparser calls the webhook every time a new document is parsed | document id, name, status, timestamps, credits used, the extracted data (`json`) and the full payload |
+
+**Setup (manual webhook).** Airparser webhooks are created in the dashboard, not through the Public API this app calls, so:
+
+1. Create the trigger and copy its callback URL.
+2. In Airparser open **Integrations, Webhooks**, choose **Create a webhook** and paste the URL.
+3. Copy the webhook's **Signing Secret** and paste it into the trigger's `signingSecret` param.
+
+**Trust model.** Airparser signs each delivery with the webhook's own Signing Secret and sends the base64 HMAC-SHA256 of the exact request body in the `airparser-signature` header. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. Airparser's signature carries no timestamp, so a captured delivery can be replayed. Airparser documents the payload only as "similar to" the `GET /docs/<id>` response, so the trigger maps those documented fields (`_id`, `name`, `status`, `created_at`, `processed_at`, `filename`, `credits`, `json`) and always keeps the whole delivery in `payload`.
+
+No poll trigger: `document-list` and `inbox-list` have undocumented response envelopes and orders, so neither can be identified or ordered reliably (https://help.airparser.com/public-api/public-api).
+
+Docs (verified 2026-11-10): https://help.airparser.com/data-export-integrations/webhooks and https://help.airparser.com/public-api/public-api
 
 ## Actions
 

@@ -1,13 +1,12 @@
 # Adyen
 
-Triggers: not shipped — list-stored-payment-methods is a per-shopper lookup (merchantAccount + shopperReference) and list-donation-campaigns is a configuration lookup, so neither is a record feed; payment events come only by webhook (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods).
-
 Payment sessions, payments, payment links, captures, refunds, cancels, stored payment methods,
 donations and partial-payment orders on **Adyen's Checkout API v72**.
 
 - **Categories** — commerce
 - **Auth methods** — api-key (`X-API-Key` header)
 - **Actions** — 24
+- **Triggers** — 4 (webhook)
 - **Health checks** — 2 declared (`api`, ~~`service`~~, ~~`quota`~~ — `service` and `quota` are declared absences) + the derived `auth:api-key`
 - **Egress allowlist** — `checkout-test.adyen.com` and `*.adyenpayments.com` (the wildcard covers every merchant-specific live host)
 - **Website** — https://www.adyen.com/
@@ -57,6 +56,27 @@ answer `authorised` or `refused`): the request was accepted, not completed. The 
 webhook (CAPTURE, CANCELLATION, REFUND, ...). Money-moving POSTs send the workflow invocation id as Adyen's
 `Idempotency-Key` (a header on every POST in the spec, 64 characters at most), so a retried step does not repeat
 the charge or refund. `idempotent` is nonetheless `false` on them, because without an invocation id there is no key.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `payment-authorisation` — Payment Authorisation | webhook (manual, signed) | `AUTHORISATION` | event code, success flag, PSP and merchant references, amount, currency, payment method |
+| `payment-capture` — Payment Capture | webhook (manual, signed) | `CAPTURE` | the same, with the original payment's reference |
+| `payment-cancellation` — Payment Cancellation | webhook (manual, signed) | `CANCELLATION` | the same, with the original payment's reference |
+| `payment-refund` — Payment Refund | webhook (manual, signed) | `REFUND` | the same, with the original payment's reference |
+
+**Setup (manual webhook).** Adyen webhooks are created in the Customer Area, not through the Checkout API this app calls, so:
+
+1. Create the trigger and copy its callback URL.
+2. In the Customer Area open **Developers, Webhooks**, add (or edit) a **Standard webhook**, set the **URL** to the callback URL, the **Method** to **JSON**, and make sure the event code is enabled under **Events** (Adyen lists which codes are on by default and which you enable on the Standard webhook page).
+3. Under **Security** generate an **HMAC key**, copy it, and paste it into the trigger's `hmacKey` param. Test and live need separate webhooks and keys.
+
+**Trust model.** Adyen signs each notification item with `additionalData.hmacSignature`: a base64 HMAC-SHA256, keyed by the binary form of the hex HMAC key, over eight fields joined with `:` (`pspReference`, `originalReference`, `merchantAccountCode`, `merchantReference`, `amount.value`, `amount.currency`, `eventCode`, `success`). The trigger recomputes it in constant time for every item before it emits anything; a missing key, a key that is not hexadecimal, a missing signature, an absent raw body or a mismatch refuses the whole delivery. Two limits come from Adyen's scheme, not the trigger: the signature covers only those eight fields (not `eventDate`, `reason` or `additionalData`), and it carries no timestamp, so a captured item can be replayed. Adyen resends an event with the same `eventCode` and `pspReference` when a delivery fails, so a workflow should dedupe on that pair. Deliveries for other event codes are acknowledged without a run. Only the JSON method of the Standard webhook is supported (not HTTP POST or SOAP, and not the platform webhooks that sign in a header).
+
+No poll trigger: the list actions (`list-stored-payment-methods`, `list-donation-campaigns`) are per-shopper and configuration lookups, not payment feeds.
+
+Docs (verified 2026-11-10): https://docs.adyen.com/development-resources/webhooks/configure-and-manage, https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures and https://docs.adyen.com/development-resources/webhooks/webhook-types
 
 ## Actions
 

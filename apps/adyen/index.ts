@@ -28,6 +28,10 @@ import listDonationCampaigns from "./actions/list-donation-campaigns.ts";
 import getCardDetails from "./actions/get-card-details.ts";
 import createOrder from "./actions/create-order.ts";
 import cancelOrder from "./actions/cancel-order.ts";
+import paymentAuthorisation from "./triggers/payment-authorisation.ts";
+import paymentCapture from "./triggers/payment-capture.ts";
+import paymentCancellation from "./triggers/payment-cancellation.ts";
+import paymentRefund from "./triggers/payment-refund.ts";
 
 export default {
   actions: [
@@ -57,5 +61,6 @@ export default {
     cancelOrder,
   ],
   auth: [apiKey],
+  triggers: [paymentAuthorisation, paymentCapture, paymentCancellation, paymentRefund],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

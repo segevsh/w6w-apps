@@ -71,4 +71,4 @@ Plus the derived `auth:api-key` check from the connection test.
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
 
-Triggers: not shipped — enrichment is an asynchronous submitted-job API with no list of account records; the configured default webhook is queued separately (https://developer.dropcontact.com/).
+Triggers: not shipped — Dropcontact's webhook (a per-request `custom_callback_url` or the one account default) only delivers the results of an enrichment batch you submitted yourself, an `enrich_api_result` job-completion callback with no account event stream, and the docs describe no signature or secret, so deliveries could not be verified (https://developer.dropcontact.com/en/webhooks/, checked 2026-11-10).
