@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 46, manual-webhook: 12, poll: 395, none: 230
+**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 395, none: 230
 
-## webhook-api (46)
+## webhook-api (44)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -38,13 +38,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/gocanvas | dispatch_create, submission_create, submission_edit, workflow_handoff_create, submission_custom_status_change | apps/gocanvas/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create |
 | apps/gumroad | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/helpscout | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/intercom | conversation-created, contact-created | no | hand | vendor ships a webhook API (model knowledge; not verified against docs) |
 | apps/invoiceninja | invoice-webhook, new-invoice | apps/invoiceninja/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/jotform | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/lemlist | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/linear | comment, cycle, issue, project | apps/linear/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/mailerlite | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/mailgun | message-delivered, message-opened | no | hand | vendor ships a webhook API (model knowledge; not verified against docs) |
+| apps/mailgun | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
 | apps/mautic | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/onfleet | task-assigned, task-completed, task-created, task-failed, task-started, task-updated | apps/onfleet/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/paypal | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -53,7 +52,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/stripe | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/surveymonkey | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/todoist | task-added, task-completed | no | hand | vendor ships a webhook API (model knowledge; not verified against docs) |
 | apps/toggl | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | new-response | apps/typeform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/webex | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -61,7 +59,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (12)
+## manual-webhook (14)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -69,12 +67,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/cognitoforms | entry submitted | no | hand | webhook candidate queued for a webhook node: entry submitted |
 | apps/customerio | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/formspark | submission.created | apps/formspark/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission.created |
+| apps/intercom | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-lead-ads | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/whatsapp | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/netlify | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/slack | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/strava | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/todoist | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 

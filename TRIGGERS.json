@@ -3013,14 +3013,14 @@
   },
   {
     "path": "apps/intercom",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "conversation-created",
       "contact-created"
     ],
     "pollAction": null,
-    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
-    "verified": false,
+    "reason": "signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order",
+    "verified": "apps/intercom/README.md Triggers section (verified 2026-11-09)",
     "source": "hand"
   },
   {
@@ -3676,12 +3676,11 @@
     "path": "apps/mailgun",
     "mechanism": "webhook-api",
     "candidates": [
-      "message-delivered",
-      "message-opened"
+      "email-event"
     ],
     "pollAction": null,
-    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
-    "verified": false,
+    "reason": "API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature",
+    "verified": "apps/mailgun/README.md Triggers section (verified 2026-11-09)",
     "source": "hand"
   },
   {
@@ -6347,14 +6346,15 @@
   },
   {
     "path": "apps/todoist",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "task-added",
-      "task-completed"
+      "task-completed",
+      "task-updated"
     ],
     "pollAction": null,
-    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
-    "verified": false,
+    "reason": "signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed)",
+    "verified": "apps/todoist/README.md Triggers section (verified 2026-11-09)",
     "source": "hand"
   },
   {
