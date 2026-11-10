@@ -3,6 +3,7 @@ import newContact from "./triggers/new-contact.ts";
 import newChannel from "./triggers/new-channel.ts";
 import newContactList from "./triggers/new-contact-list.ts";
 import newContactListMembership from "./triggers/new-contact-list-membership.ts";
+import newConversationMessage from "./triggers/new-conversation-message.ts";
 import newConversation from "./triggers/new-conversation.ts";
 import newFile from "./triggers/new-file.ts";
 import newInbox from "./triggers/new-inbox.ts";
@@ -131,6 +132,7 @@ export default {
     newContactList,
     newContactListMembership,
     newConversation,
+    newConversationMessage,
     newFile,
     newInbox,
     newTemplateFolder,
