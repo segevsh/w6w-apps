@@ -225,14 +225,22 @@ Every URL below was verified live on 2026-09-05.
 
 ## Triggers
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 4 (poll)
 
 | Trigger | Mechanism | Wraps | The run gets |
 |---|---|---|---|
 | `new-document` — New Document | poll | `document-search` (no query) | the new document |
+| `new-template` — New Template | poll | `template-list` | the new template |
+| `new-team-member` — New Team Member | poll | `team-member-list` | the new team member |
+| `new-team` — New Team | poll | `team-list` | the new team |
 
 Each check reads page 1 (`limit=100`) of `GET /documents-search/` with no `q`, `name` or `autocomplete`, which SignRequest documents as ordered by `created`, newest first, and emits the documents it has not seen. The first check records the current page and emits nothing. `document-search` lists the account's own documents; documents of a team subdomain are not covered because the action does not expose `subdomain`.
 
+
+Templates, team members and teams are small bounded collections: each check reads every page (`page=N&limit=100` until `next` is empty, at most 20 pages) and emits ids not seen before; the first check records them and emits nothing. `document-list` returns the same documents as `new-document` (covered by it).
+
+Not covered: `event-list` (document/signer event log: swagger.json documents no ordering and `timestamp` is an exact-match filter only, history is unbounded; the same events are delivered by the team `events_callback_url`, queued as a webhook candidate), `signrequest-list` (swagger.json documents only `who`/`from_email` filters, no order or since-filter, unbounded), `document-attachment-list` (only an exact `created` filter and no order, unbounded), `audit-event-list` (login/security audit log), `webhook-list` (the team's own webhook subscription configuration).
+
 Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `document-search` with the connection's credentials.
 
-Vendor docs: https://signrequest.com/api/v1/docs/?format=openapi (verified 2026-11-09: the `/documents-search/` description says documents are "ordered by created (newest first) when q, autocomplete or name are not used"; `/documents/` documents no order, so `document-list` is not used)
+Vendor docs: https://signrequest.com/api/v1/schema/swagger.json (verified 2026-11-10: `/documents-search/` is described as ordered by created, newest first, when q, autocomplete or name are not used; `/documents/` documents no order, so `document-list` is covered by `new-document`; `/templates/`, `/team-members/` and `/teams/` take only `page`/`limit` and exact-match filters, hence the snapshot shape; `/events/`, `/signrequests/`, `/document-attachments/` document no order or range filter)
