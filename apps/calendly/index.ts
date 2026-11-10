@@ -17,6 +17,13 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import inviteeCreated from "./triggers/invitee-created.ts";
 import inviteeCanceled from "./triggers/invitee-canceled.ts";
+import inviteeNoShowCreated from "./triggers/invitee-no-show-created.ts";
+import inviteeNoShowDeleted from "./triggers/invitee-no-show-deleted.ts";
+import eventTypeCreated from "./triggers/event-type-created.ts";
+import eventTypeUpdated from "./triggers/event-type-updated.ts";
+import eventTypeDeleted from "./triggers/event-type-deleted.ts";
+import routingFormSubmissionCreated from "./triggers/routing-form-submission-created.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -41,6 +48,16 @@ export default {
   ],
   // PAT first (single-account default), OAuth for public integrations.
   auth: [personalAccessToken, oauth2],
-  triggers: [inviteeCreated, inviteeCanceled],
+  triggers: [
+    inviteeCreated,
+    inviteeCanceled,
+    inviteeNoShowCreated,
+    inviteeNoShowDeleted,
+    eventTypeCreated,
+    eventTypeUpdated,
+    eventTypeDeleted,
+    routingFormSubmissionCreated,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
