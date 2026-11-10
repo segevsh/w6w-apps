@@ -37,6 +37,12 @@ import alertList from "./actions/alert-list.ts";
 import eventList from "./actions/event-list.ts";
 import processList from "./actions/process-list.ts";
 import newEvent from "./triggers/new-event.ts";
+import newAlert from "./triggers/new-alert.ts";
+import newCluster from "./triggers/new-cluster.ts";
+import newDatabaseUser from "./triggers/new-database-user.ts";
+import newFlexCluster from "./triggers/new-flex-cluster.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newProject from "./triggers/new-project.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -60,7 +66,15 @@ const app: AppDefinition = {
     eventList,
     processList,
   ],
-  triggers: [newEvent],
+  triggers: [
+    newEvent,
+    newAlert,
+    newCluster,
+    newDatabaseUser,
+    newFlexCluster,
+    newOrganization,
+    newProject,
+  ],
   auth: [serviceAccount],
   healthChecks: [service, credential, quota],
 };

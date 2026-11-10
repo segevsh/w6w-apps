@@ -5,6 +5,7 @@ Manage JumpCloud users, devices, groups and remote commands from one directory.
 - **Categories** — security, devops, hr
 - **Auth methods** — api-key
 - **Actions** — 31
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `console.jumpcloud.com`, `console.eu.jumpcloud.com`,
   `console.in.jumpcloud.com`
 - **Website** — https://jumpcloud.com
@@ -254,3 +255,22 @@ The trigger polls every 5 minutes, read one page of 100 from the app's existing 
 Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
 
 Vendor documentation: https://docs.jumpcloud.com/api/1.0/index.yaml (verified 2026-11-09). Its `systemusers_list` operation documents `sort` ("Default sort is ascending, prefix with `-` to sort descending") and the `SystemUserReturn` schema carries the `created` field. The V1 users list has no documented update-time field, so no new-or-updated trigger ships. (User groups were dropped: the V2 `UserGroup` schema at https://docs.jumpcloud.com/api/2.0/index.yaml has no creation field to sort on.)
+
+### More triggers (depth, verified 2026-11-10)
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Device (`new-system`) | poll | `system-list` by `created` descending (`sort=-created`) | each newly enrolled device |
+| New Command Result (`new-command-result`) | poll | `command-result-list` by `requestTime` descending (`sort=-requestTime`) | each newly reported command result |
+| New Command (`new-command`) | poll | `command-list`, whole collection diffed by id | each saved command newly added |
+| New Organization (`new-organization`) | poll | `organization-list`, whole collection diffed by id | each organization newly visible to the key |
+| New Device Group (`new-system-group`) | poll | `system-group-list`, whole collection diffed by id | each device group newly created |
+| New User Group (`new-user-group`) | poll | `user-group-list`, whole collection diffed by id | each user group newly created |
+| New User Group Member (`new-user-group-member`) | poll | `user-group-member-list` (effective membership) for the chosen `groupId` | each user newly added to that group |
+| New User SSH Key (`new-user-sshkey`) | poll | `user-sshkey-list` for the chosen `userId` | each SSH key newly added to that user |
+
+Sorted shapes: the V1 `/systems` and `/commandresults` operations document `sort` ("Default sort is ascending. Prefix with `-` to sort descending.") and a `limit` capped at 100; the `System` schema carries `created` and the command result carries `requestTime`, so those two read one page of 100 newest-first and dedupe by `_id`. Every other new trigger is a bounded-collection snapshot: `/commands`, `/organizations`, the V2 `/systemgroups`, `/usergroups`, `/usergroups/{id}/membership` and `/systemusers/{id}/sshkeys` document no sort order and (for commands, groups and organizations) no creation field, so each check reads the whole collection through the existing list action (100 per page) and emits only ids not seen before (capped at 5000 rows). The first check records what exists without firing.
+
+Not covered: none; every list action is behind a trigger.
+
+Vendor documentation: https://docs.jumpcloud.com/api/1.0/index.yaml and https://docs.jumpcloud.com/api/2.0/index.yaml (verified 2026-11-10).
