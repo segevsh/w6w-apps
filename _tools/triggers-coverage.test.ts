@@ -52,6 +52,7 @@ import {
   renderMarkdown,
   scanDepth,
   type TriggerRow,
+  unknownDepthApps,
 } from "./triggers-coverage.ts";
 
 function fixture(): { root: string; rows: TriggerRow[] } {
@@ -178,6 +179,58 @@ Deno.test("isListAction: classifier table", () => {
   ) assertEquals(isListAction(s, read), false, s);
   // type must be read/search
   assertEquals(isListAction("list-contacts", 'type: "write",'), false);
+  // many/all tokens are list, even under a get- prefix
+  for (
+    const s of [
+      "contact-get-many",
+      "get-many-users",
+      "get-all-orders",
+      "form-get-many",
+    ]
+  ) assertEquals(isListAction(s, read), true, s);
+  // single-record stems ending get/info/details are not list
+  for (
+    const s of [
+      "list-get",
+      "price-list-get",
+      "contact-list-get",
+      "search-get",
+      "list-fields-get",
+      "list-info",
+      "search-details",
+    ]
+  ) assertEquals(isListAction(s, read), false, s);
+  // a mutation verb still beats many/all
+  assertEquals(isListAction("delete-all-contacts", read), false);
+});
+
+Deno.test("unknownDepthApps: names the --app paths not in the scan", () => {
+  const scan = { apps: { "apps/a": {} }, n8nMeasured: false } as never;
+  assertEquals(unknownDepthApps(scan, ["apps/a", "apps/nope"]), ["apps/nope"]);
+  assertEquals(unknownDepthApps(scan, []), []);
+});
+
+Deno.test("--depth --app <unknown>: error line and exit 1 (subprocess)", async () => {
+  const out = await new Deno.Command(Deno.execPath(), {
+    args: [
+      "run",
+      "-A",
+      "--no-lock",
+      new URL("./triggers-coverage.ts", import.meta.url).pathname,
+      "--depth",
+      "--app",
+      "apps/definitely-not-an-app",
+    ],
+    stdout: "piped",
+    stderr: "piped",
+  }).output();
+  assertEquals(out.code, 1);
+  assertEquals(
+    new TextDecoder().decode(out.stderr).includes(
+      "no such app: apps/definitely-not-an-app",
+    ),
+    true,
+  );
 });
 
 /** Fixture: apps/d has 4 list actions; one backed by import, one covers, one skipped. */

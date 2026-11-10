@@ -6360,12 +6360,49 @@
     "mechanism": "poll",
     "candidates": [
       "new-answer",
-      "new-or-updated-answer"
+      "new-or-updated-answer",
+      "new-comment",
+      "new-or-updated-associated-account",
+      "new-question",
+      "new-or-updated-question",
+      "new-user",
+      "new-or-updated-user",
+      "new-tag-synonym",
+      "new-or-updated-user-badge",
+      "new-user-reputation-change"
     ],
-    "pollAction": "user-answer-list",
-    "reason": "sort=creation / sort=activity with order=desc, documented sorts on creation_date / last_activity_date (https://api.stackexchange.com/docs/answers-on-users); idOf of the update trigger includes last_activity_date",
-    "verified": "apps/stackexchange/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "question-list",
+    "reason": "Newest-first question, comment, user and tag-synonym feeds; fromdate-filtered reputation changes; bounded snapshots for associated accounts and a user's badges; documented creation/activity/modified sorts (https://api.stackexchange.com/docs).",
+    "verified": "apps/stackexchange/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "answer-comment-list": "new-comment",
+      "answer-list": "new-answer",
+      "question-answer-list": "new-answer",
+      "question-comment-list": "new-comment",
+      "question-featured-list": "new-question",
+      "question-linked-list": "new-question",
+      "question-no-answer-list": "new-question",
+      "question-related-list": "new-question",
+      "question-unanswered-list": "new-question",
+      "search-advanced": "new-question",
+      "search-excerpt": "new-question",
+      "search": "new-question",
+      "similar-question-list": "new-question",
+      "tag-faq-list": "new-question",
+      "user-question-list": "new-question"
+    },
+    "skipped": {
+      "badge-list": "reference catalogue of badge definitions",
+      "moderator-list": "administrative moderator roster",
+      "privilege-list": "reference catalogue of reputation privileges",
+      "site-list": "reference catalogue of network sites",
+      "tag-list": "no creation-time sort: the documented sorts are popular, activity and name, so a new tag cannot be read newest-first (https://api.stackexchange.com/docs/tags)",
+      "tag-related-list": "ranked related-tag recommendation analytics, not a change feed",
+      "tag-top-answerer-list": "ranked top-answerer analytics",
+      "tag-top-asker-list": "ranked top-asker analytics",
+      "user-tag-list": "per-user ranked tag activity analytics"
+    }
   },
   {
     "path": "apps/statuspage",
