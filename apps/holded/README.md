@@ -177,6 +177,8 @@ node.
 ## Layout
 
 ```
+
+Triggers: not shipped — CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference).
 holded/
 ├── index.ts                  # AppDefinition: 22 actions, 1 auth, 2 health checks
 ├── lib/client.ts              # base URL, request/write/delete, error taxonomy, JSON helpers

@@ -65,3 +65,5 @@ about whether fields travel in the query or the body, so they were left out rath
 Hyros publishes no status page or feed (`status.hyros.com` does not resolve), so the service check
 is declared `unavailable` with `informational` severity. Credential liveness is covered by the
 auth test.
+
+Triggers: not shipped — record lists accept date filters but expose neither documented newest-first ordering nor a stable incremental cursor for a safe poll (https://jsapi.apiary.io/apis/hyros.apib).

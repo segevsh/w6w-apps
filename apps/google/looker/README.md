@@ -219,3 +219,5 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **both query actions reject a
 non-positive limit**, **`query-run` maps the Explore onto `view`**, and no
 action logs a result row, a recipient address or an email.
+
+Triggers: not shipped — existing dashboard and Look actions read unbounded collections without a newest-first order or since filter (https://cloud.google.com/looker/docs/reference/looker-api/latest).

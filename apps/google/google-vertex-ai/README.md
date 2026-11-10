@@ -121,3 +121,5 @@ is not in the v1 discovery document, so it is omitted.
 
 `assets/icon.svg` is the vendor's mark, byte-for-byte from
 `https://www.gstatic.com/cloud/images/navigation/vertex-ai.svg`.
+
+Triggers: not shipped — batch prediction job listing has no documented newest-first order or created/updated-since filter (https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.batchPredictionJobs/list).

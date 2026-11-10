@@ -251,3 +251,5 @@ source — no global `fetch`, no `Deno.*`, no credential handling outside the au
 hook — plus two specific to this app: `state-set` must keep its device guard,
 `history-get` must keep requiring entity ids, and nothing logs a state value, a
 template, event data or log content, because these entities are somebody's house.
+
+Triggers: not shipped — state listing is an uncapped full instance snapshot with no server-side change filter (https://developers.home-assistant.io/docs/api/rest/).

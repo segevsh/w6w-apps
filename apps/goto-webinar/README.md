@@ -131,3 +131,5 @@ Researched and endpoint-verified 2026-09-05 against `developer.goto.com`'s own P
 collections and live probes against `api.getgo.com` / `authentication.logmeininc.com` /
 `status.goto.com`. Status surfaces move; re-check if a probe starts failing for everyone at
 once.
+
+Triggers: not shipped — webinar listing filters scheduled event time, not record creation or update time (https://developer.goto.com/GoToWebinarV2/#operation/getWebinars).

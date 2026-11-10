@@ -149,3 +149,5 @@ Researched and endpoint-verified 2026-08-02 against HighLevel's published OpenAP
 (`github.com/GoHighLevel/highlevel-api-docs`) and developer docs. Status surfaces move;
 re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for
 everyone at once.
+
+Triggers: not shipped — contact pagination exposes continuation cursors but no documented newest-first order or created/updated-since filter for polling (https://marketplace.gohighlevel.com/docs/ghl/contacts/search-contacts).

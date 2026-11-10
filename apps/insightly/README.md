@@ -126,3 +126,5 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 Researched and endpoint-verified 2026-09-05 against `api.na1.insightly.com/v3.1/help`
 and its underlying Swagger/OpenAPI document (`/v3.1/swagger/docs/v3.1`). Status and pod
 routing move; re-check if a probe starts failing for everyone at once.
+
+Triggers: not shipped — filtered Search results can use updated_after_utc but the existing action has no documented result order, so a bounded poll cannot safely advance (https://api.na1.insightly.com/v3.1/Help).

@@ -211,3 +211,5 @@ probes of every candidate Google status feed and of the retired
 Mobile-Friendly Test endpoint. The OAuth shape and scope-namespace convention
 follow this pack's other `google-*` apps. Status surfaces move; re-check if a
 probe starts failing for everyone at once.
+
+Triggers: not shipped — the site list returns every accessible site with no documented bounded collection cap or change filter (https://developers.google.com/webmaster-tools/v1/sites/list).

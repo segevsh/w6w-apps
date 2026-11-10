@@ -94,6 +94,8 @@ member list into it on every check would be exactly the leak this pack refuses e
 Measured live: no `Authorization` header and a syntactically-plausible bogus token both come back
 
 ```
+
+Triggers: not shipped — member and content list endpoints are uncapped full collections with no documented change filter (https://heartbeat.readme.io/reference).
 401 {"error":true,"message":"Invalid API Key"}
 ```
 
