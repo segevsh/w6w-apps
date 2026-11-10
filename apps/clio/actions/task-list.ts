@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClioClient } from "../lib/client.ts";
 import {
+  createdSinceParam,
   fieldsParam,
   matterIdFilterParam,
   paginationParams,
@@ -8,6 +9,7 @@ import {
   refParam,
   taskPriorityOptions,
   taskStatusOptions,
+  updatedSinceParam,
 } from "../lib/params.ts";
 
 /** `GET /tasks.json` */
@@ -19,6 +21,8 @@ interface Input {
   priority?: string;
   complete?: boolean;
   query?: string;
+  createdSince?: string;
+  updatedSince?: string;
   fields?: string;
   limit?: number;
   pageToken?: string;
@@ -48,6 +52,8 @@ const taskList: ActionDefinition<Input> = {
     { key: "priority", label: "Priority", type: "select", options: taskPriorityOptions },
     { key: "complete", label: "Complete", type: "boolean" },
     { ...queryParam, hint: "Wildcard search across name and description." },
+    createdSinceParam,
+    updatedSinceParam,
     fieldsParam(
       "id,etag,name,status,priority,due_at,complete,assignee{id,name},matter{id,display_number}",
     ),
@@ -68,6 +74,8 @@ const taskList: ActionDefinition<Input> = {
         priority: input.priority,
         complete: input.complete,
         query: input.query,
+        created_since: input.createdSince,
+        updated_since: input.updatedSince,
         fields: input.fields,
         limit: input.limit,
         order: "id(asc)",

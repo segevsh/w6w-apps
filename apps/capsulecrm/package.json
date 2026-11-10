@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/capsulecrm",
-  "version": "0.2.0",
-  "description": "Manage Capsule CRM parties (people and organisations), opportunities, tasks and account metadata via the Capsule API v2. Triggers: new and updated records.",
+  "version": "0.3.0",
+  "description": "Manage Capsule CRM parties, opportunities, tasks and account metadata via the Capsule API v2. Triggers: new/updated parties and opportunities, new pipelines, milestones and users.",
   "license": "MIT",
   "author": {
     "name": "w6w"

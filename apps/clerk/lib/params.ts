@@ -35,3 +35,12 @@ export const ORGANIZATION_ID_PARAM: Param = {
   placeholder: "org_2abc123",
   hint: "Clerk accepts either the organization's ID or its slug here.",
 };
+
+/** Clerk `order_by` (`+`/`-` prefix picks the direction); additive on lists that document it. */
+export const ORDER_BY_PARAM: Param = {
+  key: "orderBy",
+  label: "Order by",
+  type: "string",
+  advanced: true,
+  hint: "Clerk `order_by`, e.g. `-created_at` (newest first) or `+created_at`.",
+};

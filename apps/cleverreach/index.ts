@@ -36,6 +36,7 @@ import clientCredentials from "./auth/client-credentials.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import newGroup from "./triggers/new-group.ts";
+import newReceiver from "./triggers/new-receiver.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -66,7 +67,7 @@ const app: AppDefinition = {
   ],
   auth: [accessToken, clientCredentials],
   healthChecks: [service, api],
-  triggers: [newGroup],
+  triggers: [newGroup, newReceiver],
 };
 
 export default app;

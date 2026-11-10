@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClerkClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_BY_PARAM } from "../lib/params.ts";
 
 /** `GET /invitations` — a bare array, and only non-revoked invitations by default. */
 const action: ActionDefinition = {
@@ -30,6 +30,7 @@ const action: ActionDefinition = {
         "address or ID.",
     },
     ...LIST_PARAMS,
+    ORDER_BY_PARAM,
   ],
   output: [
     { key: "data", type: "array", label: "Invitations" },
@@ -41,6 +42,7 @@ const action: ActionDefinition = {
       query: {
         status: p.status as string | undefined,
         query: p.query as string | undefined,
+        order_by: (p.orderBy as string | undefined) || undefined,
         limit: (p.limit as number | undefined) ?? 10,
         offset: (p.offset as number | undefined) ?? 0,
       },

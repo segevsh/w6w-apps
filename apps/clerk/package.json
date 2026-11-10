@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/clerk",
-  "version": "0.2.0",
-  "description": "Manage a Clerk instance — users, organizations, sessions, invitations and sign-in tokens — through the Backend API. Triggers: new and updated records.",
+  "version": "0.3.0",
+  "description": "Manage a Clerk instance — users, organizations, sessions, invitations and sign-in tokens — via the Backend API. Triggers: new users (and updates), organizations, roles, members, invitations, sessions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
