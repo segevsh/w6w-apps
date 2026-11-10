@@ -153,17 +153,33 @@ export const DEPTH_STRICT_ENV = "TRIGGERS_DEPTH_STRICT";
 
 /**
  * List/search classifier. An action file is a list action when its text declares
- * `type: "read"` or `type: "search"` AND its stem has a `-`-separated token `list`
- * or `search` (or starts with `find-`/`query-`) AND does not start with a
- * `get-`/`create-`/`add-`/`remove-`/`update-`/`delete-` verb (those name a
- * single record or a mutation: `get-list`, `create-list`, `add-contact-to-list`).
+ * `type: "read"` or `type: "search"` AND, in order, its stem:
+ *  1. does not start with a `create-`/`add-`/`remove-`/`update-`/`delete-` verb
+ *     (a mutation: `create-list`, `add-contact-to-list`) -> not list;
+ *  2. has a `many` or `all` token (n8n `getAll` naming: `contact-get-many`,
+ *     `get-many-users`, `get-all-orders`, `list-all-orders`) -> list; this beats
+ *     the `get-` prefix exclusion below;
+ *  3. ends in `get`/`info`/`details`, or starts with `get-` -> single record,
+ *     not list (`list-get`, `price-list-get`, `search-get`, `get-list`);
+ *  4. starts with `find-`/`query-`, or has a `list`/`search` token -> list.
  * Pinned by the table in triggers-coverage.test.ts.
  */
 export function isListAction(stem: string, text: string): boolean {
   if (!/\btype:\s*["'](?:read|search)["']/.test(text)) return false;
-  if (/^(?:get|create|add|remove|update|delete)-/.test(stem)) return false;
+  if (/^(?:create|add|remove|update|delete)-/.test(stem)) return false;
+  const tokens = stem.split("-");
+  if (tokens.some((t) => t === "many" || t === "all")) return true;
+  if (/^get-/.test(stem)) return false;
+  if (["get", "info", "details"].includes(tokens[tokens.length - 1])) {
+    return false;
+  }
   if (/^(?:find|query)-/.test(stem)) return true;
-  return stem.split("-").some((t) => t === "list" || t === "search");
+  return tokens.some((t) => t === "list" || t === "search");
+}
+
+/** `--app` paths that name no row of the scan (empty => all known). */
+export function unknownDepthApps(scan: DepthScan, only: string[]): string[] {
+  return only.filter((p) => !(p in scan.apps));
 }
 
 export interface AppDepth {
@@ -454,6 +470,13 @@ async function main(args: string[]) {
     const scan = scanDepth(root, rows, n8n);
     console.log(depthSummary(scan));
     const only = flag("--app");
+    const unknown = unknownDepthApps(scan, only);
+    if (unknown.length) {
+      for (const p of unknown) {
+        console.error(`triggers-coverage: no such app: ${p}`);
+      }
+      Deno.exit(1);
+    }
     if (only.length || args.includes("--verbose")) {
       for (const [p, a] of Object.entries(scan.apps)) {
         if (only.length && !only.includes(p)) continue;
