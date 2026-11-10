@@ -137,3 +137,7 @@ Researched and endpoint-verified 2026-08-01 against Grafana's own HTTP API docum
 dashboard endpoints, which agree with the official docs. Grafana's legacy `/api/*` surface is
 stable across versions and Grafana Labs states it will remain accessible even as `/apis/*`
 supersedes it for new development; re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+`new-dashboard` snapshots Grafana's documented 5,000-dashboard search cap every five minutes and emits added dashboards after its baseline poll. Source: https://grafana.com/docs/grafana/latest/developers/http_api/folder_dashboard_search/ (verified 2026-11-09).

@@ -75,3 +75,7 @@ https://new.hibob.com/app/uploads/2026/05/cropped-HiBob-Logo-Icon-192x192.png (t
 ```
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+`new-task` snapshots Bob's documented 5,000-open-task response every five minutes and emits added tasks after its baseline poll. Source: https://apidocs.hibob.com/reference (verified 2026-11-09).
