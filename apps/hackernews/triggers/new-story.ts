@@ -8,9 +8,9 @@ export default pollFromListAction({
   description: "The run gets each newly submitted Hacker News story.",
   action: listNewStories as unknown as ActionDefinition,
   input: () => ({}),
-  items: (result) => (result as { ids?: unknown[] }).ids ?? [],
-  idOf: (item) => String(item),
+  items: (result) => ((result as { ids?: number[] }).ids ?? []).map((id) => ({ id })),
+  idOf: (item) => String((item as { id: number }).id),
   output: [{ key: "id", type: "number", label: "Story ID" }],
-  sample: 8863,
+  sample: { id: 8863 },
   maxPages: 1,
 });

@@ -21,6 +21,6 @@ test("new-story seeds, emits new ids, retries idempotently, and requests the lit
     { ...input, state: seeded.nextState },
     mockCtx([{ body: [3, 2] }]).ctx,
   );
-  assertEquals(first.events, [3]);
+  assertEquals(first.events, [{ id: 3 }]);
   assertEquals(retry, first);
 });

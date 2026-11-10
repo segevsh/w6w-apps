@@ -220,4 +220,4 @@ source, plus three specific to this app: **both query actions reject a
 non-positive limit**, **`query-run` maps the Explore onto `view`**, and no
 action logs a result row, a recipient address or an email.
 
-Triggers: not shipped — existing dashboard and Look actions read unbounded collections without a newest-first order or since filter (https://cloud.google.com/looker/docs/reference/looker-api/latest).
+Triggers: not shipped — existing dashboard and Look actions read unbounded collections without a newest-first order or since filter. The connection and model lists are small admin configuration collections that rarely change, so a "new connection/model" event was rejected as having no workflow use (https://cloud.google.com/looker/docs/reference/looker-api/latest).

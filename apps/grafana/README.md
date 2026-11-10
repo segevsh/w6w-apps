@@ -140,4 +140,4 @@ supersedes it for new development; re-check if a probe starts failing for everyo
 
 ## Triggers
 
-`new-dashboard` snapshots Grafana's documented 5,000-dashboard search cap every five minutes and emits added dashboards after its baseline poll. Source: https://grafana.com/docs/grafana/latest/developers/http_api/folder_dashboard_search/ (verified 2026-11-09).
+`new-dashboard` snapshots Grafana's documented 5,000-dashboard search cap every five minutes and emits added dashboards after its baseline poll. Source: https://grafana.com/docs/grafana/latest/developers/http_api/folder_dashboard_search/ (verified 2026-11-09). The check requests `limit=5000`, the documented maximum; an instance with more dashboards is read only up to that cap, so dashboards beyond it are neither seen nor reported.

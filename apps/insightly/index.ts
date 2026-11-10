@@ -46,6 +46,15 @@ import leadCreate from "./actions/lead-create.ts";
 import leadUpdate from "./actions/lead-update.ts";
 import leadDelete from "./actions/lead-delete.ts";
 
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newLead from "./triggers/new-lead.ts";
+import newOrUpdatedLead from "./triggers/new-or-updated-lead.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import newOrUpdatedOpportunity from "./triggers/new-or-updated-opportunity.ts";
+import newOrganisation from "./triggers/new-organisation.ts";
+import newOrUpdatedOrganisation from "./triggers/new-or-updated-organisation.ts";
+
 import service from "./health/service.ts";
 import pod from "./health/pod.ts";
 import quota from "./health/quota.ts";
@@ -76,6 +85,16 @@ export default {
     leadCreate,
     leadUpdate,
     leadDelete,
+  ],
+  triggers: [
+    newContact,
+    newOrUpdatedContact,
+    newLead,
+    newOrUpdatedLead,
+    newOpportunity,
+    newOrUpdatedOpportunity,
+    newOrganisation,
+    newOrUpdatedOrganisation,
   ],
   auth: [apiKey],
   healthChecks: [service, pod, quota],

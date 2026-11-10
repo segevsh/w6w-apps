@@ -177,8 +177,6 @@ node.
 ## Layout
 
 ```
-
-Triggers: not shipped — CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference).
 holded/
 ├── index.ts                  # AppDefinition: 22 actions, 1 auth, 2 health checks
 ├── lib/client.ts              # base URL, request/write/delete, error taxonomy, JSON helpers
@@ -200,3 +198,5 @@ deno task fmt      # NEVER bare `deno fmt`
 deno task test
 deno task validate
 ```
+
+Triggers: not shipped — CRM list endpoints return uncapped full collections with no documented ordering or since filter. The funnel list is account configuration that rarely changes, so a "new funnel" event was rejected as having no workflow use (https://holded.readme.io/reference).

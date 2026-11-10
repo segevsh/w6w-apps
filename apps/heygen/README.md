@@ -166,10 +166,6 @@ and returns a ready `audio_url` directly.
   limit.
 - **`auth:api-key`** — derived automatically from the Auth method's `test` hook.
 
-## Triggers
-
-`new-video` polls HeyGen's newest-first video list every five minutes; its first poll only seeds state. Source: https://developers.heygen.com/docs (verified 2026-11-09).
-
 ## Icon
 
 `assets/icon.png`, 192×192 PNG with alpha, downloaded verbatim from HeyGen's own developer-docs
@@ -184,3 +180,5 @@ wordmark PNG). Checked in both themes with `_tools/icon-legibility.ts`.
 109 assertions across 23 files: one per action, one for the auth method, one each for the `service`
 and `quota` health checks (`quota.test.ts` also covers the `request-rate` declared absence), one for
 `lib/client.ts`, and one for `index.ts`.
+
+Triggers: not shipped — the video list (`GET /v3/videos`) documents no result order and no sort or since-filter, so new videos cannot be told from old ones (https://developers.heygen.com/reference/list-videos, verified 2026-11-09).

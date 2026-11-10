@@ -20,7 +20,6 @@ import assetGet from "./actions/asset-get.ts";
 import templateList from "./actions/template-list.ts";
 import templateGet from "./actions/template-get.ts";
 import templateVideoGenerate from "./actions/template-video-generate.ts";
-import newVideo from "./triggers/new-video.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -48,6 +47,5 @@ export default {
     templateVideoGenerate,
   ],
   auth: [apiKey],
-  triggers: [newVideo],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;
