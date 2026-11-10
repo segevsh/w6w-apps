@@ -103,14 +103,34 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  topic: string;
+  /** One topic, or several that mean the same thing to the user (e.g. a user or a lead is created). */
+  topic: string | string[];
   sample: IntercomEvent;
+}
+
+/** POST check, signature check, then parse: one verified Intercom notification. */
+async function verifiedEvent(
+  raw: { method: string; rawBody?: unknown; headers: Record<string, string> },
+  secret: unknown,
+): Promise<IntercomEvent> {
+  if (raw.method.toUpperCase() !== "POST") {
+    throw new Error(`Intercom delivers webhooks with POST, not ${raw.method}.`);
+  }
+  const body = await verifySignature(raw, secret);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Intercom delivery refused: the body is not JSON.");
+  }
+  return normalizeDelivery(parsed);
 }
 
 /** Build one Intercom topic webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, IntercomEvent, { callbackUrl: string }> {
+  const topics = Array.isArray(spec.topic) ? spec.topic : [spec.topic];
   return {
     key: spec.key,
     title: spec.title,
@@ -126,19 +146,50 @@ export function webhookTrigger(
     onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
-      if (raw.method.toUpperCase() !== "POST") {
-        throw new Error(`Intercom delivers webhooks with POST, not ${raw.method}.`);
-      }
-      const body = await verifySignature(raw, params?.signingSecret);
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new Error("Intercom delivery refused: the body is not JSON.");
-      }
-      const event = normalizeDelivery(parsed);
+      const event = await verifiedEvent(raw, params?.signingSecret);
       // Other topics (and Intercom's `ping`) are acknowledged without a run.
-      if (event.topic !== spec.topic) return [];
+      if (!topics.includes(event.topic)) return [];
+      return [event];
+    },
+  };
+}
+
+export interface AnyEventParams extends TriggerParams {
+  events?: string;
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  placeholder: "conversation.admin.closed, ticket.created",
+  hint:
+    "Comma-separated Intercom topics to run on. Empty runs on every topic the webhook is subscribed to (except Intercom's ping). Subscribe the topics in the Developer Hub first.",
+};
+
+/** The Any event trigger: every verified topic, optionally narrowed by the `events` list. */
+export function anyEventTrigger(
+  spec: { sample: IntercomEvent },
+): TriggerDefinition<AnyEventParams, IntercomEvent, { callbackUrl: string }> {
+  return {
+    key: "any-event",
+    title: "Any Event",
+    description:
+      "Fires on any Intercom webhook topic you subscribed (or the ones you list). The run gets the notification id and topic and the full item.",
+    params: [SIGNING_SECRET_PARAM, EVENTS_PARAM],
+    output: OUTPUT,
+    sample: spec.sample,
+
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      const event = await verifiedEvent(raw, params?.signingSecret);
+      const wanted = (params?.events ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+      if (wanted.length === 0 ? event.topic === "ping" : !wanted.includes(event.topic)) return [];
       return [event];
     },
   };

@@ -38,6 +38,21 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import conversationCreated from "./triggers/conversation-created.ts";
 import contactCreated from "./triggers/contact-created.ts";
+import newContact from "./triggers/new-contact.ts";
+import contactUpdated from "./triggers/contact-updated.ts";
+import contactDeleted from "./triggers/contact-deleted.ts";
+import companyCreated from "./triggers/company-created.ts";
+import companyUpdated from "./triggers/company-updated.ts";
+import companyDeleted from "./triggers/company-deleted.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import conversationUserReplied from "./triggers/conversation-user-replied.ts";
+import conversationAdminReplied from "./triggers/conversation-admin-replied.ts";
+import conversationClosed from "./triggers/conversation-closed.ts";
+import conversationAssigned from "./triggers/conversation-assigned.ts";
+import conversationDeleted from "./triggers/conversation-deleted.ts";
+import newNote from "./triggers/new-note.ts";
+import newTag from "./triggers/new-tag.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -61,7 +76,25 @@ export default {
     // tag
     tagGetMany,
   ],
-  triggers: [conversationCreated, contactCreated],
+  triggers: [
+    conversationCreated,
+    contactCreated,
+    newContact,
+    contactUpdated,
+    contactDeleted,
+    companyCreated,
+    companyUpdated,
+    companyDeleted,
+    newConversation,
+    conversationUserReplied,
+    conversationAdminReplied,
+    conversationClosed,
+    conversationAssigned,
+    conversationDeleted,
+    newNote,
+    newTag,
+    anyEvent,
+  ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
