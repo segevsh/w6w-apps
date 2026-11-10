@@ -50,6 +50,8 @@ import updateTemplate from "./actions/update-template.ts";
 import updateWebhook from "./actions/update-webhook.ts";
 import verifyDomain from "./actions/verify-domain.ts";
 
+import newSenderIdentity from "./triggers/new-sender-identity.ts";
+
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -111,4 +113,5 @@ export default {
   // API token only: MailerSend publishes no OAuth surface for third-party apps.
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newSenderIdentity],
 } satisfies AppDefinition;

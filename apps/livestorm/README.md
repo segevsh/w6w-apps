@@ -5,6 +5,7 @@ Create and manage Livestorm events, sessions, registrants and webhooks.
 - **Categories** — video, communication
 - **Auth methods** — apiKey (private API token)
 - **Actions** — 40
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.livestorm.co`
 - **Website** — https://livestorm.co
 - **API docs** — https://developers.livestorm.co/reference/get_ping
@@ -195,4 +196,11 @@ Researched and endpoint-verified 2026-09-06 against the OpenAPI document embedde
 `status.livestorm.co`. Status surfaces move; re-check if a probe starts failing for everyone
 at once.
 
-Triggers: not shipped — `people-attribute-list` lists schema attributes, not a primary new-record feed (https://developers.livestorm.co/reference/list-people-attributes).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-event` — New or Updated Event | Poll | `event` | Each new or updated record |
+| `new-event` — New Event | Poll | `event-list` | Each newly created event |
+
+Polled through the `event-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://developers.livestorm.co/reference/list-events) (verified 2026-11-09).

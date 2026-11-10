@@ -30,6 +30,8 @@ import workorderList from "./actions/workorder-list.ts";
 import workorderStatusSet from "./actions/workorder-status-set.ts";
 import workorderUpdate from "./actions/workorder-update.ts";
 
+import newUser from "./triggers/new-user.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -59,4 +61,5 @@ export default {
   // API key only: MaintainX publishes no OAuth surface for third parties.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newUser],
 } satisfies AppDefinition;

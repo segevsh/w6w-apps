@@ -91,3 +91,11 @@ asset path.
 | `auth:api-key` (derived) | `GET /organizations?limit=1`, classified from the response body. An unauthenticated call answers `401 text/html` with `Invalid authentication token` (credential never attached); a bad key answers `401 application/json` `{"error":"Invalid token"}`. A 200 must carry an `organizations` array. The response contains no credential material. |
 | `service` | Better Stack status page `https://status.getmaintainx.com/en/index.json` (verified: `company_name: "MaintainX"`, resources `MaintainX App`, `REST API`, `GraphQL API`, `Website`). The verdict is the `REST API` component; the rest are reported as detail. `/api/v2/summary.json` 302s, so this is not Statuspage. The endpoint answers JSON with `content-type: text/html`. |
 | `quota` | Declared unavailable (`informational`): the OpenAPI document and live responses expose no rate-limit headers. |
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | Poll | `user-list` | Each newly created user |
+
+Polled through the `user-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.getmaintainx.com/v1/openapi.json) (verified 2026-11-09).

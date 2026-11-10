@@ -9,6 +9,7 @@ credit/usage accounting, and the websites a task can build and publish. Built on
 - **Categories** — ai, productivity
 - **Auth methods** — api-key (`x-manus-api-key` header)
 - **Actions** — 32
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.manus.ai` (the `service` check adds `status.manus.im` to its own hook
   allowlist, never to the app's)
@@ -143,3 +144,11 @@ is single-colour black, which disappears on this pack's dark tile — `assets/ic
 wherever the source pixel's alpha is non-zero; alpha itself untouched), the same "reversed mark"
 treatment the app-pack tooling (`_tools/icon-legibility.ts`) automates for SVG icons but cannot for
 a raster source.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | Poll | `task-list` | Each newly created task |
+
+Polled through the `task-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://open.manus.im/docs/api) (verified 2026-11-09).

@@ -74,3 +74,12 @@ writes, `/userinfo`. All are documented in the OpenAPI file; add them when a wor
 
 `assets/icon.svg` is the vendor's own favicon, byte-for-byte:
 `https://loyverse.com/sites/default/files/user1/icons/favicon.svg` (2,109 bytes).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-receipt` — New or Updated Receipt | Poll | `receipt` | Each new or updated record |
+| `new-receipt` — New Receipt | Poll | `receipt-list` | Each newly created receipt |
+
+Polled through the `receipt-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://developer.loyverse.com/docs/) (verified 2026-11-09).

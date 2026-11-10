@@ -129,3 +129,5 @@ being implemented.
 Unit tests mock `HookContext` (`ctx.fetch`, no-op `ctx.log`) via
 [`tests/_helpers.ts`](tests/_helpers.ts) — no network access, no real credential. Run with
 `deno task test` from this directory.
+
+Triggers: not shipped — lead-activity-list rows have no stable activity id for durable polling (https://help.lofty.com/hc/en-us/articles/360039677152-API-documentation).

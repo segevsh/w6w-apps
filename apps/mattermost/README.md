@@ -6,6 +6,7 @@ Cloud **and** self-hosted servers alike.
 - **Categories** — communication, productivity
 - **Auth methods** — access-token
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `instance`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `*` (see below — the server is per-connection)
 - **Website** — https://mattermost.com/
@@ -219,4 +220,10 @@ deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 ```
 
-Triggers: not shipped — `post-search` is relevance-ordered search, not a newest-first feed (https://api.mattermost.com/#tag/posts/operation/SearchPosts).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `posts-for-channel` | Each newly created post |
+
+Polled through the `posts-for-channel` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.mattermost.com/#tag/posts/operation/GetPostsForChannel) (verified 2026-11-09).

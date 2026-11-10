@@ -90,3 +90,12 @@ coherent:
 - `update-booking`: Lodgify warns "not all fields can be updated via this endpoint"; only the
   fields you set are sent.
 - Date inputs are passed through as written; `YYYY-MM-DD` is accepted for the date-time fields.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-or-updated-booking` — New or Updated Booking | Poll | `booking` | Each new or updated record |
+| `new-booking` — New Booking | Poll | `list-bookings` | Each newly created booking |
+
+Polled through the `list-bookings` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://docs.lodgify.com/docs/bookings) (verified 2026-11-09).

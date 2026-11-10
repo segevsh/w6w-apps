@@ -46,6 +46,9 @@ import updateBooking from "./actions/update-booking.ts";
 import updateBookingKeyCodes from "./actions/update-booking-key-codes.ts";
 import updateRates from "./actions/update-rates.ts";
 
+import newBooking from "./triggers/new-booking.ts";
+import newOrUpdatedBooking from "./triggers/new-or-updated-booking.ts";
+
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import reachability from "./health/reachability.ts";
@@ -86,4 +89,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, reachability, quota],
+  triggers: [newBooking, newOrUpdatedBooking],
 } satisfies AppDefinition;

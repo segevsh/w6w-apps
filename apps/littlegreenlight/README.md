@@ -7,6 +7,7 @@ for small and mid-size nonprofits — over LGL's own **REST API v1**.
 - **Categories** — crm, finance
 - **Auth methods** — bearer-token
 - **Actions** — 12 (2 `search`, 7 `read`, 3 `perform`)
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`, both declared `unavailable`, `informational`) + the
   derived `auth:bearer-token`
 - **Egress allowlist** — `api.littlegreenlight.com`
@@ -123,6 +124,7 @@ code — asserted directly in
 
 | Key | Type | Endpoint | Notes |
 | --- | --- | --- | --- |
+| `new-or-updated-constituent` — New or Updated Constituent | Poll | `constituent` | Each new or updated record |
 | `constituent-search` | search | `GET /api/v1/constituents/search.json` | required `filters` (`q[]`), `expand`, `sort`, pagination |
 | `constituent-get` | read | `GET /api/v1/constituents/{id}.json` | |
 | `constituent-create` | perform | `POST /api/v1/constituents.json` | `first_name`/`last_name` required per schema |
@@ -178,3 +180,11 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests
 deno task validate       # @w6w/validator conformance audit
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-constituent` — New Constituent | Poll | `constituent-search` | Each newly created constituent |
+
+Polled through the `constituent-search` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.littlegreenlight.com/api-docs/) (verified 2026-11-09).

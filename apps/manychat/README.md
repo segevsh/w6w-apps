@@ -6,6 +6,7 @@ custom fields, bot fields, Automations, and sending — on the **Manychat Public
 - **Categories** — marketing, communication, social-media
 - **Auth methods** — bearer (one API token per Page)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.manychat.com` (plus `status.manychat.com`, on the service health hook only)
 - **Website** — https://manychat.com
 - **API docs** — https://api.manychat.com/swagger
@@ -466,3 +467,11 @@ assuming a 200.
   `.../articles/14959510331420-…`, 403s to non-browser clients)*
 - **Community forum** — https://community.manychat.com *(source of the two quoted-but-unverified
   behaviours above)*
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-flow` — New Flow | Poll | `list-flows` | Each newly created flow |
+
+Polled through the `list-flows` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.manychat.com/swagger) (verified 2026-11-09).

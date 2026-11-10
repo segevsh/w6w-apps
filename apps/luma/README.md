@@ -5,6 +5,7 @@ Manage events, guest registration and ticket types on a **Luma calendar**, on th
 - **Categories** — calendar, commerce
 - **Auth methods** — api-key
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`quota`, ~~`service`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `public-api.luma.com`
 - **Website** — https://lu.ma/
@@ -133,3 +134,11 @@ deno task lint        # deno lint
 deno task test         # unit tests, mocked HookContext
 deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-calendar-event` — New Calendar Event | Poll | `calendar-events-list` | Each newly created calendar event |
+
+Polled through the `calendar-events-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://docs.lu.ma/reference/list-calendar-events) (verified 2026-11-09).
