@@ -6944,15 +6944,51 @@
     "path": "apps/mautic",
     "mechanism": "webhook-api",
     "candidates": [
+      "any-event",
+      "company-deleted",
+      "company-saved",
+      "contact-channel-subscription-changed",
+      "contact-company-changed",
       "contact-deleted",
+      "contact-points-changed",
       "contact-updated",
+      "email-opened",
+      "email-sent",
       "form-submitted",
-      "new-contact"
+      "new-campaign",
+      "new-contact",
+      "new-email",
+      "new-segment",
+      "new-tag",
+      "page-hit",
+      "sms-sent"
     ],
     "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/mautic/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped: signed webhooks registered through the Webhooks REST API (Webhook-Signature base64 HMAC-SHA256) for every catalog event plus any-event, and snapshot polls for campaigns, segments, emails and tags",
+    "verified": "apps/mautic/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-list": "new-contact",
+      "company-list": "company-saved"
+    },
+    "events": {
+      "mautic.lead_post_save_new": "new-contact",
+      "mautic.lead_post_save_update": "contact-updated",
+      "mautic.lead_post_delete": "contact-deleted",
+      "mautic.lead_points_change": "contact-points-changed",
+      "mautic.lead_channel_subscription_changed": "contact-channel-subscription-changed",
+      "mautic.lead_company_change": "contact-company-changed",
+      "mautic.company_post_save": "company-saved",
+      "mautic.company_post_delete": "company-deleted",
+      "mautic.email_on_send": "email-sent",
+      "mautic.email_on_open": "email-opened",
+      "mautic.form_on_submit": "form-submitted",
+      "mautic.page_on_hit": "page-hit",
+      "mautic.sms_on_send": "sms-sent"
+    },
+    "n8n": {
+      "*": "any-event"
+    }
   },
   {
     "path": "apps/meilisearch",
@@ -7066,13 +7102,48 @@
     "path": "apps/meta/facebook",
     "mechanism": "manual-webhook",
     "candidates": [
+      "any-event",
+      "comment-edited",
+      "comment-removed",
+      "new-ad-campaign",
       "new-comment",
-      "page-feed"
+      "new-page",
+      "new-photo",
+      "new-post",
+      "new-video",
+      "page-feed",
+      "post-edited",
+      "post-removed"
     ],
     "pollAction": null,
-    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
-    "verified": "apps/meta/facebook/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped: signed manual-webhook receivers (X-Hub-Signature-256, user registers the callback URL in the Meta dashboard) for Page feed events plus any-event, and snapshot polls for managed Pages and ad campaigns",
+    "verified": "apps/meta/facebook/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-comments": "new-comment",
+      "list-posts": "new-post",
+      "list-photos": "new-photo",
+      "list-videos": "new-video"
+    },
+    "events": {
+      "feed": "page-feed",
+      "feed:comment:add": "new-comment",
+      "feed:comment:edit": "comment-edited",
+      "feed:comment:remove": "comment-removed",
+      "feed:status:add": "new-post",
+      "feed:status:edit": "post-edited",
+      "feed:status:remove": "post-removed",
+      "feed:photo:add": "new-photo",
+      "feed:video:add": "new-video",
+      "mention": "any",
+      "ratings": "any",
+      "live_videos": "any",
+      "videos": "any",
+      "group_feed": "any"
+    },
+    "n8n": {
+      "*": "any-event"
+    }
   },
   {
     "path": "apps/meta/facebook-conversions",
@@ -8098,17 +8169,91 @@
     "path": "apps/onfleet",
     "mechanism": "webhook-api",
     "candidates": [
+      "any-event",
+      "new-hub",
+      "new-team",
+      "sms-recipient-opt-out",
+      "sms-recipient-response-missed",
+      "task-arrival",
       "task-assigned",
+      "task-cloned",
       "task-completed",
       "task-created",
+      "task-delayed",
+      "task-deleted",
+      "task-eta",
       "task-failed",
       "task-started",
-      "task-updated"
+      "task-unassigned",
+      "task-updated",
+      "worker-created",
+      "worker-deleted",
+      "worker-duty",
+      "worker-updated"
     ],
     "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/onfleet/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shipped: signed webhook triggers registered through POST /webhooks (HMAC-SHA512 X-Onfleet-Signature) for every task and worker event plus any-event, and snapshot polls for teams and hubs",
+    "verified": "apps/onfleet/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "task-list": "task-created",
+      "worker-list": "worker-created"
+    },
+    "skipped": {
+      "worker-list-by-location": "radius search around caller-supplied coordinates, not a record feed (https://docs.onfleet.com/reference/get-workers-by-location)",
+      "webhook-list": "webhook configuration of the account, not data (https://docs.onfleet.com/reference/list-webhooks)"
+    },
+    "events": {
+      "taskStarted": "task-started",
+      "taskEta": "task-eta",
+      "taskArrival": "task-arrival",
+      "taskCompleted": "task-completed",
+      "taskFailed": "task-failed",
+      "workerDuty": "worker-duty",
+      "taskCreated": "task-created",
+      "taskUpdated": "task-updated",
+      "taskDeleted": "task-deleted",
+      "taskAssigned": "task-assigned",
+      "taskUnassigned": "task-unassigned",
+      "taskDelayed": "task-delayed",
+      "taskCloned": "task-cloned",
+      "smsRecipientResponseMissed": "sms-recipient-response-missed",
+      "workerCreated": "worker-created",
+      "workerDeleted": "worker-deleted",
+      "SMSRecipientOptOut": "sms-recipient-opt-out",
+      "autoDispatchJobCompleted": "any",
+      "taskBatchCreateJobCompleted": "any",
+      "routeOptimizationJobCompleted": "any",
+      "routePlanCreated": "any",
+      "routePlanStarted": "any",
+      "routePlanCompleted": "any",
+      "workerUpdated": "worker-updated",
+      "routePlanUpdated": "any",
+      "routePlanUnassigned": "any",
+      "routePlanAssigned": "any",
+      "routePlanDelayed": "any",
+      "predictedTaskDelay": "skip: threshold event; Onfleet requires a threshold value, which the Any-event trigger does not register",
+      "taskPredictedEta": "skip: threshold event; Onfleet requires a threshold value, which the Any-event trigger does not register"
+    },
+    "n8n": {
+      "taskStarted": "task-started",
+      "taskEta": "task-eta",
+      "taskArrival": "task-arrival",
+      "taskCompleted": "task-completed",
+      "taskFailed": "task-failed",
+      "workerDuty": "worker-duty",
+      "taskCreated": "task-created",
+      "taskUpdated": "task-updated",
+      "taskDeleted": "task-deleted",
+      "taskAssigned": "task-assigned",
+      "taskUnassigned": "task-unassigned",
+      "taskDelayed": "task-delayed",
+      "taskCloned": "task-cloned",
+      "smsRecipientResponseMissed": "sms-recipient-response-missed",
+      "workerCreated": "worker-created",
+      "workerDeleted": "worker-deleted",
+      "SMSRecipientOptOut": "sms-recipient-opt-out"
+    }
   },
   {
     "path": "apps/ontraport",
@@ -9591,14 +9736,52 @@
     "path": "apps/savvycal",
     "mechanism": "webhook-api",
     "candidates": [
-      "event-created",
+      "any-event",
+      "event-approved",
+      "event-attendee-added",
+      "event-attendee-canceled",
       "event-canceled",
-      "event-rescheduled"
+      "event-changed",
+      "event-checkout-completed",
+      "event-created",
+      "event-declined",
+      "event-requested",
+      "event-rescheduled",
+      "new-link",
+      "new-workflow",
+      "new-workflow-rule",
+      "poll-response-created",
+      "poll-response-updated"
     ],
     "pollAction": null,
-    "reason": "webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks)",
+    "reason": "webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks); polls snapshot links, workflows and workflow rules",
     "verified": "apps/savvycal/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "event-list": "event-created"
+    },
+    "skipped": {
+      "webhook-list": "webhook configuration of the account, not data (https://docs.savvycal.com/developers/v1/api/list-webhooks)",
+      "time-zone-list": "reference data: the IANA time-zone list (https://api.savvycal.com/v1/spec GET /v1/time_zones)"
+    },
+    "events": {
+      "event.created": "event-created",
+      "event.requested": "event-requested",
+      "event.approved": "event-approved",
+      "event.declined": "event-declined",
+      "event.rescheduled": "event-rescheduled",
+      "event.changed": "event-changed",
+      "event.canceled": "event-canceled",
+      "event.checkout.pending": "any",
+      "event.checkout.expired": "any",
+      "event.checkout.completed": "event-checkout-completed",
+      "event.attendee.added": "event-attendee-added",
+      "event.attendee.canceled": "event-attendee-canceled",
+      "event.attendee.rescheduled": "any",
+      "poll.response.created": "poll-response-created",
+      "poll.response.updated": "poll-response-updated",
+      "workflow.action.triggered": "any"
+    }
   },
   {
     "path": "apps/scoreapp",

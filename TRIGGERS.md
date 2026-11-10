@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2573 triggers, 1672 unaccounted list actions in 427 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -83,16 +83,13 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/launchdarkly | 2 | 8 | 6 |
 | apps/lever | 2 | 7 | 6 |
 | apps/loops | 1 | 7 | 6 |
-| apps/mautic | 4 | 6 | 6 |
 | apps/meilisearch | 1 | 7 | 6 |
-| apps/meta/facebook | 2 | 6 | 6 |
 | apps/microsoft/microsoft-todo | 0 | 6 | 6 |
 | apps/microsoft/powerbi | 2 | 7 | 6 |
 | apps/miro | 1 | 7 | 6 |
 | apps/odoo | 2 | 7 | 6 |
 | apps/oncehub | 1 | 7 | 6 |
 | apps/onepassword | 0 | 6 | 6 |
-| apps/onfleet | 6 | 6 | 6 |
 | apps/personio | 2 | 7 | 6 |
 | apps/plivo | 2 | 8 | 6 |
 | apps/printful | 0 | 6 | 6 |
@@ -102,7 +99,6 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/raisely | 2 | 7 | 6 |
 | apps/recallai | 1 | 7 | 6 |
 | apps/recruitee | 1 | 7 | 6 |
-| apps/savvycal | 3 | 6 | 6 |
 | apps/servicem8 | 2 | 7 | 6 |
 | apps/splitwise | 2 | 7 | 6 |
 | apps/storyblok | 1 | 7 | 6 |
@@ -588,9 +584,11 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/maintainx | 12 | 10 | 0 |
 | apps/manus | 7 | 10 | 0 |
 | apps/manychat | 3 | 9 | 0 |
+| apps/mautic | 18 | 6 | 0 |
 | apps/meistertask | 12 | 12 | 0 |
 | apps/mem | 10 | 9 | 0 |
 | apps/mercury | 9 | 10 | 0 |
+| apps/meta/facebook | 12 | 6 | 0 |
 | apps/meta/instagram-for-business | 4 | 10 | 0 |
 | apps/microsoft/azuredevops | 9 | 8 | 0 |
 | apps/microsoft/microsoft-entra-id | 10 | 10 | 0 |
@@ -611,6 +609,7 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/omnisend | 1 | 1 | 0 |
 | apps/onepagecrm | 8 | 9 | 0 |
 | apps/onesignal | 1 | 0 | 0 |
+| apps/onfleet | 21 | 6 | 0 |
 | apps/openai | 2 | 2 | 0 |
 | apps/outreach | 2 | 0 | 0 |
 | apps/outseta | 10 | 13 | 0 |
@@ -636,6 +635,7 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/rootly | 13 | 13 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
+| apps/savvycal | 16 | 6 | 0 |
 | apps/seamlessai | 11 | 16 | 0 |
 | apps/sendblue | 5 | 9 | 0 |
 | apps/sentry | 9 | 9 | 0 |
@@ -729,16 +729,16 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/mailchimp/mandrill | 13 | email-event, email-sent, email-delivered, email-deferred, email-bounced, email-opened, email-link-clicked, email-marked-spam, email-unsubscribed, email-rejected, reject-denylist-changed, reject-allowlist-changed, new-template | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected; poll snapshots the template list |
 | apps/mailerlite | 14 | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated, any-event, subscriber-added-to-group, subscriber-removed-from-group, subscriber-bounced, subscriber-spam-reported, subscriber-automation-triggered, subscriber-automation-completed, new-group, new-segment, new-campaign | apps/mailerlite/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks (Signature = hex HMAC-SHA256 of the raw body) registered through the vendor API for the subscriber, group, automation, bounce, spam and campaign.sent events plus an Any-event trigger over all 14 published events (batched ones included); polls for new groups (sort=-created_at), segments and campaigns. |
 | apps/mailgun | 1 | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
-| apps/mautic | 4 | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/mautic | 18 | any-event, company-deleted, company-saved, contact-channel-subscription-changed, contact-company-changed, contact-deleted, contact-points-changed, contact-updated, email-opened, email-sent, form-submitted, new-campaign, new-contact, new-email, new-segment, new-tag, page-hit, sms-sent | apps/mautic/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks registered through the Webhooks REST API (Webhook-Signature base64 HMAC-SHA256) for every catalog event plus any-event, and snapshot polls for campaigns, segments, emails and tags |
 | apps/monday | 2 | item-created, column-value-changed | apps/monday/README.md Triggers section (verified 2026-11-10) | hand | create_webhook GraphQL mutation with challenge handshake; ordinary monday webhooks are unsigned (JWT only for integration-app tokens), so the callback URL is the secret (https://developer.monday.com/api-reference/docs/webhooks) |
-| apps/onfleet | 6 | task-assigned, task-completed, task-created, task-failed, task-started, task-updated | apps/onfleet/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/onfleet | 21 | any-event, new-hub, new-team, sms-recipient-opt-out, sms-recipient-response-missed, task-arrival, task-assigned, task-cloned, task-completed, task-created, task-delayed, task-deleted, task-eta, task-failed, task-started, task-unassigned, task-updated, worker-created, worker-deleted, worker-duty, worker-updated | apps/onfleet/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook triggers registered through POST /webhooks (HMAC-SHA512 X-Onfleet-Signature) for every task and worker event plus any-event, and snapshot polls for teams and hubs |
 | apps/patreon | 2 | new-pledge, post-published | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks) |
 | apps/paypal | 6 | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | 13 | new-deal, new-person, person-updated, person-deleted, new-organization, organization-updated, organization-deleted, deal-updated, deal-deleted, new-activity, new-note, new-lead, any-event | apps/pipedrive/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks (v2) registered through the vendor API with a random HTTP Basic password per subscription (Pipedrive does not sign deliveries); list actions covered by the created-event webhooks (the v1 list endpoints the actions call are no longer documented) |
 | apps/pipefy | 4 | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
 | apps/rendex | 1 | watch-event | apps/rendex/README.md Triggers section (verified 2026-11-10) | hand | Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks) |
 | apps/sanity | 3 | document-created, document-updated, document-deleted | apps/sanity/README.md Triggers section (verified 2026-11-10) | hand | GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks) |
-| apps/savvycal | 3 | event-created, event-canceled, event-rescheduled | apps/savvycal/README.md Triggers section (verified 2026-11-10) | hand | webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks) |
+| apps/savvycal | 16 | any-event, event-approved, event-attendee-added, event-attendee-canceled, event-canceled, event-changed, event-checkout-completed, event-created, event-declined, event-requested, event-rescheduled, new-link, new-workflow, new-workflow-rule, poll-response-created, poll-response-updated | apps/savvycal/README.md Triggers section (verified 2026-11-10) | hand | webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks); polls snapshot links, workflows and workflow rules |
 | apps/shopify | 18 | customer-created, customer-deleted, customer-updated, event, inventory-level-updated, location-created, location-deleted, location-updated, order-cancelled, order-created, order-deleted, order-fulfilled, order-paid, order-updated, product-created, product-deleted, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/signnow | 3 | document-created, document-completed, invite-signed | apps/signnow/README.md Triggers section (verified 2026-11-10) | hand | user-level event subscription via POST /v2/event-subscriptions with a host-chosen secret_key, signed X-SignNow-Signature base64 HMAC-SHA256 of the body (https://docs.signnow.com/docs/signnow/webhooks) |
 | apps/signwell | 3 | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
@@ -775,7 +775,7 @@ depth: 682 apps, 2521 triggers, 1696 unaccounted list actions in 431 apps, n8n-p
 | apps/line | 1 | event-received | apps/line/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in the LINE Developers Console; x-line-signature base64 HMAC-SHA256 of the raw body under the channel secret; one trigger carries message, follow, unfollow and postback (one URL per channel) |
 | apps/marketo | 1 | lead-webhook | apps/marketo/README.md Triggers section (verified 2026-11-10) | hand | unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret |
 | apps/messagebird | 1 | inbound-sms | apps/messagebird/README.md Triggers section (verified 2026-11-10) | hand | manual inbound-SMS callback (Flow Builder Forward to URL); MessageBird-Signature-JWT HS256 with url_hash and payload_hash verified; POST only (GET callbacks and status reports cannot be verified) |
-| apps/meta/facebook | 2 | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/meta/facebook | 12 | any-event, comment-edited, comment-removed, new-ad-campaign, new-comment, new-page, new-photo, new-post, new-video, page-feed, post-edited, post-removed | apps/meta/facebook/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (X-Hub-Signature-256, user registers the callback URL in the Meta dashboard) for Page feed events plus any-event, and snapshot polls for managed Pages and ad campaigns |
 | apps/meta/facebook-lead-ads | 1 | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-messenger | 1 | messenger-event | apps/meta/facebook-messenger/README.md Triggers section (verified 2026-11-10) | hand | manual Page webhook in the Meta App Dashboard; GET verify-token challenge plus X-Hub-Signature-256 HMAC-SHA256 with the App Secret over the raw body |
 | apps/meta/whatsapp | 2 | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
