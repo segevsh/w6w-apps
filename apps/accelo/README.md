@@ -5,6 +5,7 @@ Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, iss
 - **Categories** — project-management, crm, productivity
 - **Auth methods** — client-credentials (Service Application)
 - **Actions** — 34
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `*.api.accelo.com`
 - **Website** — https://www.accelo.com
 - **API docs** — https://api.accelo.com/docs/ (the older `affinitylive.jira.com` link is stale)
@@ -13,6 +14,18 @@ Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, iss
   (the link in the `<img>`/logo markup of accelo.com on 2026-10-06). It is the wordmark lockup (654x150),
   not the square symbol — Accelo serves no standalone SVG favicon (`/favicon.svg` is a 404 and the page's
   icons are 32/256px PNGs of a different, "acello", mark).
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-activity` | poll | `activity-list` | Each newly created activity. |
+| `new-company` | poll | `company-list` | Each newly created company. |
+| `new-job` | poll | `job-list` | Each newly created job. |
+
+Each check asks the list endpoint for 100 rows with the documented `order_by_desc(id)` filter (ids rise with creation) and emits the ids it has not seen. Source: https://api.accelo.com/docs/ (list filters `order_by_asc(<field>)` / `order_by_desc(<field>)`; verified 2026-11-10).
+
+No `new-or-updated-*` trigger ships: the activity list does not return `date_modified` unless it is requested explicitly, which is not yet verified against Accelo's docs.
 
 ## Connecting
 

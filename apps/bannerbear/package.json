@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bannerbear",
-  "version": "0.1.0",
-  "description": "Generate images and videos from Bannerbear templates: render, poll, batch, and manage templates, webhooks, assets, and workflows.",
+  "version": "0.2.0",
+  "description": "Generate images and videos from Bannerbear templates, and trigger workflows on new image renders.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "sync.api.bannerbear.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

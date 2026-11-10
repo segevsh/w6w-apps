@@ -16,6 +16,7 @@ import fileGet from "./actions/file-get.ts";
 import fileDelete from "./actions/file-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBatch from "./triggers/new-batch.ts";
 
 export default {
   actions: [
@@ -36,4 +37,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newBatch],
 } satisfies AppDefinition;

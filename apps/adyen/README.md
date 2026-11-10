@@ -1,5 +1,7 @@
 # Adyen
 
+Triggers: not shipped — list-stored-payment-methods is a per-shopper lookup (merchantAccount + shopperReference) and list-donation-campaigns is a configuration lookup, so neither is a record feed; payment events come only by webhook (https://docs.adyen.com/api-explorer/Checkout/latest/get/storedPaymentMethods).
+
 Payment sessions, payments, payment links, captures, refunds, cancels, stored payment methods,
 donations and partial-payment orders on **Adyen's Checkout API v72**.
 

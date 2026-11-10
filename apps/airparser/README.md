@@ -1,5 +1,7 @@
 # Airparser
 
+Triggers: not shipped — document-list has from/to date filters, but Airparser's API reference documents `GET /inboxes/<id>/docs` (page, per_page, from, to, q, status) with no response body or result order, and `inbox-list` has the same undocumented envelope, so neither can be identified or ordered reliably; the action's own header records that the envelope is undocumented (https://help.airparser.com/public-api/public-api).
+
 Parse emails and documents — PDF, DOCX, XLSX, CSV, HTML, images and more — into structured JSON
 using an AI extraction schema, on Airparser's **Public API**.
 

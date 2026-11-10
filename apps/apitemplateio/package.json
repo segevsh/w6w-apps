@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/apitemplateio",
-  "version": "0.1.1",
-  "description": "Generate PDFs and images from APITemplate.io templates.",
+  "version": "0.2.0",
+  "description": "Generate PDFs and images from APITemplate.io templates and trigger workflows on new generated objects.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,7 +32,8 @@
         "rest.apitemplate.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

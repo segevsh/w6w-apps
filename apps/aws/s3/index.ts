@@ -10,6 +10,7 @@ import objectCopy from "./actions/object-copy.ts";
 import objectHead from "./actions/object-head.ts";
 import awsIam from "./auth/aws-iam.ts";
 import service from "./health/service.ts";
+import newBucket from "./triggers/new-bucket.ts";
 
 export default {
   actions: [
@@ -25,4 +26,5 @@ export default {
   ],
   auth: [awsIam],
   healthChecks: [service],
+  triggers: [newBucket],
 } satisfies AppDefinition;

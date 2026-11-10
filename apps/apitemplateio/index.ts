@@ -7,6 +7,7 @@ import getTemplate from "./actions/get-template.ts";
 import listObjects from "./actions/list-objects.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newObject from "./triggers/new-object.ts";
 
 export default {
   actions: [
@@ -18,4 +19,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newObject],
 } satisfies AppDefinition;

@@ -25,6 +25,9 @@ import templateUpdate from "./actions/template-update.ts";
 import awsIam from "./auth/aws-iam.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSuppression from "./triggers/new-suppression.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newIdentity from "./triggers/new-identity.ts";
 
 export default {
   actions: [
@@ -54,4 +57,5 @@ export default {
   ],
   auth: [awsIam],
   healthChecks: [service, quota],
+  triggers: [newSuppression, newTemplate, newIdentity],
 } satisfies AppDefinition;
