@@ -26,12 +26,12 @@ export default boundedList({
     {
       key: "attributes",
       type: "object",
-      label: "Recording attributes (url, duration, created_at, …)",
+      label: "Recording attributes (duration, created_at, …)",
     },
   ],
   sample: {
     id: "9f3b2c74-5555-4a2b-9d3e-0a1b2c3d4e5f",
     type: "recordings",
-    attributes: { url: "https://example.test/recording/1", created_at: 1794708000 },
+    attributes: { duration: 3600, created_at: 1794708000 },
   },
 });
