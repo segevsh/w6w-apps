@@ -145,5 +145,10 @@ test("new-person: 5000 rows compare; 5001 are refused", async () => {
   const rows = (n: number) => ({ body: Array.from({ length: n }, (_, i) => ({ id: i + 1 })) });
   const ok = await newPerson.poll!({ ...input, state: {} }, mockCtx([rows(5000)]).ctx);
   assertEquals(ok.events, []);
-  await assertRejects(() => newPerson.poll!({ ...input, state: {} }, mockCtx([rows(5001)]).ctx));
+  // the trigger's own message, not the kit's row-cap error
+  await assertRejects(
+    () => newPerson.poll!({ ...input, state: {} }, mockCtx([rows(5001)]).ctx),
+    Error,
+    "cannot compare more than 5000 rows",
+  );
 });
