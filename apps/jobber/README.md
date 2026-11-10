@@ -599,4 +599,13 @@ checking for a 200.
 
 ## Triggers
 
-- **New Invoice** wraps the existing `invoice-list` action and polls its newest-first feed. Vendor documentation: https://developer.getjobber.com/docs (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Invoice (`new-invoice`) | poll | `invoice-list` — by `CREATED_AT` descending | each newly created invoice |
+| New or Updated Invoice (`new-or-updated-invoice`) | poll | `invoice-list` — by `UPDATED_AT` descending | each invoice that is new or edited (one event per edit) |
+
+Both triggers poll every 5 minutes, read one page of 100 from the app's existing `invoice-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://developer.getjobber.com/docs/ (verified 2026-11-09). The sort keys `CREATED_AT` and `UPDATED_AT` are the `InvoiceSortKey` values the existing `invoice-list` action already sends; Jobber's docs host answers automated fetches with HTTP 403, so the ordering is pinned explicitly in the request rather than read from a default.
