@@ -6,7 +6,7 @@ team chat platform (chatwork.com), over the **Chatwork API v2**.
 - **Categories** — communication, productivity
 - **Auth methods** — api-token
 - **Actions** — 32 (every operation the vendor's OpenAPI document declares)
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 1 (`quota`) + ~~`service`~~ (declared absence) + the derived `auth:api-token`
 - **Egress allowlist** — `api.chatwork.com`
 - **Website** — https://go.chatwork.com/
@@ -98,12 +98,21 @@ square.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `room-message-list` | Each new message in the chosen chat |
+| `new-room` — New Chat | Poll (snapshot) | `room-list` | Each chat the account newly belongs to |
+| `new-contact` — New Contact | Poll (snapshot) | `contact-list` | Each person newly added to the contacts |
+| `new-contact-request` — New Contact Request | Poll (snapshot) | `incoming-request-list` | Each new pending contact request |
+| `new-room-member` — New Chat Member | Poll (snapshot) | `room-member-list` | Each person newly added to the chosen chat |
+| `new-room-task` — New Chat Task | Poll (newest-first) | `room-task-list` | Each new task in the chosen chat |
+| `new-my-task` — New Task Assigned to Me | Poll (newest-first) | `my-tasks-list` | Each new task assigned to the account in any chat |
+| `new-room-file` — New Chat File | Poll (newest-first) | `room-file-list` | Each new file uploaded to the chosen chat |
 
 Polled through `room-message-list` with `force=1`, which returns the latest messages (up to 100) regardless of this connection's read marker. The list is oldest-first, so the trigger re-orders by `send_time` descending; a burst of more than 100 messages between checks loses the oldest. Edits (`update_time`) are not tracked. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
+The chat, contact, contact-request and member lists are small collections the API returns whole (no paging argument), so those triggers diff the ids between checks (`pollSnapshot`, additions only; the first check records what exists without firing). The task and file lists have no sort argument and are documented as returning only the latest rows (up to 100), so those triggers order the rows by their increasing numeric id (`task_id`, `file_id`) and emit unseen ones oldest first. An empty answer (HTTP 204) is treated as no rows. Edits to tasks are not tracked.
+
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://developer.chatwork.com/reference/get-rooms-room_id-messages) (verified 2026-11-09).
+Source: vendor docs for [messages](https://developer.chatwork.com/reference/get-rooms-room_id-messages), [chats](https://developer.chatwork.com/reference/get-rooms), [contacts](https://developer.chatwork.com/reference/get-contacts), [contact requests](https://developer.chatwork.com/reference/get-incoming_requests), [members](https://developer.chatwork.com/reference/get-rooms-room_id-members), [chat tasks](https://developer.chatwork.com/reference/get-rooms-room_id-tasks), [my tasks](https://developer.chatwork.com/reference/get-my-tasks) and [files](https://developer.chatwork.com/reference/get-rooms-room_id-files) (verified 2026-11-10). Not covered: none; every list action has a trigger.
 
 ## Layout
 
