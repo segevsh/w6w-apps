@@ -32,3 +32,16 @@ test("new-message reads one page even when every item on it is new", async () =>
   assertEquals(got.events, [item("b"), item("c")]);
   assertEquals(m.calls.length, 1);
 });
+
+test("new-message with remoteNumber requests that conversation's messages", async () => {
+  const m = ctx([item("a")]);
+  await trigger.poll!(
+    { params: { yourNumber: "+15551230000", remoteNumber: "+15559990000" }, subscriptionId: "s" },
+    m.ctx,
+  );
+  assertEquals(m.calls[0].method, "GET");
+  assertEquals(
+    m.calls[0].url,
+    "https://api.p.2chat.io/open/whatsapp/messages/+15551230000/+15559990000?page_number=0",
+  );
+});

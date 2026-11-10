@@ -1,16 +1,26 @@
 # Jira Service Management
 
-Triggers: not shipped — request-search (GET /rest/servicedeskapi/request) returns requests "ordered chronologically by the latest activity", not by creation, so a comment on an old request would read as a new one; it has no created-since filter (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-request/).
-
 Manage Jira Service Management service desks, request types, customer requests, queues,
 SLAs and organizations.
 
 - **Categories** — support, project-management
 - **Auth methods** — api-token, oauth2
 - **Actions** — 17
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.atlassian.net`, `api.atlassian.com`
 - **Website** — https://www.atlassian.com/software/jira/service-management
 - **API docs** — https://developer.atlassian.com/cloud/jira/service-desk/rest/
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-service-desk` | poll | `servicedesk-get-many` | Each service desk that newly appears in the connection's accessible set. |
+| `new-organization` | poll | `organization-get-many` | Each newly created organization. |
+
+Both collections are bounded: `GET /servicedesk` returns "all the service desks ... that the user has permission to access" and `GET /organization` returns the organizations, each as an id-keyed page (`values`, `isLastPage`). Each check reads up to 5 pages of 100 and diffs the ids against the last check (added only); a longer collection is a failed check that names the 500-row cap. Source: https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/ and https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-organization/ (verified 2026-11-10).
+
+`request-search` is not polled: it returns requests "ordered chronologically by the latest activity", not by creation, and has no created-since filter, so a comment on an old request would read as new (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-request/).
 
 ## Same site, different API
 

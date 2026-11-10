@@ -34,6 +34,7 @@ import projectTaskCreate from "./actions/project-task-create.ts";
 import projectTaskUpdate from "./actions/project-task-update.ts";
 import opportunityCreate from "./actions/opportunity-create.ts";
 import opportunityUpdate from "./actions/opportunity-update.ts";
+import newOrUpdatedTicket from "./triggers/new-or-updated-ticket.ts";
 import newTicket from "./triggers/new-ticket.ts";
 
 const app: AppDefinition = {
@@ -62,7 +63,7 @@ const app: AppDefinition = {
   ],
   auth: [apiUser],
   healthChecks: [service, api, quota],
-  triggers: [newTicket],
+  triggers: [newTicket, newOrUpdatedTicket],
 };
 
 export default app;
