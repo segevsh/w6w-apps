@@ -100,9 +100,11 @@ const QUERY_PARAM = {
 };
 
 /** `new-<record>`: search by creation date, newest first. */
-export function newRecordTrigger(kind: RecordKind): TriggerDefinition {
+export function newRecordTrigger(
+  { key, kind }: { key: string; kind: RecordKind },
+): TriggerDefinition {
   return pollFromListAction<{ query?: string }>({
-    key: `new-${kind.noun}`,
+    key,
     title: `New ${kind.title}`,
     description:
       `Polls HubSpot ${kind.noun} search in creation-date order and emits each ${kind.noun} created since the last check. The run gets the ${kind.noun}.`,
@@ -121,9 +123,11 @@ export function newRecordTrigger(kind: RecordKind): TriggerDefinition {
 }
 
 /** `new-or-updated-<record>`: search by last-modified date, newest first; an edit is a new event. */
-export function newOrUpdatedRecordTrigger(kind: RecordKind): TriggerDefinition {
+export function newOrUpdatedRecordTrigger(
+  { key, kind }: { key: string; kind: RecordKind },
+): TriggerDefinition {
   return pollFromListAction<{ query?: string }>({
-    key: `new-or-updated-${kind.noun}`,
+    key,
     title: `New or Updated ${kind.title}`,
     description:
       `Polls HubSpot ${kind.noun} search by last-modified date and emits each ${kind.noun} that is created or edited since the last check. The run gets the ${kind.noun} as it is now.`,

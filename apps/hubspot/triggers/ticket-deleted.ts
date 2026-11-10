@@ -1,3 +1,3 @@
 import { webhookTriggerFor } from "../lib/webhook-events.ts";
 
-export default webhookTriggerFor("ticket-deleted");
+export default webhookTriggerFor({ key: "ticket-deleted" });

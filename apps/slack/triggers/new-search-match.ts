@@ -52,7 +52,7 @@ const newSearchMatch = pollFromListAction<Input>({
     username: "ada",
     ts: "1508284197.000015",
     text: "Invoice 42 is overdue",
-    permalink: "https://example.slack.com/archives/C12345678/p1508284197000015",
+    permalink: "https://slack.com/archives/C12345678/p1508284197000015",
   },
 });
 

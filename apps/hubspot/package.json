@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hubspot",
   "version": "0.3.0",
-  "description": "Work with HubSpot CRM: contacts, companies, deals, tickets, engagements, lists, owners and forms. Triggers fire on new and edited contacts, companies, deals and tickets, new forms and owners, and on HubSpot webhook events verified with the app client secret.",
+  "description": "Work with HubSpot CRM: contacts, companies, deals, tickets, engagements, lists, owners and forms. Triggers fire on new and edited records and on signed HubSpot webhook events.",
   "license": "MIT",
   "author": {
     "name": "w6w"

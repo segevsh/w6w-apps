@@ -1,3 +1,3 @@
 import { webhookTriggerFor } from "../lib/webhook-events.ts";
 
-export default webhookTriggerFor("company-created");
+export default webhookTriggerFor({ key: "company-created" });

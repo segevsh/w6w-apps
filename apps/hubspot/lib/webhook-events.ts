@@ -237,10 +237,10 @@ export const WEBHOOK_EVENTS: HubSpotWebhookSpec[] = [
   },
 ];
 
-export function webhookSpec(key: string): HubSpotWebhookSpec {
+export function webhookSpec({ key }: { key: string }): HubSpotWebhookSpec {
   const spec = WEBHOOK_EVENTS.find((e) => e.key === key);
   if (!spec) throw new Error(`No named HubSpot webhook trigger ${key}.`);
   return spec;
 }
 
-export const webhookTriggerFor = (key: string) => hubspotWebhookTrigger(webhookSpec(key));
+export const webhookTriggerFor = (ref: { key: string }) => hubspotWebhookTrigger(webhookSpec(ref));

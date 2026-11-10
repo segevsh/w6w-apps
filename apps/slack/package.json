@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/slack",
   "version": "0.4.0",
-  "description": "Post messages, manage channels, files, reactions, stars, users and user groups on Slack. Triggers fire on new messages, 22 named Events API events (reactions, channels, members, files, users, user groups, stars), any Events API event and new search matches, verified with the Slack signing secret.",
+  "description": "Post messages, manage channels, files, reactions, stars, users and user groups on Slack. Triggers fire on messages, 22 named Events API events, any event and new search matches, signature-verified.",
   "license": "MIT",
   "author": {
     "name": "w6w"

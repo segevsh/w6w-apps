@@ -334,7 +334,7 @@ export const NAMED_EVENTS: NamedEvent[] = [
   },
 ];
 
-export function namedSpec(key: string): SlackTriggerSpec {
+export function namedSpec({ key }: { key: string }): SlackTriggerSpec {
   const e = NAMED_EVENTS.find((n) => n.key === key);
   if (!e) throw new Error(`No named Slack event ${key}.`);
   return {

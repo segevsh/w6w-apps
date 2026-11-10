@@ -46,7 +46,7 @@ app > API credentials > API secret key). Subscribing without it is refused.
 
 `event` is the Any-event trigger: list the topics you want (comma-separated) and it registers exactly those subscriptions; Shopify has no "all topics" wildcard. Every other Shopify topic (collections, fulfillments, draft orders, checkouts, carts, disputes, themes and the rest of https://shopify.dev/docs/api/admin-rest/latest/resources/webhook#event-topics) is reachable through it.
 
-Not covered: `customer-search` is a search over customers by a query the user writes; every customer it can return is delivered by `customer-created` and `customer-updated`, so it has no trigger of its own.
+Not covered, by list action: the four list and search actions return records these triggers already deliver, so none has a trigger of its own. `customer-search` (a search over customers by a query the user writes) is covered by `customer-created`, `order-get-many` by `order-created`, `product-get-many` by `product-created`, and `location-get-many` by `location-created`. The webhooks are registered through the Admin API, so there is nothing to set up in Shopify.
 
 Every event has `topic`, `shopDomain`, `webhookId` (`X-Shopify-Webhook-Id`, unique per delivery:
 use it to skip a duplicate), `eventId`, `triggeredAt`, `apiVersion` and `resource` (the JSON

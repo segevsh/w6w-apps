@@ -1,4 +1,4 @@
 import { slackTrigger } from "../lib/triggers.ts";
 import { namedSpec } from "../lib/events.ts";
 
-export default slackTrigger(namedSpec("reaction-added"));
+export default slackTrigger(namedSpec({ key: "reaction-added" }));

@@ -80,8 +80,9 @@ test("onSubscribe makes no Slack call and returns the callback URL", async () =>
 test("valid signature over the raw body -> one event", async () => {
   const out = evs(await ingest(newMessage, signed(BODY)));
   assert.equal(out.length, 1);
+  const first = out[0] as { eventId: unknown; channel: unknown; text: unknown };
   assert.deepEqual(
-    { id: (out[0] as any).eventId, ch: (out[0] as any).channel, text: (out[0] as any).text },
+    { id: first.eventId, ch: first.channel, text: first.text },
     { id: "Ev0PV52K21", ch: "C2147483705", text: "Hello world" },
   );
 });

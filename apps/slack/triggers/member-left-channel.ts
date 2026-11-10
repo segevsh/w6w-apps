@@ -1,4 +1,4 @@
 import { slackTrigger } from "../lib/triggers.ts";
 import { namedSpec } from "../lib/events.ts";
 
-export default slackTrigger(namedSpec("member-left-channel"));
+export default slackTrigger(namedSpec({ key: "member-left-channel" }));
