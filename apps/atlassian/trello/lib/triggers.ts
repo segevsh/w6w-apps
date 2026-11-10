@@ -20,13 +20,16 @@ import { TrelloClient } from "./client.ts";
  *     anything. The secret is not on the connection, so the user pastes it as `signingSecret`.
  *   - `onUnsubscribe` deletes the webhook; one Trello no longer has counts as deleted.
  *
- * Docs (verified 2026-11-09):
- * https://developer.atlassian.com/cloud/trello/guides/rest-api/webhooks/
+ * Docs (verified 2026-11-10):
+ * https://developer.atlassian.com/cloud/trello/guides/rest-api/webhooks/ ,
+ * https://developer.atlassian.com/cloud/trello/guides/rest-api/action-types/
  */
 
 export interface TriggerParams {
   modelId?: string;
   signingSecret?: string;
+  /** Any-event trigger only: comma-separated Trello action types; empty means every action. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -71,6 +74,23 @@ export const EVENT_OUTPUT: OutputField[] = [
   { key: "text", type: "string", label: "Comment text" },
 ];
 
+/**
+ * What the non-card triggers add: the action's own `data` (label, checklist, check item, list,
+ * board … whatever Trello sent) and the member an add/remove action is about.
+ */
+export interface ActionEvent extends CardEvent {
+  data: Record<string, unknown> | null;
+  targetMemberId: string | null;
+  targetMemberName: string | null;
+}
+
+export const ACTION_OUTPUT: OutputField[] = [
+  ...EVENT_OUTPUT,
+  { key: "data", type: "object", label: "Action data" },
+  { key: "targetMemberId", type: "string", label: "Member ID the action is about" },
+  { key: "targetMemberName", type: "string", label: "Member the action is about" },
+];
+
 export const EVENT_SAMPLE: CardEvent = {
   actionId: "5f0a1b2c3d4e5f6a7b8c9d0e",
   type: "createCard",
@@ -105,6 +125,26 @@ const PARAMS: Param[] = [
       "The secret of the Trello Power-Up (API key) that owns the connection's token, from its Trello Auth tab at trello.com/power-ups/admin. Trello signs every delivery with it.",
   },
 ];
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Action types",
+  type: "string",
+  hint:
+    "Comma-separated Trello action types, for example createList,updateBoard,addMemberToBoard. Leave blank for every action on the model. Types: https://developer.atlassian.com/cloud/trello/guides/rest-api/action-types/",
+};
+
+/** An action type is a bare camel-case word; anything else is a typo caught at subscribe time. */
+const ACTION_TYPE = /^[a-z][A-Za-z]{2,63}$/;
+
+function actionTypes(v: string | undefined): string[] {
+  const names = [...new Set((v ?? "").split(",").map((e) => e.trim()).filter(Boolean))];
+  const bad = names.filter((n) => !ACTION_TYPE.test(n));
+  if (bad.length > 0) {
+    throw new Error(`Action types look like createList or updateCard; got: ${bad.join(", ")}.`);
+  }
+  return names;
+}
 
 function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
@@ -149,6 +189,11 @@ export interface WebhookTriggerSpec {
   description: string;
   /** Accept an action: its `type` and its `data`. */
   match(type: string, data: Record<string, unknown>): boolean;
+  /** Emit the richer {@link ActionEvent} (the action's `data` and target member). */
+  withData?: boolean;
+  /** Any-event trigger: `match` is ignored and the `events` param picks the action types. */
+  any?: boolean;
+  sample?: Partial<ActionEvent>;
 }
 
 /** Build one Trello webhook trigger. */
@@ -159,15 +204,24 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: PARAMS,
-    output: EVENT_OUTPUT,
-    sample: EVENT_SAMPLE,
+    params: spec.any ? [...PARAMS, EVENTS_PARAM] : PARAMS,
+    output: spec.withData ? ACTION_OUTPUT : EVENT_OUTPUT,
+    sample: spec.withData
+      ? {
+        ...EVENT_SAMPLE,
+        data: null,
+        targetMemberId: null,
+        targetMemberName: null,
+        ...spec.sample,
+      }
+      : EVENT_SAMPLE,
 
     async onSubscribe({ params, callbackUrl, subscriptionId }, ctx) {
       const modelId = params.modelId?.trim();
       if (!modelId) throw new Error("Set the board, list or card ID to watch.");
       // Fail now, not on the first delivery: a webhook nothing could verify is useless.
       requireSecret(params.signingSecret);
+      if (spec.any) actionTypes(params.events);
       const created = await new TrelloClient(ctx).request<{ id?: unknown }>("/webhooks", {
         method: "POST",
         query: {
@@ -226,8 +280,18 @@ export function webhookTrigger(
         throw new Error("Trello delivery is for another webhook, not this subscription's.");
       }
       const type = str(action.type) ?? "";
-      if (!spec.match(type, asObject(action.data) ?? {})) return [];
-      return [normalizeAction(action)];
+      if (spec.any) {
+        const wanted = actionTypes(params?.events);
+        if (wanted.length > 0 && !wanted.includes(type)) return [];
+      } else if (!spec.match(type, asObject(action.data) ?? {})) return [];
+      if (!spec.withData) return [normalizeAction(action)];
+      const target = asObject(action.member);
+      return [{
+        ...normalizeAction(action),
+        data: asObject(action.data),
+        targetMemberId: str(target?.id),
+        targetMemberName: str(target?.fullName) ?? str(target?.username),
+      }];
     },
   };
 }

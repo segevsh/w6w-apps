@@ -17,6 +17,22 @@ import taskCreatedTrigger from "./triggers/task-created.ts";
 import taskUpdatedTrigger from "./triggers/task-updated.ts";
 import taskDeletedTrigger from "./triggers/task-deleted.ts";
 import taskCommentPostedTrigger from "./triggers/task-comment-posted.ts";
+import taskStatusUpdatedTrigger from "./triggers/task-status-updated.ts";
+import taskPriorityUpdatedTrigger from "./triggers/task-priority-updated.ts";
+import taskAssigneeUpdatedTrigger from "./triggers/task-assignee-updated.ts";
+import taskDueDateUpdatedTrigger from "./triggers/task-due-date-updated.ts";
+import taskTagUpdatedTrigger from "./triggers/task-tag-updated.ts";
+import taskMovedTrigger from "./triggers/task-moved.ts";
+import taskCommentUpdatedTrigger from "./triggers/task-comment-updated.ts";
+import taskTimeEstimateUpdatedTrigger from "./triggers/task-time-estimate-updated.ts";
+import taskTimeTrackedUpdatedTrigger from "./triggers/task-time-tracked-updated.ts";
+import listCreatedTrigger from "./triggers/list-created.ts";
+import listUpdatedTrigger from "./triggers/list-updated.ts";
+import listDeletedTrigger from "./triggers/list-deleted.ts";
+import folderCreatedTrigger from "./triggers/folder-created.ts";
+import folderUpdatedTrigger from "./triggers/folder-updated.ts";
+import folderDeletedTrigger from "./triggers/folder-deleted.ts";
+import anyEventTrigger from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -36,6 +52,27 @@ export default {
     timeEntryGetMany,
   ],
   auth: [apiToken, oauth2],
-  triggers: [taskCreatedTrigger, taskUpdatedTrigger, taskDeletedTrigger, taskCommentPostedTrigger],
+  triggers: [
+    taskCreatedTrigger,
+    taskUpdatedTrigger,
+    taskDeletedTrigger,
+    taskCommentPostedTrigger,
+    taskStatusUpdatedTrigger,
+    taskPriorityUpdatedTrigger,
+    taskAssigneeUpdatedTrigger,
+    taskDueDateUpdatedTrigger,
+    taskTagUpdatedTrigger,
+    taskMovedTrigger,
+    taskCommentUpdatedTrigger,
+    taskTimeEstimateUpdatedTrigger,
+    taskTimeTrackedUpdatedTrigger,
+    listCreatedTrigger,
+    listUpdatedTrigger,
+    listDeletedTrigger,
+    folderCreatedTrigger,
+    folderUpdatedTrigger,
+    folderDeletedTrigger,
+    anyEventTrigger,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -50,6 +50,23 @@ import cardCreated from "./triggers/card-created.ts";
 import cardMoved from "./triggers/card-moved.ts";
 import cardUpdated from "./triggers/card-updated.ts";
 import commentAdded from "./triggers/comment-added.ts";
+import cardDeleted from "./triggers/card-deleted.ts";
+import commentUpdated from "./triggers/comment-updated.ts";
+import listCreated from "./triggers/list-created.ts";
+import listUpdated from "./triggers/list-updated.ts";
+import boardUpdated from "./triggers/board-updated.ts";
+import boardMemberAdded from "./triggers/board-member-added.ts";
+import cardMemberAdded from "./triggers/card-member-added.ts";
+import checklistAdded from "./triggers/checklist-added.ts";
+import checkItemCreated from "./triggers/check-item-created.ts";
+import checkItemStateUpdated from "./triggers/check-item-state-updated.ts";
+import labelAddedToCard from "./triggers/label-added-to-card.ts";
+import labelRemovedFromCard from "./triggers/label-removed-from-card.ts";
+import labelCreated from "./triggers/label-created.ts";
+import labelUpdated from "./triggers/label-updated.ts";
+import labelDeleted from "./triggers/label-deleted.ts";
+import newCardInList from "./triggers/new-card-in-list.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -89,6 +106,28 @@ export default {
     labelGetMany,
   ],
   auth: [apiKey],
-  triggers: [cardCreated, cardMoved, cardUpdated, commentAdded],
+  triggers: [
+    cardCreated,
+    cardMoved,
+    cardUpdated,
+    commentAdded,
+    cardDeleted,
+    commentUpdated,
+    listCreated,
+    listUpdated,
+    boardUpdated,
+    boardMemberAdded,
+    cardMemberAdded,
+    checklistAdded,
+    checkItemCreated,
+    checkItemStateUpdated,
+    labelAddedToCard,
+    labelRemovedFromCard,
+    labelCreated,
+    labelUpdated,
+    labelDeleted,
+    newCardInList,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
