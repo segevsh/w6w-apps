@@ -164,6 +164,18 @@ test("new-call: records created before the seed are never emitted, however many 
   assertEquals(third.events, [created]);
 });
 
+test("new-call: a record with no parseable timestamp after the seed is emitted", async () => {
+  at(T0);
+  const seeded = await trigger.poll!({ ...input, state: {} }, mockCtx([]).ctx);
+  at(T0 + 300_000);
+  const undated = { call_id: "call-77", model_id: "agent-1" };
+  const next = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{ body: body([undated], 1, 1) }]).ctx,
+  );
+  assertEquals(next.events, [undated]);
+});
+
 test("new-call: the overlap is two minutes", () => {
   assertEquals(OVERLAP_MS, 120_000);
 });

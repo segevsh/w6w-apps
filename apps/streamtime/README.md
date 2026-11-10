@@ -233,4 +233,4 @@ deno task test
 
 `deno task validate` passes `--config ./deno.json` explicitly, matching the sibling `apify` app.
 
-Triggers: not shipped — `search-records` sorts by a per-view `sortColumn` taken from Search Setup, defaulting to ascending ("Sort direction for sortColumn. Defaults to true (ascending)."), and the spec names no creation column or record id for every view (https://api.streamtime.net/swagger.json)
+Triggers: not shipped — `search-records` sorts by a per-view `sortColumn` taken from Search Setup, defaulting to ascending ("Sort direction for sortColumn. Defaults to true (ascending)."), and the spec names no creation column or record id for every view (https://api.streamtime.net/swagger.json, verified 2026-11-09)

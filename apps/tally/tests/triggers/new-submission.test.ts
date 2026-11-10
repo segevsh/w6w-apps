@@ -172,6 +172,18 @@ test("new-submission: records created before the seed are never emitted, however
   assertEquals(third.events, [created]);
 });
 
+test("new-submission: a record with no parseable timestamp after the seed is emitted", async () => {
+  at(T0);
+  const seeded = await trigger.poll!({ ...input, state: {} }, mockCtx([]).ctx);
+  at(T0 + 300_000);
+  const undated = { id: "sub-77", formId: "form-1", isCompleted: true };
+  const next = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{ body: body([undated], 1, 1) }]).ctx,
+  );
+  assertEquals(next.events, [undated]);
+});
+
 test("new-submission: the overlap is two minutes", () => {
   assertEquals(OVERLAP_MS, 120_000);
 });
