@@ -22,6 +22,8 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newCandidate from "./triggers/new-candidate.ts";
+import newConnection from "./triggers/new-connection.ts";
+import newProfilePost from "./triggers/new-profile-post.ts";
 import apiKey from "./auth/api-key.ts";
 
 import creditsGet from "./actions/credits-get.ts";
@@ -153,6 +155,6 @@ export default {
   // dashboard (or its /v2/login), never to w6w: this app only ever holds the API key and the
   // account_id the vendor hands back.
   auth: [apiKey],
-  triggers: [newCandidate],
+  triggers: [newCandidate, newConnection, newProfilePost],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

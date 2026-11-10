@@ -1,6 +1,6 @@
 # LinkupAPI
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 
 Run LinkedIn, WhatsApp and email outreach, lead sourcing, messaging, posting, recruiter and
 email-enrichment calls through [LinkupAPI](https://linkupapi.com)'s V2 API
@@ -29,6 +29,10 @@ only a count.
 ## Triggers
 
 - **New Candidate** (`new-candidate`) polls `job-candidates-list` by descending application date.
+- **New Connection** (`new-connection`) polls the cached newest-first `connection-list` page for a selected account.
+- **New Profile Post** (`new-profile-post`) polls the newest-first `profile-posts-list` page for a selected profile.
+
+These list ordering and cursor semantics are documented in the [LinkupAPI V2 reference](https://docs.linkupapi.com/api-reference/v2) (verified 2026-11-10). The first check seeds the current page and emits nothing; later checks emit only unseen records.
 
 **account**
 
