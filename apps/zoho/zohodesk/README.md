@@ -272,12 +272,17 @@ hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-c
 | `new-account` | poll | `account-list` | an account (customer company) when it is created |
 | `new-agent` | poll | `agent-list` | an agent newly added to the organization |
 | `new-department` | poll | `department-list` | a department newly created in the organization |
+| `new-ticket-thread` | poll | `ticket-thread-list` | a new conversation thread on one ticket (`ticketId` required) |
+| `new-ticket-comment` | poll | `ticket-comment-list` | a new comment on one ticket (`ticketId` required) |
+| `new-ticket-attachment` | poll | `ticket-attachment-list` | a new attachment on one ticket (`ticketId` required) |
 
 There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
 
 `new-contact`, `new-ticket` and `new-account` request `sortBy=-createdTime`, 100 records (page 1 is the newest). `new-agent` and `new-department` read the first 100 of a short list and diff the ids. Set the `orgId` trigger parameter, or leave it empty to use the organization recorded on the connection. The contact, ticket and account lists document no modified-time sort (tickets: dueDate, recentThread, createdTime, ticketNumber; accounts: accountName, createdTime), so there is no new-or-updated trigger.
 
-Not covered: `ticket-comment-list`, `ticket-thread-list` and `ticket-attachment-list` (child lists of one ticket: a single ticket ID is not a feed a user picks; use `new-ticket` and read the ticket in the run), `search-records` (free-text search across modules, relevance-ranked: the same tickets, contacts and accounts are delivered by the triggers above) and `organization-list` (setup discovery: it only finds the `orgId`).
+The three per-ticket triggers take a required `ticketId` (the `id` of `new-ticket`). Threads list newest first by default (`sendDateTime`, descending when `sortBy` is omitted); comments request `sortBy=-commentedTime` and attachments `sortBy=-createdTime`, 100 records (https://desk.zoho.com/DeskAPIDocument, verified 2026-11-10).
+
+Not covered: `search-records` (free-text search across modules, relevance-ranked: the same tickets, contacts and accounts are delivered by the triggers above) and `organization-list` (setup discovery: it only finds the `orgId`).
 
 **Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
 

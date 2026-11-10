@@ -15,11 +15,14 @@
 | `new-folder-item` — New Folder Item | Poll | `folder-item-list` | Each new video, subfolder or live event in one folder (`folderId` param) |
 | `new-showcase-video` — New Showcase Video | Poll | `showcase-video-list` | Each newly uploaded video in one showcase (`showcaseId` param) |
 | `new-comment` — New Comment | Poll | `comment-list` | Each new top-level comment on one video (`videoId` param) |
+| `new-comment-reply` — New Comment Reply | Poll | `comment-reply-list` | Each new reply to one comment (`videoId` + `commentId` params) |
 | `new-search-video` — New Video Matching Search | Poll | `video-search` | Each newly uploaded public video matching a search query (`query` param) |
 
 Every trigger is polled newest-first through its list action with `direction=desc` and `sort=date` (`sort=modified_time` / `last_modified` for the "or updated" folder and showcase triggers, whose event id carries `modified_time` so an edit is a new event), 100 per page, page 1 only. The first check records what is there and emits nothing. `date` is a video's own date, so a video moved into a folder or showcase from older uploads can sit below page 1 and is not seen.
 
-Not covered: `comment-reply-list` (replies of one comment; a comment ID is not something a user picks as a feed parent, and `new-comment` delivers top-level comments), `like-list` (`GET /me/likes` documents `sort=date` with no direction parameter and has no since filter, so the newest likes cannot be read reliably).
+`new-comment-reply` reads one comment's replies whole (the replies endpoint documents only `page` and `per_page`, no sort or direction; https://developer.vimeo.com/api/reference/videos, verified 2026-11-10), up to 5 pages of 100, and diffs the reply URIs; a longer thread fails the check.
+
+Not covered: `like-list` (`GET /me/likes` documents `sort=date` with no direction parameter and has no since filter, so the newest likes cannot be read reliably).
 
 Sources: https://developer.vimeo.com/api/reference/videos, https://developer.vimeo.com/api/reference/folders, https://developer.vimeo.com/api/reference/showcases (verified 2026-11-10).
 

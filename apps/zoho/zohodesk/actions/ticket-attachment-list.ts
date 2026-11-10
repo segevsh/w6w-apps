@@ -5,6 +5,7 @@ import { orgId, ticketId } from "../lib/params.ts";
 interface Input extends DeskListInput {
   ticketId: string;
   include?: string;
+  sortBy?: string;
 }
 
 const ticketAttachmentList: ActionDefinition<Input, DeskListEnvelope<Record<string, unknown>>> = {
@@ -17,12 +18,19 @@ const ticketAttachmentList: ActionDefinition<Input, DeskListEnvelope<Record<stri
     ticketId,
     orgId,
     { key: "include", label: "Include", type: "string", hint: "Supported value: creator." },
+    {
+      key: "sortBy",
+      label: "Sort by",
+      type: "string",
+      hint: "createdTime. Prefix with - for descending.",
+    },
   ],
   output: [{ key: "data", type: "array", label: "Attachments" }],
 
   execute(input, ctx) {
     return deskList(ctx, `/tickets/${encodeURIComponent(input.ticketId)}/attachments`, input, {
       include: input.include,
+      sortBy: input.sortBy,
     });
   },
 };

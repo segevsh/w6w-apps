@@ -123,6 +123,9 @@ import newTicket from "./triggers/new-ticket.ts";
 import newAccount from "./triggers/new-account.ts";
 import newAgent from "./triggers/new-agent.ts";
 import newDepartment from "./triggers/new-department.ts";
+import newTicketThread from "./triggers/new-ticket-thread.ts";
+import newTicketComment from "./triggers/new-ticket-comment.ts";
+import newTicketAttachment from "./triggers/new-ticket-attachment.ts";
 
 export default {
   actions: [
@@ -174,5 +177,8 @@ export default {
     newAccount,
     newAgent,
     newDepartment,
+    newTicketThread,
+    newTicketComment,
+    newTicketAttachment,
   ],
 } satisfies AppDefinition;

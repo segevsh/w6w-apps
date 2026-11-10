@@ -249,3 +249,42 @@ test("new-alias: aliases from before the seed never flood a later check", async 
   );
   assertEquals(idsOf(r2.events, "uid"), ["fresh"]);
 });
+
+test("new-domain: reads every page of a 51-domain list (returnAll), so the last domain is seen", async () => {
+  const dom = (i: number) => ({ id: `dom_${i}`, name: `d${i}.example.com` });
+  const all = Array.from({ length: 51 }, (_, i) => dom(i));
+  const dinput = { params: {}, subscriptionId: "sub-1" };
+  const seeded = await newDomain.poll!(
+    { ...dinput, state: {} },
+    mockCtx([page("domains", all.slice(0, 30), 1), page("domains", all.slice(30, 50))]).ctx,
+  );
+  assertEquals(seeded.events, []);
+  const c = mockCtx([page("domains", all.slice(0, 30), 1), page("domains", all.slice(30))]);
+  const r = await newDomain.poll!({ ...dinput, state: seeded.nextState }, c.ctx);
+  assertEquals(c.calls.length, 2);
+  assertEquals(idsOf(r.events, "id"), ["dom_50"]);
+});
+
+test("new-alias: a 7-page, 700-alias window drains in one check and the cursor advances", async () => {
+  const s = await seedAlias();
+  const pages = Array.from(
+    { length: 7 },
+    (_, p) =>
+      Array.from({ length: 100 }, (_, i) => alias(`w${p}_${i}`, NOW + 600_000 - p * 1000 - i)),
+  );
+  const responses = [
+    ...pages.map((items, p) => page("aliases", items, p < 6 ? NOW + 500_000 - p : null)),
+  ];
+  const c = mockCtx(responses);
+  clock.now = () => NOW + 300_000;
+  const r = await newAlias.poll!({ ...ainput, state: s.nextState }, c.ctx);
+  assertEquals(c.calls.length, 7);
+  assertEquals(r.events.length, 700);
+  assertEquals((r.nextState as { cursor: number }).cursor, NOW + 300_000);
+  clock.now = () => NOW + 600_000;
+  const again = await newAlias.poll!(
+    { ...ainput, state: r.nextState },
+    mockCtx([page("aliases", pages[0])]).ctx,
+  );
+  assertEquals(again.events, []);
+});

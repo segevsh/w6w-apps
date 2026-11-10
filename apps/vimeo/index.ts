@@ -94,6 +94,7 @@ import newFolderVideo from "./triggers/new-folder-video.ts";
 import newFolderItem from "./triggers/new-folder-item.ts";
 import newShowcaseVideo from "./triggers/new-showcase-video.ts";
 import newComment from "./triggers/new-comment.ts";
+import newCommentReply from "./triggers/new-comment-reply.ts";
 import newSearchVideo from "./triggers/new-search-video.ts";
 
 export default {
@@ -158,6 +159,7 @@ export default {
     newFolderItem,
     newShowcaseVideo,
     newComment,
+    newCommentReply,
     newSearchVideo,
   ],
 } satisfies AppDefinition;
