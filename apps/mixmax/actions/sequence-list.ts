@@ -5,6 +5,8 @@ interface Input {
   name?: string;
   folder?: string;
   expandStages?: boolean;
+  limit?: number;
+  next?: string;
 }
 
 const sequenceList: ActionDefinition<Input> = {
@@ -33,8 +35,24 @@ const sequenceList: ActionDefinition<Input> = {
       type: "boolean",
       hint: "Return full stage information.",
     },
+    {
+      key: "limit",
+      label: "Limit",
+      type: "number",
+      hint: "Sequences per page (Mixmax default and maximum 100).",
+    },
+    {
+      key: "next",
+      label: "Next cursor",
+      type: "string",
+      hint: "The `next` cursor returned by the previous page.",
+    },
   ],
-  output: [{ key: "results", type: "array", label: "Sequences" }],
+  output: [
+    { key: "results", type: "array", label: "Sequences" },
+    { key: "next", type: "string", label: "Next page cursor" },
+    { key: "hasNext", type: "boolean", label: "Has a next page" },
+  ],
 
   async execute(input, ctx) {
     const r = await new MixmaxClient(ctx).request("GET", "/sequences", {
@@ -42,9 +60,15 @@ const sequenceList: ActionDefinition<Input> = {
         name: input.name,
         folder: input.folder,
         expand: input.expandStages ? "stages" : undefined,
+        limit: input.limit,
+        next: input.next,
       },
     });
-    return { results: resultsOf(r) };
+    const b = (r ?? {}) as { next?: string; hasNext?: boolean };
+    // Cursor fields only when the page carries them, so the plain response shape is unchanged.
+    return b.next === undefined && b.hasNext === undefined
+      ? { results: resultsOf(r) }
+      : { results: resultsOf(r), next: b.next, hasNext: b.hasNext === true };
   },
 };
 

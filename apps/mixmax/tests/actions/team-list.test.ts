@@ -11,3 +11,9 @@ test("team-list: GET /teams?expand=members", async () => {
   assertEquals(calls[0].body, null);
   assertEquals(out, { results: [{ _id: "tm1" }] });
 });
+
+test("team-list: limit is sent", async () => {
+  const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
+  await action.execute!({ limit: 100 } as never, ctx);
+  assertEquals(calls[0].url, "https://api.mixmax.com/v1/teams?limit=100");
+});

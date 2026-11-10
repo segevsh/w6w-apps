@@ -1,6 +1,6 @@
 # Mixmax
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 Send and schedule email, run sequences and read templates, tasks, teams and unsubscribes in
 **Mixmax**, the email-engagement and sales-outreach platform, over the **Mixmax REST API (v1)**.
@@ -21,10 +21,6 @@ own OpenAPI fragment, which were merged and read) and unauthenticated probes of 
 
 ## Actions
 
-## Triggers
-
-- **New Unsubscribe** (`new-unsubscribe`) polls `unsubscribe-list` by descending `createdAt`.
-
 | Area | Actions |
 |---|---|
 | User | `user-get` |
@@ -34,6 +30,38 @@ own OpenAPI fragment, which were merged and read) and unauthenticated probes of 
 | Tasks | `task-list` |
 | Teams | `team-list`, `team-get`, `team-member-list` |
 | Unsubscribes | `unsubscribe-list`, `unsubscribe-add`, `unsubscribe-remove` |
+
+## Triggers
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-unsubscribe` | poll, newest-first (`createdAt` desc) | `unsubscribe-list` | each new unsubscribe |
+| `new-message` | poll, newest-first | `message-list` | each new draft, scheduled or sent message |
+| `new-sequence` | poll, snapshot (follows the `next` cursor, 20 pages of 100, errors beyond) | `sequence-list` | each sequence that newly becomes accessible (optional folder) |
+| `new-sequence-folder` | poll, snapshot | `sequence-folder-list` | each new sequence folder |
+| `new-sequence-recipient` | poll, newest-first (`sortBy=createdAt`, `sortDesc=true`) | `sequence-search` | each recipient newly added to a sequence (optional sequence) |
+| `new-team` | poll, newest-first (documented default) | `team-list` | each team newly joined or created |
+| `new-team-member` | poll, snapshot (`teamId`) | `team-member-list` | each person newly added to the team |
+| `new-template` | poll, newest-first (`sort=createdAt`, `sortAscending=false`) | `template-list` | each new template or snippet |
+
+Snapshot triggers (sequences, sequence folders, team members) diff the `_id`s of the whole list: sequences are cursor-paged with no documented sort, so the check follows `next`; folders and team members come back in one response.
+
+Not covered: `sequence-recipient-list` (a sequence's recipients sort by `email`, `lastStage`,
+`lastMessageCreated`, `nextStageScheduledAt`, `opens`, `clicks`, `downloads`, `replied`, `accepted`,
+`declined` or `tentative`, with no key for when a recipient joined, and `offset`+`limit` stops at
+25,000, so it is neither newest-first nor a snapshot that fits; `new-sequence-recipient` covers the
+same records across sequences through `sequence-search`), `task-list` (the task query documents only
+a `sortBy:due` example and no creation sort or since filter, and the list is unbounded).
+
+Vendor docs (read 2026-11-10): [messages](https://developer.mixmax.com/reference/messages-1),
+[sequences](https://developer.mixmax.com/reference/sequences),
+[sequence search](https://developer.mixmax.com/reference/sequencessearch),
+[sequence folders](https://developer.mixmax.com/reference/sequencefolders),
+[teams](https://developer.mixmax.com/reference/teams-1),
+[team members](https://developer.mixmax.com/reference/teams-members-get),
+[snippets](https://developer.mixmax.com/reference/snippets),
+[tasks](https://developer.mixmax.com/reference/listtasks),
+[unsubscribes](https://developer.mixmax.com/reference/unsubscribes-get).
 
 ## Deliberately not covered
 

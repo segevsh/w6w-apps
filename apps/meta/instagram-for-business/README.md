@@ -60,4 +60,17 @@ Instagram Login.
 
 ## Triggers
 
+- **Triggers** — 4 (poll)
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-media` | poll, newest-first | `list-media` | each new post or reel |
+| `new-comment` | poll, newest-first | `list-comments` | each new top-level comment on the chosen post (`mediaId`) |
+| `new-story` | poll, bounded snapshot | `list-stories` | each new live story (stories expire after 24 h, so the set is small) |
+| `new-instagram-account` | poll, bounded snapshot | `list-instagram-accounts` | each managed Facebook Page that newly appears with a linked Instagram account (Pages without one are left out) |
+
 - **New Media** wraps `list-media`, whose media edge returns the most recent media. [Instagram IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media), verified 2026-11-09.
+
+Not covered: `list-comment-replies` and `list-media-children` (per-comment / per-carousel lists whose parent is a single post item, not something a user picks; replies and carousel items follow their post), `list-hashtag-recent-media` and `list-hashtag-top-media` (no documented order or time filter; the top feed is a popularity ranking), `search-hashtag` (an id lookup limited to 30 hashtags per 7 days), `list-tagged-media` (its time filters apply after each page is cut, so a window cannot be read without walking the edge).
+
+Vendor docs for the triggers above: [IG Media comments](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-media/comments), [IG User stories](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/stories), [User accounts](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/user/accounts), verified 2026-11-10.

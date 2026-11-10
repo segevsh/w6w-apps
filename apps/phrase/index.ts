@@ -27,6 +27,15 @@
 import type { AppDefinition } from "@w6w/types";
 import newJob from "./triggers/new-job.ts";
 import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newKey from "./triggers/new-key.ts";
+import newOrUpdatedKey from "./triggers/new-or-updated-key.ts";
+import newTranslation from "./triggers/new-translation.ts";
+import newOrUpdatedTranslation from "./triggers/new-or-updated-translation.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newAccount from "./triggers/new-account.ts";
+import newLocale from "./triggers/new-locale.ts";
+import newTag from "./triggers/new-tag.ts";
 import accessToken from "./auth/access-token.ts";
 
 import userGet from "./actions/user-get.ts";
@@ -102,5 +111,17 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, quota],
-  triggers: [newJob, newOrUpdatedJob],
+  triggers: [
+    newJob,
+    newOrUpdatedJob,
+    newKey,
+    newOrUpdatedKey,
+    newTranslation,
+    newOrUpdatedTranslation,
+    newProject,
+    newOrUpdatedProject,
+    newAccount,
+    newLocale,
+    newTag,
+  ],
 } satisfies AppDefinition;

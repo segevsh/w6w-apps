@@ -17,3 +17,21 @@ test("sequence-search: GET /sequences/search?recipients=a%40x.com&recipients=b%4
   assertEquals(calls[0].body, null);
   assertEquals(out, { results: [{ email: "a@x.com" }], total: 1 });
 });
+
+test("sequence-search: sortBy/sortDesc/limit are sent and matches are read from `recipients`", async () => {
+  const { ctx, calls } = mockCtx([{
+    body: {
+      sequences: { total: 0, results: [] },
+      recipients: { total: 2, results: [{ _id: "r1" }] },
+    },
+  }]);
+  const out = await action.execute!(
+    { sortBy: "createdAt", sortDesc: true, limit: 50 } as never,
+    ctx,
+  );
+  assertEquals(
+    calls[0].url,
+    "https://api.mixmax.com/v1/sequences/search?limit=50&sortBy=createdAt&sortDesc=true",
+  );
+  assertEquals(out, { results: [{ _id: "r1" }], total: 2 });
+});

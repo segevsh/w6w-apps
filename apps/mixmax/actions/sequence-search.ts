@@ -7,6 +7,8 @@ interface Input {
   sequenceId?: string;
   offset?: number;
   limit?: number;
+  sortBy?: string;
+  sortDesc?: boolean;
 }
 
 const sequenceSearch: ActionDefinition<Input> = {
@@ -31,7 +33,20 @@ const sequenceSearch: ActionDefinition<Input> = {
     },
     { key: "sequenceId", label: "Sequence ID", type: "string", hint: "Restrict to one sequence." },
     { key: "offset", label: "Offset", type: "number", hint: "Records to skip." },
-    { key: "limit", label: "Limit", type: "number", hint: "Records to return." },
+    { key: "limit", label: "Limit", type: "number", hint: "Records to return (1 to 50)." },
+    {
+      key: "sortBy",
+      label: "Sort by",
+      type: "string",
+      hint:
+        "Recipient field to sort by, such as `state`, `email`, `createdAt` or `lastStageSentAt`.",
+    },
+    {
+      key: "sortDesc",
+      label: "Sort descending",
+      type: "boolean",
+      hint: "Sort in descending order.",
+    },
   ],
   output: [{ key: "results", type: "array", label: "Matches" }, {
     key: "total",
@@ -40,7 +55,11 @@ const sequenceSearch: ActionDefinition<Input> = {
   }],
 
   async execute(input, ctx) {
-    const r = await new MixmaxClient(ctx).request<{ results?: unknown[]; total?: number }>(
+    // Mixmax answers `{ sequences: {…always empty}, recipients: { total, results } }`
+    // (https://developer.mixmax.com/reference/sequencessearch); a bare `{ results, total }` is kept
+    // as a fallback.
+    type Page = { results?: unknown[]; total?: number };
+    const r = await new MixmaxClient(ctx).request<Page & { recipients?: Page }>(
       "GET",
       "/sequences/search",
       {
@@ -50,10 +69,13 @@ const sequenceSearch: ActionDefinition<Input> = {
           sequenceId: input.sequenceId,
           offset: input.offset,
           limit: input.limit,
+          sortBy: input.sortBy,
+          sortDesc: input.sortDesc,
         },
       },
     );
-    return { results: r.results ?? [], total: r.total ?? 0 };
+    const p = r.recipients ?? r;
+    return { results: p.results ?? [], total: p.total ?? 0 };
   },
 };
 
