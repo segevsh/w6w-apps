@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
+import newConversation from "../../triggers/new-conversation.ts";
 import newKobject from "../../triggers/new-kobject.ts";
 import newMessage from "../../triggers/new-message.ts";
 import newNote from "../../triggers/new-note.ts";
@@ -12,6 +13,11 @@ const item = (id: string) => ({ id, type: "x", attributes: {} });
 const page = (ids: string[]) => ({ data: ids.map(item) });
 
 const cases = [
+  {
+    trigger: newConversation,
+    params: {},
+    url: `${BASE}/conversations?page=1&pageSize=100&sort=desc`,
+  },
   {
     trigger: newKobject,
     params: { name: "order" },

@@ -123,3 +123,17 @@ test("project-scoped triggers refuse a blank project id before any request", asy
     assertEquals(mock.calls.length, 0);
   }
 });
+
+test("new-database-user: the same username in two authentication databases is two users", async () => {
+  const user = (username: string, databaseName: string) => ({ username, databaseName });
+  const run = async (state: unknown, results: unknown[]) => {
+    const mock = mockCtx([{ body: { results, totalCount: results.length } }]);
+    return await newDatabaseUser.poll!(
+      { params: { projectId: PROJECT }, subscriptionId: "s", state },
+      mock.ctx,
+    );
+  };
+  const seeded = (await run({}, [user("reader", "admin")])).nextState;
+  const next = await run(seeded, [user("reader", "admin"), user("reader", "$external")]);
+  assertEquals(next.events, [user("reader", "$external")]);
+});

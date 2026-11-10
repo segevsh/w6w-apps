@@ -5,7 +5,7 @@ Manage Kustomer customers, conversations, messages, notes, custom objects and CS
 - **Categories** — support, crm
 - **Auth methods** — api-key
 - **Actions** — 23
-- **Triggers** — 7 (poll)
+- **Triggers** — 8 (poll)
 - **Egress allowlist** — `*.api.kustomerapp.com`
 - **Website** — https://www.kustomer.com
 - **API docs** — https://developer.kustomer.com/kustomer-api-docs/reference/introduction
@@ -156,13 +156,14 @@ Vendor documentation: https://developer.kustomer.com/api/core-resources/get-cust
 | Trigger | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | New Custom Object (`new-kobject`) | poll | `kobject-list` for the chosen Klass with `sort=desc` | each newly created record of that Klass |
+| New Conversation (`new-conversation`) | poll | `conversation-list` — one newest-first page (`sort=desc`, `page=1`, `pageSize=100`) | each newly created conversation |
 | New Message in Conversation (`new-message`) | poll | `message-list` for the chosen `conversationId`, whole thread diffed by id | each message newly added to that conversation |
 | New Note on Conversation (`new-note`) | poll | `note-list` for the chosen `conversationId`, whole list diffed by id | each internal note newly added to that conversation |
 | New Team (`new-team`) | poll | `team-list`, whole collection diffed by id | each team newly created |
 | New User (`new-user`) | poll | `user-list`, whole collection diffed by id | each user newly added to the organization |
 
-Paging per the vendor reference: `page` / `pageSize` (default and maximum 100). `GET /v1/klasses/{name}` is documented as ordered by `createdAt` with `sort=asc|desc`, so the KObject trigger reads one newest-first page. Messages, notes, teams and users document no created/updated sort, so those four are bounded-collection snapshots: each check pages (100 per page) through the whole list with the existing action and emits only ids not seen before (capped at 5000 rows; a conversation thread or an org's staff is far below that).
+Paging per the vendor reference: `page` / `pageSize` (default 100; users and teams accept up to 1,000, the triggers use 100 per page). `GET /v1/klasses/{name}` is documented as ordered by `createdAt` with `sort=asc|desc`, so the KObject trigger reads one newest-first page. `GET /v1/conversations` documents `sort` only as "Sort direction for results" (no field named), so `new-conversation` assumes the same `createdAt` ordering as those sibling endpoints; that order is inferred, not stated, for conversations. If a deployment returns another order, new conversations beyond the first 100 would be missed. Messages, notes, teams and users document no created/updated sort, so those four are bounded-collection snapshots: each check pages (100 per page) through the whole list with the existing action and emits only ids not seen before (capped at 5000 rows; a conversation thread or an org's staff is far below that).
 
-Not covered: `conversation-list` (the `sort` parameter of `GET /v1/conversations` is documented only as "Sort direction for results", with no field list and no created/updated filter, and the collection is unbounded, so there is no safe feed; new conversations are better reached with a Kustomer outbound webhook); `klass-list` (custom object type definitions, reference data); `satisfaction-survey-list` (CSAT survey form definitions, configuration data).
+Not covered: `klass-list` (custom object type definitions, reference data); `satisfaction-survey-list` (CSAT survey form definitions, configuration data).
 
-Vendor documentation: https://developer.kustomer.com/api/core-resources/get-conversations, .../get-kobjects-custom-objects, .../get-messages-by-conversation, .../get-notes, https://developer.kustomer.com/api/access-management/get-users and .../get-teams (verified 2026-11-10).
+Vendor documentation: https://developer.kustomer.com/api/core-resources/get-conversations, .../get-kobjects-custom-objects, .../get-messages-by-conversation, .../get-notes-by-conversation, https://developer.kustomer.com/api/access-management/get-users and .../get-teams (verified 2026-11-10).
