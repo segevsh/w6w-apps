@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -19,7 +20,7 @@ const spreadsheetDelete: ActionDefinition<Input> = {
   description: "Permanently delete a Google spreadsheet (via the Drive API).",
   idempotent: false,
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
   ],
 
   async execute(input, ctx) {

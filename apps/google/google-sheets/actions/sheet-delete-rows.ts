@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -23,7 +24,7 @@ const sheetDeleteRows: ActionDefinition<Input> = {
   title: "Delete Rows",
   description: "Delete a contiguous block of rows from a sheet.",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     { key: "sheetId", label: "Sheet ID (numeric)", type: "number", required: true },
     { key: "startRow", label: "Start Row (1-based)", type: "number", required: true },
     { key: "rowCount", label: "Number of Rows", type: "number", default: 1 },

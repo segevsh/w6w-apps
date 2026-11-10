@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-sheets",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Read and write Google Sheets: manage spreadsheets, sheets, rows and cells, and start workflows when a row is added or updated.",
   "license": "MIT",
   "author": {

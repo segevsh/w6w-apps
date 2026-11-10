@@ -57,7 +57,9 @@ const spreadsheetCreate: ActionDefinition<Input> = {
     };
     if (input.sheets?.length) {
       body.sheets = input.sheets.map((s) => ({
-        properties: { title: s.title, hidden: s.hidden ?? false },
+        // Steps saved before the editor seeded checkboxes as `false` hold `""`
+        // here; Google rejects anything but a bool.
+        properties: { title: s.title, hidden: s.hidden === true || String(s.hidden) === "true" },
       }));
     }
     return client.request("/spreadsheets", { method: "POST", body });

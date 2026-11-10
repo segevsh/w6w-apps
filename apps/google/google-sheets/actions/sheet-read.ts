@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -24,7 +25,7 @@ const sheetRead: ActionDefinition<Input> = {
   title: "Read Rows",
   description: "Return cell values from a range (A1 notation).",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     {
       key: "range",
       label: "Range (A1)",

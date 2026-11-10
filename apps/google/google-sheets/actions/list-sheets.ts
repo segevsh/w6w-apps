@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -25,7 +26,7 @@ const listSheets: ActionDefinition<Input> = {
   title: "List Sheets",
   description: "List all sheet tabs (name, ID, size) inside a spreadsheet.",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
   ],
   output: [
     { key: "sheets", type: "array", label: "Sheets" },
