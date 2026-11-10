@@ -21,7 +21,7 @@ const trigger: TriggerDefinition = {
   sample: {
     id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
     created_at: "2026-11-09T12:00:00+00:00",
-    details: { browser: "Chrome", referrer: "https://example-blog.inc/post/" },
+    details: { browser: "Chrome", platform: "Desktop" },
     geolocation: { country: "United States", country_code: "US" },
   },
   minIntervalMs: 300_000,

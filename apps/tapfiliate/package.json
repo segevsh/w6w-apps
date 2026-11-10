@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/tapfiliate",
   "version": "0.3.0",
-  "description": "Manage affiliate programs, affiliates, customers, conversions, commissions and payments through the Tapfiliate REST API, and start workflows on new conversions, customers, clicks, programs, affiliate groups, affiliate payments and program memberships.",
+  "description": "Manage affiliate programs, affiliates, customers, conversions, commissions and payments through the Tapfiliate REST API, and start workflows on new conversions, customers and clicks.",
   "license": "MIT",
   "author": {
     "name": "w6w"

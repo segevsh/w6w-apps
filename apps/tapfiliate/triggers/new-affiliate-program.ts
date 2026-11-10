@@ -32,7 +32,7 @@ const trigger: TriggerDefinition = {
     title: "John's affiliate program",
     applied_at: "2026-11-09T12:00:00+00:00",
     approved: true,
-    referral_link: { link: "https://tapper.inc/johns-cool-product/?ref=nwjinmy" },
+    referral_link: { asset_id: "1-aaaaaa", source_id: "1-ssssss" },
     coupon: "JANE10OFF",
   },
   minIntervalMs: 300_000,
