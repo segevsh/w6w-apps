@@ -5,6 +5,7 @@ Read, send, and organize Outlook mail and calendar events through the Microsoft 
 - **Categories** — communication, email, calendar
 - **Auth methods** — oauth2
 - **Actions** — 18
+- **Triggers** — 4 (poll)
 - **Egress allowlist** — `graph.microsoft.com`
 - **API version** — Microsoft Graph **v1.0** (`https://graph.microsoft.com/v1.0`). `beta` is not
   used.
@@ -224,13 +225,24 @@ because neither check makes a request at all.
 
 ## Triggers
 
+Four poll triggers, each built on the app's own list request (same client, endpoint and auth):
+
 | Trigger | Poll source | Behaviour |
 | ------- | ----------- | --------- |
-| New Email | `GET /me/messages?$orderby=receivedDateTime desc` | Seeds the current page on its first check, then emits unseen messages oldest first. An optional folder and KQL search narrow the same request used by **List Messages**. |
+| New Email (`new-email`) | `GET /me/messages?$orderby=receivedDateTime desc` | Seeds the current page on its first check, then emits unseen messages oldest first. An optional folder and KQL search narrow the same request used by **List Messages**. |
+| New Calendar Event (`new-event`) | `GET /me/events?$orderby=createdDateTime desc&$top=50` (or `/me/calendars/{id}/events`) | Seeds the current page on its first check, then emits events created after it. An optional calendar id narrows it. |
+| New Calendar (`new-calendar`) | `GET /me/calendars?$top=100` | Reads the whole calendar list each check and emits a calendar that was not there last time. The first check emits nothing. |
+| New Mail Folder (`new-mail-folder`) | `GET /me/mailFolders?$top=100` (or `/me/mailFolders/{id}/childFolders`) | Reads the whole folder list each check and emits a folder that was not there last time. Set **Parent folder** (an id or a name such as `inbox`) to watch its subfolders. The first check emits nothing. |
 
 This poll uses the Graph [List messages](https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09), rather than a webhook subscription: Graph's webhook subscriptions require renewal and a public callback endpoint.
 
 When a KQL search is set, Graph supplies the search result order (by sent date), so the poll omits `$orderby`; otherwise it requests newest received messages first.
+
+**New Calendar Event** sorts by `createdDateTime`, the property Graph's own `$orderby` example uses on `/me/events` ([query parameters](https://learn.microsoft.com/en-us/graph/query-parameters), verified 2026-11-10). It sees series masters and single events, as **List Events** does; occurrences of a recurring series are not separate new events. **List Calendar View** (a date-range query that expands those occurrences) returns the same event records and has no feed of its own. A new-or-updated-event trigger is not shipped: the Graph docs show `$orderby` on events only for `createdDateTime`, and an edited event would need a sort on `lastModifiedDateTime`.
+
+**New Calendar** and **New Mail Folder** compare the collection with the previous check ([List calendars](https://learn.microsoft.com/en-us/graph/api/user-list-calendars?view=graph-rest-1.0), [List mailFolders](https://learn.microsoft.com/en-us/graph/api/user-list-mailfolders?view=graph-rest-1.0), verified 2026-11-10). Both are small, bounded lists; they are read 100 at a time up to 500, and a longer list fails the check with a clear error instead of being half-read. A rename is not an event.
+
+**Why polls and not webhooks.** Graph change notifications for mail and events are real, but a subscription is not permanent: "Subscriptions have a limited lifetime. Apps need to renew their subscriptions before the expiration time" — up to 10,080 minutes (under seven days) for Outlook message and event resources, 1,440 minutes with resource data ([change notifications overview](https://learn.microsoft.com/en-us/graph/change-notifications-overview), [subscription resource](https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0), verified 2026-11-10). w6w triggers have no renewal step, so a webhook trigger would silently stop firing after a few days. The polls need only the permissions the list actions already use.
 
 ## Not implemented
 
