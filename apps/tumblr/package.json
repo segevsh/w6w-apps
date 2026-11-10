@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/tumblr",
-  "version": "0.2.0",
-  "description": "Read and post to Tumblr blogs, manage likes and follows, and check a user's dashboard, over the Tumblr API v2. Polling trigger: New Post.",
+  "version": "0.3.0",
+  "description": "Read and post to Tumblr blogs, manage likes and follows, and check a user's dashboard, over the Tumblr API v2. Polling triggers: New Post, New Draft Post, New Queued Post, New Submission, New Followed Blog and New Post Note.",
   "license": "MIT",
   "author": {
     "name": "w6w"
