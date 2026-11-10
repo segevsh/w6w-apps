@@ -220,8 +220,10 @@ export const anyEvent: TriggerDefinition<
   },
   handleIngest({ raw, params }) {
     const body = acceptedBody(raw);
+    // A delivery with no event type is not an Affinity event: never emit an empty run.
+    if (typeof body.type !== "string" || body.type === "") return [];
     const wanted = parseEvents(params?.events);
-    if (wanted.length && !wanted.includes(String(body.type))) return [];
+    if (wanted.length && !wanted.includes(body.type)) return [];
     return [body];
   },
 };

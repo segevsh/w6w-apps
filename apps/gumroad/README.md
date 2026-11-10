@@ -7,7 +7,7 @@ subscriptions) for sales, refunds, disputes and subscription changes, on the **G
 
 **53 actions**, one access-token auth method, two declared health checks.
 
-- **Triggers** — 16 (poll, webhook)
+- **Triggers** — 17 (poll, webhook)
 
 ## Provenance
 
@@ -173,10 +173,11 @@ tests/                 index, auth, client, health, defaults + one test file per
 | `subscription-ended` | Subscription Ended | webhook | `subscription_ended` resource | Each membership that has ended |
 | `subscription-restarted` | Subscription Restarted | webhook | `subscription_restarted` resource | Each restarted membership |
 | `any-event` | Any Event | webhook | all 8 resources, or the `events` list | The delivered fields plus `resource_name` |
-| `new-product` | New Product | poll | `product-list` (whole catalogue in one request) | Each new product |
+| `new-product` | New Product | poll | `product-list` (paged, 10 a page; every page is read) | Each new product |
 | `new-offer-code` | New Offer Code | poll | `offer-code-list` (all codes of a product in one request) | Each new offer code on a product |
 | `new-variant-category` | New Variant Category | poll | `variant-category-list` (all categories of a product in one request) | Each new variant category |
 | `new-variant` | New Variant | poll | `variant-list` (all variants of a category in one request) | Each new variant |
+| `new-subscriber` | New Subscriber | poll | `subscriber-list` (`paginated=true`, 100 a page; every page is read) | Each new subscriber of a membership product |
 | `new-review` | New Review | poll | `review-list` (reference: newest first) | Each new written review on a product |
 | `new-payout` | New Payout | poll | `payout-list` with `after=` (since-filter window) | Each new payout (not the upcoming one) |
 
@@ -190,16 +191,19 @@ Gumroad documents that resource-subscription notifications are **not signed** (t
 in account settings covers only the Ping URL), so the private callback URL is the secret. Deliveries
 are at least once and unordered: de-duplicate on `sale_id` plus `resource_name`.
 
-**Polls.** The product, offer code, variant category and variant lists return the whole collection
-in one request (no paging parameters), so each is a snapshot that reports rows added after the
-first check. `new-payout` filters by `after` (a date) and follows `page_key` across checks, so a
+**Polls.** The offer code, variant category and variant lists return the whole collection in one
+request (no paging parameters), so each is a snapshot that reports rows added after the first
+check. The product and subscriber lists are **paged** (`next_page_key` goes back as `page_key`; 10
+products or 100 subscribers a page), and the reference states no order for them, so `new-product`
+and `new-subscriber` read every page in one check (at most 50 pages; a longer list is a loud error,
+never a partial snapshot) and report rows added after the first check. `new-subscriber` needs a
+membership product's `id`; a cancelled subscriber leaving the list is not an event, and a new
+subscriber also arrives as a `sale` webhook with a `subscription_id`. `new-payout` filters by `after` (a date) and follows `page_key` across checks, so a
 long window is drained over several checks and payouts created before the trigger started are never
 emitted.
 
 Not covered as triggers: `category-list` (static product taxonomy), `custom-field-list` (checkout
 field definitions), `tax-form-list` (US tax-form report output), `resource-subscription-list`
-(webhook subscription management), and `subscriber-list` (the reference gives no order or
-since-filter and returns every active subscriber; use the `subscription_*` and `cancellation` webhook
-triggers for membership changes).
+(webhook subscription management).
 
 Vendor mechanism: <https://gumroad.com/api> and <https://gumroad.com/ping> (verified 2026-11-10).

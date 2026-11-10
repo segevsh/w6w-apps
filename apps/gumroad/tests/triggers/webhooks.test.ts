@@ -245,3 +245,78 @@ test("any-event: tags the delivery from the callback query, filters to the event
     { sale_id: "s3" },
   ]);
 });
+
+test("register deletes only its own callback URL, never another subscriber's", async () => {
+  const other = "https://other.example.test/hook";
+  const { ctx, calls } = mockCtx([
+    {
+      body: {
+        success: true,
+        resource_subscriptions: [
+          { id: "theirs", post_url: other },
+          { id: "mine", post_url: callbackUrl },
+        ],
+      },
+    },
+    { body: { success: true } },
+    { body: { success: true, resource_subscription: { id: "new" } } },
+  ]);
+  await saleRefunded.onSubscribe!({ params: {}, callbackUrl, subscriptionId: "sub" }, ctx);
+  assertEquals(
+    calls.filter((c) => c.method === "DELETE").map((c) => new URL(c.url).pathname),
+    ["/v2/resource_subscriptions/mine"],
+  );
+});
+
+test("unsubscribe treats Gumroad's HTTP 200 success:false 'not found' as already gone", async () => {
+  await saleRefunded.onUnsubscribe!(
+    { params: {}, state: { webhookIds: ["a"] }, subscriptionId: "sub" },
+    mockCtx([{
+      status: 200,
+      body: { success: false, message: "The resource_subscription was not found." },
+    }]).ctx,
+  );
+});
+
+test("any-event: unsubscribe keeps deleting the later ids after one fails, then reports the failure", async () => {
+  const { ctx, calls } = mockCtx([
+    { status: 500, body: { success: false, message: "boom" } },
+    { body: { success: true } },
+    { body: { success: true } },
+  ]);
+  await assertRejects(
+    () =>
+      Promise.resolve(anyEvent.onUnsubscribe!(
+        { params: {}, state: { webhookIds: ["a", "b", "c"] }, subscriptionId: "sub" },
+        ctx,
+      )),
+    Error,
+    "500",
+  );
+  assertEquals(calls.map((c) => [c.method, new URL(c.url).pathname]), [
+    ["DELETE", "/v2/resource_subscriptions/a"],
+    ["DELETE", "/v2/resource_subscriptions/b"],
+    ["DELETE", "/v2/resource_subscriptions/c"],
+  ]);
+});
+
+test("subscription-updated: declares the bracket keys Gumroad sends and delivers them as sent", async () => {
+  const declared = subscriptionUpdated.output!.map((f) => f.key);
+  for (const key of ["old_plan[recurrence]", "new_plan[price_cents]", "new_plan[quantity]"]) {
+    assertEquals(declared.includes(key), true);
+  }
+  assertEquals(declared.includes("old_plan"), false);
+  const body = "subscription_id=u1&type=upgrade&old_plan%5Brecurrence%5D=monthly" +
+    "&new_plan%5Brecurrence%5D=yearly&new_plan%5Bprice_cents%5D=12000";
+  const events = await subscriptionUpdated.handleIngest!(input(post(body)), mockCtx().ctx);
+  assertEquals(events, [{
+    subscription_id: "u1",
+    type: "upgrade",
+    "old_plan[recurrence]": "monthly",
+    "new_plan[recurrence]": "yearly",
+    "new_plan[price_cents]": "12000",
+  }]);
+  for (const key of Object.keys(subscriptionUpdated.sample!)) {
+    assertEquals(key === "old_plan" || key === "new_plan", false);
+  }
+});

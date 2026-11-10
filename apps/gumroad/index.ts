@@ -104,6 +104,7 @@ import newProduct from "./triggers/new-product.ts";
 import newOfferCode from "./triggers/new-offer-code.ts";
 import newVariantCategory from "./triggers/new-variant-category.ts";
 import newVariant from "./triggers/new-variant.ts";
+import newSubscriber from "./triggers/new-subscriber.ts";
 import newReview from "./triggers/new-review.ts";
 import newPayout from "./triggers/new-payout.ts";
 
@@ -193,6 +194,7 @@ export default {
     newVariantCategory,
     newVariant,
     newReview,
+    newSubscriber,
     newPayout,
   ],
 } satisfies AppDefinition;

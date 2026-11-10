@@ -10,8 +10,13 @@ export default resourceTrigger({
   extra: [
     { key: "type", type: "string", label: "upgrade or downgrade" },
     { key: "effective_as_of", type: "string", label: "Effective as of" },
-    { key: "old_plan", type: "object", label: "Plan before" },
-    { key: "new_plan", type: "object", label: "Plan after" },
+    // Gumroad posts form-encoded, so nested objects arrive as bracket keys.
+    { key: "old_plan[recurrence]", type: "string", label: "Plan before: recurrence" },
+    { key: "old_plan[price_cents]", type: "string", label: "Plan before: price (cents)" },
+    { key: "old_plan[quantity]", type: "string", label: "Plan before: quantity" },
+    { key: "new_plan[recurrence]", type: "string", label: "Plan after: recurrence" },
+    { key: "new_plan[price_cents]", type: "string", label: "Plan after: price (cents)" },
+    { key: "new_plan[quantity]", type: "string", label: "Plan after: quantity" },
   ],
   sample: {
     "subscription_id": "sub_1",
@@ -21,7 +26,11 @@ export default resourceTrigger({
     "created_at": "2026-11-01T10:00:00Z",
     "type": "upgrade",
     "effective_as_of": "2026-11-23T16:31:44Z",
-    "old_plan": { "recurrence": "monthly", "price_cents": "1000", "quantity": 1 },
-    "new_plan": { "recurrence": "yearly", "price_cents": "12000", "quantity": 1 },
+    "old_plan[recurrence]": "monthly",
+    "old_plan[price_cents]": "1000",
+    "old_plan[quantity]": "1",
+    "new_plan[recurrence]": "yearly",
+    "new_plan[price_cents]": "12000",
+    "new_plan[quantity]": "1",
   },
 });

@@ -13,7 +13,9 @@ import { GumroadClient, seg } from "./client.ts";
  *
  * Sources (gumroad.com/api, a client-rendered page read from its own JavaScript bundle on
  * 2026-11-10): "Resource subscriptions" lists the 8 resource names; each GET/PUT list below
- * ("Retrieve all of the existing ...") returns the whole collection with no paging parameters.
+ * ("Retrieve all of the existing ...") for variant categories, variants and offer codes returns the
+ * whole collection with no paging parameters. `GET /products` and `GET /products/:id/subscribers`
+ * ARE paged (`next_page_key` goes back as `page_key`), so `newRecordSnapshot` can follow a cursor.
  */
 
 export const productIdParam: Param = {
@@ -68,7 +70,9 @@ async function remove(client: GumroadClient, id: string): Promise<void> {
   try {
     await client.call("DELETE", `/resource_subscriptions/${seg(id)}`);
   } catch (error) {
-    if (/\b(404|410)\b/.test(String(error))) return;
+    // Gone already: HTTP 404/410, or (what Gumroad actually sends) HTTP 200 with
+    // `{"success": false, "message": "The resource_subscription was not found."}`.
+    if (/\b(404|410)\b|not found/i.test(String(error))) return;
     throw error;
   }
 }
@@ -122,7 +126,16 @@ async function unregister(state: unknown, ctx: HookContext): Promise<void> {
   const ids = (state as Partial<WebhooksState> | undefined)?.webhookIds;
   if (!Array.isArray(ids) || ids.length === 0) return;
   const client = new GumroadClient(ctx);
-  for (const id of ids) await remove(client, String(id));
+  // One failed delete must not leave the later ids registered at Gumroad: try all, then report.
+  const failures: unknown[] = [];
+  for (const id of ids) {
+    try {
+      await remove(client, String(id));
+    } catch (error) {
+      failures.push(error);
+    }
+  }
+  if (failures.length) throw failures[0];
 }
 
 function contentType(headers: Record<string, string>): string {
@@ -259,10 +272,16 @@ export const anyEvent: TriggerDefinition<
   },
 };
 
+/** Upper bound on pages read per check by a paged snapshot; a cursor beyond it is a loud error. */
+export const SNAPSHOT_MAX_PAGES = 50;
+
 /**
- * "New <record>" for a bounded collection that the vendor returns whole in one request (no paging
- * parameters, no order) — `pollSnapshot` on the action's rows, `added` only. Rows without an id are
- * dropped: a duplicate or empty key would make the kit throw on every check.
+ * "New <record>" for a bounded collection — `pollSnapshot` on the action's rows, added rows only
+ * (`updated: false`; the kit default would also emit edited rows). The vendor returns it whole in
+ * one request, or (with `next`) as pages that are all read, in one check, up to `SNAPSHOT_MAX_PAGES`: a snapshot of a prefix would announce an OLD row as new
+ * whenever a newer one is deleted. A cursor still present after the cap, or one that repeats,
+ * throws instead of snapshotting part of the collection. Rows without an id are dropped: a
+ * duplicate or empty key would make the kit throw on every check.
  */
 export function newRecordSnapshot<P extends Record<string, unknown>>(spec: {
   key: string;
@@ -273,6 +292,8 @@ export function newRecordSnapshot<P extends Record<string, unknown>>(spec: {
   params?: Param[];
   input(params: P): Record<string, unknown>;
   rows(result: unknown): unknown[];
+  /** The cursor to pass as `pageKey` for the next page, or undefined on the last page. */
+  next?(result: unknown): string | undefined;
   output: OutputField[];
   sample: Record<string, unknown>;
 }): TriggerDefinition<P> {
@@ -285,11 +306,34 @@ export function newRecordSnapshot<P extends Record<string, unknown>>(spec: {
     sample: spec.sample,
     minIntervalMs: 300_000,
     async poll({ params, state }, ctx) {
-      const result = await spec.action.execute(spec.input(params), ctx);
-      const rows = spec.rows(result)
+      const all: unknown[] = [];
+      const seen = new Set<string>();
+      let pageKey: string | undefined;
+      for (let page = 1;; page++) {
+        const input = spec.input(params);
+        const result = await spec.action.execute(
+          pageKey === undefined ? input : { ...input, pageKey },
+          ctx,
+        );
+        all.push(...spec.rows(result));
+        pageKey = spec.next?.(result) || undefined;
+        if (pageKey === undefined) break;
+        if (page >= SNAPSHOT_MAX_PAGES || seen.has(pageKey)) {
+          throw new Error(
+            `${spec.key}: still more pages after ${page} (cap ${SNAPSHOT_MAX_PAGES}); not snapshotting a partial list`,
+          );
+        }
+        seen.add(pageKey);
+      }
+      const rows = all
         .filter((row) => String((row as { id?: unknown })?.id ?? "") !== "")
         .map((row) => ({ key: String((row as { id: unknown }).id), values: row }));
-      const polled = await pollSnapshot({ state, rows, emit: { added: true }, maxRows: 5000 });
+      const polled = await pollSnapshot({
+        state,
+        rows,
+        emit: { added: true, updated: false },
+        maxRows: 5000,
+      });
       return {
         events: polled.events.map((e) => e.values as Record<string, unknown>),
         nextState: polled.nextState,

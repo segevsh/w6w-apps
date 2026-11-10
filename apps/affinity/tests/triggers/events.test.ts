@@ -193,3 +193,55 @@ test("any-event: unsubscribe deletes the stored webhook", async () => {
     { method: "DELETE", url: "https://api.affinity.co/webhook/12" },
   ]);
 });
+
+test("any-event: accepts every vendor event name the README and rows list (29 names, as read 2026-11-10)", async () => {
+  const names = [
+    "field.created",
+    "field.deleted",
+    "field.updated",
+    "field_value.created",
+    "field_value.deleted",
+    "field_value.updated",
+    "file.created",
+    "file.deleted",
+    "list.created",
+    "list.deleted",
+    "list.updated",
+    "list_entry.created",
+    "list_entry.deleted",
+    "note.created",
+    "note.deleted",
+    "note.updated",
+    "opportunity.created",
+    "opportunity.deleted",
+    "opportunity.updated",
+    "organization.created",
+    "organization.deleted",
+    "organization.merged",
+    "organization.updated",
+    "person.created",
+    "person.deleted",
+    "person.updated",
+    "reminder.created",
+    "reminder.deleted",
+    "reminder.updated",
+  ];
+  assert.equal(names.length, 29);
+  for (const name of names) {
+    const { ctx, calls } = mockCtx([
+      { body: [] },
+      { body: { id: 1 } },
+    ]);
+    await anyEvent.onSubscribe!({ params: { events: name }, callbackUrl: CALLBACK }, ctx);
+    assert.deepEqual(JSON.parse(calls[1].body as string).subscriptions, [name]);
+  }
+});
+
+test("any-event: a delivery without a string type is dropped, never an empty event", async () => {
+  const run = async (events: string | undefined, raw: unknown) =>
+    evs(await anyEvent.handleIngest!({ raw, params: { events } } as never, undefined as never));
+  for (const body of [{}, null, "ping", [], { body: { id: 1 } }, { type: 7 }, { type: "" }]) {
+    assert.deepEqual(await run(undefined, { method: "POST", body }), []);
+    assert.deepEqual(await run("person.created", { method: "POST", body }), []);
+  }
+});
