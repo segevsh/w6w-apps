@@ -1,6 +1,6 @@
 # PDF.co
 
-Triggers: not shipped — the app is a conversion/job API and exposes no existing list action returning a stable, changing record feed (https://developer.pdf.co/).
+Triggers: not shipped — PDF.co's only webhook is a per-request `callback` URL that reports completion of an asynchronous job the caller itself starts; there is no account event stream or webhook registration, and the app has no list action returning a changing record feed (https://developer.pdf.co/api/webhooks, verified 2026-11-10).
 
 Convert, generate, merge, split, and extract data from PDFs and other documents on the **PDF.co
 API v1/v2**.
