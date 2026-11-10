@@ -2,6 +2,8 @@ import type { ActionDefinition } from "@w6w/types";
 import { compact, SalesloftClient } from "../lib/client.ts";
 
 interface Input {
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
   personId?: number;
   userId?: number;
   currentState?: "scheduled" | "completed";
@@ -54,6 +56,20 @@ const taskList: ActionDefinition<Input> = {
     },
     { key: "perPage", label: "Per page", type: "number", default: 25, hint: "1–100." },
     { key: "page", label: "Page", type: "number", default: 1 },
+    {
+      key: "sortBy",
+      label: "Sort by",
+      type: "string",
+      advanced: true,
+      hint: "Salesloft's own sort key for this list; omit for its default.",
+    },
+    {
+      key: "sortDirection",
+      label: "Sort direction",
+      type: "select",
+      advanced: true,
+      options: [{ value: "ASC", label: "Ascending" }, { value: "DESC", label: "Descending" }],
+    },
   ],
   output: [
     { key: "data", type: "array", label: "Tasks" },
@@ -71,6 +87,8 @@ const taskList: ActionDefinition<Input> = {
         time_interval_filter: input.timeIntervalFilter,
         per_page: input.perPage,
         page: input.page,
+        sort_by: input.sortBy,
+        sort_direction: input.sortDirection,
       }),
     });
   },
