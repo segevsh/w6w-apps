@@ -110,7 +110,20 @@ const triggerByKey = (key: string): T => {
   return t;
 };
 const bodyFor = (event: string) => BODY.replace("type=subscribe", `type=${event}`);
-const stateFor = (event: string) => ({ ...STATE, events: [event] });
+/**
+ * The state the trigger itself stores when subscribed (so its own wired event is what the
+ * delivery tests run against), with the secret Mailchimp returned.
+ */
+async function stateFor(trigger: T, event: string, anyEvent: boolean) {
+  const { ctx } = mockCtx([
+    { body: { webhooks: [] } },
+    { body: { id: "wh_1", signing_secret: SECRET } },
+  ]);
+  const params = { listId: "aud_1", ...(anyEvent ? { events: event } : {}) };
+  const state = await trigger.onSubscribe(hook({ params }), ctx);
+  assert.deepEqual(state, { webhookId: "wh_1", listId: "aud_1", secret: SECRET, events: [event] });
+  return state;
+}
 /** `hex` with the character at `i` changed. */
 const flipAt = (hex: string, i: number) =>
   hex.slice(0, i) + (hex[i] === "0" ? "1" : "0") + hex.slice(i + 1);
@@ -125,16 +138,17 @@ test("the table names every signed trigger the app declares, once", () => {
 for (const [key, event] of SIGNED) {
   const trigger = triggerByKey(key);
   const body = bodyFor(event);
-  const state = stateFor(event);
   const other = bodyFor(event === "subscribe" ? "unsubscribe" : "subscribe");
 
   test(`${key}: a signed ${event} delivery yields one run of that event; another event yields none`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const out = evs(await ingest(trigger, signed(body), state)) as Array<{ type: string }>;
     assert.deepEqual(out.map((e) => e.type), [event]);
     assert.deepEqual(evs(await ingest(trigger, signed(other), state)), []);
   });
 
   test(`${key}: a flipped byte of the SIGNATURE (first, middle and last position) throws`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const ts = nowSec();
     const good = createHmac("sha256", SECRET).update(`${ts}.${body}`).digest("hex");
     assert.equal(good.length, 64);
@@ -153,6 +167,7 @@ for (const [key, event] of SIGNED) {
   });
 
   test(`${key}: a flipped byte in the body, or a re-serialised body, throws`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const ts = nowSec();
     const tampered = delivery(body.replace("Ada", "Adb"), {
       "x-mailchimp-signature": sig(body, ts),
@@ -165,6 +180,7 @@ for (const [key, event] of SIGNED) {
   });
 
   test(`${key}: a missing or malformed signature header throws`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const ts = nowSec();
     for (
       const headers of [
@@ -179,12 +195,14 @@ for (const [key, event] of SIGNED) {
   });
 
   test(`${key}: an absent rawBody throws (never falls back to the parsed body)`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const call = signed(body);
     delete call.rawBody;
     await assert.rejects(async () => await ingest(trigger, call, state), /raw body/);
   });
 
   test(`${key}: a stale or future timestamp throws even with a correct signature`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     const now = nowSec();
     for (const ts of [now - 305, now + 305]) {
       await assert.rejects(
@@ -196,6 +214,7 @@ for (const [key, event] of SIGNED) {
   });
 
   test(`${key}: an unset or empty secret refuses before any compare`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     for (const secret of [undefined, ""]) {
       for (
         const call of [delivery(body, {}), delivery(body, { "x-mailchimp-signature": "t=1,v1=" })]
@@ -209,6 +228,7 @@ for (const [key, event] of SIGNED) {
   });
 
   test(`${key}: a non-POST delivery throws`, async () => {
+    const state = await stateFor(trigger, event, key === "any-event");
     for (const method of ["PUT", "GET"]) {
       const call = delivery(body, { "x-mailchimp-signature": sig(body, nowSec()) }, method);
       await assert.rejects(async () => await ingest(trigger, call, state), undefined, method);
