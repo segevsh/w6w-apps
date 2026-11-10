@@ -43,6 +43,9 @@ import entryFileGet from "./actions/entry-file-get.ts";
 import formPublicLinkAvailabilitySet from "./actions/form-public-link-availability-set.ts";
 
 import service from "./health/service.ts";
+import entrySubmitted from "./triggers/entry-submitted.ts";
+import entryUpdated from "./triggers/entry-updated.ts";
+import entryDeleted from "./triggers/entry-deleted.ts";
 
 export default {
   actions: [
@@ -63,5 +66,6 @@ export default {
     entryFileGet,
   ],
   auth: [bearerToken],
+  triggers: [entrySubmitted, entryUpdated, entryDeleted],
   healthChecks: [service],
 } satisfies AppDefinition;
