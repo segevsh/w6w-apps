@@ -132,7 +132,10 @@ directly. If it's the wrong field for your account, pass the correct one through
 On activation w6w calls `POST /open_api/v1.3/subscription/subscribe/` with the callback URL and
 stores the returned `subscription_id`; deleting the trigger calls `/subscription/unsubscribe/`.
 
-**Trust model.** TikTok signs every delivery: `TikTok-Signature: t=<unix seconds>,s=<hex>`, an
+**Trust model.** TikTok's lead-subscription pages do not themselves describe the signature; the scheme
+below comes from its general webhook-verification page and no live lead delivery has been observed. If lead
+deliveries are unsigned or signed differently, every delivery is refused (the trigger never fires and each
+refusal is recorded as a failed event). The expected header is `TikTok-Signature: t=<unix seconds>,s=<hex>`, an
 HMAC-SHA256 of `<t>.<raw request body>` keyed with the App Secret. w6w recomputes it over the exact
 bytes received, compares in constant time, and accepts only a timestamp within 300 seconds of now
 (TikTok's own sample uses 5 s; 300 s tolerates clock skew and a delayed first attempt). A missing or
