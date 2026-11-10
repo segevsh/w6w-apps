@@ -66,9 +66,10 @@ test("fixture: the body is not canonical JSON", () => {
   assert.notEqual(JSON.stringify(JSON.parse(BODY)), BODY);
 });
 
-test("app: declares both triggers with output and sample; signature keys are secret params", () => {
-  assert.deepEqual(app.triggers.map((t) => t.key), ["file-uploaded", "activity"]);
-  for (const t of app.triggers) {
+test("app: declares the webhook triggers with output and sample; signature keys are secret params", () => {
+  assert.ok(app.triggers.some((t) => t.key === "file-uploaded"));
+  assert.ok(app.triggers.some((t) => t.key === "activity"));
+  for (const t of app.triggers.filter((t) => t.handleIngest)) {
     assert.ok(t.output.length > 0);
     assert.notEqual(t.sample, undefined);
     assert.equal(t.params!.find((p) => p.key === "primaryKey")!.type, "secret");
