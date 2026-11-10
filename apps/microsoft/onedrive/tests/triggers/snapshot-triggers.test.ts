@@ -73,8 +73,29 @@ describe("new-permission", () => {
     }));
     await assertRejects(
       () => newPermission.poll!(input({}, params), mockCtx(pages).ctx) as Promise<unknown>,
+      Error,
       "more than 10 pages",
     );
+  });
+
+  test("drops the secret-bearing link URL and share id from emitted permissions", async () => {
+    const seed = await newPermission.poll!(
+      input({}, params),
+      mockCtx([{ body: { value: [] } }]).ctx,
+    );
+    const shared = {
+      id: "perm-link",
+      roles: ["read"],
+      shareId: "share-id-sample",
+      link: { type: "view", scope: "anonymous", webUrl: "https://example.test/s/sample" },
+    };
+    const next = await newPermission.poll!(
+      input(seed.nextState, params),
+      mockCtx([{ body: { value: [shared] } }]).ctx,
+    );
+    assertEquals(next.events, [
+      { id: "perm-link", roles: ["read"], link: { type: "view", scope: "anonymous" } },
+    ]);
   });
 
   test("declares a required item id, output and sample", () => {

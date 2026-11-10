@@ -10,14 +10,20 @@
  *    `$orderby` documents only `name`/`size`/`lastModifiedDateTime` (and `name`/`url` on OneDrive
  *    for Business and SharePoint) and the reference lists no `$filter`
  *    (https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/optional-query-parameters).
- *    Delta reports each changed item's *latest state* once per round, not an event, so
+ *    Delta reports each changed item's *latest state*, not an event, and "the same item may appear
+ *    more than once in a delta feed … use the last occurrence you see" (same page, Remarks), so an
+ *    item is reduced to its last occurrence within a page and emitted at most once per round.
  *    "created" vs "updated" vs "deleted" is decided here:
  *      deleted  → the item carries the `deleted` facet;
- *      created  → `createdDateTime` is at or after the window start;
- *      updated  → it is not deleted and was created before the window start.
- *    The window start is `max(floor, since − 60 s)`: `floor` is the instant the subscription was
- *    seeded (nothing older is ever "created", so the seed can never cause a flood later) and
- *    `since` is when the previous *complete* delta round began.
+ *      created  → `createdDateTime` is at or after `max(floor, since − 60 s)`;
+ *      updated  → not deleted, and `createdDateTime` is before `max(floor, since)`.
+ *    `floor` is the instant the subscription was seeded (nothing older is ever "created", so the
+ *    seed can never cause a flood later) and `since` is when the previous *complete* delta round
+ *    began. The 60 s clock-skew overlap only widens "created" (guarded by `seen`): applying it to
+ *    "updated" would swallow the first edit of a file created just before a check.
+ *    Every request sends `deltaExcludeParent`, so the feed carries the changed items and not the
+ *    ancestor folders of each one ("the response includes the items that have changed, and not the
+ *    parent items in the hierarchy").
  *  - **Snapshot** — `pollSnapshot` over a small bounded list (permissions of one item, the user's
  *    drives), "added" only.
  */
@@ -68,6 +74,8 @@ export interface DeltaState {
   since: number;
   /** Start of the delta round still being drained; absent between rounds. */
   roundStart?: number;
+  /** Ids a non-"created" trigger already emitted in the round still being drained. */
+  roundEmitted?: string[];
   seen: string[];
 }
 
@@ -87,8 +95,8 @@ function readState(state: unknown): DeltaState | undefined {
 async function fetchDelta(driveId: string | undefined, token: string, ctx: HookContext) {
   const result = await listChanges.execute(
     token === "latest"
-      ? { driveId, token, top: DELTA_PAGE_MAX, all: false }
-      : { driveId, deltaLink: token, top: DELTA_PAGE_MAX, all: false },
+      ? { driveId, token, top: DELTA_PAGE_MAX, excludeParents: true, all: false }
+      : { driveId, deltaLink: token, top: DELTA_PAGE_MAX, excludeParents: true, all: false },
     ctx,
   );
   const cursor = result.nextLink ?? result.deltaLink;
@@ -103,12 +111,17 @@ async function fetchDelta(driveId: string | undefined, token: string, ctx: HookC
   };
 }
 
-function classify(item: DriveItem, windowStart: number): Change | undefined {
-  if (item.deleted) return "deleted";
-  if (item.root) return undefined;
+function matches(
+  item: DriveItem,
+  change: Change,
+  window: { created: number; updated: number },
+): boolean {
+  if (item.deleted) return change === "deleted";
+  if (item.root || change === "deleted") return false;
   const created = Date.parse(item.createdDateTime ?? "");
   // An item with no parseable creation stamp is kept as "created" (deduped by id).
-  return Number.isNaN(created) || created >= windowStart ? "created" : "updated";
+  if (Number.isNaN(created)) return change === "created";
+  return change === "created" ? created >= window.created : created < window.updated;
 }
 
 /** One check of a delta-classified trigger. */
@@ -146,17 +159,31 @@ export async function pollDelta(o: {
     throw err;
   }
 
-  const windowStart = Math.max(prior.floor, prior.since - CREATED_OVERLAP_MS);
+  const window = {
+    created: Math.max(prior.floor, prior.since - CREATED_OVERLAP_MS),
+    updated: Math.max(prior.floor, prior.since),
+  };
   const seen = new Set(prior.seen);
-  const events: DriveItem[] = [];
+  // Only a non-"created" trigger needs the per-round memory; "created" has `seen`.
+  const emitted = new Set(o.change === "created" ? [] : prior.roundEmitted ?? []);
+  // Last occurrence of each id within the page wins (a later duplicate replaces the earlier).
+  const latest = new Map<string, DriveItem>();
   for (const item of page.items) {
     if (typeof item.id !== "string" || item.id === "") continue;
+    latest.delete(item.id);
+    latest.set(item.id, item);
+  }
+  const events: DriveItem[] = [];
+  for (const [id, item] of latest) {
     if (params.folderId && item.parentReference?.id !== params.folderId) continue;
     if (o.facet && !item[o.facet]) continue;
-    if (classify(item, windowStart) !== o.change) continue;
+    if (!matches(item, o.change, window)) continue;
     if (o.change === "created") {
-      if (seen.has(item.id)) continue;
-      seen.add(item.id);
+      if (seen.has(id)) continue;
+      seen.add(id);
+    } else {
+      if (emitted.has(id)) continue;
+      emitted.add(id);
     }
     events.push(item);
   }
@@ -170,7 +197,10 @@ export async function pollDelta(o: {
     since: page.complete ? roundStart : prior.since,
     seen: [...seen].slice(-SEEN_MAX),
   };
-  if (!page.complete) nextState.roundStart = roundStart;
+  if (!page.complete) {
+    nextState.roundStart = roundStart;
+    if (emitted.size > 0) nextState.roundEmitted = [...emitted].slice(-SEEN_MAX);
+  }
   return { events, nextState };
 }
 
@@ -190,6 +220,13 @@ const itemOutputFields: OutputField[] = [
   { key: "webUrl", type: "string", label: "Web URL" },
   { key: "createdDateTime", type: "string", label: "Created at" },
   { key: "lastModifiedDateTime", type: "string", label: "Modified at" },
+  { key: "parentReference", type: "object", label: "Parent reference" },
+];
+
+const deletedOutputFields: OutputField[] = [
+  { key: "id", type: "string", label: "Item ID" },
+  { key: "name", type: "string", label: "Name" },
+  { key: "deleted", type: "object", label: "Deleted facet" },
   { key: "parentReference", type: "object", label: "Parent reference" },
 ];
 
@@ -239,7 +276,7 @@ export function deltaTrigger(
     title: spec.title,
     description: spec.description,
     params: [driveIdParam, ...(spec.withFolder === false ? [] : [folderIdParam])],
-    output: itemOutputFields,
+    output: spec.change === "deleted" ? deletedOutputFields : itemOutputFields,
     sample,
     minIntervalMs: 300_000,
     poll: ({ params, state }, ctx) =>
@@ -258,6 +295,19 @@ function overCap(what: string): Error {
 export interface PermissionParams {
   driveId?: string;
   itemId: string;
+}
+
+/**
+ * The list-permissions page marks a sharing link's `webUrl` and a permission's `shareId` as
+ * secret-bearing (anyone holding the URL has the access), so they are dropped from events.
+ */
+export function withoutSecretFields(p: Record<string, unknown>): Record<string, unknown> {
+  const { shareId: _shareId, link, ...rest } = p;
+  if (link && typeof link === "object") {
+    const { webUrl: _webUrl, ...safeLink } = link as Record<string, unknown>;
+    return { ...rest, link: safeLink };
+  }
+  return link === undefined ? rest : { ...rest, link };
 }
 
 export async function pollPermissions(o: {
@@ -279,7 +329,7 @@ export async function pollPermissions(o: {
     emit: { added: true, updated: false, removed: false },
   });
   return {
-    events: out.events.map((e) => e.values as Record<string, unknown>),
+    events: out.events.map((e) => withoutSecretFields(e.values as Record<string, unknown>)),
     nextState: out.nextState,
   };
 }

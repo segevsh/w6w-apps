@@ -362,9 +362,9 @@ against the Microsoft Graph reference (verified 2026-11-10).
 | New File (`new-file`) | poll, delta cursor | **List Changes** | A file created since the trigger was switched on. Optional **Folder ID** keeps only files directly inside that folder. |
 | New Folder (`new-folder`) | poll, delta cursor | **List Changes** | A folder created since the trigger was switched on; optional **Folder ID** as above. |
 | File Updated (`file-updated`) | poll, delta cursor | **List Changes** | A file that already existed and was modified, renamed or moved; optional **Folder ID**. |
-| Folder Updated (`folder-updated`) | poll, delta cursor | **List Changes** | A folder that already existed and was modified, renamed or moved; optional **Folder ID**. |
+| Folder Updated (`folder-updated`) | poll, delta cursor | **List Changes** | A folder that already existed and that Graph delta reports as changed itself (renamed, moved or modified); ancestors of a changed item are not sent. Graph may also report a folder whose modified time moved because its contents changed. Optional **Folder ID**. |
 | Item Deleted (`item-deleted`) | poll, delta cursor | **List Changes** | The id (and name, when Graph still reports it) of a deleted file or folder. |
-| New Permission (`new-permission`) | poll, bounded snapshot | **List Permissions** — `GET …/items/{id}/permissions` | A sharing permission (link, invite or inherited grant) newly added to the **Item ID** you pick. |
+| New Permission (`new-permission`) | poll, bounded snapshot | **List Permissions** — `GET …/items/{id}/permissions` | A sharing permission (link, invite or inherited grant) newly added to the **Item ID** you pick. The link URL (`link.webUrl`) and `shareId` are dropped from the event because the vendor marks them secret-bearing. |
 | New Drive (`new-drive`) | poll, bounded snapshot | **List Drives** — `GET /me/drives` | A drive (a OneDrive or SharePoint document library) the signed-in user can newly reach. |
 
 Setup: pick the connection; for a drive other than your own set **Drive ID**
@@ -372,15 +372,27 @@ Setup: pick the connection; for a drive other than your own set **Drive ID**
 clean up when a trigger is switched off. Checks run at most every 5 minutes.
 
 How "created" and "updated" are told apart. Graph's [delta](https://learn.microsoft.com/en-us/graph/api/driveitem-delta)
-returns each changed item's latest state once per round, not an event. The
-`token=latest` seed records the instant it ran; an item whose `createdDateTime`
-is at or after the start of the previous complete round (never earlier than that
-seed instant, less 60 seconds of clock skew after the first round) is *created*
-and is emitted once; any other non-deleted item is *updated*; an item with the
-`deleted` facet is *deleted*. Nothing that existed before the trigger was switched
-on is ever reported as new, and a modification landing in the same check as the
-creation is reported only as the creation. The delta cursor expires with Graph's
-`410 Gone`; the trigger then starts a fresh cursor and reports nothing for the gap.
+returns each changed item's latest state, not an event, and "the same item may
+appear more than once in a delta feed … use the last occurrence you see". So within
+a page an item counts once (its last occurrence), and the update/delete triggers
+emit an item at most once per delta round (a round can span several checks; the
+ids already emitted are kept in the state until Graph closes the round). Every
+request carries the `deltaExcludeParent` header, so the feed holds the changed
+items and not their ancestor folders. The `token=latest` seed records the instant
+it ran. An item whose `createdDateTime` is at or after the start of the previous
+complete round (never earlier than that seed instant, less 60 seconds of clock skew
+after the first round) is *created* and is emitted once (its id is remembered). An
+item created before the previous round began (no skew allowance) and not deleted
+is *updated*; an item with the `deleted` facet is *deleted*. Nothing that existed
+before the trigger was switched on is ever reported as new. The delta cursor
+expires with Graph's `410 Gone`; the trigger then starts a fresh cursor and reports
+nothing for the gap.
+
+Known edges of that heuristic: a modification landing in the same check as the
+creation is reported only as the creation; a file Graph first shows up to 60 s
+after the round it was created in (clock skew, delta lag) is reported by New File
+and, because "updated" has no skew allowance, also by File Updated; and a folder
+the vendor reports only because its contents changed is delivered as updated.
 
 Trust model: these triggers only read, through your connection; no inbound
 request exists to verify.
@@ -388,7 +400,8 @@ request exists to verify.
 Scope notes, each from the Microsoft docs:
 
 - The delta feed is the root-scoped `GET …/root/delta` request that **List Changes**
-  and File Changed already make, so these triggers need no new endpoint or consent.
+  and File Changed already make (the new triggers add the `deltaExcludeParent`
+  header **List Changes** supports), so these triggers need no new endpoint or consent.
   **Folder ID** filters items by their `parentReference.id` (direct children only)
   instead of starting a per-folder delta.
   <https://learn.microsoft.com/en-us/graph/api/driveitem-delta>
@@ -397,15 +410,24 @@ Scope notes, each from the Microsoft docs:
   documents `name`, `size` and `lastModifiedDateTime`, and for OneDrive for
   Business and SharePoint only `name` and `url`, so neither is a newest-first feed.
   <https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/optional-query-parameters>
+- **New Permission** polls the permissions of one item and **New Drive** the drives
+  the user can reach; both are bounded lists that follow `@odata.nextLink` up to 10
+  pages and then fail rather than track a partial list. They report additions only
+  (removed permissions and drives are not delivered; the snapshot "added" form is the
+  shared convention).
+  <https://learn.microsoft.com/en-us/graph/api/driveitem-list-permissions>,
+  <https://learn.microsoft.com/en-us/graph/api/drive-list>
 - **Not covered:** *List Shared With Me* — Microsoft marks `drive/sharedWithMe`
-  deprecated and says it stops returning data after November 2026, so a trigger
-  on it would go silent (<https://learn.microsoft.com/en-us/graph/api/drive-sharedwithme>).
+  deprecated: it "will operate in a degraded state until November, 2026, after which
+  it will stop returning data", so a trigger on it would go silent
+  (<https://learn.microsoft.com/en-us/graph/api/drive-sharedwithme>).
 - **Webhooks not shipped.** Graph change notifications for a drive
   (`POST /subscriptions` on `/me/drive/root`) carry no item data — only "something
   under this root changed" — support only the `updated` change type on a drive
-  root, expire after at most 42,300 minutes (under 30 days), and the trigger
-  lifecycle has no renewal hook, so a subscription would stop silently. Delta
-  polling above delivers the actual records instead.
+  root, and expire after at most 42,300 minutes (under 30 days). A notification would
+  only say "something changed", and the records still need the polled delta query, so
+  a webhook would add a ping without removing the poll. Delta polling above delivers
+  the actual records instead.
   <https://learn.microsoft.com/en-us/graph/api/resources/subscription>,
   <https://learn.microsoft.com/en-us/graph/api/subscription-post-subscriptions>,
   <https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/using-webhooks>
@@ -449,7 +471,7 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 ```
 
 - `deno task validate` — 0 errors, 0 warnings.
-- `deno task test` — **202 unit tests**, all against a mocked `HookContext`
+- `deno task test` — **261 unit tests**, all against a mocked `HookContext`
   (fake `ctx.fetch`, no-op `ctx.log`). No network, no server.
 - The icon is `simple-icons`' `microsoftonedrive.svg`, **verbatim** — 1,331 bytes,
   md5 `b2575ded6a12b578893bd1418e15e4cf`, `<title>Microsoft OneDrive</title>`.

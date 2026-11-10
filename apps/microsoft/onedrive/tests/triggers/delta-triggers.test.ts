@@ -17,6 +17,10 @@ const T0 = Date.parse("2026-11-10T10:00:00Z");
 const T1 = T0 + 5 * 60_000;
 const T2 = T0 + 10 * 60_000;
 
+// Every delta request asks Graph to leave out the ancestors of each changed item
+// (the `deltaExcludeParent` header; the test helper lower-cases header names).
+const EXCLUDE_PARENTS = { deltaexcludeparent: "true" };
+
 const OLD = "2026-11-01T08:00:00Z"; // created long before the seed
 const FRESH_AT = "2026-11-10T10:03:00Z"; // created after the seed
 
@@ -101,7 +105,7 @@ for (const { trigger, expected } of CASES) {
       assertEquals(calls[0], {
         method: "GET",
         url: "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=latest&%24top=999",
-        headers: {},
+        headers: EXCLUDE_PARENTS,
         body: null,
       });
     });
@@ -112,7 +116,7 @@ for (const { trigger, expected } of CASES) {
       const r = await trigger.poll!(input(seeded()), ctx);
       assertEquals((r.events as Array<{ id: string }>).map((e) => e.id), [expected]);
       assertEquals(r.nextState?.token, DELTA);
-      assertEquals(calls[0], { method: "GET", url: DELTA, headers: {}, body: null });
+      assertEquals(calls[0], { method: "GET", url: DELTA, headers: EXCLUDE_PARENTS, body: null });
     });
 
     test("the same state and response give the same result", async () => {
@@ -209,7 +213,12 @@ describe("new-file: created classification", () => {
     const created = await newFile.poll!(input(state), mockCtx([{ body }]).ctx);
     assertEquals((created.events as Array<{ id: string }>).map((e) => e.id), ["after-window"]);
     const updated = await fileUpdated.poll!(input(state), mockCtx([{ body }]).ctx);
-    assertEquals((updated.events as Array<{ id: string }>).map((e) => e.id), ["before-window"]);
+    // "updated" has no skew overlap (it starts at `since`, 10:05): both predate it, so a file
+    // created inside the created-overlap is still reported when it is edited (B3).
+    assertEquals((updated.events as Array<{ id: string }>).map((e) => e.id), [
+      "after-window",
+      "before-window",
+    ]);
   });
 });
 
@@ -245,6 +254,7 @@ describe("delta round tracking", () => {
     const { ctx } = mockCtx([{ body: { value: [] } }]);
     await assertRejects(
       () => newFile.poll!(input(seeded()), ctx) as Promise<unknown>,
+      Error,
       "delta link",
     );
   });
@@ -252,7 +262,118 @@ describe("delta round tracking", () => {
   test("a non-410 failure propagates", async () => {
     clock.now = () => T1;
     const { ctx } = mockCtx([{ status: 500, statusText: "Server Error", body: { error: {} } }]);
-    await assertRejects(() => newFile.poll!(input(seeded()), ctx) as Promise<unknown>, "500");
+    await assertRejects(
+      () => newFile.poll!(input(seeded()), ctx) as Promise<unknown>,
+      Error,
+      "500",
+    );
+  });
+});
+
+const ids = (r: { events: unknown[] }) => (r.events as Array<{ id: string }>).map((e) => e.id);
+
+describe("an item Graph repeats is delivered once (last occurrence wins)", () => {
+  const twice = (id: string, extra: Record<string, unknown>) => [
+    { id, createdDateTime: OLD, lastModifiedDateTime: "2026-11-10T10:01:00Z", ...extra },
+    { id, createdDateTime: OLD, lastModifiedDateTime: "2026-11-10T10:02:00Z", ...extra },
+  ];
+  const REPEATS = [
+    { trigger: fileUpdated, id: "dup-file", items: twice("dup-file", { file: {} }) },
+    { trigger: folderUpdated, id: "dup-folder", items: twice("dup-folder", { folder: {} }) },
+    { trigger: itemDeleted, id: "dup-gone", items: twice("dup-gone", { deleted: {} }) },
+    {
+      trigger: newFile,
+      id: "dup-new",
+      items: twice("dup-new", { file: {}, createdDateTime: FRESH_AT }),
+    },
+  ];
+  for (const { trigger, id, items } of REPEATS) {
+    test(`${trigger.key}: the same id twice in a page gives one event`, async () => {
+      clock.now = () => T1;
+      const body = { value: items, "@odata.deltaLink": DELTA };
+      const r = await trigger.poll!(input(seeded()), mockCtx([{ body }]).ctx);
+      assertEquals(ids(r), [id]);
+    });
+  }
+
+  test("the last occurrence decides: updated then deleted is not an update", async () => {
+    clock.now = () => T1;
+    const body = {
+      value: [
+        { id: "x", createdDateTime: OLD, file: {} },
+        { id: "x", deleted: { state: "deleted" } },
+      ],
+      "@odata.deltaLink": DELTA,
+    };
+    assertEquals(ids(await fileUpdated.poll!(input(seeded()), mockCtx([{ body }]).ctx)), []);
+    assertEquals(ids(await itemDeleted.poll!(input(seeded()), mockCtx([{ body }]).ctx)), ["x"]);
+  });
+
+  test("an id on page 1 and again on page 2 of one round fires at the first check only", async () => {
+    const item = { id: "again", createdDateTime: OLD, file: {} };
+    clock.now = () => T1;
+    const one = await fileUpdated.poll!(
+      input(seeded()),
+      mockCtx([{ body: { value: [item], "@odata.nextLink": NEXT } }]).ctx,
+    );
+    assertEquals(ids(one), ["again"]);
+    assertEquals(one.nextState?.roundEmitted, ["again"]);
+    clock.now = () => T2;
+    const two = await fileUpdated.poll!(
+      input(one.nextState),
+      mockCtx([{ body: { value: [item, { ...item, id: "other" }], "@odata.deltaLink": DELTA } }])
+        .ctx,
+    );
+    assertEquals(ids(two), ["other"]);
+    assertEquals(two.nextState?.roundEmitted, undefined);
+  });
+
+  test("a real second edit in a later round fires again", async () => {
+    const item = { id: "again", createdDateTime: OLD, file: {} };
+    const body = { value: [item], "@odata.deltaLink": DELTA };
+    clock.now = () => T1;
+    const one = await fileUpdated.poll!(input(seeded()), mockCtx([{ body }]).ctx);
+    clock.now = () => T2;
+    const two = await fileUpdated.poll!(input(one.nextState), mockCtx([{ body }]).ctx);
+    assertEquals(ids(one), ["again"]);
+    assertEquals(ids(two), ["again"]);
+  });
+});
+
+describe("a file edited in the interval after its creation is not lost", () => {
+  // Created at 10:04:30, 30 s before the check at T1 (10:05): new-file emits it at T1.
+  const CREATED = "2026-11-10T10:04:30Z";
+  const file = (extra: Record<string, unknown> = {}) => ({
+    value: [{ id: "doc", createdDateTime: CREATED, file: {}, ...extra }],
+    "@odata.deltaLink": DELTA,
+  });
+
+  test("created 30 s before a check, edited in the next round: file-updated once, new-file not repeated", async () => {
+    clock.now = () => T1;
+    const nf = await newFile.poll!(input(seeded()), mockCtx([{ body: file() }]).ctx);
+    const fu = await fileUpdated.poll!(input(seeded()), mockCtx([{ body: file() }]).ctx);
+    assertEquals(ids(nf), ["doc"]);
+    assertEquals(ids(fu), []);
+
+    clock.now = () => T2;
+    const edited = file({ lastModifiedDateTime: "2026-11-10T10:07:00Z" });
+    const nf2 = await newFile.poll!(input(nf.nextState), mockCtx([{ body: edited }]).ctx);
+    const fu2 = await fileUpdated.poll!(input(fu.nextState), mockCtx([{ body: edited }]).ctx);
+    assertEquals(ids(nf2), []);
+    assertEquals(ids(fu2), ["doc"]);
+  });
+
+  test("the pre-seed floor still holds: a file created 30 s before the seed is updated, never created", async () => {
+    // seed at T0 (10:00); file created at 09:59:30 and modified afterwards.
+    const pre = {
+      value: [{ id: "pre", createdDateTime: "2026-11-10T09:59:30Z", file: {} }],
+      "@odata.deltaLink": DELTA,
+    };
+    clock.now = () => T1;
+    assertEquals(ids(await newFile.poll!(input(seeded()), mockCtx([{ body: pre }]).ctx)), []);
+    assertEquals(ids(await fileUpdated.poll!(input(seeded()), mockCtx([{ body: pre }]).ctx)), [
+      "pre",
+    ]);
   });
 });
 

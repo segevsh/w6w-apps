@@ -4,7 +4,7 @@ export default deltaTrigger({
   key: "folder-updated",
   title: "Folder Updated",
   description:
-    "The run gets a folder that already existed and was modified, renamed or moved in the drive (or directly inside one folder), from Microsoft Graph delta.",
+    "The run gets a folder that already existed and that Microsoft Graph delta reports as changed itself (renamed, moved or modified); parent folders of a changed item are not sent. Graph may also report a folder whose modified time moved because its contents changed.",
   change: "updated",
   facet: "folder",
 });
