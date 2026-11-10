@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx, v3Page } from "../_helpers.ts";
+import newCategoryTree from "../../triggers/new-category-tree.ts";
 import newBrand from "../../triggers/new-brand.ts";
 import newInventoryLocation from "../../triggers/new-inventory-location.ts";
 import newOrUpdatedPriceList from "../../triggers/new-or-updated-price-list.ts";
@@ -33,6 +34,12 @@ const cases = [
     trigger: newInventoryLocation,
     item: { id: 1, code: "WH-1", label: "Main warehouse" },
     request: `${ROOT}/v3/inventory/locations?limit=250&page=1`,
+  },
+  {
+    name: "new-category-tree",
+    trigger: newCategoryTree,
+    item: { id: 1, name: "Main tree", channels: [1] },
+    request: `${ROOT}/v3/catalog/trees`,
   },
 ];
 
@@ -82,4 +89,17 @@ test("a full page is followed by the next page", async () => {
   assertEquals(m.calls.length, 2);
   assertEquals(m.calls[1].url, `${ROOT}/v3/catalog/brands?limit=250&page=2`);
   assertEquals(Object.keys((seeded.nextState as { hashes: object }).hashes).length, 251);
+});
+
+test("a collection past 20 full pages of 250 rejects instead of snapshotting a partial read", async () => {
+  const full = Array.from({ length: 250 }, (_, i) => ({ id: i + 1, name: `B${i + 1}` }));
+  const m = mockCtx(Array.from({ length: 20 }, () => ({ body: v3Page(full) })));
+  let message = "";
+  try {
+    await newBrand.poll!({ ...input, state: {} }, m.ctx);
+  } catch (err) {
+    message = (err as Error).message;
+  }
+  assertEquals(message, "new-brand: more than 5000 rows; cannot snapshot");
+  assertEquals(m.calls.length, 20);
 });

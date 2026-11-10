@@ -269,35 +269,57 @@ Every `perform` action declares `idempotent` explicitly, and honestly:
 
 ## Triggers
 
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| Trigger key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-|  — New Order | Poll |  | Each newly created order |
-|  — New Product | Poll | , uid=1000(node) gid=1000(node) groups=1000(node),983(docker),998(nvm),999(npm) descending | Each newly created product |
-|  — New or Updated Product | Poll | ,  descending | Each product whose modification time changes |
-|  — New Customer | Poll | ,  descending | Each newly created customer |
-|  — New or Updated Customer | Poll | ,  descending | Each customer whose modification time changes |
-|  — New Price List | Poll (snapshot) | , all pages | Each price list first seen |
-|  — New or Updated Price List | Poll (snapshot) | , all pages | Each price list first seen or whose values change |
-|  — New Brand | Poll (snapshot) | , all pages | Each brand first seen |
-|  — New Inventory Location | Poll (snapshot) | , all pages | Each inventory location first seen |
+| `new-order` — New Order | Poll | `order-list`, `sort=date_created:desc` | Each newly created order |
+| `new-product` — New Product | Poll | `product-list`, `sort=id`, `direction=desc` | Each newly created product |
+| `new-or-updated-product` — New or Updated Product | Poll | `product-list`, `sort=date_modified`, `direction=desc` | Each product whose modification time changes |
+| `new-customer` — New Customer | Poll | `customer-list`, `sort=date_created:desc` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list`, `sort=date_modified:desc` | Each customer whose modification time changes |
+| `new-price-list` — New Price List | Poll (snapshot) | `price-list-list`, all pages | Each price list first seen |
+| `new-or-updated-price-list` — New or Updated Price List | Poll (snapshot) | `price-list-list`, all pages | Each price list first seen or whose values change |
+| `new-brand` — New Brand | Poll (snapshot) | `brand-list`, all pages | Each brand first seen |
+| `new-inventory-location` — New Inventory Location | Poll (snapshot) | `inventory-location-list`, all pages | Each inventory location first seen |
+| `new-category-tree` — New Category Tree | Poll (snapshot) | `category-tree-list` | Each category tree first seen |
+| `new-or-updated-price-list-record` — New or Updated Price List Record | Poll (since-filter) | `price-list-record-list`, `date_modified:min` | Each price (variant and currency) in one chosen price list that is added or changed |
 
 Order, product and customer triggers poll newest-first through their listed actions; the first check
-records what exists without firing, later checks emit only unseen items.  sorts by uid=1000(node) gid=1000(node) groups=1000(node),983(docker),998(nvm),999(npm)
-because the vendor says "Since ID increments when new products are added, you can use the ID value to
-sort by product create date" — a bulk edit of other products cannot push a new one off the page, as a
- sort would. The snapshot triggers read the whole (small, bounded) collection, up to
-5000 rows, and diff per-row hashes. Sources, opened 2026-11-10:
-[products](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/products/get-products) ( enum, ),
-[customers](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/customers/v3/get-customers) ( enum),
-[price lists](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/get-price-lists),
-[brands](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/brands/get-brands),
-[inventory locations](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/inventory/locations/get-locations).
+records what exists without firing, later checks emit only unseen items. `new-product` sorts by `id`
+descending because the vendor says "Since ID increments when new products are added, you can use the
+ID value to sort by product create date" — a bulk edit of other products cannot push a new one off
+the page, as a `date_modified` sort would. The snapshot triggers read the whole (small, bounded)
+collection, up to 5000 rows, and diff per-row hashes; `category-tree-list` is one request, as the
+vendor page documents no paging for it.
 
-Not covered, by reason: **per-parent lists** (, ,
-, ,  need an order, customer or
-price list a user picks first); **reference or administration output** (,
-); **no usable date filter or creation order** (, ,
-, ).
+`new-or-updated-price-list-record` takes a required `priceListId` (the price list to watch). Each
+check asks for records with `date_modified:min` set to the last check minus a two-minute overlap, reads at
+most five pages of 100, and resumes a longer window on the next check instead of stalling. The first
+check stores the moment it ran as a floor and emits nothing, so prices that existed before the
+trigger was switched on never fire. A price record has no id of its own, so it is identified by
+price list, variant, currency and modification time.
+
+Sources, opened 2026-11-10:
+[products](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/products/get-products) (`sort` enum, `direction`),
+[customers](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/customers/v3/get-customers) (`sort` enum),
+[price lists](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/get-price-lists),
+[price list records](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/price-lists-records/get-price-list-records) (`date_modified:min`, `date_modified:max`, `date_created:min`),
+[brands](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/brands/get-brands),
+[inventory locations](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/inventory/locations/get-locations),
+[category trees](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/category-trees/get-category-trees) (only `id:in`, `channel_id:in`).
+
+Not covered, by reason:
+
+- **Sub-lists of one individual order or customer** (`order-product-list`,
+  `order-shipping-address-list`, `order-transaction-list`, `customer-address-list`): the parent is a
+  single order or customer record, not a container a user would choose to watch, and the vendor
+  pages document only `page` and `limit` (the transactions page documents no query parameters at all), so
+  no date filter.
+  New orders and customers are delivered by `new-order` and `new-customer`.
+- **Reference or administration output** (`order-status-list`, `webhook-list`).
+- **No usable date filter or creation order, and no documented size bound** (`category-list`:
+  `GET /v3/catalog/trees/categories` documents only id, uuid, tree, parent, name, title, keyword and
+  visibility filters; `inventory-item-list`, `variant-list`: only `page`, `limit` and id, SKU
+  filters).
 
 ## Health checks
 

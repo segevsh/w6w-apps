@@ -130,6 +130,8 @@ import newPriceList from "./triggers/new-price-list.ts";
 import newOrUpdatedPriceList from "./triggers/new-or-updated-price-list.ts";
 import newBrand from "./triggers/new-brand.ts";
 import newInventoryLocation from "./triggers/new-inventory-location.ts";
+import newCategoryTree from "./triggers/new-category-tree.ts";
+import newOrUpdatedPriceListRecord from "./triggers/new-or-updated-price-list-record.ts";
 
 export default {
   actions: [
@@ -197,5 +199,7 @@ export default {
     newOrUpdatedPriceList,
     newBrand,
     newInventoryLocation,
+    newCategoryTree,
+    newOrUpdatedPriceListRecord,
   ],
 } satisfies AppDefinition;
