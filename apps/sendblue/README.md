@@ -3,7 +3,7 @@
 Send and receive iMessage, SMS, and RCS business messages — plus contacts, webhooks, TOTP,
 seats, location sharing, and phone verification — through the **Sendblue REST API**.
 
-- **Triggers** — 3 (poll)
+- **Triggers** — 5 (poll)
 - **Categories** — communication
 - **Auth methods** — api-keys (two custom headers: `sb-api-key-id` + `sb-api-secret-key`)
 - **Actions** — 47
@@ -199,6 +199,8 @@ verbatim-mark claim.
 | `new-message` — New Message | poll (every 5 minutes at most) | `message-list`, ordered `createdAt` descending | each new message, inbound or outbound, identified by `message_handle` |
 | `new-contact` — New Contact | poll (every 5 minutes at most) | `contact-list`, ordered `created_at` descending | each new contact, identified by phone number |
 | `new-seat` — New Seat | poll (every 5 minutes at most) | `seat-list` (whole list, id snapshot) | each new seat (rep) of the account |
+| `new-verification` — New Verification | poll (every 5 minutes at most) | `verify-verification-list`, filtered `updated_at_gte`, paged by `offset` | each Verify verification created after the first check, identified by `sid` |
+| `new-verified-contact` — New Verified Contact | poll (every 5 minutes at most) | `verified-contact-list` (whole list, id snapshot) | each contact newly attached to the shared line, identified by phone number |
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `message-list` through the connection's own
@@ -210,6 +212,8 @@ the connection.
 
 `new-seat` reads the whole seat list (a small account-level collection with no sort or filter) and emits `seat_id`s not seen before.
 
-Vendor docs: <https://docs.sendblue.com/api-v2/messages/>, <https://docs.sendblue.com/api-v2/contacts>, <https://docs.sendblue.com/api-v2/seats> (verified 2026-11-10).
+`new-verification` asks for everything updated since the last check (minus two minutes), follows `pagination.has_more` with `offset` and drops verifications whose `date_created` is before the first check (the list documents no sort order). `new-verified-contact` reads `data.contacts` (a small per-account collection, no paging) and emits phone numbers not seen before.
 
-Not covered: `verify-verification-list` (the account-wide list and its `updated_at_gte` filter are in no public docs page — only the per-service endpoints are documented — and Verify attempts are one-time-code state); `verify-service-list` and `webhook-list` are account configuration; `totp-secret-list` returns credential material only (secret values never included); `location-list` is live Find My position state; `verified-contact-list` has no documented item fields or order.
+Vendor docs: <https://docs.sendblue.com/api-v2/messages/>, <https://docs.sendblue.com/api-v2/contacts>, <https://docs.sendblue.com/api-v2/seats>, <https://docs.sendblue.com/api/resources/verify/subresources/verifications/methods/list/>, <https://docs.sendblue.com/api/resources/verified_contacts/methods/list/> (verified 2026-11-10).
+
+Not covered: `verify-service-list` and `webhook-list` are account configuration; `totp-secret-list` returns credential material only (secret values never included); `location-list` needs a `from_number` line and returns current Find My positions, live state that changes between reads rather than an event record feed.

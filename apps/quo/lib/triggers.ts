@@ -158,19 +158,21 @@ export async function newRecords(o: {
   return { events: events.map((e) => byId.get(e.key)), nextState };
 }
 
-/** Pages read for a snapshot of a bounded list (100 rows each; the kit caps a snapshot at 5000). */
+/** Pages read for a snapshot of a bounded list (up to 100 rows each; the kit caps a snapshot at 5000). */
 const SNAPSHOT_PAGES = 50;
 
 /** Reads a whole small list through the app's OWN list action, following `nextPageToken`. */
 export async function readAllPages(
   action: ActionDefinition,
   ctx: Parameters<ActionDefinition["execute"]>[1],
+  /** Rows per request: the vendor's maximum differs per list (users 50, calls/messages 100). */
+  pageSize = 100,
 ): Promise<unknown[]> {
   const all: unknown[] = [];
   let pageToken: string | undefined;
   for (let page = 0; page < SNAPSHOT_PAGES; page++) {
     const res = await action.execute(
-      { maxResults: 100, ...(pageToken ? { pageToken } : {}) },
+      { maxResults: pageSize, ...(pageToken ? { pageToken } : {}) },
       ctx,
     ) as { data?: unknown[]; nextPageToken?: string | null };
     all.push(...(res.data ?? []));

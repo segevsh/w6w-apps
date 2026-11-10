@@ -95,3 +95,58 @@ describe("new-release", () => {
     assertEquals(sent(first.calls[0]), { method: "GET", url });
   });
 });
+
+// Multi-page fixtures: a Link `rel="next"` header makes the action follow the cursor, so a
+// snapshot or newest-first feed that stopped after one page (or capped its limit) would lose rows.
+const next = (path: string, cursor: string) => ({
+  "content-type": "application/json",
+  link: `<${base}${path}?cursor=${cursor}>; rel="previous"; results="false"; cursor="p", ` +
+    `<${base}${path}?cursor=${cursor}>; rel="next"; results="true"; cursor="${cursor}"`,
+});
+
+describe("multi-page lists", () => {
+  test("new-release follows the Link cursor to the second page (limit 100, not 5)", async () => {
+    const params = { organizationSlug: "acme" };
+    const rel = (n: number) => ({ version: `r${n}`, dateCreated: "2026-11-10T09:00:00Z" });
+    const seeded = await newRelease.poll!(
+      { params, state: {}, subscriptionId: "s" },
+      mockCtx([{ body: [rel(0)] }], { display }).ctx,
+    );
+    const run = mockCtx([
+      { body: [rel(1), rel(2), rel(3)], headers: next("/organizations/acme/releases/", "c2") },
+      { body: [rel(4), rel(5), rel(6)] },
+    ], { display });
+    const out = await newRelease.poll!(
+      { params, state: seeded.nextState, subscriptionId: "s" },
+      run.ctx,
+    );
+    assertEquals(run.calls.length, 2);
+    assertEquals(
+      run.calls[1].url,
+      `${base}/organizations/acme/releases/?per_page=100&cursor=c2`,
+    );
+    assertEquals(out.events.length, 6);
+  });
+
+  test("new-deploy drains every page (returnAll), not just the first 50 rows", async () => {
+    const params = { organizationSlug: "acme", version: "web@1.0" };
+    const path = "/organizations/acme/releases/web%401.0/deploys/";
+    const dep = (n: number) => ({ id: `d${n}`, environment: "production" });
+    const seeded = await newDeploy.poll!(
+      { params, state: {}, subscriptionId: "s" },
+      mockCtx([{ body: [dep(0)] }], { display }).ctx,
+    );
+    const page = (from: number) => Array.from({ length: 30 }, (_, i) => dep(from + i));
+    const run = mockCtx([
+      { body: page(1), headers: next(path, "c2") },
+      { body: page(31) },
+    ], { display });
+    const out = await newDeploy.poll!(
+      { params, state: seeded.nextState, subscriptionId: "s" },
+      run.ctx,
+    );
+    assertEquals(run.calls.length, 2);
+    assertEquals(run.calls[1].url, `${base}${path}?per_page=100&cursor=c2`);
+    assertEquals(out.events.length, 60);
+  });
+});

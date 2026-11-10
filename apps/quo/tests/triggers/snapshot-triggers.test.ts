@@ -23,7 +23,7 @@ describe("new-user", () => {
     assertEquals(req(seed.calls[0]), {
       method: "GET",
       url: "https://api.quo.com/v1/users",
-      query: "?maxResults=100",
+      query: "?maxResults=50",
     });
     const run = () => mockCtx([page([u("US1"), u("US2")])]);
     const out = await newUser.poll!(input(seeded.nextState), run().ctx);
@@ -39,7 +39,7 @@ describe("new-user", () => {
     assertEquals(req(ctx.calls[1]), {
       method: "GET",
       url: "https://api.quo.com/v1/users",
-      query: "?maxResults=100&pageToken=tok2",
+      query: "?maxResults=50&pageToken=tok2",
     });
     const out = await newUser.poll!(
       input(seeded.nextState),

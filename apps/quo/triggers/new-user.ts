@@ -3,7 +3,7 @@ import userList from "../actions/user-list.ts";
 import { newRecords, readAllPages } from "../lib/triggers.ts";
 
 /**
- * `GET /v1/users` lists the workspace's members (a small bounded collection, paged 100 at a time;
+ * `GET /v1/users` lists the workspace's members (a small bounded collection, paged 50 at a time, its documented maximum;
  * it takes no sort or date filter). Every check reads it through `user-list` and diffs the ids.
  * https://www.quo.com/docs/mdx/api-reference/users/list-users (verified 2026-11-10)
  */
@@ -31,7 +31,7 @@ const trigger: TriggerDefinition = {
   async poll({ state }, ctx) {
     return newRecords({
       state,
-      items: await readAllPages(userList, ctx),
+      items: await readAllPages(userList, ctx, 50),
       idOf: (u) => (u as { id?: unknown }).id,
     });
   },
