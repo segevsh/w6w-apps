@@ -45,6 +45,17 @@ export function zonedToMs(text: unknown, timeZone: string): number {
   return wall - offsetAt(wall - offsetAt(wall, timeZone), timeZone);
 }
 
+/** The company zone, or UTC when it is unset or not an IANA name this runtime knows. */
+export function zoneOf(timezone: unknown): string {
+  if (typeof timezone !== "string" || timezone.trim() === "") return "UTC";
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone.trim() });
+    return timezone.trim();
+  } catch {
+    return "UTC";
+  }
+}
+
 interface Page {
   data?: unknown[];
   metadata?: { pages_count?: number };
@@ -55,7 +66,7 @@ interface Page {
  * `filter[record_date_to]` in the COMPANY time zone (read from `GET /admin/company/info`). The
  * window is asked one day wider on each side and every row is kept or dropped by its own
  * `record_date`, read in that zone (brief §9.1 b, §9.8, §9.9). A booking carries no edit stamp, so
- * there is no "new or updated" trigger.
+ * there is no "new or updated" trigger. A company with no time zone set is read as UTC.
  */
 const trigger: TriggerDefinition = {
   key: "new-booking",
@@ -84,8 +95,7 @@ const trigger: TriggerDefinition = {
       async fetchPage(win, pos) {
         const client = new SimplybookClient(ctx, apiBaseOf(ctx.connection));
         const info = await client.request<{ timezone?: string | null }>("/admin/company/info");
-        if (!info?.timezone) throw new Error("SimplyBook.me company time zone is not set");
-        zone = info.timezone;
+        zone = zoneOf(info?.timezone);
         const page = Number(pos ?? 1);
         const res = await bookingGetMany.execute({
           page,
