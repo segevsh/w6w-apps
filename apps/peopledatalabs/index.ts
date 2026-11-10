@@ -1,6 +1,7 @@
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
 
+import personUpdates from "./triggers/person-updates.ts";
 import enrichPerson from "./actions/enrich-person.ts";
 import previewEnrichPerson from "./actions/preview-enrich-person.ts";
 import bulkEnrichPersons from "./actions/bulk-enrich-persons.ts";
@@ -44,6 +45,7 @@ export default {
     enrichJobTitle,
     searchJobPostings,
   ],
+  triggers: [personUpdates],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

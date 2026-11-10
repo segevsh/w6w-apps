@@ -6,7 +6,7 @@ produce, and check organization resource headroom, on the **PhantomBuster API v2
 - **Categories** — marketing, crm, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 14
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (1 poll, 1 webhook)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.phantombuster.com` (the `service` check adds
   `status.phantombuster.com` to its own hook allowlist, never to the app's)
@@ -150,13 +150,24 @@ scope, and returns nothing secret — the same reasoning this pack's Apify app a
 | Key | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-agent` | poll | `agent-list` (`GET /api/v2/agents/fetch-all`, the whole agent list) | Each agent (phantom) newly created in the organization (additions only). |
+| `agent-run-finished` | webhook (manual) | agent webhook, fired when a run ends | Each ended run of an agent that points at the callback URL: agent and container ids, script, durations, exit code and message, result object. |
 
-`agents/fetch-all` returns every agent of the organization in one response and has no ordering or date filter, so the trigger snapshots the list and emits ids not seen before (renames and removals are ignored). PhantomBuster plans meter agents as slots (the action's `withAgentSlotsFactor` option), so the list is small. `container-list` is not wrapped: it filters only by `beforeEndedAt`, which cannot select runs newer than a cursor. PhantomBuster also lets each agent call a webhook when a run ends (configured per agent, secret carried in the URL); no webhook trigger is shipped yet.
+`agents/fetch-all` returns every agent of the organization in one response and has no ordering or date filter, so the trigger snapshots the list and emits ids not seen before (renames and removals are ignored). PhantomBuster plans meter agents as slots (the action's `withAgentSlotsFactor` option), so the list is small. `container-list` is not wrapped: it filters only by `beforeEndedAt`, which cannot select runs newer than a cursor.
 
-Vendor documentation (verified 2026-11-09):
+**Webhook setup (`agent-run-finished`, manual).** PhantomBuster's documentation describes the webhook only as a setting on each agent's setup page (no registration endpoint), so it is set per agent by hand:
+
+1. Subscribe the trigger in w6w and copy the callback URL it shows.
+2. In PhantomBuster open the agent's setup page, go to Settings, then **Advanced Notification Settings**, and paste the URL into the webhook field. Repeat for every agent you want to watch (each agent has its own webhook field).
+3. Every ended run of that agent now POSTs a run summary to w6w, including failed and killed runs (PhantomBuster calls the webhook at the end of an agent's execution; check `exitCode` / `exitMessage` / `succeeded`).
+
+PhantomBuster calls a webhook with a short timeout (about 11 seconds) and removes the webhook after a 4xx answer or too many redirects, so a callback URL that stops being valid (for example after you unsubscribe) is dropped on PhantomBuster's side after its next run.
+
+**Trust model.** PhantomBuster does not sign webhook deliveries and does not support custom request headers, so there is no signature to check: **the callback URL is the secret**. Anyone who learns it can post a fake run summary, so keep it out of logs and tickets and re-subscribe to rotate it. The vendor's own suggestion of a `?secret=` query parameter only extends that same URL; this trigger does not parse it.
+
+Vendor documentation (verified 2026-11-09 unless dated):
 
 - https://hub.phantombuster.com/reference/get_agents-fetch-all
-- https://hub.phantombuster.com/docs/using-webhooks
+- https://hub.phantombuster.com/docs/using-webhooks (webhook payload, setup, errors and timeouts; verified 2026-11-10)
 
 ## Auth
 
