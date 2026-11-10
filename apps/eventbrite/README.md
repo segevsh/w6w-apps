@@ -5,7 +5,7 @@ Create and run Eventbrite events end to end: events, tickets, inventory, discoun
 - **Categories** — commerce, calendar
 - **Auth methods** — personal-token, oauth2
 - **Actions** — 94
-- **Triggers** — 16 (webhook)
+- **Triggers** — 27 (16 webhook, 11 poll)
 - **Egress allowlist** — `www.eventbriteapi.com`
 - **Website** — https://www.eventbrite.com
 - **API docs** — https://www.eventbrite.com/platform/api
@@ -58,8 +58,11 @@ and control characters, all before it sends a request.
 
 ## Triggers
 
-Every trigger is a webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
-There is one per Eventbrite webhook action, plus **Organization Activity** for any mix of them:
+Sixteen webhook triggers ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)):
+one per Eventbrite webhook action, plus **Organization Activity** for any mix of them. Eventbrite's
+webhook catalog is event, order, attendee, organizer, ticket class and venue; the table lists every
+action in it. Eleven poll triggers (below) check on a schedule for the records Eventbrite sends no
+webhook for.
 
 | Trigger | Eventbrite action | The run's `resource` |
 |---|---|---|
@@ -80,36 +83,38 @@ There is one per Eventbrite webhook action, plus **Organization Activity** for a
 | `venue-updated` — Venue Updated | `venue.updated` | the venue |
 | `activity` — Organization Activity | the **Actions** you choose | whichever record fired |
 
-**Params.** *Organization ID* — leave it blank when the account belongs to exactly one organization
-and it is looked up; with several, the subscription fails and names them. *Event ID* — limits the
-webhook to one event. *Actions* — `activity` only.
+**Poll triggers.** Each checks every five minutes or more, through the same list action the app
+ships (same request, same connection), and the first check only records what exists, so nothing that
+was there before the workflow was switched on fires.
 
-**Lifecycle.**
+| Trigger | List action it reads | The run gets | Parent to set |
+|---|---|---|---|
+| `new-or-updated-attendee` — New or Updated Attendee | `list-attendees` (`changed_since`) | each attendee that is new or changed (an edit or a check-in is a new run) | organization or event ID |
+| `new-organizer` — New Organizer | `list-organizers` | each new organizer | organization ID |
+| `new-venue` — New Venue | `list-venues` | each new venue | organization ID |
+| `new-ticket-group` — New Ticket Group | `list-ticket-groups` (live groups) | each new ticket group | organization ID |
+| `new-inventory-tier` — New Inventory Tier | `list-inventory-tiers` | each new tier | event ID |
+| `new-seat-map` — New Seat Map | `list-seat-maps` | each new seat map | organization ID |
+| `new-event-team` — New Event Team | `list-event-teams` (also covers `search-event-teams`) | each new team | event ID |
+| `new-discount` — New Discount | `search-discounts` | each new discount or access code | organization ID, scope, event ID for the one-event scope |
+| `new-custom-question` — New Custom Question | `list-custom-questions` | each new custom question | event ID |
+| `new-default-question` — New Default Question | `list-default-questions` | each new default question | event ID |
+| `new-organization-member` — New Organization Member | `list-organization-members` | each new member | organization ID |
 
-- *Subscribe* creates an organization webhook (`POST /organizations/{id}/webhooks/`) whose
-  `endpoint_url` is the subscription's callback URL, and stores the webhook id, organization,
-  actions and event on the subscription. Before creating it, any webhook already pointed at that
-  callback URL is deleted: the URL is unique to the subscription, so such a webhook is a leftover
-  of an earlier attempt (a retried registration never leaves a duplicate behind).
-- *Unsubscribe* deletes that webhook (`DELETE /webhooks/{id}/`). A webhook Eventbrite no longer has
-  counts as deleted.
-- *Receive.* Eventbrite's delivery is a notification, not the record:
-  `{ "config": { "action", "webhook_id", "user_id", "endpoint_url" }, "api_url" }`. The ingest
-  parser stores one event for it — `action`, `resourceType`, `resourceId`, `apiUrl`, `webhookId`,
-  `userId`. The dashboard's **Test** ping and an action the subscription did not register are
-  acknowledged with no event.
-- *Run.* At dispatch the output parser fetches `api_url` with the subscription's connection, and
-  the run's `trigger.event` is the stored event plus `resource`, the record as it is at that
-  moment. A record that is gone (404) gives `resource: null`; any other failure is retried by the
-  dispatcher.
+The attendee trigger asks Eventbrite only for attendees changed since the last check (minus a two
+minute overlap) and reads at most three pages per check, resuming where it stopped when a window
+holds more. The others read the whole list (up to 20 pages of 50 records); a list longer than that,
+or one Eventbrite says has more records than it can be asked for, makes the check fail with a clear
+message instead of announcing records it did not read.
 
-**Verification.** Eventbrite does not sign webhook deliveries. The callback URL is the shared
-secret; on top of it a delivery that names a different webhook id than the subscription
-registered is refused (recorded as a failed call), and `api_url` must be on
-`www.eventbriteapi.com/v3/` before it is fetched with the connection's credential.
-
-Eventbrite retries a delivery it did not get a 2xx for, so a run can see the same change twice:
-key on `trigger.event.id` (host-issued) or the record's own id when that matters.
+**Which trigger carries which list.** The webhook triggers deliver these records, so their list
+actions need no poll: `list-events` (`event-created`), `list-orders` (`order-placed`) and
+`list-ticket-classes` (`ticket-class-created`). Eventbrite's webhooks for organizers and venues are
+update-only, so brand-new ones come from the `new-organizer` and `new-venue` polls. **Not covered by
+a trigger**, because they are reference data or account administration that does not produce
+events: categories, subcategories, formats, organization roles and fee rates (Eventbrite's fixed
+reference data), your webhook list (the registrations this app itself creates), and the list of
+organizations your account belongs to.
 
 ## Pickers
 
