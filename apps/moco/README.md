@@ -115,3 +115,7 @@ nothing to probe.
   180×180, the largest served), fetched live from the vendor's homepage and embedded as a raster
   image inside `assets/icon.svg` (same technique as `apps/bloomerang`, `apps/bannerbear`) —
   simple-icons has no MOCO entry (`cdn.simpleicons.org/moco` → 404, checked first).
+
+## Triggers
+
+- **New or Updated Contact** wraps `contact-list` with its `updated_after` incremental-sync filter. [MOCO API v1](https://docs.mocoapp.com/api/docs/v1), verified 2026-11-09.
