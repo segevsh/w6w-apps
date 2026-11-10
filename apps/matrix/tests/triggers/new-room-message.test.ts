@@ -3,7 +3,9 @@ import { assertEquals } from "../_assert.ts";
 import { mockMatrixCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-room-message.ts";
 
-const response = (...ids: string[]) => ({ body: { chunk: ids.map((event_id) => ({ event_id })) } });
+const response = (...ids: string[]) => ({
+  body: { chunk: ids.map((event_id) => ({ event_id, type: "m.room.message" })) },
+});
 const poll = (state: unknown, responses: ReturnType<typeof response>[]) => {
   const result = mockMatrixCtx(responses);
   return {
@@ -45,4 +47,20 @@ test("4 calls the literal messages endpoint backwards with a bounded limit", asy
   assertEquals(url.pathname, "/_matrix/client/v3/rooms/!x%3Aexample.org/messages");
   assertEquals(url.searchParams.get("dir"), "b");
   assertEquals(url.searchParams.get("limit"), "100");
+});
+
+test("state and membership events in the chunk are not emitted", async () => {
+  const seed = await poll({}, [response("$a:example.org")]).out;
+  const value = await poll(seed.nextState, [{
+    body: {
+      chunk: [
+        { event_id: "$m:example.org", type: "m.room.member" },
+        { event_id: "$b:example.org", type: "m.room.message" },
+        { event_id: "$a:example.org", type: "m.room.message" },
+      ],
+    },
+  }]).out;
+  assertEquals(value.events.map((event) => (event as { event_id: string }).event_id), [
+    "$b:example.org",
+  ]);
 });
