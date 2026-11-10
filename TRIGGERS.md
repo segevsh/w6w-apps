@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2490 triggers, 1737 unaccounted list actions in 437 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -113,7 +113,6 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/splitwise | 2 | 7 | 6 |
 | apps/storyblok | 1 | 7 | 6 |
 | apps/thinkific | 2 | 7 | 6 |
-| apps/thrivecart | 4 | 6 | 6 |
 | apps/timelinesai | 1 | 7 | 6 |
 | apps/wealthbox | 2 | 7 | 6 |
 | apps/whatconverts | 1 | 7 | 6 |
@@ -142,7 +141,6 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/google/google-business-profile | 1 | 6 | 5 |
 | apps/google/googlechat | 1 | 6 | 5 |
 | apps/gorgias | 2 | 6 | 5 |
-| apps/goto-webinar | 5 | 5 | 5 |
 | apps/granola | 1 | 6 | 5 |
 | apps/grist | 0 | 5 | 5 |
 | apps/hackernews | 1 | 6 | 5 |
@@ -150,11 +148,9 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/kit | 1 | 6 | 5 |
 | apps/klicktipp | 1 | 5 | 5 |
 | apps/lodgify | 0 | 5 | 5 |
-| apps/mailchimp/mandrill | 1 | 5 | 5 |
 | apps/mailgun | 1 | 5 | 5 |
 | apps/metricool | 0 | 5 | 5 |
 | apps/murf | 0 | 5 | 5 |
-| apps/netlify | 3 | 5 | 5 |
 | apps/nocodb | 1 | 6 | 5 |
 | apps/ontraport | 4 | 8 | 5 |
 | apps/paddle | 1 | 6 | 5 |
@@ -545,6 +541,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/google/google-drive | 5 | 3 | 0 |
 | apps/google/google-forms | 3 | 2 | 0 |
 | apps/google/google-sheets | 4 | 1 | 0 |
+| apps/goto-webinar | 8 | 5 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
 | apps/gumroad | 17 | 12 | 0 |
 | apps/gusto | 15 | 14 | 0 |
@@ -589,6 +586,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/loyverse | 2 | 0 | 0 |
 | apps/lusha | 7 | 9 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
+| apps/mailchimp/mandrill | 13 | 5 | 0 |
 | apps/mailerlite | 14 | 6 | 0 |
 | apps/maintainx | 12 | 10 | 0 |
 | apps/manus | 7 | 10 | 0 |
@@ -608,6 +606,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/mollie | 9 | 15 | 0 |
 | apps/mongodb-atlas | 7 | 8 | 0 |
 | apps/mural | 9 | 12 | 0 |
+| apps/netlify | 7 | 5 | 0 |
 | apps/ninox | 3 | 9 | 0 |
 | apps/notion | 42 | 30 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
@@ -657,6 +656,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/teamup | 7 | 13 | 0 |
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
+| apps/thrivecart | 20 | 6 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
 | apps/tumblr | 6 | 10 | 0 |
 | apps/twilio/sendgrid | 1 | 0 | 0 |
@@ -713,7 +713,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/github | 15 | any-event, fork, issue-comment, issue, pull-request-review-comment, pull-request-review, pull-request, push, ref-created, ref-deleted, release, repository-event, star, workflow-job, workflow-run | apps/github/README.md Triggers section (verified 2026-11-10) | hand | shipped: repository webhook registered through the vendor API (POST /repos/{owner}/{repo}/hooks); 14 named event triggers plus Any Event, X-Hub-Signature-256 HMAC-SHA256 verified |
 | apps/gitlab | 13 | any-event, comment, deployment, issue, job, merge-request, milestone, new-project, pipeline, push, release, tag-push, wiki-page | apps/gitlab/README.md Triggers section (verified 2026-11-10) | hand | API-registered project webhook (POST /projects/:id/hooks); 11 named event triggers, the `new-project` poll trigger and Any Event; onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
 | apps/gocanvas | 17 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed, any-event, new-form, new-user, new-customer, new-site, new-project, new-group, new-department, new-department-user, new-form-assigned-user, new-submission, new-dispatch | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | shipped: API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks) for the five documented event types plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; 9 snapshot polls for the collections without a webhook event; 2 created_at since-filter polls (new-submission, new-dispatch) for users who cannot register webhooks (Company Admin/Designer only, one webhook per form and event) |
-| apps/goto-webinar | 5 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation |
+| apps/goto-webinar | 8 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted, any-event, new-session, new-panelist | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; polls snapshot a webinar's past sessions and panelists |
 | apps/gumroad | 17 | any-event, dispute-raised, dispute-won, new-offer-code, new-payout, new-product, new-review, new-sale, new-subscriber, new-variant, new-variant-category, sale-refunded, sale-webhook, subscription-cancelled, subscription-ended, subscription-restarted, subscription-updated | apps/gumroad/README.md Triggers section (verified 2026-11-10) | hand | shipped: 7 named webhook triggers plus Any Event registered through resource subscriptions, and 8 polls (sales, products, offer codes, variant categories, variants, reviews, payouts, subscribers) |
 | apps/heartbeat | 19 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created, mention, direct-message, abandoned-invitation, any-event, new-channel, new-channel-category, new-group, new-course, new-invitation, new-video, new-direct-message | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat |
 | apps/helpscout | 4 | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -726,7 +726,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/lokalise | 15 | key-added, key-modified, key-deleted, translation-updated, translation-proofread, comment-added, contributor-added, contributor-deleted, language-added, file-imported, task-created, task-closed, task-deleted, any-event, new-project | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks, https://developers.lokalise.com/reference/create-a-webhook); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound); new projects by a bounded GET /projects snapshot poll since no project-created event exists |
 | apps/lusha | 7 | signal-received, contact-promotion, contact-company-change, company-hiring-surge, company-headcount-change, company-news, new-subscription | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned; signal-received is the any-signal trigger, five named triggers fix the entity type and signal types; new-subscription polls subscription-list (newest first, limit 100) |
 | apps/mailchimp/mailchimp | 10 | new-member, new-campaign, new-group-interest, member-subscribed, member-unsubscribed, member-updated, member-cleaned, email-changed, campaign-status, any-event | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook-api triggers (the app registers the audience webhook and keeps its signing secret) plus polls over list-members, list-campaigns and list-group-interests |
-| apps/mailchimp/mandrill | 1 | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
+| apps/mailchimp/mandrill | 13 | email-event, email-sent, email-delivered, email-deferred, email-bounced, email-opened, email-link-clicked, email-marked-spam, email-unsubscribed, email-rejected, reject-denylist-changed, reject-allowlist-changed, new-template | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected; poll snapshots the template list |
 | apps/mailerlite | 14 | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated, any-event, subscriber-added-to-group, subscriber-removed-from-group, subscriber-bounced, subscriber-spam-reported, subscriber-automation-triggered, subscriber-automation-completed, new-group, new-segment, new-campaign | apps/mailerlite/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks (Signature = hex HMAC-SHA256 of the raw body) registered through the vendor API for the subscriber, group, automation, bounce, spam and campaign.sent events plus an Any-event trigger over all 14 published events (batched ones included); polls for new groups (sort=-created_at), segments and campaigns. |
 | apps/mailgun | 1 | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
 | apps/mautic | 4 | contact-deleted, contact-updated, form-submitted, new-contact | apps/mautic/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -746,7 +746,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/surveymonkey | 1 | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | 11 | callback-query, channel-post, chat-member-updated, edited-channel-post, edited-message, inline-query, new-message, poll, pre-checkout-query, shipping-query, update | apps/telegram/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (setWebhook with a secret_token); one trigger per update type plus the Any-event trigger `update`; no list actions (https://core.telegram.org/bots/api#update) |
 | apps/terraform | 4 | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
-| apps/thrivecart | 4 | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret |
+| apps/thrivecart | 20 | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event, new-bump-purchase, new-upsell-purchase, new-downsell-purchase, payment-declined, order-refunded, subscription-payment-failed, cart-abandoned, subscription-paused, subscription-resumed, affiliate-created, affiliate-approved, commission-earned, new-product, new-bump, new-upsell, new-downsell | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe), unsigned (callback URL is the secret); polls snapshot the unpaginated product, bump, upsell and downsell lists |
 | apps/tiktok-lead-generation | 1 | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
 | apps/toggl | 3 | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | 8 | new-response, new-partial-response, any-event, new-form, new-or-updated-form, new-workspace, new-theme, new-image | apps/typeform/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images |
@@ -781,7 +781,7 @@ depth: 682 apps, 2455 triggers, 1758 unaccounted list actions in 441 apps, n8n-p
 | apps/meta/whatsapp | 2 | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/microsoft/azure-blob | 2 | blob-created, blob-deleted | apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10) | hand | manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret |
 | apps/mighty-networks | 21 | member-joined, post-created, network-event, member-left, member-updated, member-purchased, member-subscription-canceled, member-tag-added, member-tag-removed, member-lesson-completed, post-updated, comment-created, event-created, event-updated, event-canceled, rsvp-created, invite-requested, new-space, new-plan, new-tag, new-coursework | apps/mighty-networks/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in Network settings (https://docs.mightynetworks.com/api/webhooks.md); no signature, each delivery carries Authorization: Bearer <the API key configured on the webhook>, compared in constant time; polls cover spaces, plans, tags and coursework, which have no webhook event (hourly: the Admin API is metered per request); member-list is covered by member-joined per space join, not as a network-level feed |
-| apps/netlify | 3 | deploy, deploy-failed, deploy-succeeded | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/netlify | 7 | deploy, deploy-succeeded, deploy-failed, deploy-started, submission-created, new-site, new-form | apps/netlify/README.md Triggers section (verified 2026-11-10) | hand | signed manual-webhook receivers (deploy notifications, JWS secret token) and an optionally signed form-submission receiver; polls snapshot the site list and one site's forms; deploy-list and form-submission-list have no documented sort order or since filter |
 | apps/notion | 42 | any-event, comment-created, comment-deleted, comment-updated, data-source-content-updated, data-source-created, data-source-deleted, data-source-schema-updated, database-created, database-deleted, file-upload-completed, file-upload-created, file-upload-expired, file-upload-upload-failed, new-agent, new-block, new-comment, new-data-source-template, new-database-page, new-file-upload, new-meeting-note, new-or-updated-data-source, new-or-updated-database, new-or-updated-database-page, new-or-updated-meeting-note, new-or-updated-page, new-or-updated-plugin, new-or-updated-session, new-session, new-session-event, new-view, new-workspace-user, page-content-updated, page-created, page-deleted, page-moved, page-properties-updated, page-transcript-deleted, page-undeleted, view-created, view-deleted, view-updated | apps/notion/README.md Triggers section (verified 2026-11-10) | hand | shipped 24 signed manual-webhook triggers (named created/updated/deleted-style events for page, database, data source, comment, view, file upload, page transcript + any-event, all 31 documented events mapped) and 18 poll triggers over the list actions |
 | apps/payhip | 4 | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
 | apps/peopledatalabs | 1 | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |

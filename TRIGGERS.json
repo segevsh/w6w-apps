@@ -4584,12 +4584,27 @@
       "registrant-joined",
       "webinar-created",
       "webinar-changed",
-      "survey-submitted"
+      "survey-submitted",
+      "any-event",
+      "new-session",
+      "new-panelist"
     ],
-    "pollAction": null,
-    "reason": "API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation",
+    "pollAction": "session-list",
+    "reason": "API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; polls snapshot a webinar's past sessions and panelists",
     "verified": "apps/goto-webinar/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "webinar-list": "webinar-created",
+      "registrant-list": "registrant-added",
+      "attendee-list": "registrant-joined"
+    },
+    "events": {
+      "registrant.added": "registrant-added",
+      "registrant.joined": "registrant-joined",
+      "webinar.created": "webinar-created",
+      "webinar.changed": "webinar-changed",
+      "survey.submitted": "survey-submitted"
+    }
   },
   {
     "path": "apps/grafana",
@@ -6641,12 +6656,46 @@
     "path": "apps/mailchimp/mandrill",
     "mechanism": "webhook-api",
     "candidates": [
-      "email-event"
+      "email-event",
+      "email-sent",
+      "email-delivered",
+      "email-deferred",
+      "email-bounced",
+      "email-opened",
+      "email-link-clicked",
+      "email-marked-spam",
+      "email-unsubscribed",
+      "email-rejected",
+      "reject-denylist-changed",
+      "reject-allowlist-changed",
+      "new-template"
     ],
-    "pollAction": null,
-    "reason": "API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected",
+    "pollAction": "list-templates",
+    "reason": "API-registered webhooks (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected; poll snapshots the template list",
     "verified": "apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "list-rejects": "reject-denylist-changed",
+      "list-whitelist": "reject-allowlist-changed"
+    },
+    "skipped": {
+      "list-senders": "per-sender sending statistics (sent, bounces, opens, clicks): analytics output, https://mailchimp.com/developer/transactional/api/senders/list/",
+      "list-tags": "per-tag sending statistics and reputation: analytics output, https://mailchimp.com/developer/transactional/api/tags/list/"
+    },
+    "events": {
+      "send": "email-sent",
+      "delivered": "email-delivered",
+      "deferral": "email-deferred",
+      "hard_bounce": "email-bounced",
+      "soft_bounce": "email-bounced",
+      "open": "email-opened",
+      "click": "email-link-clicked",
+      "spam": "email-marked-spam",
+      "unsub": "email-unsubscribed",
+      "reject": "email-rejected",
+      "blacklist": "reject-denylist-changed",
+      "whitelist": "reject-allowlist-changed"
+    }
   },
   {
     "path": "apps/mailerlite",
@@ -7647,13 +7696,45 @@
     "mechanism": "manual-webhook",
     "candidates": [
       "deploy",
+      "deploy-succeeded",
       "deploy-failed",
-      "deploy-succeeded"
+      "deploy-started",
+      "submission-created",
+      "new-site",
+      "new-form"
     ],
-    "pollAction": null,
-    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
-    "verified": "https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08)",
-    "source": "hand"
+    "pollAction": "site-list",
+    "reason": "signed manual-webhook receivers (deploy notifications, JWS secret token) and an optionally signed form-submission receiver; polls snapshot the site list and one site's forms; deploy-list and form-submission-list have no documented sort order or since filter",
+    "verified": "apps/netlify/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "deploy-list": "deploy",
+      "form-submission-list": "submission-created"
+    },
+    "skipped": {
+      "env-var-list": "environment variable definitions are site configuration holding secrets, not a record feed (https://open-api.netlify.com/ getEnvVars)"
+    },
+    "events": {
+      "Deploy started": "deploy-started",
+      "Deploy succeeded": "deploy-succeeded",
+      "Deploy failed": "deploy-failed",
+      "Deploy deleted": "any",
+      "Deploy locked": "any",
+      "Deploy unlocked": "any",
+      "Deploy request pending": "any",
+      "Deploy request accepted": "any",
+      "Deploy request rejected": "any",
+      "Deploy restored": "any",
+      "Previously successful deploy failed": "any",
+      "Previously failed deploy succeeded": "any",
+      "New form submission": "submission-created"
+    },
+    "n8n": {
+      "deployBuilding": "deploy-started",
+      "deployFailed": "deploy-failed",
+      "deployCreated": "deploy",
+      "submissionCreated": "submission-created"
+    }
   },
   {
     "path": "apps/netsuite",
@@ -11422,12 +11503,54 @@
       "new-purchase",
       "subscription-payment",
       "subscription-cancelled",
-      "thrivecart-event"
+      "thrivecart-event",
+      "new-bump-purchase",
+      "new-upsell-purchase",
+      "new-downsell-purchase",
+      "payment-declined",
+      "order-refunded",
+      "subscription-payment-failed",
+      "cart-abandoned",
+      "subscription-paused",
+      "subscription-resumed",
+      "affiliate-created",
+      "affiliate-approved",
+      "commission-earned",
+      "new-product",
+      "new-bump",
+      "new-upsell",
+      "new-downsell"
     ],
-    "pollAction": null,
-    "reason": "API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe); unsigned (no signature documented), callback URL is the secret",
+    "pollAction": "product-list",
+    "reason": "API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe), unsigned (callback URL is the secret); polls snapshot the unpaginated product, bump, upsell and downsell lists",
     "verified": "apps/thrivecart/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "transaction-search": "thrivecart-event",
+      "affiliate-search": "affiliate-created"
+    },
+    "events": {
+      "*": "any",
+      "order_payment_product": "new-purchase",
+      "order_payment_bump": "new-bump-purchase",
+      "order_payment_upsell": "new-upsell-purchase",
+      "order_payment_downsell": "new-downsell-purchase",
+      "order_payment_declined_product": "payment-declined",
+      "cart_abandoned": "cart-abandoned",
+      "order_refund": "order-refunded",
+      "order_rebill": "subscription-payment",
+      "order_rebill_failed": "subscription-payment-failed",
+      "order_rebill_cancelled": "subscription-cancelled",
+      "order_rebill_completed": "any",
+      "subscription_paused": "subscription-paused",
+      "subscription_resumed": "subscription-resumed",
+      "affiliate_created": "affiliate-created",
+      "affiliate_approved": "affiliate-approved",
+      "affiliate_rejected": "any",
+      "affiliate_commission_earned": "commission-earned",
+      "affiliate_commission_payout": "any",
+      "affiliate_commission_refund": "any"
+    }
   },
   {
     "path": "apps/tickettailor",
