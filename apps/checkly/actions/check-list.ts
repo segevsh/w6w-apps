@@ -25,7 +25,6 @@ const action: ActionDefinition = {
       key: "checkType",
       label: "Check Type",
       type: "select",
-      placeholder: "Select…",
       options: [
         { value: "BROWSER", label: "BROWSER" },
         { value: "API", label: "API" },

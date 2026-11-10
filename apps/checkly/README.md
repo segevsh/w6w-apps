@@ -3,7 +3,7 @@
 Run and inspect Checkly synthetic monitors, their results, alerts and
 maintenance windows.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Categories** — monitoring, devops, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 25
@@ -194,11 +194,26 @@ there too, so the whole body is surfaced.
 | Key | Title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-check-result` | New Check Result | poll (since-filter) | `check-result-list` | Each new final result of one check, optionally failures only |
+| `new-check-alert` | New Check Alert | poll (since-filter) | `check-alert-list` | Each alert Checkly sends, optionally for one check |
+| `new-check` | New Check | poll (snapshot) | `check-list` | Each newly created check |
+| `new-or-updated-check` | New or Updated Check | poll (snapshot) | `check-list` | Each check that is new or has been edited |
+| `new-check-group` | New Check Group | poll (snapshot) | `check-group-list` | Each newly created group |
+| `new-alert-channel` | New Alert Channel | poll (snapshot) | `alert-channel-list` | Each newly created alert channel |
+| `new-maintenance-window` | New Maintenance Window | poll (snapshot) | `maintenance-window-list` | Each newly scheduled maintenance window |
 
 The poll calls the same `GET /v1/check-results/{checkId}` request as `check-result-list` with
 `resultType=FINAL` (so retry attempts are not events), `hasFailures=true` when "Failures only" is on,
 and `from` set to the previous check minus two minutes as a Unix timestamp, then de-duplicates on the
 result id. Checkly documents `from` / `to` (Unix timestamps), `hasFailures` and `resultType` for this
-endpoint in its OpenAPI document, <https://api.checklyhq.com/openapi.json> (verified 2026-11-09). A
+endpoint in its OpenAPI document, <https://api.checklyhq.com/openapi.json> (verified 2026-11-10). A
 trigger that was stopped looks back at most one hour. The first check records the current window and
 emits nothing. No webhook code is included.
+
+`new-check-alert` uses the same pattern with `GET /v1/check-alerts?from=<unix seconds>` (Checkly answers a 6-hour window
+from there), looks back at most one hour, and ignores alerts created before the first check. Checks, groups, alert
+channels and maintenance windows have no sort or created-since filter, so the trigger reads every page (100 per page,
+at most 5000 records) and compares it with the previous check; the first check records what exists and fires
+nothing. `check-group-checks-list` returns checks, which `new-check` already delivers. Not covered: check status
+(a live state; failures arrive through `new-check-result`), locations and runtimes (reference data) and variables
+(configuration, may hold secrets). Source: <https://api.checklyhq.com/openapi.json> (verified 2026-11-10).
+

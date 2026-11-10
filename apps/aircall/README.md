@@ -7,7 +7,7 @@ Workspace, and manage the users, teams, numbers, tags and webhooks behind them �
 - **API**: `https://api.aircall.io`, version in the path (`/v1`, `/v2`)
 - **Auth**: HTTP Basic — `api_id` as the username, `api_token` as the password
 - **Actions**: 38 · **Health checks**: `service` · `quota` · 1 derived (`auth:basic`)
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 Every path, verb, query parameter, body field and enum below was verified on **2026-08-11** against
 Aircall's own reference (`developer.aircall.io/api-references/`, which 301s to
@@ -442,5 +442,16 @@ or a bare `deno fmt` rewriting the asset fails the suite rather than shipping.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-call` — New Call | Poll | `call-list` | Each newly created call |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created shared Contact |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-list` | Each Contact that is new or has been edited |
+| `new-user` — New User | Poll | `user-list` | Each newly created User |
+| `new-number` — New Number | Poll | `number-list` | Each newly added phone Number |
+| `new-team` — New Team | Poll | `team-list` | Each newly created Team |
+| `new-user-number` — New Number for a User | Poll | `user-number-list` | Each Number newly assigned to the chosen User (`userId` param) |
 
-Polled through `call-list` with `order=desc`. Source: [Aircall API reference](https://developer.aircall.io/api-references/) (verified 2026-11-09).
+Calls, contacts, users, numbers and teams are polled with `order=desc` (newest first by creation date); edited
+contacts with `order_by=updated_at&order=desc`. A User's numbers are a small bounded list, diffed on each check.
+`call-search` and `contact-search` return the same records as `call-list` and `contact-list`, so `new-call` and
+`new-contact` already deliver them. Not covered: tags (reference data), user availability (a live status, not
+records) and webhooks (integration admin). Source: [Aircall API reference](https://developer.aircall.io/api-references/)
+(verified 2026-11-10).

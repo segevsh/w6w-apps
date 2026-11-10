@@ -7,7 +7,7 @@ the applicant tracking system, over the **Breezy v3 API**.
 - **Auth methods** — access-token (`Authorization: <token>`, a Personal Access Token or a
   `/signin` session token)
 - **Actions** — 32
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned `GET /user`,
   a schema-correct auth error passes), `quota` (rate-limit headers off a signed `GET /user`,
   informational) + the derived `auth:access-token`
@@ -85,6 +85,19 @@ declared.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-candidate` — New Candidate | Poll | `candidate-search` | Each newly created candidate matching the search query |
+| `new-candidate` — New Candidate | Poll | `candidate-search` | Each newly created candidate matching the search query (needs `companyId` and `query`) |
+| `new-position` — New Position | Poll | `position-list` | Each newly created position (`companyId`) |
+| `new-or-updated-position` — New or Updated Position | Poll | `position-list` | Each position that is new or has been edited (`companyId`) |
+| `new-position-candidate` — New Candidate on a Position | Poll | `candidate-list` | Each candidate newly added to one position (`companyId`, `positionId`) |
+| `new-candidate-message` — New Candidate Message | Poll | `candidate-conversation-list` | Each new message or interview proposal in one candidate's thread |
+| `new-candidate-activity` — New Candidate Activity | Poll | `candidate-stream-list` | Each new stage move, note or interview on one candidate's stream |
 
-Polled newest-first through the `candidate-search` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developer.breezy.hr/reference/overview) (verified 2026-11-09).
+Candidates (search), a candidate's messages and activity are polled newest-first (`sort=created`; the conversation
+and stream are documented newest-first). Positions and a position's candidates are read in full on each check (without
+`page_size` Breezy returns the whole list in one response) and compared with the previous check; the first check
+records what exists and fires nothing. Not covered: companies, departments, categories, pipelines and custom-field
+definitions (reference data) and webhook endpoints (integration admin). Sources:
+[List positions](https://developer.breezy.hr/reference/listpositions),
+[List candidates](https://developer.breezy.hr/reference/listcandidates),
+[Candidate conversation](https://developer.breezy.hr/reference/getcandidateconversation),
+[Candidate stream](https://developer.breezy.hr/reference/getcandidatestream) (verified 2026-11-10).
