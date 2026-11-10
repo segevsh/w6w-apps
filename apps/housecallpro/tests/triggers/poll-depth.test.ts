@@ -12,9 +12,8 @@ import newJobLineItem from "../../triggers/new-job-line-item.ts";
 import newJob from "../../triggers/new-job.ts";
 import newLead from "../../triggers/new-lead.ts";
 import newOrUpdatedEstimate from "../../triggers/new-or-updated-estimate.ts";
-import newOrUpdatedInvoice from "../../triggers/new-or-updated-invoice.ts";
+import newOrUpdatedEvent from "../../triggers/new-or-updated-event.ts";
 import newOrUpdatedJob from "../../triggers/new-or-updated-job.ts";
-import newOrUpdatedLead from "../../triggers/new-or-updated-lead.ts";
 
 const base = "https://api.housecallpro.com";
 const parent = { jobId: "job-1", estimateId: "estimate-1", optionId: "option-1" };
@@ -102,9 +101,8 @@ for (const [name, trigger, collection, params, expectedUrl] of cases) {
 
 const updatedCases = [
   ["new-or-updated-estimate", newOrUpdatedEstimate, "estimates", `${base}/estimates`],
-  ["new-or-updated-invoice", newOrUpdatedInvoice, "invoices", `${base}/invoices`],
+  ["new-or-updated-event", newOrUpdatedEvent, "events", `${base}/events`],
   ["new-or-updated-job", newOrUpdatedJob, "jobs", `${base}/jobs`],
-  ["new-or-updated-lead", newOrUpdatedLead, "leads", `${base}/leads`],
 ] as const;
 
 for (const [name, trigger, collection, path] of updatedCases) {
@@ -133,5 +131,16 @@ for (const [name, trigger, collection, path] of updatedCases) {
       ),
       result,
     );
+  });
+}
+
+for (const [name, trigger, collection, params] of cases.slice(5)) {
+  test(`${name} stays silent for an edited row and for a removed row`, async () => {
+    const a = { id: "a", name: "before" }, b = { id: "b" };
+    const seed = mockCtx([{ body: page(collection, [a, b]) }]);
+    const seeded = await trigger.poll!({ params, state: {} } as never, seed.ctx);
+    const after = mockCtx([{ body: page(collection, [{ id: "a", name: "after" }]) }]);
+    const result = await trigger.poll!({ params, state: seeded.nextState } as never, after.ctx);
+    assertEquals(result.events, []);
   });
 }

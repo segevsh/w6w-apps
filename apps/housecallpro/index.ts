@@ -119,14 +119,13 @@ import newOrUpdatedEstimate from "./triggers/new-or-updated-estimate.ts";
 import newEstimateOptionLineItem from "./triggers/new-estimate-option-line-item.ts";
 import newEvent from "./triggers/new-event.ts";
 import newInvoice from "./triggers/new-invoice.ts";
-import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newOrUpdatedEvent from "./triggers/new-or-updated-event.ts";
 import newJobAppointment from "./triggers/new-job-appointment.ts";
 import newJobInvoice from "./triggers/new-job-invoice.ts";
 import newJobLineItem from "./triggers/new-job-line-item.ts";
 import newJob from "./triggers/new-job.ts";
 import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
 import newLead from "./triggers/new-lead.ts";
-import newOrUpdatedLead from "./triggers/new-or-updated-lead.ts";
 
 export default {
   actions: [
@@ -190,13 +189,12 @@ export default {
     newEstimateOptionLineItem,
     newEvent,
     newInvoice,
-    newOrUpdatedInvoice,
+    newOrUpdatedEvent,
     newJobAppointment,
     newJobInvoice,
     newJobLineItem,
     newJob,
     newOrUpdatedJob,
     newLead,
-    newOrUpdatedLead,
   ],
 } satisfies AppDefinition;

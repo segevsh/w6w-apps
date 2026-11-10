@@ -121,16 +121,16 @@ export const newEvent = newest("new-event", "New Event", eventList, {
   id: "event-1",
   name: "Team meeting",
 });
+export const newOrUpdatedEvent = newOrUpdated(
+  "new-or-updated-event",
+  "New or Updated Event",
+  eventList,
+  { id: "event-1", updated_at: "2026-11-10T10:00:00Z" },
+);
 export const newInvoice = newest("new-invoice", "New Invoice", invoiceList, {
   id: "invoice-1",
   total_amount: 12500,
 });
-export const newOrUpdatedInvoice = newOrUpdated(
-  "new-or-updated-invoice",
-  "New or Updated Invoice",
-  invoiceList,
-  { id: "invoice-1", updated_at: "2026-11-10T10:00:00Z" },
-);
 export const newJob = newest("new-job", "New Job", jobList, {
   id: "job-1",
   description: "Repair heater",
@@ -143,15 +143,6 @@ export const newLead = newest("new-lead", "New Lead", leadList, {
   id: "lead-1",
   status: "open",
 });
-export const newOrUpdatedLead = newOrUpdated(
-  "new-or-updated-lead",
-  "New or Updated Lead",
-  leadList,
-  {
-    id: "lead-1",
-    updated_at: "2026-11-10T10:00:00Z",
-  },
-);
 
 const jobIdParam: Param = { key: "jobId", label: "Job ID", type: "string", required: true };
 const companyIdParam: Param = { key: "companyId", label: "Company ID", type: "string" };

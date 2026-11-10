@@ -205,3 +205,18 @@ test("new-offer fails loudly instead of truncating a collection longer than five
   }
   assertEquals(message.includes("more than 500 records"), true);
 });
+
+for (const [name, trigger, params] of snapshotCases) {
+  test(`${name} stays silent for an edited row`, async () => {
+    const seeded = await trigger.poll!(
+      input(params, {}),
+      mockCtx([rows([{ id: "a", type: "x", attributes: { title: "before" } }])]).ctx,
+    );
+    const edited = { id: "a", type: "x", attributes: { title: "after" } };
+    const result = await trigger.poll!(
+      input(params, seeded.nextState),
+      mockCtx([rows([edited])]).ctx,
+    );
+    assertEquals(result.events, []);
+  });
+}

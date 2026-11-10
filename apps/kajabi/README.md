@@ -3,7 +3,7 @@
 Creator commerce — courses, memberships and digital products — via the **Kajabi Public API v1**.
 
 49 actions across contacts, tags, offers, products, courses, orders, purchases, transactions,
-payouts and forms; one OAuth2 client-credentials auth method; two health checks; 17 poll triggers.
+payouts and forms; one OAuth2 client-credentials auth method; two health checks; 18 poll triggers.
 
 Everything here is transcribed from Kajabi's **vendor-generated OpenAPI document** or verified on
 the wire against `api.kajabi.com` on **2026-08-03**. Nothing is recalled.
@@ -459,7 +459,7 @@ serialisation of the repeated product-type filter — the app says so rather tha
 
 ## Triggers
 
-- **Triggers** — 17 (poll)
+- **Triggers** — 18 (poll)
 
 | Trigger | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
@@ -473,6 +473,7 @@ serialisation of the repeated product-type filter — the app says so rather tha
 | New Contact Note (`new-contact-note`) | poll | `contact-note-list` — `sort=-created_at`, optional contact | each new note |
 | New or Updated Contact Note (`new-or-updated-contact-note`) | poll | `contact-note-list` — `sort=-updated_at`, optional contact | each note that is new or edited |
 | New Transaction (`new-transaction`) | poll | `transaction-list` — `filter[start_date]` | each new payment |
+| New Payout (`new-payout`) | poll | `payout-list` — `filter[start_date]`, site required | each new Kajabi Payments payout |
 | New Offer (`new-offer`) | poll | `offer-list` — snapshot, <= 500 | each offer added to the site |
 | New Product (`new-product`) | poll | `product-list` — snapshot, <= 500 | each product added to the site |
 | New Course (`new-course`) | poll | `course-list` — snapshot, <= 500 | each course added to the site |
@@ -481,12 +482,12 @@ serialisation of the repeated product-type filter — the app says so rather tha
 | New Contact Offer (`new-contact-offer`) | poll | `contact-offer-list` — snapshot of one contact | each offer newly granted to the chosen contact |
 | New Offer Product (`new-offer-product`) | poll | `offer-product-list` — snapshot of one offer | each product newly added to the chosen offer |
 
-Every trigger polls every 5 minutes through the app's existing list action (same client, endpoint and credential); the first check seeds the feed and emits nothing. The newest-first triggers read one page of 100 and dedupe by id. `new-transaction` is the one since-filter trigger: Kajabi sorts nothing on `/v1/transactions` but filters by calendar day, so each check asks for the day before the last check, drains the window over as many checks as it takes (3 pages of 100 per check, resuming where it stopped), drops anything created before the seed, and only then moves the cursor. The snapshot triggers compare the whole list (up to 5 pages of 100, then they fail loudly rather than truncate) with the previous check and emit additions only.
+Every trigger polls every 5 minutes through the app's existing list action (same client, endpoint and credential); the first check seeds the feed and emits nothing. The newest-first triggers read one page of 100 and dedupe by id. `new-transaction` and `new-payout` are the since-filter triggers: Kajabi sorts nothing on `/v1/transactions` or `/v1/kajabi_payments_payouts` but filters by date (payouts document no page size, so that one drains until an empty page, keyed on `initiated_date`), so each check asks for the day before the last check, drains the window over as many checks as it takes (3 pages of 100 per check, resuming where it stopped), drops anything created before the seed, and only then moves the cursor. The snapshot triggers compare the whole list (up to 5 pages of 100, then they fail loudly rather than truncate) with the previous check and emit additions only.
 
 Site-scoped triggers take an optional `siteId` (Kajabi needs it when the account has several sites); the per-parent snapshots (`new-contact-tag`, `new-contact-offer`, `new-offer-product`) require the contact or offer id.
 
-Not covered (list actions with no trigger): `site-list`, `tag-list`, `custom-field-list` (reference data: sites, tag names and field definitions rather than records a workflow reacts to) and `payout-list` (Kajabi Payments settlement report: no sort, no page size, date-only filter, and no documented creation stamp to floor on).
+Not covered (list actions with no trigger): `site-list`, `tag-list`, `custom-field-list` (reference data: sites, tag names and field definitions rather than records a workflow reacts to). Payouts are covered by `new-payout`.
 
 Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
 
-Vendor documentation: <https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml> (verified 2026-11-10). It states "The default Sorting is by created_at in descending order (newest first)" for `GET /v1/customers`, lists `created_at` as a sort field on orders, order items, purchases, form submissions and contact notes (`updated_at` on purchases and contact notes), documents `filter[start_date]`/`filter[end_date]` on `GET /v1/transactions`, and shows `created_at` in each transaction's attributes. The triggers send the sort explicitly. Contacts have no update-time sort, so no new-or-updated contact trigger ships.
+Vendor documentation: <https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml> (verified 2026-11-10). It states "The default Sorting is by created_at in descending order (newest first)" for `GET /v1/customers`, lists `created_at` as a sort field on orders, order items, purchases, form submissions and contact notes (`updated_at` on purchases and contact notes), documents `filter[start_date]`/`filter[end_date]` on `GET /v1/transactions`, shows `created_at` in each transaction's attributes, and documents `initiated_date` ("Payout creation timestamp in UTC") with `filter[start_date]` on `GET /v1/kajabi_payments_payouts`. The triggers send the sort explicitly. Contacts have no update-time sort, so no new-or-updated contact trigger ships.

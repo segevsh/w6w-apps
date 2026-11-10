@@ -11,6 +11,7 @@ import offerList from "../actions/offer-list.ts";
 import offerProductList from "../actions/offer-product-list.ts";
 import orderItemList from "../actions/order-item-list.ts";
 import orderList from "../actions/order-list.ts";
+import payoutList from "../actions/payout-list.ts";
 import productList from "../actions/product-list.ts";
 import purchaseList from "../actions/purchase-list.ts";
 import transactionList from "../actions/transaction-list.ts";
@@ -371,74 +372,112 @@ const isSinceState = (state: unknown): state is SinceState => {
  * re-reading page 1), and only then advances the cursor. The seed stores `floor = now` and reads
  * nothing; records created before the floor are dropped on every later check.
  */
-export const newTransaction: TriggerDefinition = {
+interface SinceSpec {
+  key: string;
+  title: string;
+  description: string;
+  action: unknown;
+  /** Attribute holding the record's creation instant. */
+  stamp: string;
+  /** Kajabi marks `siteId` required on this endpoint. */
+  siteRequired?: boolean;
+  /** Page size sent, or undefined when the endpoint documents none (drain until an empty page). */
+  pageSize?: number;
+  sample: unknown;
+}
+
+function since(spec: SinceSpec): TriggerDefinition {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [spec.siteRequired ? { ...siteParam, required: true } : siteParam],
+    output: [...output],
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ params, state }, ctx: HookContext) {
+      if (!isSinceState(state)) {
+        const now = clock.now();
+        const seeded: SinceState = {
+          v: 1,
+          kind: "since",
+          seeded: true,
+          floor: now,
+          cursor: now,
+          ids: [],
+        };
+        return { events: [], nextState: seeded };
+      }
+      const action = spec.action as {
+        execute(input: Params, context: HookContext): Promise<unknown>;
+      };
+      const windowAt = state.resume?.windowAt ?? state.cursor;
+      const startedAt = state.resume?.startedAt ?? clock.now();
+      const startDate = new Date(windowAt - DAY_MS).toISOString().slice(0, 10);
+      const seen = new Set(state.ids);
+      const emitted: Array<{ ts: number; row: unknown }> = [];
+      let page = state.resume?.page ?? 1;
+      let drained = false;
+      for (let n = 0; n < SINCE_PAGES; n++, page++) {
+        const rows = listItems(
+          await action.execute(
+            {
+              ...siteFilter((params ?? {}) as Params),
+              startDate,
+              pageNumber: page,
+              ...(spec.pageSize ? { pageSize: spec.pageSize } : {}),
+            },
+            ctx,
+          ),
+        );
+        for (const row of rows) {
+          const id = idOf(row);
+          if (!id || seen.has(id)) continue;
+          const ts = Date.parse(attrOf(row, spec.stamp));
+          if (Number.isFinite(ts) && ts < state.floor) continue;
+          seen.add(id);
+          emitted.push({ ts: Number.isFinite(ts) ? ts : Number.MAX_SAFE_INTEGER, row });
+        }
+        if (rows.length < (spec.pageSize ?? 1)) {
+          drained = true;
+          break;
+        }
+      }
+      emitted.sort((a, b) => a.ts - b.ts);
+      const ids = [...state.ids, ...emitted.map((e) => idOf(e.row))].slice(-SEEN_WINDOW);
+      const nextState: SinceState = {
+        v: 1,
+        kind: "since",
+        seeded: true,
+        floor: state.floor,
+        cursor: drained ? startedAt : state.cursor,
+        ids,
+        ...(drained ? {} : { resume: { page, windowAt, startedAt } }),
+      };
+      return { events: emitted.map((e) => e.row), nextState };
+    },
+  };
+}
+
+export const newTransaction = since({
   key: "new-transaction",
   title: "New Transaction",
   description:
     "The run gets each payment recorded since the last check, polled from the existing `transaction-list` action with `filter[start_date]` set to the day before the last check.",
-  params: [siteParam],
-  output: [...output],
+  action: transactionList,
+  stamp: "created_at",
+  pageSize: PAGE_SIZE,
   sample: sample("transactions", { amount_in_cents: 9900, created_at: "2026-11-10T10:00:00Z" }),
-  minIntervalMs: 300_000,
-  async poll({ params, state }, ctx: HookContext) {
-    if (!isSinceState(state)) {
-      const now = clock.now();
-      const seeded: SinceState = {
-        v: 1,
-        kind: "since",
-        seeded: true,
-        floor: now,
-        cursor: now,
-        ids: [],
-      };
-      return { events: [], nextState: seeded };
-    }
-    const action = transactionList as unknown as {
-      execute(input: Params, context: HookContext): Promise<unknown>;
-    };
-    const windowAt = state.resume?.windowAt ?? state.cursor;
-    const startedAt = state.resume?.startedAt ?? clock.now();
-    const startDate = new Date(windowAt - DAY_MS).toISOString().slice(0, 10);
-    const seen = new Set(state.ids);
-    const emitted: Array<{ ts: number; row: unknown }> = [];
-    let page = state.resume?.page ?? 1;
-    let drained = false;
-    for (let n = 0; n < SINCE_PAGES; n++, page++) {
-      const rows = listItems(
-        await action.execute(
-          {
-            ...siteFilter((params ?? {}) as Params),
-            startDate,
-            pageNumber: page,
-            pageSize: PAGE_SIZE,
-          },
-          ctx,
-        ),
-      );
-      for (const row of rows) {
-        const id = idOf(row);
-        if (!id || seen.has(id)) continue;
-        const ts = Date.parse(attrOf(row, "created_at"));
-        if (Number.isFinite(ts) && ts < state.floor) continue;
-        seen.add(id);
-        emitted.push({ ts: Number.isFinite(ts) ? ts : Number.MAX_SAFE_INTEGER, row });
-      }
-      if (rows.length < PAGE_SIZE) {
-        drained = true;
-        break;
-      }
-    }
-    emitted.sort((a, b) => a.ts - b.ts);
-    const ids = [...state.ids, ...emitted.map((e) => idOf(e.row))].slice(-SEEN_WINDOW);
-    const nextState: SinceState = {
-      v: 1,
-      kind: "since",
-      seeded: true,
-      floor: state.floor,
-      cursor: drained ? startedAt : state.cursor,
-      ids,
-      ...(drained ? {} : { resume: { page, windowAt, startedAt } }),
-    };
-    return { events: emitted.map((e) => e.row), nextState };
-  },
-};
+});
+
+/** Same shape as `new-transaction`; `payout-list` documents no page size, so it drains to an empty page. */
+export const newPayout = since({
+  key: "new-payout",
+  title: "New Payout",
+  description:
+    "The run gets each payout initiated since the last check, polled from the existing `payout-list` action with `filter[start_date]` set to the day before the last check. Only applies to sites using Kajabi Payments.",
+  action: payoutList,
+  stamp: "initiated_date",
+  siteRequired: true,
+  sample: sample("kajabi_payments_payouts", { initiated_date: "2026-11-10T10:00:00Z" }),
+});

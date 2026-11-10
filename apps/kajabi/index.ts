@@ -94,6 +94,7 @@ import newContactTag from "./triggers/new-contact-tag.ts";
 import newContactOffer from "./triggers/new-contact-offer.ts";
 import newOfferProduct from "./triggers/new-offer-product.ts";
 import newTransaction from "./triggers/new-transaction.ts";
+import newPayout from "./triggers/new-payout.ts";
 
 /**
  * Kajabi — creator commerce: courses, memberships and digital products.
@@ -188,6 +189,7 @@ export default {
     newContactOffer,
     newOfferProduct,
     newTransaction,
+    newPayout,
   ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

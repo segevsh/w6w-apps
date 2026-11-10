@@ -1,6 +1,6 @@
 # Housecall Pro
 
-- **Triggers** — 15 (poll)
+- **Triggers** — 14 (poll)
 
 ## Triggers
 
@@ -10,13 +10,13 @@
 | `new-employee` — New Employee | poll | `employee-list` | Each new employee |
 | `new-estimate` / `new-or-updated-estimate` | poll | `estimate-list` | Each new estimate, or each created or edited estimate |
 | `new-estimate-option-line-item` | poll | `estimate-option-line-item-list` | Each line item added to a selected estimate option |
-| `new-event` — New Event | poll | `event-list` | Each new calendar event |
-| `new-invoice` / `new-or-updated-invoice` | poll | `invoice-list` | Each new invoice, or each created or edited invoice |
+| `new-event` / `new-or-updated-event` | poll | `event-list` | Each new calendar event, or each created or edited event |
+| `new-invoice` | poll | `invoice-list` | Each new invoice |
 | `new-job` / `new-or-updated-job` | poll | `job-list` | Each new job, or each created or edited job |
 | `new-job-appointment` | poll | `job-appointment-list` | Each appointment added to a selected job |
 | `new-job-invoice` | poll | `job-invoice-list` | Each invoice added to a selected job |
 | `new-job-line-item` | poll | `job-line-item-list` | Each line item added to a selected job |
-| `new-lead` / `new-or-updated-lead` | poll | `lead-list` | Each new lead, or each created or edited lead |
+| `new-lead` | poll | `lead-list` | Each new lead |
 
 Housecall Pro documents its public API at https://stoplight.io/api/v1/projects/housecallpro/housecall-public-api/nodes/reference/housecall.v1.yaml (verified 2026-11-10).
 
