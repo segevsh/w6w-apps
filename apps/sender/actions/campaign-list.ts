@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { SenderClient, type SenderListPage, toList } from "../lib/client.ts";
-import { campaignStatusOptions } from "../lib/params.ts";
+import { campaignStatusOptions, paginationParams, paginationQuery } from "../lib/params.ts";
 
 /**
  * `GET /v2/campaigns` — all campaigns, optionally filtered by status.
@@ -13,6 +13,9 @@ import { campaignStatusOptions } from "../lib/params.ts";
 interface Input {
   limit?: number;
   status?: string[] | string;
+  page?: number;
+  order?: string;
+  direction?: string;
 }
 
 const campaignList: ActionDefinition<Input> = {
@@ -35,6 +38,7 @@ const campaignList: ActionDefinition<Input> = {
       type: "multiselect",
       options: campaignStatusOptions,
     },
+    ...paginationParams().filter((p) => p.key !== "limit"),
   ],
   output: [
     { key: "data", type: "array", label: "Campaigns" },
@@ -43,7 +47,7 @@ const campaignList: ActionDefinition<Input> = {
 
   execute(input, ctx) {
     return new SenderClient(ctx).json<SenderListPage<unknown>>("/campaigns", {
-      query: { limit: input.limit, status: toList(input.status) },
+      query: { ...paginationQuery(input), status: toList(input.status) },
     });
   },
 };
