@@ -1818,13 +1818,19 @@
   },
   {
     "path": "apps/elastic-email",
-    "mechanism": "poll",
+    "mechanism": "webhook-api",
     "candidates": [
-      "new-list"
+      "new-list",
+      "email-sent",
+      "email-opened",
+      "email-clicked",
+      "email-unsubscribed",
+      "email-error",
+      "abuse-report"
     ],
     "pollAction": "list-list",
-    "reason": "New List diffs GET /v4/lists (returns all lists, limit 5000, cap error); contacts/campaigns/templates have only limit/offset with no created filter; v4 notification webhooks (/webhook, signing secret) exist and are queued as an upgrade.",
-    "verified": "apps/elastic-email/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept.",
+    "verified": "apps/elastic-email/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1887,13 +1893,17 @@
   },
   {
     "path": "apps/esignatures",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "contract events"
+      "contract-event",
+      "contract-sent",
+      "contract-signed",
+      "signer-signed",
+      "signer-declined"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: contract lifecycle events signed with X-Signature-SHA256; the vendor docs tell integrators not to poll (blocked requests) and templates/collaborators have no created filter.",
-    "verified": "apps/esignatures/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp).",
+    "verified": "apps/esignatures/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -1938,11 +1948,12 @@
     "path": "apps/exa",
     "mechanism": "webhook-api",
     "candidates": [
-      "monitor events"
+      "new-webset-item",
+      "webset-item-enriched"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: monitor delivery; list-websets documents only cursor paging and a search filter (no order or created filter) and Websets are created only by the caller's own calls.",
-    "verified": "apps/exa/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: Websets webhooks registered through POST /websets/v0/webhooks (webset.item.created, webset.item.enriched); Exa-Signature t=,v1= HMAC-SHA256 of '<t>.<raw body>' with the secret returned once at creation, 5-minute window. The research note 'unsigned monitors' was wrong: Exa signs both Monitors and Websets webhooks.",
+    "verified": "apps/exa/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2061,13 +2072,15 @@
   },
   {
     "path": "apps/firecrawl",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
-      "crawl and batch completion"
+      "crawl.completed",
+      "batch_scrape.completed",
+      "extract.completed"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: caller-configured crawl, batch-scrape and extract completion callbacks; status reads are caller-started jobs with no account record feed.",
-    "verified": "apps/firecrawl/README.md Triggers section (verified 2026-11-09)",
+    "reason": "Firecrawl webhooks are a per-job `webhook` object on each crawl, batch scrape, extract or agent request (and per monitor), with no account-level subscription to register: they only report completion of jobs this app starts itself, not an account event stream (https://docs.firecrawl.dev/webhooks/overview).",
+    "verified": "apps/firecrawl/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2094,13 +2107,16 @@
   },
   {
     "path": "apps/fivetran",
-    "mechanism": "poll",
+    "mechanism": "webhook-api",
     "candidates": [
-      "new-connection"
+      "new-connection",
+      "sync-started",
+      "sync-ended",
+      "connection-failure"
     ],
     "pollAction": "connection-list",
-    "reason": "New Connection diffs the cursor-paginated /v1/connections (limit 1000, up to 6 pages, cap error); Fivetran Webhook API (sync_start, sync_end, ...) exists and is queued as an upgrade.",
-    "verified": "apps/fivetran/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: webhooks registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret; X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); the earlier New Connection poll (connection-list) is kept.",
+    "verified": "apps/fivetran/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2117,13 +2133,16 @@
   },
   {
     "path": "apps/flodesk",
-    "mechanism": "poll",
+    "mechanism": "webhook-api",
     "candidates": [
-      "new-segment"
+      "new-segment",
+      "new-subscriber",
+      "subscriber-unsubscribed",
+      "subscriber-added-to-segment"
     ],
     "pollAction": "list-segments",
-    "reason": "New Segment diffs the paginated segments collection (per_page 100, max 5 pages, cap error); subscribers have no created filter or documented order; subscriber.created webhooks are queued as an upgrade.",
-    "verified": "apps/flodesk/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment; no updated or complaint event exists). Flodesk publishes no signature, so the README says the callback URL is the secret; the earlier New Segment poll (list-segments) is kept.",
+    "verified": "apps/flodesk/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2184,11 +2203,11 @@
     "path": "apps/formspark",
     "mechanism": "manual-webhook",
     "candidates": [
-      "submission.created"
+      "new-submission"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: submission.created",
-    "verified": "apps/formspark/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped: manual webhook set per form in the dashboard (no webhook API); signing is optional at Formspark so the trigger requires it: Formspark-Signature v1= hex HMAC-SHA256 of '<Formspark-Timestamp>.<raw body>' under the pasted secret, 5-minute window.",
+    "verified": "apps/formspark/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2295,13 +2314,13 @@
   },
   {
     "path": "apps/fullenrich",
-    "mechanism": "webhook-api",
+    "mechanism": "none",
     "candidates": [
       "enrichment completion"
     ],
     "pollAction": null,
-    "reason": "webhook candidate queued for a webhook node: enrichment completion",
-    "verified": "apps/fullenrich/README.md Triggers section (verified 2026-11-09)",
+    "reason": "FullEnrich's webhook is a `webhook_url` field on each enrichment or reverse-email request with no account-level subscription: it only reports completion of a job this app starts itself, not an account event stream (https://docs.fullenrich.com/api/v2/general/webhooks).",
+    "verified": "apps/fullenrich/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
