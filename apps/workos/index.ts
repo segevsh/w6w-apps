@@ -16,6 +16,13 @@ import service from "./health/service.ts";
 import environment from "./health/environment.ts";
 import quota from "./health/quota.ts";
 import newEvent from "./triggers/new-event.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newConnection from "./triggers/new-connection.ts";
+import newDirectory from "./triggers/new-directory.ts";
+import newDirectoryUser from "./triggers/new-directory-user.ts";
+import newDirectoryGroup from "./triggers/new-directory-group.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrganizationMembership from "./triggers/new-organization-membership.ts";
 
 import organizationList from "./actions/organization-list.ts";
 import organizationGet from "./actions/organization-get.ts";
@@ -69,7 +76,16 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, environment, quota],
-  triggers: [newEvent],
+  triggers: [
+    newEvent,
+    newOrganization,
+    newConnection,
+    newDirectory,
+    newDirectoryUser,
+    newDirectoryGroup,
+    newUser,
+    newOrganizationMembership,
+  ],
 };
 
 export default app;

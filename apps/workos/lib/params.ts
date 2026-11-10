@@ -32,3 +32,21 @@ export const ORGANIZATION_PARAM: Param = {
   placeholder: "org_01EHZNVPK3SFK441A1RGBFSHRT",
   hint: "One customer company. `organization-list` maps names to ids.",
 };
+
+/**
+ * Creation-time order of a list, passed to WorkOS as `order` (`asc` | `desc`). Left empty, the
+ * request carries no `order` and WorkOS applies its own default.
+ */
+export const ORDER_PARAM: Param = {
+  key: "order",
+  label: "Order",
+  type: "select",
+  default: "",
+  advanced: true,
+  options: [
+    { value: "", label: "WorkOS default" },
+    { value: "desc", label: "Newest first" },
+    { value: "asc", label: "Oldest first" },
+  ],
+  hint: "Order by creation time. Leave empty for WorkOS's default.",
+};

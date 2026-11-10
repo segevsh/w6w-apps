@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /connections` — the SSO connections, and whether they are live.
@@ -50,6 +50,7 @@ const action: ActionDefinition = {
       hint: "Filters the result to connections that are not `active` — the customers who started " +
         "SSO setup and stopped.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -68,6 +69,7 @@ const action: ActionDefinition = {
       {
         query: compact({
           organization_id: p.organizationId,
+          order: p.order,
           connection_type: p.connectionType,
         }) as Record<string, string>,
       },
