@@ -4823,12 +4823,25 @@
     "path": "apps/jibble",
     "mechanism": "poll",
     "candidates": [
-      "new-activity"
+      "new-activity",
+      "new-client",
+      "new-group",
+      "new-location",
+      "new-member",
+      "new-or-updated-member",
+      "new-or-updated-time-entry",
+      "new-project",
+      "new-time-entry",
+      "new-time-off-request"
     ],
     "pollAction": "activity-list",
-    "reason": "shape a: Activity has createdAt (OData $metadata), trigger sends $orderby=createdAt desc (https://workspace.prod.jibble.io/v1/$metadata)",
-    "verified": "apps/jibble/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shape a: $orderby=createdAt|updatedAt desc on Activity, Project, Client, Location, Group, Person and TimeEntry (https://workspace.prod.jibble.io/v1/$metadata); time-off requests via bounded snapshot of not-yet-ended requests",
+    "verified": "apps/jibble/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "leave-balance-list": "per person and policy balance rows recomputed by the server: no id or created stamp (https://time-tracking.prod.jibble.io/v1/$metadata LeaveBalance: personId, policyId, entitled, taken, balance, ...)",
+      "timesheet-list": "computed daily timesheet report, not a record feed (reports/analytics output)"
+    }
   },
   {
     "path": "apps/jinaai",
@@ -5458,12 +5471,23 @@
     "path": "apps/lofty",
     "mechanism": "poll",
     "candidates": [
-      "new-lead"
+      "new-appointment",
+      "new-lead",
+      "new-note",
+      "new-task",
+      "new-team-member"
     ],
     "pollAction": "lead-list",
-    "reason": "lead-list sort=CreateTime desc=true limit 100; id leadId (vendor reference is client-rendered, sort value rests on the action's documented list)",
-    "verified": "apps/lofty/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-lead is newest-first (sort=CreateTime desc); tasks, appointments, notes (per lead) and team members have no sort or filter so they diff the whole list by id (https://api.lofty.com/docs/)",
+    "verified": "apps/lofty/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "lead-activity-list": "site-tracking browse/search events with no id field (type, text, link, created only), analytics output (https://api.lofty.com/docs/)",
+      "pipeline-list": "reference data: lead pipeline/stage definitions",
+      "tag-list": "reference data: lead tag definitions",
+      "custom-field-list": "reference data: custom field definitions",
+      "webhook-list": "admin: the account's own webhook subscriptions (integration setup, not business records)"
+    }
   },
   {
     "path": "apps/lokalise",
@@ -5658,24 +5682,48 @@
     "path": "apps/maintainx",
     "mechanism": "poll",
     "candidates": [
+      "new-asset",
+      "new-location",
+      "new-meter",
+      "new-or-updated-asset",
+      "new-or-updated-part",
+      "new-or-updated-work-order",
+      "new-part",
+      "new-team",
+      "new-user",
+      "new-vendor",
       "new-work-order",
-      "new-or-updated-work-order"
+      "new-work-order-comment"
     ],
     "pollAction": "workorder-list",
-    "reason": "GET /workorders explicit sort=-createdAt / -updatedAt per vendor OpenAPI; user-list dropped (no documented order)",
-    "verified": "apps/maintainx/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "shape a: sort=-createdAt|-updatedAt on work orders, assets, parts (https://api.getmaintainx.com/v1/openapi.json); locations, meters, teams, users, vendors, work order comments diff the cursor-read list by id",
+    "verified": "apps/maintainx/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "organization-list": "reference data: the organizations the API key can reach (tenant configuration, not business records)"
+    }
   },
   {
     "path": "apps/manus",
     "mechanism": "poll",
     "candidates": [
-      "new-task"
+      "new-agent",
+      "new-connector",
+      "new-project",
+      "new-skill",
+      "new-task",
+      "new-task-event",
+      "new-website-checkpoint"
     ],
     "pollAction": "task-list",
-    "reason": "order=desc is newest first by creation time (https://open.manus.ai/docs/v2/task.list)",
-    "verified": "apps/manus/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "order=desc on task.list and task.listMessages (https://open.manus.ai/docs/v2/task.listMessages), website.listCheckpoints newest first; agent/project/connector/skill lists are unpaginated and diffed by id",
+    "verified": "apps/manus/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "browser-online-list": "presence snapshot of which browser clients are online right now, not records (state, no stable record set)",
+      "usage-list": "credit ledger/billing report whose rows carry no id of their own (task_id, credits, created_at, type only)",
+      "webhook-list": "admin: the account's own webhook subscriptions (integration setup, not business records)"
+    }
   },
   {
     "path": "apps/manychat",
@@ -5809,12 +5857,23 @@
     "path": "apps/mercury",
     "mechanism": "poll",
     "candidates": [
-      "new-customer"
+      "new-account",
+      "new-account-statement",
+      "new-card",
+      "new-category",
+      "new-customer",
+      "new-invoice",
+      "new-recipient",
+      "new-transaction",
+      "new-user"
     ],
     "pollAction": "customer-list",
-    "reason": "Customers requested in descending order.",
-    "verified": "apps/mercury/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "order=desc on every list endpoint (https://docs.mercury.com/reference/listtransactions); sorted field not named by the vendor, newest-created-first is the expected order",
+    "verified": "apps/mercury/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhook-list": "admin: the account's own webhook subscriptions (integration setup, not business records)"
+    }
   },
   {
     "path": "apps/messagebird",

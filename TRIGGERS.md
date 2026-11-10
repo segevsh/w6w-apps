@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1858 triggers, 2461 unaccounted list actions in 526 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -42,12 +42,7 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/dixa | 1 | 10 | 9 |
 | apps/gitea | 1 | 10 | 9 |
 | apps/highlevel | 4 | 9 | 9 |
-| apps/jibble | 1 | 10 | 9 |
-| apps/lofty | 1 | 10 | 9 |
 | apps/lusha | 1 | 9 | 9 |
-| apps/maintainx | 2 | 10 | 9 |
-| apps/manus | 1 | 10 | 9 |
-| apps/mercury | 1 | 10 | 9 |
 | apps/meta/instagram-for-business | 1 | 10 | 9 |
 | apps/microsoft/microsoft-entra-id | 1 | 10 | 9 |
 | apps/mixmax | 1 | 10 | 9 |
@@ -611,6 +606,7 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/insightly | 8 | 4 | 0 |
 | apps/intercom | 17 | 5 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
+| apps/jibble | 10 | 10 | 0 |
 | apps/kajabi | 18 | 19 | 0 |
 | apps/keap | 17 | 17 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
@@ -623,9 +619,13 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
 | apps/linkupapi | 7 | 20 | 0 |
 | apps/livestorm | 9 | 13 | 0 |
+| apps/lofty | 5 | 10 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
+| apps/maintainx | 12 | 10 | 0 |
+| apps/manus | 7 | 10 | 0 |
 | apps/meistertask | 12 | 12 | 0 |
+| apps/mercury | 9 | 10 | 0 |
 | apps/microsoft/outlook | 4 | 5 | 0 |
 | apps/microsoft/teams | 8 | 8 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
@@ -1004,7 +1004,7 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/ironclad | 2 | record-list | new-record, new-or-updated-record | apps/ironclad/README.md Triggers section (verified 2026-11-09) | hand | Records support descending agreement-date and last-updated sorts with stable IDs. |
 | apps/iterable | 1 | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
 | apps/jenkins | 2 | get-job-info | new-build, new-job | apps/jenkins/README.md Triggers section (verified 2026-11-09) | hand | get-job-info exposes the job's builds, sorted by number in the trigger; list-jobs is a whole-root snapshot (https://www.jenkins.io/doc/book/using/remote-access-api/) |
-| apps/jibble | 1 | activity-list | new-activity | apps/jibble/README.md Triggers section (verified 2026-11-09) | hand | shape a: Activity has createdAt (OData $metadata), trigger sends $orderby=createdAt desc (https://workspace.prod.jibble.io/v1/$metadata) |
+| apps/jibble | 10 | activity-list | new-activity, new-client, new-group, new-location, new-member, new-or-updated-member, new-or-updated-time-entry, new-project, new-time-entry, new-time-off-request | apps/jibble/README.md Triggers section (verified 2026-11-10) | hand | shape a: $orderby=createdAt\|updatedAt desc on Activity, Project, Client, Location, Group, Person and TimeEntry (https://workspace.prod.jibble.io/v1/$metadata); time-off requests via bounded snapshot of not-yet-ended requests |
 | apps/jobber | 2 | invoice-list | new-invoice, new-or-updated-invoice | apps/jobber/README.md Triggers section (verified 2026-11-09) | hand | invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/) |
 | apps/jobnimbus | 2 | contact-list | new-contact, new-or-updated-contact | apps/jobnimbus/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x) |
 | apps/jobtread | 1 | list-jobs | new-job | no | hand | shipped poll trigger(s) over list action list-jobs |
@@ -1039,7 +1039,7 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/livechat | 1 | list-archives | new-chat-thread | apps/livechat/README.md Triggers section (verified 2026-11-09) | hand | list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api) |
 | apps/livestorm | 9 | event-list | new-event, new-or-updated-event, new-session, new-or-updated-session, new-session-registrant, new-or-updated-session-registrant, new-session-question, new-session-recording, new-user | apps/livestorm/README.md Triggers section (verified 2026-11-10) | hand | since-filter polls (filter[created_since]/[updated_since]) over event-list, session-list and session-people-list, plus whole-collection snapshots for questions, recordings and users (https://developers.livestorm.co/reference/get_sessions) |
 | apps/lob | 1 | address-list | new-address | apps/lob/README.md Triggers section (verified 2026-11-09) | hand | address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list) |
-| apps/lofty | 1 | lead-list | new-lead | apps/lofty/README.md Triggers section (verified 2026-11-09) | hand | lead-list sort=CreateTime desc=true limit 100; id leadId (vendor reference is client-rendered, sort value rests on the action's documented list) |
+| apps/lofty | 5 | lead-list | new-appointment, new-lead, new-note, new-task, new-team-member | apps/lofty/README.md Triggers section (verified 2026-11-10) | hand | new-lead is newest-first (sort=CreateTime desc); tasks, appointments, notes (per lead) and team members have no sort or filter so they diff the whole list by id (https://api.lofty.com/docs/) |
 | apps/loop-returns | 1 | order-list | new-order | no | hand | shipped poll trigger(s) over list action order-list |
 | apps/loops | 1 | transactional-list | new-transactional | apps/loops/README.md Triggers section (verified 2026-11-09) | hand | vendor: list transactional emails 'most recently created first' (https://loops.so/docs/api-reference/list-transactional-emails) |
 | apps/loyverse | 2 | receipt-list | new-receipt, new-or-updated-receipt | apps/loyverse/README.md Triggers section (verified 2026-11-09) | hand | new-receipt: receipt-list newest first per the action; updated: updated_at_min=cursor-120s following the vendor cursor, ids id:updated_at |
@@ -1047,8 +1047,8 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/maileroo | 1 | list-domains | new-domain | no | hand | shipped poll trigger(s) over list action list-domains |
 | apps/mailersend | 1 | list-sender-identities | new-sender-identity | apps/mailersend/README.md Triggers section (verified 2026-11-09) | hand | order_by=created_at&order=desc (vendor default asc) per developers.mailersend.com sender-identity page |
 | apps/mailjet | 1 | list-messages | new-message | apps/mailjet/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
-| apps/maintainx | 2 | workorder-list | new-work-order, new-or-updated-work-order | apps/maintainx/README.md Triggers section (verified 2026-11-09) | hand | GET /workorders explicit sort=-createdAt / -updatedAt per vendor OpenAPI; user-list dropped (no documented order) |
-| apps/manus | 1 | task-list | new-task | apps/manus/README.md Triggers section (verified 2026-11-09) | hand | order=desc is newest first by creation time (https://open.manus.ai/docs/v2/task.list) |
+| apps/maintainx | 12 | workorder-list | new-asset, new-location, new-meter, new-or-updated-asset, new-or-updated-part, new-or-updated-work-order, new-part, new-team, new-user, new-vendor, new-work-order, new-work-order-comment | apps/maintainx/README.md Triggers section (verified 2026-11-10) | hand | shape a: sort=-createdAt\|-updatedAt on work orders, assets, parts (https://api.getmaintainx.com/v1/openapi.json); locations, meters, teams, users, vendors, work order comments diff the cursor-read list by id |
+| apps/manus | 7 | task-list | new-agent, new-connector, new-project, new-skill, new-task, new-task-event, new-website-checkpoint | apps/manus/README.md Triggers section (verified 2026-11-10) | hand | order=desc on task.list and task.listMessages (https://open.manus.ai/docs/v2/task.listMessages), website.listCheckpoints newest first; agent/project/connector/skill lists are unpaginated and diffed by id |
 | apps/manychat | 1 | list-flows | new-flow | apps/manychat/README.md Triggers section (verified 2026-11-09) | hand | getFlows returns the Page's whole flow set in one call: pollSnapshot, added only |
 | apps/mastodon | 1 | notification-list | new-notification | apps/mastodon/README.md Triggers section (verified 2026-11-09) | hand | notification-list is newest-first and supports forward paging with min_id |
 | apps/matrix | 1 | get-messages | new-room-message | apps/matrix/README.md Triggers section (verified 2026-11-09) | hand | get-messages supports backwards (newest-first) room timeline paging; trigger keeps only m.room.message events (https://spec.matrix.org/latest/client-server-api/) |
@@ -1057,7 +1057,7 @@ depth: 682 apps, 1821 triggers, 2506 unaccounted list actions in 531 apps, n8n-p
 | apps/meistertask | 12 | checklist-item-list | new-checklist-item, new-project, new-section, new-task, new-or-updated-task, new-comment, new-subtask, new-checklist, new-label, new-project-person, new-person, new-task-label | apps/meistertask/README.md Triggers section (verified 2026-11-10) | hand | sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page; unpaginated lists (labels, persons, task labels) are compared as bounded lists. |
 | apps/mem | 2 | task-list | new-task, new-or-updated-task | apps/mem/README.md Triggers section (verified 2026-11-09) | hand | task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI. |
 | apps/memberstack | 1 | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
-| apps/mercury | 1 | customer-list | new-customer | apps/mercury/README.md Triggers section (verified 2026-11-09) | hand | Customers requested in descending order. |
+| apps/mercury | 9 | customer-list | new-account, new-account-statement, new-card, new-category, new-customer, new-invoice, new-recipient, new-transaction, new-user | apps/mercury/README.md Triggers section (verified 2026-11-10) | hand | order=desc on every list endpoint (https://docs.mercury.com/reference/listtransactions); sorted field not named by the vendor, newest-created-first is the expected order |
 | apps/meta/instagram-for-business | 1 | list-media | new-media | apps/meta/instagram-for-business/README.md Triggers section (verified 2026-11-09) | hand | Media edge is documented as most recent first. |
 | apps/microsoft/azuredevops | 3 | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
 | apps/microsoft/excel | 2 | list-workbooks | new-workbook, new-or-updated-workbook | apps/microsoft/excel/README.md Triggers section (verified 2026-11-09) | hand | list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp). |
