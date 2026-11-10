@@ -49,8 +49,6 @@ auth probe (`GET /team/credit-usage`) is a dedicated, credential-only endpoint i
 {"success": false, "code": "SCRAPE_DNS_RESOLUTION_ERROR", "error": "DNS resolution failed for hostname \"...\". ..."}
 ```
 
-Triggers: not shipped — crawl, batch-scrape, and extract status endpoints describe caller-started jobs rather than a general account record feed; completion callbacks are queued separately (https://docs.firecrawl.dev/).
-
 — measured live against a nonexistent domain. Checking only `res.ok` would report that scrape as a
 success with an empty page. [`lib/client.ts`](lib/client.ts) checks every response body for
 `success === false` regardless of status code, and a pinned test
@@ -267,3 +265,5 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+Triggers: not shipped — Firecrawl webhooks are set per job, as a `webhook` object on each crawl, batch scrape, extract or agent request (and per monitor), with no account-level subscription to register, so they only report the completion of jobs this app starts itself and cannot feed an account event stream; crawl, batch-scrape and extract status endpoints describe those caller-started jobs, not a record feed (https://docs.firecrawl.dev/webhooks/overview, verified 2026-11-10).
