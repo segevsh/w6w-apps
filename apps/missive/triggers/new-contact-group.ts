@@ -11,8 +11,8 @@ const CAP = 5000;
  */
 const trigger: TriggerDefinition = {
   key: "new-contact-group",
-  title: "New or Updated Contact Group",
-  description: "The run gets each new or updated group in the selected contact book.",
+  title: "New Contact Group",
+  description: "The run gets each new group in the selected contact book.",
   params: [
     { key: "contactBook", label: "Contact Book ID", type: "string", required: true },
     {
@@ -61,7 +61,7 @@ const trigger: TriggerDefinition = {
     return await pollSnapshot({
       state,
       rows,
-      emit: { added: true, updated: true, removed: false },
+      emit: { added: true, updated: false, removed: false },
       maxRows: CAP,
     });
   },

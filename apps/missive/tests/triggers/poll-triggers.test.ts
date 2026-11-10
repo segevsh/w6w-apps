@@ -101,7 +101,7 @@ for (const entry of cases) {
   });
 }
 
-test("new-contact-group snapshots a chosen contact book with literal GET pagination", async () => {
+test("new-contact-group snapshots a chosen contact book and emits only additions", async () => {
   const input = {
     params: { contactBook: "book", kind: "group" },
     state: {},
@@ -125,7 +125,6 @@ test("new-contact-group snapshots a chosen contact book with literal GET paginat
       .ctx,
   );
   assertEquals(changed.events, [
-    { change: "updated", key: "a", values: { id: "a", name: "Renamed" } },
     { change: "added", key: "b", values: { id: "b", name: "New" } },
   ]);
 });
