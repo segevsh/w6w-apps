@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/teamup",
   "version": "0.3.0",
-  "description": "Run a gym or studio on TeamUp: customers, the class schedule, attendance, memberships and invoices, instructors, venues and front-desk check-ins. Poll triggers: new invoices, venues, instructors, staff, courses, membership plans and offering types.",
+  "description": "Run a gym or studio on TeamUp: customers, classes, attendance, memberships, invoices, venues and check-ins. Poll triggers for new invoices, venues, staff, courses and plans.",
   "license": "MIT",
   "author": {
     "name": "w6w"

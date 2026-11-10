@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/aidbase",
   "version": "0.3.0",
-  "description": "Aidbase AI support: manage knowledge sources, chatbots, email inboxes and ticket forms, get chatbot replies, read chats, emails and tickets, and reply to, update or block them. Poll triggers: new tickets, chats, emails, chatbots, inboxes, ticket forms and knowledge.",
+  "description": "Aidbase AI support: knowledge, chatbots, email inboxes and ticket forms, replies, chats, emails and tickets. Poll triggers for new tickets, chats, emails, chatbots and knowledge.",
   "license": "MIT",
   "author": {
     "name": "w6w"
