@@ -35,6 +35,11 @@ import memberList from "./actions/member-list.ts";
 import memberScopeList from "./actions/member-scope-list.ts";
 import inviteList from "./actions/invite-list.ts";
 import newRequest from "./triggers/new-request.ts";
+import newProject from "./triggers/new-project.ts";
+import newApiKey from "./triggers/new-api-key.ts";
+import newMember from "./triggers/new-member.ts";
+import newInvite from "./triggers/new-invite.ts";
+import newMemberScope from "./triggers/new-member-scope.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -60,7 +65,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, quota, concurrency],
-  triggers: [newRequest],
+  triggers: [newRequest, newProject, newApiKey, newMember, newInvite, newMemberScope],
 };
 
 export default app;

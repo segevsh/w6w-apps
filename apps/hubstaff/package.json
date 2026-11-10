@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hubstaff",
-  "version": "0.2.0",
-  "description": "Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that make up a Hubstaff organization, and write back time entries and tasks, with new-project triggers.",
+  "version": "0.3.0",
+  "description": "Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that make up a Hubstaff organization, and write back time entries and tasks, with new-project triggers. Poll triggers emit new projects, clients, members, tasks, teams, organizations and timesheets.",
   "license": "MIT",
   "author": {
     "name": "w6w"
