@@ -52,6 +52,17 @@ const OUTPUT: OutputField[] = [
   { key: "item", type: "object", label: "Item (conversation or contact)" },
 ];
 
+/**
+ * The `*.deleted` topics send "a minimal identification payload containing only identifying fields
+ * — not the full resource object" (https://developers.intercom.com/docs/references/webhooks/webhook-models,
+ * verified 2026-11-10), so `item` is the type and id only.
+ */
+export const DELETED_OUTPUT: OutputField[] = OUTPUT.map((f) =>
+  f.key === "item"
+    ? { key: "item", type: "object", label: "Deleted item (identifying fields only: type and id)" }
+    : f
+);
+
 function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
     ? v as Record<string, unknown>
@@ -106,6 +117,8 @@ export interface WebhookTriggerSpec {
   /** One topic, or several that mean the same thing to the user (e.g. a user or a lead is created). */
   topic: string | string[];
   sample: IntercomEvent;
+  /** Output fields when they differ from the default (the `*.deleted` topics). */
+  output?: OutputField[];
 }
 
 /** POST check, signature check, then parse: one verified Intercom notification. */
@@ -136,7 +149,7 @@ export function webhookTrigger(
     title: spec.title,
     description: spec.description,
     params: [SIGNING_SECRET_PARAM],
-    output: OUTPUT,
+    output: spec.output ?? OUTPUT,
     sample: spec.sample,
 
     onSubscribe({ callbackUrl }) {
@@ -175,7 +188,7 @@ export function anyEventTrigger(
     key: spec.key,
     title: "Any Event",
     description:
-      "Fires on any Intercom webhook topic you subscribed (or the ones you list). The run gets the notification id and topic and the full item.",
+      "Fires on any Intercom webhook topic you subscribed (or the ones you list). The run gets the notification id and topic and the item (for a deletion topic only its type and id).",
     params: [SIGNING_SECRET_PARAM, EVENTS_PARAM],
     output: OUTPUT,
     sample: spec.sample,

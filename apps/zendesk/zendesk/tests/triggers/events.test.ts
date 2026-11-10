@@ -23,6 +23,15 @@ const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] })
 const sign = (ts: string, body: string, secret = SECRET) =>
   createHmac("sha256", secret).update(ts + body).digest("base64");
 
+/** Positions of the signature to flip: first, middle and last. */
+const flipPositions = (sig: string) => [0, Math.floor(sig.length / 2), sig.length - 1];
+/** The same string with the character at `at` changed to a different one. */
+const flipAt = (s: string, at: number) => {
+  const out = s.slice(0, at) + (s[at] === "A" ? "B" : "A") + s.slice(at + 1);
+  assert(out !== s && out.length === s.length);
+  return out;
+};
+
 const nowIso = () => new Date().toISOString();
 
 /** Non-canonical whitespace so JSON.stringify(JSON.parse(body)) !== body. */
@@ -152,23 +161,24 @@ for (const { trigger, eventType, subject, id, ticket } of named) {
     assertEquals(out[0], expected);
   });
 
-  test(`${k}: one flipped byte of the SIGNATURE throws`, async () => {
+  test(`${k}: one flipped byte of the SIGNATURE (first, middle, last) throws`, async () => {
     const ts = nowIso();
     const good = sign(ts, body);
-    const bad = (good[0] === "A" ? "B" : "A") + good.slice(1);
-    await assertRejects(
-      () =>
-        ingest(
-          trigger,
-          call({
-            "x-zendesk-webhook-signature": bad,
-            "x-zendesk-webhook-signature-timestamp": ts,
-          }, body),
-          state,
-        ),
-      Error,
-      "refused",
-    );
+    for (const at of flipPositions(good)) {
+      await assertRejects(
+        () =>
+          ingest(
+            trigger,
+            call({
+              "x-zendesk-webhook-signature": flipAt(good, at),
+              "x-zendesk-webhook-signature-timestamp": ts,
+            }, body),
+            state,
+          ),
+        Error,
+        "refused",
+      );
+    }
   });
 
   test(`${k}: one flipped byte of the body throws`, async () => {
@@ -297,23 +307,24 @@ test("any-event: an event type outside the list is filtered out", async () => {
   assertEquals(evs(await ingest(anyEvent, call(signed(other), other), anyState)), []);
 });
 
-test("any-event: one flipped byte of the SIGNATURE throws", async () => {
+test("any-event: one flipped byte of the SIGNATURE (first, middle, last) throws", async () => {
   const ts = nowIso();
   const good = sign(ts, anyBody);
-  const bad = (good[0] === "A" ? "B" : "A") + good.slice(1);
-  await assertRejects(
-    () =>
-      ingest(
-        anyEvent,
-        call({
-          "x-zendesk-webhook-signature": bad,
-          "x-zendesk-webhook-signature-timestamp": ts,
-        }, anyBody),
-        anyState,
-      ),
-    Error,
-    "refused",
-  );
+  for (const at of flipPositions(good)) {
+    await assertRejects(
+      () =>
+        ingest(
+          anyEvent,
+          call({
+            "x-zendesk-webhook-signature": flipAt(good, at),
+            "x-zendesk-webhook-signature-timestamp": ts,
+          }, anyBody),
+          anyState,
+        ),
+      Error,
+      "refused",
+    );
+  }
 });
 
 test("any-event: tampered body, missing header, absent rawBody and stale timestamp all throw", async () => {

@@ -18,18 +18,18 @@ Manage Intercom contacts, companies, conversations, notes and tags via its REST 
 | `contact-created` — New Contact | webhook (manual, signed) | `contact.user.created` | notification id, topic, app id, the contact object |
 | `new-contact` — New Contact or Lead | webhook (manual, signed) | `contact.user.created`, `contact.lead.created` | the contact object (user or lead) |
 | `contact-updated` — Contact Updated | webhook (manual, signed) | `contact.user.updated`, `contact.lead.updated` | the updated contact |
-| `contact-deleted` — Contact Deleted | webhook (manual, signed) | `contact.deleted` | the contact as it was |
+| `contact-deleted` — Contact Deleted | webhook (manual, signed) | `contact.deleted` | the deleted contact's type and id only (Intercom sends a minimal identification payload for `*.deleted` topics) |
 | `company-created` — Company Created | webhook (manual, signed) | `company.created` | the company object |
 | `company-updated` — Company Updated | webhook (manual, signed) | `company.updated` | the updated company |
-| `company-deleted` — Company Deleted | webhook (manual, signed) | `company.deleted` | the company as it was |
+| `company-deleted` — Company Deleted | webhook (manual, signed) | `company.deleted` | the deleted company's type and id only (minimal identification payload) |
 | `new-conversation` — New Conversation (Any Starter) | webhook (manual, signed) | `conversation.user.created`, `conversation.admin.single.created` | the conversation object |
 | `conversation-user-replied` — Conversation Replied by Contact | webhook (manual, signed) | `conversation.user.replied` | the conversation with the new part |
 | `conversation-admin-replied` — Conversation Replied by Admin | webhook (manual, signed) | `conversation.admin.replied` | the conversation with the new part |
 | `conversation-closed` — Conversation Closed | webhook (manual, signed) | `conversation.admin.closed` | the conversation |
 | `conversation-assigned` — Conversation Assigned | webhook (manual, signed) | `conversation.admin.assigned` | the conversation |
-| `conversation-deleted` — Conversation Deleted | webhook (manual, signed) | `conversation.deleted` | the conversation as it was |
+| `conversation-deleted` — Conversation Deleted | webhook (manual, signed) | `conversation.deleted` | the deleted conversation's type and id only (minimal identification payload) |
 | `any-event` — Any Event | webhook (manual, signed) | any topic you subscribed, optionally narrowed by `events` | notification id, topic, app id, the item |
-| `new-note` — New Note on Contact | poll (newest-first) | `note-get-many` (`GET /contacts/{id}/notes`) | the note; you pick the contact id |
+| `new-note` — New Note on Contact | poll (snapshot of note ids, order-independent) | `note-get-many` (`GET /contacts/{id}/notes`) | the note; you pick the contact id |
 | `new-tag` — New Tag | poll (snapshot) | `tag-get-many` (`GET /tags`) | the tag (id, name) |
 
 **Setup (manual webhook).** Intercom sets webhooks per app in the Developer Hub, not through the API, so:
@@ -42,13 +42,15 @@ Manage Intercom contacts, companies, conversations, notes and tags via its REST 
 
 **Trust model.** Intercom signs the exact request body with HMAC-SHA1 under the client secret and sends it as `X-Hub-Signature: sha1=<hex>`. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. Intercom's signature carries no timestamp, so a captured delivery can be replayed. Deliveries for other topics (and Intercom's `ping`) are acknowledged without a run.
 
-**Polls.** `new-note` wraps `note-get-many`: the notes endpoint orders by id and "Defaults to desc", so page 1 is the newest. `new-tag` wraps `tag-get-many`: `GET /tags` returns the whole workspace tag list in one response, so each check diffs the ids.
+**Deleted items.** Intercom's `*.deleted` topics send "a minimal identification payload containing only identifying fields — not the full resource object" (webhook-models page below), so `contact-deleted`, `company-deleted` and `conversation-deleted` give the run the item's `type` and `id` and nothing else (no email, name or body); look the record up beforehand if you need more.
+
+**Polls.** `new-note` wraps `note-get-many`: the notes endpoint takes only `page` and `per_page` for the pinned API version (2.11) and documents no sort order, so it does not rely on one. Each check reads every page of the contact's notes (50 per page, at most 100 pages; a contact with more notes is refused, not truncated) and diffs the note ids against the previous check, so a new note is found wherever it sits and an edited note is not a new one. `new-tag` wraps `tag-get-many`: `GET /tags` returns the whole workspace tag list in one response, so each check diffs the ids.
 
 **Not covered.** `company-get-many` (companies list), `contact-search` and `conversation-get-many` are served by the webhook triggers `company-created`, `new-contact` and `new-conversation`: the companies list is ordered by `last_request_at` (not creation), `GET /conversations` documents no order, and a contact search needs a filter, so none would make a correct newest-first poll.
 
 Docs (verified 2026-11-10): https://developers.intercom.com/docs/webhooks ,
 https://developers.intercom.com/docs/references/webhooks/webhook-models (topic catalog and `X-Hub-Signature`) ,
-https://developers.intercom.com/docs/references/rest-api/api.intercom.io/contacts/listnotes ,
+https://developers.intercom.com/docs/references/2.11/rest-api/api.intercom.io/notes/listnotes (the version the client pins) ,
 https://developers.intercom.com/docs/references/rest-api/api.intercom.io/tags/listtags ,
 https://developers.intercom.com/docs/references/rest-api/api.intercom.io/companies/listallcompanies ,
 https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/listconversations

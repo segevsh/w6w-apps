@@ -20,6 +20,15 @@ const body = (topic: string, item: string) =>
 const sign = (b: string, secret = SECRET) =>
   "sha1=" + createHmac("sha1", secret).update(b).digest("hex");
 
+/** Positions of the hex digest (after `sha1=`) to flip: first, middle and last. */
+const flipPositions = (sig: string) => [5, Math.floor((5 + sig.length) / 2), sig.length - 1];
+/** The same string with the character at `at` changed to a different one. */
+const flipAt = (s: string, at: number) => {
+  const out = s.slice(0, at) + (s[at] === "0" ? "1" : "0") + s.slice(at + 1);
+  assert(out !== s && out.length === s.length);
+  return out;
+};
+
 const trigger = (key: string) => {
   const t = app.triggers.find((x) => x.key === key);
   assert(t !== undefined, `trigger ${key} is not in the app`);
@@ -100,14 +109,15 @@ for (const [key, topics] of Object.entries(TOPICS)) {
     }
   });
 
-  test(`${key}: one flipped byte of the SIGNATURE → refused`, async () => {
+  test(`${key}: one flipped byte of the SIGNATURE (first, middle, last) → refused`, async () => {
     const good = sign(ok);
-    const last = good.slice(-1) === "0" ? "1" : "0";
-    await assertRejects(
-      () => ingest(key, input(ok, { headers: { "x-hub-signature": good.slice(0, -1) + last } })),
-      Error,
-      "signature",
-    );
+    for (const at of flipPositions(good)) {
+      await assertRejects(
+        () => ingest(key, input(ok, { headers: { "x-hub-signature": flipAt(good, at) } })),
+        Error,
+        "signature",
+      );
+    }
   });
 
   test(`${key}: one flipped byte of the body → refused`, async () => {
@@ -189,18 +199,19 @@ test("any-event: a listed topic is emitted, an unlisted one is filtered out", as
   );
 });
 
-test("any-event: one flipped byte of the SIGNATURE → refused", async () => {
+test("any-event: one flipped byte of the SIGNATURE (first, middle, last) → refused", async () => {
   const good = sign(ANY_BODY);
-  const last = good.slice(-1) === "0" ? "1" : "0";
-  await assertRejects(
-    () =>
-      ingest(
-        "any-event",
-        input(ANY_BODY, { headers: { "x-hub-signature": good.slice(0, -1) + last } }),
-      ),
-    Error,
-    "signature",
-  );
+  for (const at of flipPositions(good)) {
+    await assertRejects(
+      () =>
+        ingest(
+          "any-event",
+          input(ANY_BODY, { headers: { "x-hub-signature": flipAt(good, at) } }),
+        ),
+      Error,
+      "signature",
+    );
+  }
 });
 
 test("any-event: tampered body, missing header, absent rawBody and unset secret → refused", async () => {

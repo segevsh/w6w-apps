@@ -89,14 +89,17 @@ for (const [key, [action, object, shape]] of Object.entries(NAMED)) {
     }
   });
 
-  test(`${key}: one flipped byte of the credential is refused`, async () => {
+  test(`${key}: one flipped byte of the credential (first, middle, last) is refused`, async () => {
     const good = basic(PASSWORD);
-    const bad = good.slice(0, -2) + (good.slice(-2, -1) === "A" ? "B" : "A") + good.slice(-1);
-    assert.notEqual(bad, good);
-    await assert.rejects(
-      () => ingest(t, call(delivery(action, object), { headers: { authorization: bad } }), state),
-      /refused/,
-    );
+    for (const at of [6, Math.floor((6 + good.length) / 2), good.length - 1]) {
+      const bad = good.slice(0, at) + (good[at] === "A" ? "B" : "A") + good.slice(at + 1);
+      assert.notEqual(bad, good);
+      assert.equal(bad.length, good.length);
+      await assert.rejects(
+        () => ingest(t, call(delivery(action, object), { headers: { authorization: bad } }), state),
+        /refused/,
+      );
+    }
   });
 
   test(`${key}: a missing Authorization header is refused`, async () => {
@@ -166,6 +169,31 @@ for (const [key, [action, object, shape]] of Object.entries(NAMED)) {
     assert.deepEqual(t.params, []);
   });
 }
+
+// ---- the per-subscription password is random ----
+
+test("onSubscribe: two subscriptions get different random passwords (64 hex), one per subscription", async () => {
+  const register = async (t: Any, responses: unknown[]) => {
+    const { ctx, calls } = mockCtx(responses as Parameters<typeof mockCtx>[0]);
+    await t.onSubscribe({ params: {}, callbackUrl: CALLBACK, subscriptionId: "s" }, ctx);
+    return calls.filter((c) => c.method === "POST").map((c) =>
+      JSON.parse(c.body!).http_auth_password
+    );
+  };
+  const one = () => [
+    { body: { success: true, data: [] } },
+    { body: { success: true, data: { id: 9 } } },
+  ];
+  const a = await register(trigger("new-person"), one());
+  const b = await register(trigger("new-person"), one());
+  assert.equal(a.length, 1);
+  assert.equal(b.length, 1);
+  for (const p of [a[0], b[0]]) {
+    assert.ok(p.length >= 32);
+    assert.match(p, /^[0-9a-f]{64}$/);
+  }
+  assert.notEqual(a[0], b[0]);
+});
 
 // ---- Any event ----
 
