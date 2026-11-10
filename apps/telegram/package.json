@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/telegram",
   "version": "0.4.0",
-  "description": "Send messages, media and chat actions through a Telegram bot, and manage chats. Triggers fire on new and edited messages, channel posts, button presses, inline, shipping and pre-checkout queries, polls, chat member changes and any other bot update, verified with a per-subscription secret token.",
+  "description": "Send messages, media and chat actions through a Telegram bot, and manage chats. Triggers fire on messages, button presses, channel posts, polls and any bot update.",
   "license": "MIT",
   "author": {
     "name": "w6w"
