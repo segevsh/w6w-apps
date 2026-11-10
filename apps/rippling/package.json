@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/rippling",
-  "version": "0.1.0",
-  "description": "Read and manage Rippling workers, users, org structure, time off and custom objects through the Rippling REST API.",
+  "version": "0.2.0",
+  "description": "Read and manage Rippling workers, users, org structure, time off and custom objects through the Rippling REST API, and trigger workflows on new or updated users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "rest.ripplingapis.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

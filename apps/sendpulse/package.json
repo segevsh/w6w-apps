@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sendpulse",
-  "version": "0.1.0",
-  "description": "Manage SendPulse CRM deals and contacts, and send bulk email campaigns.",
+  "version": "0.2.0",
+  "description": "Manage SendPulse CRM deals and contacts, send bulk email campaigns, and trigger on new pipelines and mailing lists.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.sendpulse.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

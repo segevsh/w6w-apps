@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { perPage, SallaClient, toArray } from "../lib/client.ts";
 
+type SortField = "id" | "total" | "updated_at" | "created_at";
 interface Input {
   keyword?: string;
   status?: string | number | Array<string | number>;
@@ -15,7 +16,8 @@ interface Input {
   reference_id?: number;
   coupon?: string;
   customer_id?: number;
-  sort_by?: "id" | "total" | "updated_at" | "created_at";
+  /** An attribute, optionally suffixed `-asc` / `-desc` (`created_at-desc`), per the vendor. */
+  sort_by?: SortField | `${SortField}-${"asc" | "desc"}`;
   expanded?: boolean;
   page?: number;
   per_page?: number;

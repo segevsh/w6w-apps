@@ -56,6 +56,8 @@ import authInfoGet from "./actions/auth-info-get.ts";
 import service from "./health/service.ts";
 import host from "./health/host.ts";
 import quota from "./health/quota.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newOrUpdatedAgent from "./triggers/new-or-updated-agent.ts";
 
 export default {
   actions: [
@@ -79,4 +81,5 @@ export default {
   // opaque API key plus the region id of the organization it belongs to.
   auth: [apiToken],
   healthChecks: [service, host, quota],
+  triggers: [newAgent, newOrUpdatedAgent],
 } satisfies AppDefinition;

@@ -32,6 +32,7 @@ interface Input {
   unsubscribed?: boolean;
   email?: string;
   perPage?: number;
+  page?: number;
   countOnly?: boolean;
   status?: string;
   lastOpenedAfter?: string;
@@ -84,6 +85,13 @@ const contactList: ActionDefinition<Input> = {
         "way to size an audience — the response is `{count, filter}` instead of a page.",
     },
     perPageParam,
+    {
+      key: "page",
+      label: "Page",
+      type: "number",
+      validation: { integer: true, min: 1 },
+      hint: "1-based page number (the response's `current_page`). Leave empty for page 1.",
+    },
     contactFilterSection(),
   ],
   output: [
@@ -103,6 +111,7 @@ const contactList: ActionDefinition<Input> = {
         unsubscribed: bool(input.unsubscribed),
         count_only: bool(input.countOnly),
         per_page: input.perPage,
+        page: input.page,
         "filter[status]": input.status,
         "filter[last_opened_after]": input.lastOpenedAfter,
         "filter[last_opened_before]": input.lastOpenedBefore,

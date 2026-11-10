@@ -1,5 +1,15 @@
 # SendFox
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact. |
+
+SendFox documents the `filter[created_after]` contact filter in its [OpenAPI document](https://sendfox.com/openapi.yaml). The endpoint has no sort argument, so the trigger asks for contacts created since the saved cursor minus a 2-minute overlap, de-duplicates by `id`, and walks a window larger than one page across checks before moving the cursor. The vendor document shows the Laravel paginator envelope (`current_page`, `total`, `per_page`) but lists no `page` query parameter; `contact-list` gained an optional `page` that is sent only when set, and paging by `page` is the Laravel convention, not a documented argument. Verified 2026-11-09.
+
 Manage contacts, tags, lists, campaigns, forms and automations on the **SendFox** email-newsletter
 platform for content creators, over its REST API.
 

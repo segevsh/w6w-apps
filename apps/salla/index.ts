@@ -57,6 +57,8 @@ import storeInfoGet from "./actions/store-info-get.ts";
 import oauth2 from "./auth/oauth2.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrder from "./triggers/new-order.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
 
 export default {
   actions: [
@@ -94,4 +96,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newOrder, newOrUpdatedOrder],
 } satisfies AppDefinition;

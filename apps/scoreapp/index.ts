@@ -66,6 +66,7 @@ import resultAnswersGet from "./actions/result-answers-get.ts";
 
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
+import newResult from "./triggers/new-result.ts";
 
 export default {
   actions: [
@@ -82,4 +83,5 @@ export default {
   // documents no OAuth surface and no second auth mode.
   auth: [apiKey],
   healthChecks: [service, rateLimit],
+  triggers: [newResult],
 } satisfies AppDefinition;

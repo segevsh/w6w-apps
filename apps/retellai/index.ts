@@ -49,6 +49,8 @@ import getConcurrency from "./actions/get-concurrency.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newOrUpdatedAgent from "./triggers/new-or-updated-agent.ts";
 
 export default {
   actions: [
@@ -68,4 +70,5 @@ export default {
   // the bearer key is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newAgent, newOrUpdatedAgent],
 } satisfies AppDefinition;

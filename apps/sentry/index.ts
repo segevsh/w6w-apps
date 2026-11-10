@@ -56,6 +56,7 @@ import memberList from "./actions/member-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newIssue from "./triggers/new-issue.ts";
 
 export default {
   actions: [
@@ -89,4 +90,5 @@ export default {
   ],
   auth: [authToken, oauth2],
   healthChecks: [service, quota, site],
+  triggers: [newIssue],
 } satisfies AppDefinition;

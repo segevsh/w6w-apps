@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/rocketchat",
-  "version": "0.1.1",
-  "description": "Post and manage Rocket.Chat messages, channels, private groups, direct messages and users over the REST API.",
+  "version": "0.2.0",
+  "description": "Post and manage Rocket.Chat messages, channels, private groups, direct messages and users over the REST API, and trigger workflows on new or updated users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "*.rocket.chat"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
