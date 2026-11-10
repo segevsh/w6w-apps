@@ -102,7 +102,8 @@ async function guardedCase(
   const ascending = [dated("old", OLDER), dated("new", NEWER)];
   await assertRejects(
     () => trigger.poll!(input, mockCtx([{ body: list(resource, ascending) }]).ctx),
-    /not newest-first/,
+    Error,
+    "not newest-first",
   );
   await assertRejects(
     () =>
@@ -110,13 +111,15 @@ async function guardedCase(
         { ...input, state: seeded.nextState },
         mockCtx([{ body: list(resource, ascending) }]).ctx,
       ),
-    /not newest-first/,
+    Error,
+    "not newest-first",
   );
 
   // Order that cannot be read is also refused.
   await assertRejects(
     () => trigger.poll!(input, mockCtx([{ body: list(resource, [item("a"), item("b")]) }]).ctx),
-    /createdAt/,
+    Error,
+    "createdAt",
   );
 }
 
