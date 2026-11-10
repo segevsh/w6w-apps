@@ -17,7 +17,6 @@ export default itemFeed({
     item_id: 4012345,
     title: "Acme renewal",
     created_on: "2026-11-10 09:00:00",
-    last_edit_on: "2026-11-10 09:00:00",
     fields: [],
   },
 });

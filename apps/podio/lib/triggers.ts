@@ -4,7 +4,11 @@ import { pollFromListAction, pollSnapshot, pollToken } from "../../_shared/poll/
 /** Rows per page requested from the filter endpoint (Podio documents up to 500). */
 export const PAGE_SIZE = 100;
 
-/** An item feed over `item-filter`: newest by `created_on` or by `last_edit_on`, descending. */
+/**
+ * An item feed over `item-filter`: newest by `created_on` or by `last_edit_on`, descending.
+ * `last_edit_on` is only a sort key; items carry `current_revision.created_on`, which moves on
+ * each edit (unlike `last_event_on`, which also moves on comments), so that stamps an edit.
+ */
 export function itemFeed(spec: {
   key: string;
   title: string;
@@ -37,12 +41,15 @@ export function itemFeed(spec: {
     }),
     items: (r) => (r as { items?: unknown[] }).items ?? [],
     idOf: (x) => {
-      const item = x as { item_id?: unknown; last_edit_on?: unknown };
+      const item = x as {
+        item_id?: unknown;
+        current_revision?: { created_on?: unknown } | null;
+      };
       if (item.item_id === undefined || item.item_id === null) {
         throw new Error(`${spec.key}: Podio item has no item_id`);
       }
       return updated
-        ? `${String(item.item_id)}:${String(item.last_edit_on ?? "")}`
+        ? `${String(item.item_id)}:${String(item.current_revision?.created_on ?? "")}`
         : String(item.item_id);
     },
     output: spec.output,

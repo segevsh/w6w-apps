@@ -11,14 +11,14 @@ export default itemFeed({
   output: [
     { key: "item_id", type: "number", label: "Item ID" },
     { key: "title", type: "string", label: "Title" },
-    { key: "last_edit_on", type: "string", label: "Last edited on" },
+    { key: "current_revision", type: "object", label: "Current revision (revision, created_on)" },
     { key: "fields", type: "array", label: "Field values" },
   ],
   sample: {
     item_id: 4012345,
     title: "Acme renewal",
     created_on: "2026-11-09 09:00:00",
-    last_edit_on: "2026-11-10 09:00:00",
+    current_revision: { revision: 3, created_on: "2026-11-10 09:00:00" },
     fields: [],
   },
 });

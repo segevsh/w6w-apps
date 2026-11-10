@@ -411,7 +411,7 @@ deno task test
 | --- | --- | --- | --- |
 | `new-task` — New Task | Poll | `task-list` | Each newly created task |
 | `new-item` — New Item | Poll | `item-filter` | Each item created in one app (`sort_by=created_on`, descending) |
-| `new-or-updated-item` — New or Updated Item | Poll | `item-filter` | Each item created or edited in one app (`sort_by=last_edit_on`, descending; one event per edit) |
+| `new-or-updated-item` — New or Updated Item | Poll | `item-filter` | Each item created or edited in one app (`sort_by=last_edit_on`, descending; one event per edit, stamped by `current_revision.created_on`) |
 | `new-comment` — New Comment | Poll | `comment-list` | Each new comment on one item, task or other object |
 | `new-app` — New App | Poll | `app-list` | Each app newly added to one workspace |
 | `new-space` — New Workspace | Poll | `space-list` | Each workspace newly added to one organization |

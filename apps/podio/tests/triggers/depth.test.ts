@@ -39,9 +39,14 @@ test("new-item: seeds, emits the new item, retries idempotently, literal created
   assertEquals(retry, first);
 });
 
-test("new-or-updated-item: an edited item fires again once; literal last_edit_on desc request", async () => {
+test("new-or-updated-item: an edited item fires again once; stamped by current_revision.created_on; literal last_edit_on desc request", async () => {
   const params = { appId: "31001" };
-  const it = (id: number, at: string) => ({ item_id: id, last_edit_on: at });
+  const it = (id: number, at: string, revision = 1) => ({
+    item_id: id,
+    created_on: "2026-11-01 08:00:00",
+    last_event_on: "2026-11-10 12:00:00",
+    current_revision: { revision, created_on: at },
+  });
   const seed = ok({ items: [it(1, "2026-11-10 08:00:00"), it(2, "2026-11-09 08:00:00")] });
   const seeded = await newOrUpdatedItem.poll!({ ...sub, params, state: {} } as never, seed.ctx);
   assertEquals(seeded.events, []);
@@ -50,12 +55,12 @@ test("new-or-updated-item: an edited item fires again once; literal last_edit_on
     JSON.parse(seed.calls[0].body!),
     { sort_by: "last_edit_on", sort_desc: true, limit: 100, offset: 0 },
   );
-  const page = { items: [it(2, "2026-11-10 09:00:00"), it(1, "2026-11-10 08:00:00")] };
+  const page = { items: [it(2, "2026-11-10 09:00:00", 2), it(1, "2026-11-10 08:00:00")] };
   const first = await newOrUpdatedItem.poll!(
     { ...sub, params, state: seeded.nextState } as never,
     ok(page).ctx,
   );
-  assertEquals(first.events, [it(2, "2026-11-10 09:00:00")]);
+  assertEquals(first.events, [it(2, "2026-11-10 09:00:00", 2)]);
   assertEquals(
     await newOrUpdatedItem.poll!(
       { ...sub, params, state: seeded.nextState } as never,
