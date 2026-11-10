@@ -459,4 +459,12 @@ serialisation of the repeated product-type filter — the app says so rather tha
 
 ## Triggers
 
-- **New Contact** wraps the existing `contact-list` action and polls its newest-first feed. Vendor documentation: https://developer.kajabi.com (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Contact (`new-contact`) | poll | `contact-list` — by `created_at` descending (`sort=-created_at`) | each newly created contact |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `contact-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml (verified 2026-11-09). Its `GET /v1/contacts` description states "The default Sorting is by created_at in descending order (newest first)" and shows `sort=created_at` / `sort=-email` forms; the trigger sends `sort=-created_at` explicitly. The documented sort fields are `name`, `email` and `created_at` — no update-time sort, so no new-or-updated trigger ships.

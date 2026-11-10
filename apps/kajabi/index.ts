@@ -77,6 +77,7 @@ import formSubmissionList from "./actions/form-submission-list.ts";
 import formSubmissionGet from "./actions/form-submission-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 /**
  * Kajabi — creator commerce: courses, memberships and digital products.
@@ -86,7 +87,6 @@ import quota from "./health/quota.ts";
  * `lib/client.ts` for the wire-level contract, `auth/client-credentials.ts` for
  * the OAuth2 grant, and `README.md` for what is deliberately not covered.
  */
-import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
