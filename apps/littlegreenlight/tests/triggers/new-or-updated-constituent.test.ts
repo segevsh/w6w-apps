@@ -28,8 +28,8 @@ test("new-or-updated-constituent: seeds, emits only new or updated items, retrie
   assertEquals(retry, first);
 });
 
-test("new-or-updated-constituent: an edited constituent (same id, newer date_updated) is emitted", async () => {
-  const row = (date: string) => ({ id: "a", date_updated: date });
+test("new-or-updated-constituent: an edited constituent (same id, newer updated_at) is emitted", async () => {
+  const row = (date: string) => ({ id: "a", updated_at: date });
   const seeded = await trigger.poll!(
     { ...input, state: {} },
     mockCtx([{ body: { items: [row("t1")] } }]).ctx,

@@ -57,3 +57,12 @@ test("new-post: ids absent from `posts` are skipped, not thrown", async () => {
   const res = await trigger.poll!({ ...input, state: seeded.nextState }, c.ctx);
   assertEquals(res.events, [post("n")]);
 });
+
+test("new-post: a fresh post in `posts` but absent from `order` is not emitted", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx(["a"]).ctx);
+  const c = mockMattermostCtx([{
+    body: { order: ["n"], posts: { stray: post("stray", NOW + 5000), n: post("n", NOW + 1000) } },
+  }]);
+  const res = await trigger.poll!({ ...input, state: seeded.nextState }, c.ctx);
+  assertEquals(res.events, [post("n", NOW + 1000)]);
+});

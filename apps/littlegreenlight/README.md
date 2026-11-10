@@ -185,7 +185,8 @@ deno task validate       # @w6w/validator conformance audit
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-constituent` — New Constituent | Poll | `constituent-search` | Each newly created constituent |
+| `new-or-updated-constituent` — New or Updated Constituent | Poll | `constituent-search` | Each constituent that is new or was edited since the last check |
 
-Both triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:date_updated`, so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
+Both triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:updated_at` (the vendor response carries `created_at`/`updated_at`; `date_updated` is only the sort key), so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
 
 Source: [vendor constituents API](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/constituents.json) (verified 2026-11-10).

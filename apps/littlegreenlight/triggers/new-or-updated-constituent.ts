@@ -16,10 +16,13 @@ export default pollFromListAction({
   }),
   items: (r) => (r as { items?: unknown[] }).items ?? [],
   idOf: (item) =>
-    String((item as { id?: unknown; date_updated?: unknown }).id ?? "") + ":" +
-    String((item as { date_updated?: unknown }).date_updated ?? ""),
+    String((item as { id?: unknown; updated_at?: unknown }).id ?? "") + ":" +
+    String((item as { updated_at?: unknown }).updated_at ?? ""),
 
-  output: [{ key: "id", type: "string", label: "New Constituent ID" }],
-  sample: { id: "example-1" },
+  output: [
+    { key: "id", type: "string", label: "Constituent ID" },
+    { key: "updated_at", type: "string", label: "Updated at" },
+  ],
+  sample: { id: "example-1", updated_at: "2026-11-09T10:00:00Z" },
   maxPages: 1,
 });
