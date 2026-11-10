@@ -5,6 +5,8 @@ import trigger from "../../triggers/new-crawl.ts";
 
 const input = { params: {}, subscriptionId: "sub-1" };
 const crawl = (id: string) => ({ id });
+// The state carries a cursor and floor stamped from the clock: pin it so a retry is byte-equal.
+Date.now = () => Date.parse("2026-11-09T12:00:00Z");
 
 test("new-crawl: seeds, emits only new crawls, retries idempotently, lists the crawls", async () => {
   const seed = mockCtx([{ body: { crawls: [crawl("a")] } }]);
