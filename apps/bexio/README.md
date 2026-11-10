@@ -6,7 +6,7 @@ bexio, the Swiss all-in-one CRM/accounting/invoicing platform, over the REST API
 - **Categories** — crm, finance, productivity
 - **Auth method** — oauth2 (OpenID Connect against bexio's own Keycloak realm)
 - **Actions** — 25
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 - **Egress allowlist** — `api.bexio.com`
 - **Website** — https://bexio.com
 - **API docs** — https://docs.bexio.com (a Redoc page rendering an embedded OpenAPI 3.0 document —
@@ -153,6 +153,20 @@ low is worth surfacing, never worth failing a verdict over on its own.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+| `new-contact` — New Contact | Poll | `contact-list` (`id_desc`) | Each newly created contact |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-list` (`updated_at_desc`) | Each new contact and each edit |
+| `new-invoice` — New Invoice | Poll | `invoice-list` (`id_desc`) | Each newly created invoice |
+| `new-or-updated-invoice` — New or Updated Invoice | Poll | `invoice-list` (`updated_at_desc`) | Each new invoice and each edit |
+| `new-order` — New Order | Poll | `order-list` (`id_desc`) | Each newly created order |
+| `new-or-updated-order` — New or Updated Order | Poll | `order-list` (`updated_at_desc`) | Each new order and each edit |
+| `new-quote` — New Quote | Poll | `quote-list` (`id_desc`) | Each newly created quote |
+| `new-or-updated-quote` — New or Updated Quote | Poll | `quote-list` (`updated_at_desc`) | Each new quote and each edit |
+| `new-project` — New Project | Poll | `project-list` (`id_desc`) | Each newly created project |
+| `new-article` — New Article | Poll | `article-list` (`id_desc`) | Each newly created article |
+| `new-timesheet` — New Timesheet | Poll | `timesheet-list` (`id_desc`) | Each newly tracked timesheet entry |
 
-Polled newest-first through the `contact-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://docs.bexio.com) (verified 2026-11-09).
+Every trigger polls its list action newest-first: bexio documents `order_by` on each list endpoint with an `_asc` / `_desc` suffix (enums `id`, `updated_at`, `date`, … per endpoint), and the `new-or-updated-*` triggers sort by `updated_at_desc` and dedupe on `id:updated_at`. The `*-search` actions return the same records as the matching list action, so `contact-search` is covered by `new-contact`, `invoice-search` by `new-invoice` and `article-search` by `new-article`. Articles, projects and timesheets carry no `updated_at` in the documented response, so they have no `new-or-updated-*` sibling. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://docs.bexio.com) (verified 2026-11-10).

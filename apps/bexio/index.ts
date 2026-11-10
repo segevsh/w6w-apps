@@ -69,6 +69,16 @@ import timesheetCreate from "./actions/timesheet-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newOrder from "./triggers/new-order.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newQuote from "./triggers/new-quote.ts";
+import newOrUpdatedQuote from "./triggers/new-or-updated-quote.ts";
+import newProject from "./triggers/new-project.ts";
+import newArticle from "./triggers/new-article.ts";
+import newTimesheet from "./triggers/new-timesheet.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -107,5 +117,17 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newInvoice,
+    newOrUpdatedInvoice,
+    newOrder,
+    newOrUpdatedOrder,
+    newQuote,
+    newOrUpdatedQuote,
+    newProject,
+    newArticle,
+    newTimesheet,
+    newOrUpdatedContact,
+  ],
 } satisfies AppDefinition;
