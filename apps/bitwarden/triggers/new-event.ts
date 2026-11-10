@@ -1,8 +1,9 @@
-import { sinceTrigger } from "../lib/since.ts";
+import { sinceTrigger, toMs } from "../lib/since.ts";
 import eventList from "../actions/event-list.ts";
 
 interface OrgEvent {
   id?: string;
+  date?: string;
 }
 
 /**
@@ -26,7 +27,9 @@ export default sinceTrigger<OrgEvent>({
       next: res.continuationToken,
     };
   },
+  pageSize: 50,
   idOf: (e) => String(e.id),
+  tsOf: (e) => toMs(e.date),
   output: [
     { key: "id", type: "string", label: "Event ID" },
     { key: "type", type: "number", label: "Event type code" },

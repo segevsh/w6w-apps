@@ -1,9 +1,10 @@
 import type { ActionDefinition } from "@w6w/types";
-import { sinceTrigger } from "./since.ts";
+import { sinceTrigger, toMs } from "./since.ts";
 
 interface Record_ {
   id?: number | string;
   modified?: string;
+  created?: string;
 }
 
 /** Clientify filters on dates, not times: `created[gte]=2020/01/01` (https://developer.clientify.com). */
@@ -38,6 +39,7 @@ export function clientifyPoll(o: {
       }, ctx) as { results?: Record_[]; next?: string | null };
       return { items: res.results ?? [], more: typeof res.next === "string" && res.next !== "" };
     },
+    tsOf: (r) => toMs(r[o.field]),
     idOf: (r) => o.withStamp ? `${r.id}:${r.modified ?? ""}` : String(r.id),
   });
 }

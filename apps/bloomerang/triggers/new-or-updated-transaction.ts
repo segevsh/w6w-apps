@@ -1,4 +1,4 @@
-import { sinceTrigger } from "../lib/since.ts";
+import { sinceTrigger, toMs } from "../lib/since.ts";
 import listTransactions from "../actions/list-transactions.ts";
 
 /** Bloomerang caps `take` at 50 (see the list-transactions action). */
@@ -23,6 +23,8 @@ export default sinceTrigger<Tx>({
     const items = res.Results ?? [];
     return { items, more: items.length === PAGE_SIZE };
   },
+  pageSize: PAGE_SIZE,
+  tsOf: (t) => toMs(t.AuditTrail?.LastModifiedDate),
   idOf: (t) => `${t.Id}:${t.AuditTrail?.LastModifiedDate ?? ""}`,
   output: [
     { key: "Id", type: "number", label: "Transaction ID" },
