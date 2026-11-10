@@ -1,4 +1,5 @@
-import type { OutputField, TriggerDefinition } from "@w6w/types";
+import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
+import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
 
 /**
@@ -111,7 +112,8 @@ export function normalizeDelivery(body: unknown): HighLevelEvent {
   const id = str(appt?.id) ?? str(d.messageId) ?? str(d.id);
   return {
     type,
-    locationId: str(d.locationId),
+    // Location events (LocationCreate, LocationUpdate) carry the location's own id as `id`.
+    locationId: str(d.locationId) ?? (type.startsWith("Location") ? id : null),
     id,
     contactId: str(d.contactId) ?? str(appt?.contactId) ?? (type.startsWith("Contact") ? id : null),
     conversationId: str(d.conversationId),
@@ -126,6 +128,24 @@ export interface WebhookTriggerSpec {
   /** The HighLevel webhook event `type` this trigger fires on. */
   eventType: string;
   sample: HighLevelEvent;
+}
+
+/** POST only, signature first, then JSON, then the normalised event. */
+async function verifiedEvent(
+  raw: { method: string; rawBody?: unknown; headers: Record<string, string> },
+  publicKey: string,
+): Promise<HighLevelEvent> {
+  if (raw.method.toUpperCase() !== "POST") {
+    throw new Error(`HighLevel delivers webhooks with POST, not ${raw.method}.`);
+  }
+  const body = await verifySignature(raw, publicKey);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("HighLevel delivery refused: the body is not JSON.");
+  }
+  return normalizeDelivery(parsed);
 }
 
 /** Build one HighLevel event webhook trigger. `publicKey` is for tests only. */
@@ -148,20 +168,81 @@ export function webhookTrigger(
     onUnsubscribe() {},
 
     async handleIngest({ raw }) {
-      if (raw.method.toUpperCase() !== "POST") {
-        throw new Error(`HighLevel delivers webhooks with POST, not ${raw.method}.`);
-      }
-      const body = await verifySignature(raw, publicKey);
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new Error("HighLevel delivery refused: the body is not JSON.");
-      }
-      const event = normalizeDelivery(parsed);
+      const event = await verifiedEvent(raw, publicKey);
       // The URL may be pasted beside several events; other types are acknowledged, no run.
       if (event.type !== spec.eventType) return [];
       return [event];
     },
   };
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated HighLevel webhook event names to start a run for, e.g. ContactUpdate,TaskCreate. Leave empty for every event delivered to this URL.",
+};
+
+/** The comma-separated `events` filter → lowercase names; empty means "every event". */
+export function eventFilter(v: unknown): string[] {
+  return typeof v === "string"
+    ? v.split(",").map((s) => s.trim().toLowerCase()).filter((s) => s !== "")
+    : [];
+}
+
+/**
+ * The Any-event trigger: the same signed manual webhook, but it starts a run for every verified
+ * delivery whose `type` is in the `events` list (all of them when the list is empty).
+ */
+export function anyEventTrigger(
+  spec: { key: string; title: string; description: string; sample: HighLevelEvent },
+  publicKey: string = GHL_PUBLIC_KEY_SPKI,
+): TriggerDefinition<TriggerParams, HighLevelEvent, { callbackUrl: string }> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [EVENTS_PARAM],
+    output: OUTPUT,
+    sample: spec.sample,
+
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      const event = await verifiedEvent(raw, publicKey);
+      const wanted = eventFilter(params?.events);
+      if (wanted.length > 0 && !wanted.includes(event.type.toLowerCase())) return [];
+      return [event];
+    },
+  };
+}
+
+/**
+ * "New <record>" over a bounded collection: diff the ids against the previous check (added only).
+ * `pollSnapshot` keeps only `{ id: hash }`, never the records; the events are the new records.
+ */
+export async function newRecords(o: {
+  state: unknown;
+  items: unknown[];
+  what: string;
+}): Promise<{ events: unknown[]; nextState: unknown }> {
+  const byId = new Map<string, unknown>();
+  for (const item of o.items) {
+    const id = asObject(item)?.id;
+    if (typeof id !== "string" || id === "") {
+      throw new Error(`HighLevel returned a ${o.what} without an id.`);
+    }
+    byId.set(id, item);
+  }
+  const { events, nextState } = await pollSnapshot({
+    state: o.state,
+    rows: [...byId.keys()].map((key) => ({ key, values: { key } })),
+    emit: { added: true, updated: false },
+  });
+  return { events: events.map((e) => byId.get(e.key)), nextState };
 }

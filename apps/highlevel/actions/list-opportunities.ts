@@ -8,6 +8,7 @@ interface Input {
   status?: "open" | "won" | "lost" | "abandoned" | "all";
   assignedTo?: string;
   query?: string;
+  order?: "added_desc" | "added_asc" | "name_asc" | "name_desc";
   limit?: number;
   page?: number;
 }
@@ -37,6 +38,19 @@ const listOpportunities: ActionDefinition<Input> = {
     },
     { key: "assignedTo", label: "Assigned user ID", type: "string" },
     { key: "query", label: "Search", type: "string", hint: "Matches contact email/name." },
+    {
+      key: "order",
+      label: "Order",
+      type: "select",
+      hint:
+        "Leave empty for HighLevel's own order. `added_desc` lists the newest opportunities first.",
+      options: [
+        { value: "added_desc", label: "Newest first" },
+        { value: "added_asc", label: "Oldest first" },
+        { value: "name_asc", label: "Name A-Z" },
+        { value: "name_desc", label: "Name Z-A" },
+      ],
+    },
     { key: "page", label: "Page", type: "number", default: 1 },
     { key: "limit", label: "Limit", type: "number", default: 20 },
   ],
@@ -59,6 +73,7 @@ const listOpportunities: ActionDefinition<Input> = {
         status: input.status,
         assigned_to: input.assignedTo,
         q: input.query,
+        order: input.order,
         page: input.page ?? 1,
         limit: input.limit ?? 20,
       },
