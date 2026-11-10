@@ -34,6 +34,7 @@ import workItemGet from "./actions/work-item-get.ts";
 import workItemCreate from "./actions/work-item-create.ts";
 import workItemUpdate from "./actions/work-item-update.ts";
 import workItemQuery from "./actions/work-item-query.ts";
+import newBuild from "./triggers/new-build.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -59,6 +60,7 @@ const app: AppDefinition = {
   ],
   auth: [pat],
   healthChecks: [service, organization, quota],
+  triggers: [newBuild],
 };
 
 export default app;
