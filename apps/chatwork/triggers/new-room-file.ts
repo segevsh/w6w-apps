@@ -8,7 +8,8 @@ interface Params {
 export default newestFirstTrigger<Params>({
   key: "new-room-file",
   title: "New Chat File",
-  description: "The run gets each file newly uploaded to a Chatwork chat (newest first).",
+  description:
+    "The run gets each file newly uploaded to a Chatwork chat (up to 100 per check, order undocumented).",
   action: roomFileList,
   input: (p) => ({ roomId: p.roomId }),
   idKey: "file_id",

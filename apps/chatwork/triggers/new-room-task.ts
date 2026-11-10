@@ -9,7 +9,7 @@ export default newestFirstTrigger<Params>({
   key: "new-room-task",
   title: "New Chat Task",
   description:
-    "The run gets each new task in a Chatwork chat (the latest tasks are checked, newest first).",
+    "The run gets each new task in a Chatwork chat (up to 100 tasks per check, order undocumented).",
   action: roomTaskList,
   input: (p) => ({ roomId: p.roomId }),
   idKey: "task_id",

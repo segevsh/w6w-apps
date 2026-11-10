@@ -5,7 +5,7 @@ export default newestFirstTrigger({
   key: "new-my-task",
   title: "New Task Assigned to Me",
   description:
-    "The run gets each new task assigned to the connected account in any chat (newest first).",
+    "The run gets each new task assigned to the connected account in any chat (up to 100 per check, order undocumented).",
   action: myTasksList,
   input: () => ({}),
   idKey: "task_id",

@@ -8,7 +8,7 @@ import newRoom from "../../triggers/new-room.ts";
 import newCallRouter from "../../triggers/new-call-router.ts";
 
 const input = { params: {}, subscriptionId: "sub-1" };
-const row = (id: string) => ({ id, name: `Record ${id}` });
+const row = (id: string) => ({ id, name: `Record ${Number(id) % 2}` });
 const cases = [
   { name: "new-office", trigger: newOffice, url: "https://dialpad.com/api/v2/offices" },
   { name: "new-user", trigger: newUser, url: "https://dialpad.com/api/v2/users" },
@@ -66,5 +66,9 @@ test("a collection that never ends fails the check instead of reporting a partia
   const forever = mockCtx(Array.from({ length: 101 }, (_, i) => ({
     body: page([row(String(i))], `c${i}`),
   })));
-  await assertRejects(() => newOffice.poll!({ ...input, state: {} }, forever.ctx), Error, "100");
+  await assertRejects(
+    () => newOffice.poll!({ ...input, state: {} }, forever.ctx),
+    Error,
+    "refusing a partial snapshot",
+  );
 });

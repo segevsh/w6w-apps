@@ -102,13 +102,13 @@ square.
 | `new-contact` — New Contact | Poll (snapshot) | `contact-list` | Each person newly added to the contacts |
 | `new-contact-request` — New Contact Request | Poll (snapshot) | `incoming-request-list` | Each new pending contact request |
 | `new-room-member` — New Chat Member | Poll (snapshot) | `room-member-list` | Each person newly added to the chosen chat |
-| `new-room-task` — New Chat Task | Poll (newest-first) | `room-task-list` | Each new task in the chosen chat |
-| `new-my-task` — New Task Assigned to Me | Poll (newest-first) | `my-tasks-list` | Each new task assigned to the account in any chat |
-| `new-room-file` — New Chat File | Poll (newest-first) | `room-file-list` | Each new file uploaded to the chosen chat |
+| `new-room-task` — New Chat Task | Poll (up to 100) | `room-task-list` | Each new task in the chosen chat |
+| `new-my-task` — New Task Assigned to Me | Poll (up to 100) | `my-tasks-list` | Each new task assigned to the account in any chat |
+| `new-room-file` — New Chat File | Poll (up to 100) | `room-file-list` | Each new file uploaded to the chosen chat |
 
 Polled through `room-message-list` with `force=1`, which returns the latest messages (up to 100) regardless of this connection's read marker. The list is oldest-first, so the trigger re-orders by `send_time` descending; a burst of more than 100 messages between checks loses the oldest. Edits (`update_time`) are not tracked. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
-The chat, contact, contact-request and member lists are small collections the API returns whole (no paging argument), so those triggers diff the ids between checks (`pollSnapshot`, additions only; the first check records what exists without firing). The task and file lists have no sort argument and are documented as returning only the latest rows (up to 100), so those triggers order the rows by their increasing numeric id (`task_id`, `file_id`) and emit unseen ones oldest first. An empty answer (HTTP 204) is treated as no rows. Edits to tasks are not tracked.
+The chat, contact, contact-request and member lists are small collections the API returns whole (no paging argument), so those triggers diff the ids between checks (`pollSnapshot`, additions only; the first check records what exists without firing). The task and file lists have no sort argument and return up to 100 rows per call; the vendor documents neither a sort argument nor which rows a longer list returns, so a chat with more than 100 open tasks or files may be missed (best-effort snapshots of 100, not newest-first). Those triggers order the rows by their increasing numeric id (`task_id`, `file_id`) and emit unseen ones oldest first. An empty answer (HTTP 204) is treated as no rows. Edits to tasks are not tracked.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
