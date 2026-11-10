@@ -6522,12 +6522,32 @@
     "path": "apps/samcart",
     "mechanism": "poll",
     "candidates": [
-      "new-order"
+      "new-order",
+      "new-charge",
+      "new-failed-charge",
+      "new-customer",
+      "new-product",
+      "new-subscription",
+      "subscription-status-changed",
+      "new-refund"
     ],
     "pollAction": "order-list",
-    "reason": "order-list created_at_min since-filter with overlap and offset resume (https://developer.samcart.com/specs/openapi.yaml)",
-    "verified": "apps/samcart/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "created_at_min since-filter polls (overlap, offset resume, seed floor) on order/charge/failed-charge/customer/product/subscription/subscription-history lists; refund-list id-cursor poll (https://developer.samcart.com/specs/openapi.yaml)",
+    "verified": "apps/samcart/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "customer-charge-list": "new-charge",
+      "order-charge-list": "new-charge",
+      "subscription-charge-list": "new-charge",
+      "customer-order-list": "new-order",
+      "funnel-order-list": "new-order",
+      "product-order-list": "new-order",
+      "upsell-order-list": "new-order",
+      "customer-subscription-list": "new-subscription",
+      "order-subscription-list": "new-subscription",
+      "charge-refund-list": "new-refund",
+      "customer-address-list": "new-customer"
+    }
   },
   {
     "path": "apps/sanity",
@@ -8128,12 +8148,37 @@
     "path": "apps/upsales",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-activity",
+      "new-appointment",
+      "new-campaign",
+      "new-comment",
+      "new-company",
+      "new-order",
+      "new-product",
+      "new-subscription",
+      "new-ticket",
+      "new-user",
+      "new-or-updated-activity",
+      "new-or-updated-appointment",
+      "new-or-updated-company",
+      "new-or-updated-contact",
+      "new-or-updated-order",
+      "new-or-updated-subscription"
     ],
     "pollAction": "contact-list",
-    "reason": "Id-crawl poll trigger: sort=id with id=gt:<last id> (documented crawl form), resume position + seed floor.",
-    "verified": "apps/upsales/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Id-crawl poll triggers use sort=id with id=gt:<last id>, a seed floor plus the newest id at seed, overlap state, and resume position; new-or-updated-* use modDate=gte:<window> with id paging (https://api.upsales.com).",
+    "verified": "apps/upsales/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "activity-type-list": "reference data: configured activity types",
+      "appointment-type-list": "reference data: configured appointment types",
+      "currency-list": "reference data: account currencies and exchange rates",
+      "custom-field-list": "reference data: custom-field definitions",
+      "order-stage-list": "reference data: configured order stages",
+      "price-list-list": "reference data: configured price lists",
+      "product-category-list": "reference data: product-category taxonomy"
+    }
   },
   {
     "path": "apps/upstash",

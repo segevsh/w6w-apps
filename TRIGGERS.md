@@ -12,15 +12,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/notion | 1 | 30 | 29 |
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
-| apps/samcart | 1 | 19 | 18 |
-| apps/upsales | 1 | 18 | 17 |
 | apps/bigcommerce | 1 | 17 | 16 |
 | apps/greenhouse | 1 | 17 | 16 |
 | apps/heartbeat | 8 | 16 | 16 |
@@ -667,6 +665,7 @@ depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-p
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
+| apps/samcart | 8 | 19 | 0 |
 | apps/shopify | 18 | 4 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
@@ -678,6 +677,7 @@ depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-p
 | apps/twilio/sendgrid | 1 | 0 | 0 |
 | apps/twilio/twilio | 2 | 0 | 0 |
 | apps/twitter | 1 | 1 | 0 |
+| apps/upsales | 17 | 18 | 0 |
 | apps/uptimerobot | 2 | 2 | 0 |
 | apps/vero | 1 | 0 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
@@ -1160,7 +1160,7 @@ depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-p
 | apps/salesmate | 2 | contact-search | new-contact, new-or-updated-contact | apps/salesmate/README.md Triggers section (verified 2026-11-09) | hand | contact search supports documented createdAt and lastModifiedAt descending sort (the contact.-prefixed field names are unverified without a live request) |
 | apps/salesmsg | 1 | contact-list | new-contact | apps/salesmsg/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/salla | 2 | order-list | new-order, new-or-updated-order | apps/salla/README.md Triggers section (verified 2026-11-09) | hand | order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md) |
-| apps/samcart | 1 | order-list | new-order | apps/samcart/README.md Triggers section (verified 2026-11-09) | hand | order-list created_at_min since-filter with overlap and offset resume (https://developer.samcart.com/specs/openapi.yaml) |
+| apps/samcart | 8 | order-list | new-order, new-charge, new-failed-charge, new-customer, new-product, new-subscription, subscription-status-changed, new-refund | apps/samcart/README.md Triggers section (verified 2026-11-10) | hand | created_at_min since-filter polls (overlap, offset resume, seed floor) on order/charge/failed-charge/customer/product/subscription/subscription-history lists; refund-list id-cursor poll (https://developer.samcart.com/specs/openapi.yaml) |
 | apps/scoreapp | 1 | result-list | new-result | apps/scoreapp/README.md Triggers section (verified 2026-11-09) | hand | result-list order_by=created_at order_dir=desc (https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started) |
 | apps/seamlessai | 1 | task-list | new-task | apps/seamlessai/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action task-list |
 | apps/seatable | 1 | row-list | new-row | apps/seatable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
@@ -1226,7 +1226,7 @@ depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-p
 | apps/typefully | 1 | draft-list | new-draft | apps/typefully/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action draft-list |
 | apps/typesense | 1 | document-search | new-document | apps/typesense/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a) by user-supplied sortBy (sort_by documented, https://typesense.org/docs/28.0/api/search.html); q=*, strict |
 | apps/unbounce | 1 | page-lead-list | new-lead | apps/unbounce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action page-lead-list |
-| apps/upsales | 1 | contact-list | new-contact | apps/upsales/README.md Triggers section (verified 2026-11-09) | hand | Id-crawl poll trigger: sort=id with id=gt:<last id> (documented crawl form), resume position + seed floor. |
+| apps/upsales | 17 | contact-list | new-contact, new-activity, new-appointment, new-campaign, new-comment, new-company, new-order, new-product, new-subscription, new-ticket, new-user, new-or-updated-activity, new-or-updated-appointment, new-or-updated-company, new-or-updated-contact, new-or-updated-order, new-or-updated-subscription | apps/upsales/README.md Triggers section (verified 2026-11-10) | hand | Id-crawl poll triggers use sort=id with id=gt:<last id>, a seed floor plus the newest id at seed, overlap state, and resume position; new-or-updated-* use modDate=gte:<window> with id paging (https://api.upsales.com). |
 | apps/uptimerobot | 2 | monitor-list | new-monitor, new-alert-contact | apps/uptimerobot/README.md Triggers section (verified 2026-11-09) | hand | getMonitors/getAlertContacts document offset/limit (max 50) but no order or since filter: plan-limited collections read in full and snapshot-diffed; web-hook alert contact upgrade queued (https://uptimerobot.com/api/legacy/) |
 | apps/uscreen | 3 | customer-list | new-customer, new-invoice, new-or-updated-invoice | apps/uscreen/README.md Triggers section (verified 2026-11-09) | hand | /customers and /invoices document from (RFC 3339) + date_field but no sort: since-filter with page resume and id dedupe; Invoice.updated_at exists so new-or-updated-invoice (date_field=updated_at); Customer has no updated_at (https://uscreen.io/api/publisher.yml) |
 | apps/vanta | 1 | issue-list | new-issue | apps/vanta/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-list |
