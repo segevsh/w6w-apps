@@ -1,5 +1,11 @@
 import type { AppDefinition } from "@w6w/types";
 import newUnsubscribe from "./triggers/new-unsubscribe.ts";
+import newMessage from "./triggers/new-message.ts";
+import newSequence from "./triggers/new-sequence.ts";
+import newSequenceFolder from "./triggers/new-sequence-folder.ts";
+import newTeam from "./triggers/new-team.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
+import newTemplate from "./triggers/new-template.ts";
 import userGet from "./actions/user-get.ts";
 import messageList from "./actions/message-list.ts";
 import messageGet from "./actions/message-get.ts";
@@ -48,7 +54,15 @@ export default {
     unsubscribeAdd,
     unsubscribeRemove,
   ],
-  triggers: [newUnsubscribe],
+  triggers: [
+    newUnsubscribe,
+    newMessage,
+    newSequence,
+    newSequenceFolder,
+    newTeam,
+    newTeamMember,
+    newTemplate,
+  ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

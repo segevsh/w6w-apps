@@ -1,6 +1,6 @@
 # Mixmax
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 Send and schedule email, run sequences and read templates, tasks, teams and unsubscribes in
 **Mixmax**, the email-engagement and sales-outreach platform, over the **Mixmax REST API (v1)**.
@@ -21,10 +21,6 @@ own OpenAPI fragment, which were merged and read) and unauthenticated probes of 
 
 ## Actions
 
-## Triggers
-
-- **New Unsubscribe** (`new-unsubscribe`) polls `unsubscribe-list` by descending `createdAt`.
-
 | Area | Actions |
 |---|---|
 | User | `user-get` |
@@ -34,6 +30,34 @@ own OpenAPI fragment, which were merged and read) and unauthenticated probes of 
 | Tasks | `task-list` |
 | Teams | `team-list`, `team-get`, `team-member-list` |
 | Unsubscribes | `unsubscribe-list`, `unsubscribe-add`, `unsubscribe-remove` |
+
+## Triggers
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-unsubscribe` | poll, newest-first (`createdAt` desc) | `unsubscribe-list` | each new unsubscribe |
+| `new-message` | poll, newest-first | `message-list` | each new draft, scheduled or sent message |
+| `new-sequence` | poll, snapshot | `sequence-list` | each sequence that newly becomes accessible (optional folder) |
+| `new-sequence-folder` | poll, snapshot | `sequence-folder-list` | each new sequence folder |
+| `new-team` | poll, snapshot | `team-list` | each team newly joined or created |
+| `new-team-member` | poll, snapshot (`teamId`) | `team-member-list` | each person newly added to the team |
+| `new-template` | poll, snapshot | `template-list` | each new template or snippet |
+
+Snapshot triggers read the list the API returns whole (no paging) and diff the `_id`s.
+
+Not covered: `sequence-recipient-list` (sortable only by email, last stage or last message, with no
+join-time key, and capped at 10,000 recipients in 50-row offset pages, so it is neither newest-first
+nor a snapshot that fits), `sequence-search` (looks up recipients by an email the caller supplies, not
+a feed), `task-list` (the task query documents only a `sortBy:due` example and no creation sort or
+since filter, and the list is unbounded).
+
+Vendor docs (verified 2026-11-10): [messages](https://developer.mixmax.com/reference/messages-get),
+[sequences](https://developer.mixmax.com/reference/sequences-get),
+[sequence folders](https://developer.mixmax.com/reference/sequencefolders-get),
+[teams](https://developer.mixmax.com/reference/teams-get),
+[team members](https://developer.mixmax.com/reference/teams-members-get),
+[snippets](https://developer.mixmax.com/reference/snippets-get),
+[unsubscribes](https://developer.mixmax.com/reference/unsubscribes-get).
 
 ## Deliberately not covered
 
