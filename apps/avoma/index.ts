@@ -45,6 +45,7 @@ import userList from "./actions/user-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newMeeting from "./triggers/new-meeting.ts";
 
 export default {
   actions: [
@@ -68,6 +69,7 @@ export default {
     scorecardGet,
     scorecardEvaluationList,
   ],
+  triggers: [newMeeting],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

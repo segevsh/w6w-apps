@@ -18,12 +18,17 @@ async function at<T>(iso: string, fn: () => Promise<T>): Promise<T> {
 }
 
 test("new-invoice seeds, emits, retries, and requests creation_date_after", async () => {
+  const seedCtx = mockCtx([page("a", "x"), empty]);
   const seed = await at(
     "2026-11-09T00:00:00Z",
-    () => newInvoice.poll!({ params: {}, state: {} }, mockCtx([page("a", "x"), empty]).ctx),
+    () => newInvoice.poll!({ params: {}, state: {} }, seedCtx.ctx),
   );
   assertEquals(seed.events, []);
   assertEquals((seed.nextState as { seeded: boolean }).seeded, true);
+  assertEquals(
+    seedCtx.calls[0].url,
+    "https://axonaut.com/api/v2/invoices?creation_date_after=08%2F11%2F2026",
+  );
   assertEquals((seed.nextState as { cursor: string }).cursor, "2026-11-09T00:00:00.000Z");
   const run = () => {
     const c = mockCtx([page("b", "2026-11-09T00:01:00Z"), empty]);

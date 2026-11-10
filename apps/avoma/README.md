@@ -1,14 +1,22 @@
 # Avoma
 
-Triggers: not shipped — `call-list` only filters by call START time (`from_date`/`to_date` "calls started at or after/before"), with no created-since filter or sort, so a call synced or backfilled after it started lands before any cursor and would never be emitted (https://dev.avoma.com/openapi.yml, `GET /v1/calls/`; verified 2026-11-09).
-
 AI meeting assistant. This app reads Avoma's meetings, recordings, transcripts, AI notes,
 insights, scorecards, users and smart categories, and can submit a call recording for analysis.
+
+- **Triggers** — 1 (poll)
 
 - App id: `io.w6w.avoma` · categories: `ai`, `productivity`, `analytics`
 - Host: `api.avoma.com` (the only entry in `network.allow`) · API prefix `/v1`
 - Source of truth: Avoma's OpenAPI document, `https://dev.avoma.com/openapi.yml` (43 paths,
   fetched 2026-10-06), plus unauthenticated live probes against `api.avoma.com` the same day.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-meeting` — New Meeting | poll | `meeting-list` with `o=-start_at`, `page_size=100` and a rolling `from_date`/`to_date` window (7 days back to 14 days ahead, computed at each poll) | Each new meeting inside the window |
+
+Vendor reference: https://dev.avoma.com/openapi.yml (verified 2026-11-09). `GET /v1/meetings/` is listed in descending `start_at` order (`o=-start_at` is the default); the trigger sends it explicitly. Residual: a meeting synced later whose start time is older than the window, or that falls below the newest 100, is missed. The `call-list` action is not wrapped (it filters by call start time only).
 
 ## Auth
 

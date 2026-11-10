@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/avoma",
-  "version": "0.1.0",
-  "description": "Read Avoma meetings, recordings, transcripts, AI notes, insights, scorecards and users, and submit call recordings for analysis.",
+  "version": "0.2.0",
+  "description": "Read Avoma meetings, recordings, transcripts, AI notes, insights, scorecards and users, and submit call recordings for analysis. Adds a poll trigger for new meetings.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.avoma",
     "displayName": "Avoma",
     "apiDocs": [
