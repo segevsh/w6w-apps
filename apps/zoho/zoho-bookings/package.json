@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-bookings",
-  "version": "0.1.0",
-  "description": "List workspaces, services and staff, check availability, and book, get, update, reschedule and cancel appointments in Zoho Bookings, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "List workspaces, services and staff, trigger on new workspaces, and manage appointments in Zoho Bookings, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "www.zohoapis.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

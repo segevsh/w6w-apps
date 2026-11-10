@@ -81,6 +81,7 @@ import appointmentReschedule from "./actions/appointment-reschedule.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
 
 export default {
   actions: [
@@ -103,4 +104,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newWorkspace],
 } satisfies AppDefinition;

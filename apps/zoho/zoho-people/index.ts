@@ -52,6 +52,7 @@ import timesheetsList from "./actions/timesheets-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
 
 export default {
   actions: [
@@ -82,4 +83,5 @@ export default {
   // OAuth2 only, one method per Zoho data centre — see auth/oauth2.ts and lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newOrUpdatedRecord],
 } satisfies AppDefinition;

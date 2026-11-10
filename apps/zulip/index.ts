@@ -29,6 +29,7 @@ import unsubscribe from "./actions/unsubscribe.ts";
 import getUsers from "./actions/get-users.ts";
 import getUser from "./actions/get-user.ts";
 import getOwnUser from "./actions/get-own-user.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -60,4 +61,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, site, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;
