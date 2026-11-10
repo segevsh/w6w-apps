@@ -25,6 +25,15 @@ import deleteWebhook from "./actions/delete-webhook.ts";
 
 import newPledge from "./triggers/new-pledge.ts";
 import postPublished from "./triggers/post-published.ts";
+import memberCreated from "./triggers/member-created.ts";
+import memberUpdated from "./triggers/member-updated.ts";
+import memberDeleted from "./triggers/member-deleted.ts";
+import pledgeUpdated from "./triggers/pledge-updated.ts";
+import pledgeDeleted from "./triggers/pledge-deleted.ts";
+import postUpdated from "./triggers/post-updated.ts";
+import postDeleted from "./triggers/post-deleted.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newCampaign from "./triggers/new-campaign.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -43,7 +52,19 @@ export default {
     updateWebhook,
     deleteWebhook,
   ],
-  triggers: [newPledge, postPublished],
+  triggers: [
+    newPledge,
+    postPublished,
+    memberCreated,
+    memberUpdated,
+    memberDeleted,
+    pledgeUpdated,
+    pledgeDeleted,
+    postUpdated,
+    postDeleted,
+    anyEvent,
+    newCampaign,
+  ],
   auth: [oauth2, creatorAccessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

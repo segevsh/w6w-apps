@@ -5,7 +5,7 @@ Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2.
 - **Categories** — commerce, crm
 - **Auth methods** — oauth2, creator-access-token
 - **Actions** — 11
-- **Triggers** — 2 (webhook)
+- **Triggers** — 11 (10 webhook, 1 poll)
 - **Egress allowlist** — `www.patreon.com`
 - **Website** — https://www.patreon.com
 - **API docs** — https://docs.patreon.com/#api (redirected from
@@ -17,11 +17,20 @@ Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2.
 |---|---|---|---|
 | `new-pledge` — New Pledge | webhook (API-registered) | `members:pledge:create` | the member resource: patron status, entitled amount, campaign and user |
 | `post-published` — Post Published | webhook (API-registered) | `posts:publish` | the post resource: title, URL, publish time and campaign |
+| `member-created` — Member Created | webhook (API-registered) | `members:create` | the member resource |
+| `member-updated` — Member Updated | webhook (API-registered) | `members:update` (includes charge events) | the member resource |
+| `member-deleted` — Member Deleted | webhook (API-registered) | `members:delete` | the member resource |
+| `pledge-updated` — Pledge Updated | webhook (API-registered) | `members:pledge:update` | the member resource |
+| `pledge-deleted` — Pledge Deleted | webhook (API-registered) | `members:pledge:delete` | the member resource |
+| `post-updated` — Post Updated | webhook (API-registered) | `posts:update` | the post resource |
+| `post-deleted` — Post Deleted | webhook (API-registered) | `posts:delete` | the post resource |
+| `any-event` — Any Event | webhook (API-registered) | any of the nine triggers named in its **Events** param (`members:create`, `members:update`, `members:delete`, `members:pledge:create`, `members:pledge:update`, `members:pledge:delete`, `posts:publish`, `posts:update`, `posts:delete`); empty means all, registered as one webhook | the resource with the `trigger` that fired |
+| `new-campaign` — New Campaign | poll | `list-campaigns` (`GET /campaigns`, all cursor pages, diffed) | the campaign |
 
 ### Setup
 
 Nothing to paste. Subscribing needs the campaign id (from List Campaigns) and runs `POST /webhooks`
-for that one trigger with the subscription's callback URL; Patreon returns the webhook's `secret`,
+for the trigger (or, for `any-event`, the chosen triggers) with the subscription's callback URL; Patreon returns the webhook's `secret`,
 which is kept in the subscription's state. Unsubscribing runs `DELETE /webhooks/{id}` (a 404/410 counts
 as already deleted). The connection needs the `w:campaigns.webhook` scope. The delivered payload only
 holds what the webhook's scopes allow: a webhook without `campaigns.members` carries no member data, so
@@ -36,7 +45,9 @@ or wrong signature, an absent raw body or an unset secret refuses the delivery (
 Patreon sends no timestamp, so there is no replay window: a captured delivery can be replayed.
 Keep the callback URL private as well.
 
-Docs (verified 2026-11-10): https://docs.patreon.com/#webhooks (Webhooks, Triggers v2, Webhook Payloads and POST/DELETE /webhooks)
+`list-campaign-members` is covered by `new-pledge` and the `member-*` / `pledge-*` triggers (every membership change arrives as a member resource); `list-campaign-posts` by `post-published` and the `post-*` triggers. Not covered: `list-webhooks` (the app's own webhook registrations: admin configuration, not a record feed).
+
+Docs (verified 2026-11-10): https://docs.patreon.com/#pagination (cursor paging for `new-campaign`), https://docs.patreon.com/#webhooks (Webhooks, Triggers v2, Webhook Payloads and POST/DELETE /webhooks)
 
 ## Why API v2, not v1
 
