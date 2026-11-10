@@ -3448,12 +3448,51 @@
       "new-connection",
       "sync-started",
       "sync-ended",
-      "connection-failure"
+      "connection-failure",
+      "connection-created",
+      "connection-updated",
+      "connection-deleted",
+      "connection-paused",
+      "connection-resumed",
+      "connection-successful",
+      "transformation-started",
+      "transformation-succeeded",
+      "transformation-failed",
+      "any-event",
+      "new-destination",
+      "new-transformation",
+      "new-transformation-project",
+      "new-user"
     ],
     "pollAction": "connection-list",
-    "reason": "shipped: webhooks registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret; X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); the earlier New Connection poll (connection-list) is kept.",
+    "reason": "shipped: 13 signed webhook triggers registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret, X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); Any Event registers all 15 documented events or a chosen list; plus 5 bounded-snapshot polls (connections, destinations, transformations, transformation projects, users) over the cursor-paginated list actions",
     "verified": "apps/fivetran/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "group-list": "new-destination",
+      "group-connection-list": "new-connection"
+    },
+    "skipped": {
+      "connector-type-list": "reference/static data: the catalogue of sources Fivetran supports, the same for every account (GET /v1/metadata/connector-types)"
+    },
+    "events": {
+      "sync_start": "sync-started",
+      "sync_end": "sync-ended",
+      "status": "any",
+      "transformation_start": "transformation-started",
+      "transformation_succeeded": "transformation-succeeded",
+      "transformation_failed": "transformation-failed",
+      "connection_successful": "connection-successful",
+      "connection_failure": "connection-failure",
+      "create_connector": "connection-created",
+      "pause_connector": "connection-paused",
+      "resume_connector": "connection-resumed",
+      "edit_connector": "connection-updated",
+      "delete_connector": "connection-deleted",
+      "force_update_connector": "any",
+      "resync_connector": "any",
+      "resync_table": "any"
+    }
   },
   {
     "path": "apps/float",
@@ -4717,12 +4756,60 @@
     "mechanism": "webhook-api",
     "candidates": [
       "video-completed",
-      "video-failed"
+      "video-failed",
+      "video-translation-completed",
+      "video-translation-failed",
+      "any-event",
+      "new-template",
+      "new-avatar-group",
+      "new-avatar-look"
     ],
-    "pollAction": null,
-    "reason": "API-registered endpoint (POST /v3/webhooks/endpoints, one-time whsec secret kept in state); signature header hex HMAC-SHA256 of the raw body; no poll: GET /v3/videos documents no order or since filter",
+    "pollAction": "template-list",
+    "reason": "shipped: 5 signed webhook triggers registered through POST /v3/webhooks/endpoints (vendor-issued one-time secret kept in state, signature header hex HMAC-SHA256 of the raw body; Any Event registers with no events list = all types, or a chosen list) plus 3 bounded-snapshot polls (templates, own avatars, own avatar looks); no poll for videos or translations: their list endpoints document no order or since filter",
     "verified": "apps/heygen/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "video-list": "video-completed",
+      "video-translation-list": "video-translation-completed"
+    },
+    "skipped": {
+      "voice-list": "reference data (the public stock-voice library) and the action calls GET /v3/voices, which HeyGen's current docs no longer list (voices are GET /v3/models/audio/voices, https://developers.heygen.com/reference/list-audio-voices)",
+      "video-translation-languages-list": "reference/static data: the fixed list of supported target-language names"
+    },
+    "events": {
+      "avatar_video.success": "video-completed",
+      "avatar_video.fail": "video-failed",
+      "avatar_video_gif.success": "any",
+      "avatar_video_gif.fail": "any",
+      "avatar_video_caption.success": "any",
+      "avatar_video_caption.fail": "any",
+      "video_translate.success": "video-translation-completed",
+      "video_translate.fail": "video-translation-failed",
+      "video_agent.success": "any",
+      "video_agent.fail": "any",
+      "personalized_video": "any",
+      "instant_avatar.success": "any",
+      "instant_avatar.fail": "any",
+      "photo_avatar_generation.success": "any",
+      "photo_avatar_generation.fail": "any",
+      "photo_avatar_train.success": "any",
+      "photo_avatar_train.fail": "any",
+      "photo_avatar_add_motion.success": "any",
+      "photo_avatar_add_motion.fail": "any",
+      "proofread_creation.success": "any",
+      "proofread_creation.fail": "any",
+      "live_avatar.success": "any",
+      "live_avatar.fail": "any",
+      "hyperframes_video.success": "any",
+      "hyperframes_video.fail": "any",
+      "ai_clipping.success": "any",
+      "ai_clipping.fail": "any",
+      "filler_word_removal.success": "any",
+      "filler_word_removal.fail": "any",
+      "video_translate.preflight.validation_failed": "any",
+      "video_translate.preflight.download_failed": "any",
+      "batch.finished": "any"
+    }
   },
   {
     "path": "apps/heyreach",
@@ -11685,13 +11772,50 @@
     "path": "apps/webex",
     "mechanism": "webhook-api",
     "candidates": [
+      "new-message",
       "new-membership",
-      "new-message"
+      "message-deleted",
+      "membership-updated",
+      "membership-deleted",
+      "room-created",
+      "room-updated",
+      "any-event",
+      "new-room",
+      "new-team",
+      "new-team-member"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/webex/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-rooms",
+    "reason": "shipped: 8 signed webhook triggers registered through POST /v1/webhooks (per-subscription secret, X-Spark-Signature hex HMAC-SHA1 of the raw body; Any Event registers the all/all firehose and filters by resource.event) plus 3 bounded-snapshot polls (new-room, new-team, new-team-member) for lists with no webhook; Webex documents no usable list order for them",
+    "verified": "apps/webex/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-messages": "new-message",
+      "list-direct-messages": "new-message",
+      "list-memberships": "new-membership"
+    },
+    "skipped": {
+      "list-people": "org directory search: non-admins must pass email or displayName, no created-since filter or order, and Webex warns that polling /people for status quickly 429s (https://developer.webex.com/messaging/docs/api/v1/people/list-people)",
+      "list-webhooks": "the app's own webhook registrations (admin/config list), not a record feed"
+    },
+    "events": {
+      "memberships.created": "new-membership",
+      "memberships.updated": "membership-updated",
+      "memberships.deleted": "membership-deleted",
+      "messages.created": "new-message",
+      "messages.deleted": "message-deleted",
+      "rooms.created": "room-created",
+      "rooms.updated": "room-updated",
+      "rooms.migrated": "skip: not part of the all/all firehose (Webex: do not assume all includes specialized events) and a data-residency migration, not a record this app manages",
+      "attachmentActions.created": "skip: card interactions need a bot posting Adaptive Cards; the app has no card action and the all/all firehose does not include the resource"
+    },
+    "n8n": {
+      "created": "any-event",
+      "updated": "any-event",
+      "deleted": "any-event",
+      "all": "any-event",
+      "started": "skip: n8n's meeting-started event; Meetings are outside the Messaging API this app covers",
+      "ended": "skip: n8n's meeting-ended event; Meetings are outside the Messaging API this app covers"
+    }
   },
   {
     "path": "apps/webflow",

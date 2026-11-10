@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2316 triggers, 1904 unaccounted list actions in 463 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -36,7 +36,6 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/respondio | 0 | 8 | 8 |
 | apps/thanksio | 0 | 8 | 8 |
 | apps/tidycal | 0 | 8 | 8 |
-| apps/webex | 2 | 8 | 8 |
 | apps/zoho/zoho-cliq | 1 | 9 | 8 |
 | apps/addevent | 1 | 8 | 7 |
 | apps/apify | 1 | 8 | 7 |
@@ -44,12 +43,10 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/chatwork | 1 | 8 | 7 |
 | apps/dialpad | 1 | 8 | 7 |
 | apps/eztexting | 1 | 8 | 7 |
-| apps/fivetran | 4 | 8 | 7 |
 | apps/float | 2 | 8 | 7 |
 | apps/freeagent | 2 | 8 | 7 |
 | apps/google/google-ads | 0 | 7 | 7 |
 | apps/google/looker | 0 | 7 | 7 |
-| apps/heygen | 2 | 7 | 7 |
 | apps/hostaway | 1 | 8 | 7 |
 | apps/ironclad | 2 | 8 | 7 |
 | apps/iterable | 1 | 8 | 7 |
@@ -545,6 +542,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/everhour | 10 | 23 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
 | apps/findymail | 5 | 12 | 0 |
+| apps/fivetran | 18 | 8 | 0 |
 | apps/followupboss | 10 | 11 | 0 |
 | apps/front | 7 | 13 | 0 |
 | apps/gitea | 9 | 10 | 0 |
@@ -561,6 +559,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/gumroad | 17 | 12 | 0 |
 | apps/gusto | 15 | 14 | 0 |
 | apps/heartbeat | 19 | 16 | 0 |
+| apps/heygen | 8 | 7 | 0 |
 | apps/hibob | 7 | 13 | 0 |
 | apps/highlevel | 22 | 9 | 0 |
 | apps/hospitable | 9 | 12 | 0 |
@@ -676,6 +675,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/vero | 1 | 0 | 0 |
 | apps/vimeo | 11 | 10 | 0 |
 | apps/wakatime | 7 | 11 | 0 |
+| apps/webex | 11 | 8 | 0 |
 | apps/woocommerce | 10 | 3 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zendesk/zendesk | 12 | 5 | 0 |
@@ -707,7 +707,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/eventbrite | 27 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated, new-or-updated-attendee, new-organizer, new-venue, new-ticket-group, new-inventory-tier, new-seat-map, new-event-team, new-discount, new-custom-question, new-default-question, new-organization-member | apps/eventbrite/README.md Triggers section (verified 2026-11-10) | hand | shipped: 16 webhook triggers registered through the vendor API (unsigned deliveries; callback URL is the secret, https://www.eventbrite.com/platform/docs/webhooks) plus 11 poll triggers for records with no webhook |
 | apps/exa | 2 | new-webset-item, webset-item-enriched | apps/exa/README.md Triggers section (verified 2026-11-10) | hand | shipped: Websets webhooks registered through POST /websets/v0/webhooks (webset.item.created, webset.item.enriched); Exa-Signature t=,v1= HMAC-SHA256 of '<t>.<raw body>' with the secret returned once at creation, 5-minute window. The research note 'unsigned monitors' was wrong: Exa signs both Monitors and Websets webhooks. |
 | apps/figma | 5 | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/fivetran | 4 | new-connection, sync-started, sync-ended, connection-failure | apps/fivetran/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret; X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); the earlier New Connection poll (connection-list) is kept. |
+| apps/fivetran | 18 | new-connection, sync-started, sync-ended, connection-failure, connection-created, connection-updated, connection-deleted, connection-paused, connection-resumed, connection-successful, transformation-started, transformation-succeeded, transformation-failed, any-event, new-destination, new-transformation, new-transformation-project, new-user | apps/fivetran/README.md Triggers section (verified 2026-11-10) | hand | shipped: 13 signed webhook triggers registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret, X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); Any Event registers all 15 documented events or a chosen list; plus 5 bounded-snapshot polls (connections, destinations, transformations, transformation projects, users) over the cursor-paginated list actions |
 | apps/flodesk | 4 | new-segment, new-subscriber, subscriber-unsubscribed, subscriber-added-to-segment | apps/flodesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment; no updated or complaint event exists). Flodesk publishes no signature, so the README says the callback URL is the secret; the earlier New Segment poll (list-segments) is kept. |
 | apps/formstack | 2 | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/github | 15 | any-event, fork, issue-comment, issue, pull-request-review-comment, pull-request-review, pull-request, push, ref-created, ref-deleted, release, repository-event, star, workflow-job, workflow-run | apps/github/README.md Triggers section (verified 2026-11-10) | hand | shipped: repository webhook registered through the vendor API (POST /repos/{owner}/{repo}/hooks); 14 named event triggers plus Any Event, X-Hub-Signature-256 HMAC-SHA256 verified |
@@ -717,7 +717,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/gumroad | 17 | any-event, dispute-raised, dispute-won, new-offer-code, new-payout, new-product, new-review, new-sale, new-subscriber, new-variant, new-variant-category, sale-refunded, sale-webhook, subscription-cancelled, subscription-ended, subscription-restarted, subscription-updated | apps/gumroad/README.md Triggers section (verified 2026-11-10) | hand | shipped: 7 named webhook triggers plus Any Event registered through resource subscriptions, and 8 polls (sales, products, offer codes, variant categories, variants, reviews, payouts, subscribers) |
 | apps/heartbeat | 19 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created, mention, direct-message, abandoned-invitation, any-event, new-channel, new-channel-category, new-group, new-course, new-invitation, new-video, new-direct-message | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat |
 | apps/helpscout | 4 | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/heygen | 2 | video-completed, video-failed | apps/heygen/README.md Triggers section (verified 2026-11-10) | hand | API-registered endpoint (POST /v3/webhooks/endpoints, one-time whsec secret kept in state); signature header hex HMAC-SHA256 of the raw body; no poll: GET /v3/videos documents no order or since filter |
+| apps/heygen | 8 | video-completed, video-failed, video-translation-completed, video-translation-failed, any-event, new-template, new-avatar-group, new-avatar-look | apps/heygen/README.md Triggers section (verified 2026-11-10) | hand | shipped: 5 signed webhook triggers registered through POST /v3/webhooks/endpoints (vendor-issued one-time secret kept in state, signature header hex HMAC-SHA256 of the raw body; Any Event registers with no events list = all types, or a chosen list) plus 3 bounded-snapshot polls (templates, own avatars, own avatar looks); no poll for videos or translations: their list endpoints document no order or since filter |
 | apps/invoiceninja | 2 | invoice-webhook, new-invoice | apps/invoiceninja/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/jotform | 2 | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/judgeme | 2 | review-created, review-updated | apps/judgeme/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/DELETE /webhooks, keys review/created and review/updated); JUDGEME-HMAC-SHA256 hex HMAC of the raw body under the Private API token; no poll: list-reviews has no sort or created-after filter |
@@ -750,7 +750,7 @@ depth: 682 apps, 2287 triggers, 1926 unaccounted list actions in 466 apps, n8n-p
 | apps/tiktok-lead-generation | 1 | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
 | apps/toggl | 3 | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | 8 | new-response, new-partial-response, any-event, new-form, new-or-updated-form, new-workspace, new-theme, new-image | apps/typeform/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images |
-| apps/webex | 2 | new-membership, new-message | apps/webex/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/webex | 11 | new-message, new-membership, message-deleted, membership-updated, membership-deleted, room-created, room-updated, any-event, new-room, new-team, new-team-member | apps/webex/README.md Triggers section (verified 2026-11-10) | hand | shipped: 8 signed webhook triggers registered through POST /v1/webhooks (per-subscription secret, X-Spark-Signature hex HMAC-SHA1 of the raw body; Any Event registers the all/all firehose and filters by resource.event) plus 3 bounded-snapshot polls (new-room, new-team, new-team-member) for lists with no webhook; Webex documents no usable list order for them |
 | apps/webflow | 4 | collection-item-changed, collection-item-created, form-submission, new-order | apps/webflow/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
 | apps/zendesk/zendesk | 12 | new-ticket, ticket-status-changed, ticket-comment-added, ticket-deleted, ticket-priority-changed, ticket-assignee-changed, new-user, user-deleted, user-details-changed, new-organization, organization-deleted, any-event | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed event-subscription webhooks registered through the Webhooks API (X-Zendesk-Webhook-Signature, HMAC-SHA256 over timestamp+body, signing secret read from the API); list actions are covered by the created-event webhooks |
