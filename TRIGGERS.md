@@ -442,28 +442,28 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/recurly | list-invoices | new-invoice, new-or-updated-invoice | apps/recurly/README.md Triggers section (verified 2026-11-09) | hand | poll: list-invoices sort=created_at\|updated_at order=desc page 1 (OpenAPI list_invoices) |
 | apps/reddit | post-list | new-post | apps/reddit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-list |
 | apps/refiner | form-list | new-survey | apps/refiner/README.md Triggers section (verified 2026-11-09) | hand | poll snapshot: form-list is a bounded name-ordered set (one page of 1000); contact-list order_by has no documented direction |
-| apps/regfox | form-list | new-form-list | no | scan | list action form-list has pagination and order/since params |
-| apps/relevanceai | agent-list | new-agent-list | no | scan | list action agent-list has pagination and order/since params |
-| apps/replicate | prediction-list | new-prediction-list | no | scan | list action prediction-list has pagination and order/since params |
-| apps/replyio | sequence-contact-list | new-sequence-contact-list | no | scan | list action sequence-contact-list has pagination and order/since params |
-| apps/retellai | list-agents | new-agents | no | scan | list action list-agents has pagination and order/since params |
+| apps/regfox | form-list | new-form, new-or-updated-form | apps/regfox/README.md Triggers section (verified 2026-11-09) | hand | form-list: new-form sorts sort=desc (id-cursor listing); new-or-updated-form uses the dateUpdatedAfter since-filter with 2-minute overlap and a startingAfter resume (https://docs.webconnex.io/api/v2/) |
+| apps/relevanceai | agent-list | new-agent, new-or-updated-agent | apps/relevanceai/README.md Triggers section (verified 2026-11-09) | hand | agent-list sort [{insert_date_:desc}] / [{update_date_:desc}] per ListAgentsInput.sort (https://api-f1db6c.stack.tryrelevance.com/latest/openapi_schema.json) |
+| apps/replicate | prediction-list | new-prediction | apps/replicate/README.md Triggers section (verified 2026-11-09) | hand | prediction-list is newest-first per the vendor (https://replicate.com/docs/reference/http#predictions.list) |
+| apps/replyio | sequence-contact-list | new-contact, new-sequence-contact | apps/replyio/README.md Triggers section (verified 2026-11-09) | hand | new-sequence-contact: sequence-contact-list sort_by=addingDate desc; new-contact: contact-filter sortBy=addedOn desc (https://docs.reply.io/api-reference/bundled.yaml); contact-list (GET /v3/contacts) has no sort or since filter and is not used |
+| apps/retellai | list-agents | new-agent, new-or-updated-agent | apps/retellai/README.md Triggers section (verified 2026-11-09) | hand | list-agents sort_order=descending (default); sort field unnamed by the vendor, creation order unproven (https://docs.retellai.com/api-references/list-agents) |
 | apps/ringover | call-list | new-call | apps/ringover/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
-| apps/rippling | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/rocketchat | list-users | new-users | no | scan | list action list-users has pagination and order/since params |
+| apps/rippling | user-list | new-user, new-or-updated-user | apps/rippling/README.md Triggers section (verified 2026-11-09) | hand | user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users) |
+| apps/rocketchat | list-users | new-user, new-or-updated-user | apps/rocketchat/README.md Triggers section (verified 2026-11-09) | hand | list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list) |
 | apps/rootly | incident-list | new-incident | apps/rootly/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
 | apps/salesforce | query | new-record | apps/salesforce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action query |
 | apps/salesloft | person-list | new-person | apps/salesloft/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action person-list |
 | apps/salesmsg | contact-list | new-contact | apps/salesmsg/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
-| apps/salla | order-history-list | new-order-history-list | no | scan | list action order-history-list has pagination and order/since params |
-| apps/samcart | funnel-order-list | new-funnel-order-list | no | scan | list action funnel-order-list has pagination and order/since params |
-| apps/scoreapp | result-list | new-result-list | no | scan | list action result-list has pagination and order/since params |
+| apps/salla | order-list | new-order, new-or-updated-order | apps/salla/README.md Triggers section (verified 2026-11-09) | hand | order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md) |
+| apps/samcart | order-list | new-order | apps/samcart/README.md Triggers section (verified 2026-11-09) | hand | order-list created_at_min since-filter with overlap and offset resume (https://developer.samcart.com/specs/openapi.yaml) |
+| apps/scoreapp | result-list | new-result | apps/scoreapp/README.md Triggers section (verified 2026-11-09) | hand | result-list order_by=created_at order_dir=desc (https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started) |
 | apps/seamlessai | task-list | new-task | apps/seamlessai/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action task-list |
 | apps/seatable | row-list | new-row | apps/seatable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
 | apps/sendblue | message-list | new-message | apps/sendblue/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action message-list |
-| apps/sender | field-list | new-field-list | no | scan | list action field-list has pagination and order/since params |
-| apps/sendfox | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/sendpulse | deals-list | new-deals-list | no | scan | list action deals-list has pagination and order/since params |
-| apps/sentry | issue-list | new-issue-list | no | scan | list action issue-list has pagination and order/since params |
+| apps/sender | subscriber-list | new-subscriber, new-or-updated-subscriber | apps/sender/README.md Triggers section (verified 2026-11-09) | hand | subscriber-list order=created / modified direction=desc (https://api.sender.net/pagination/); key names unproven |
+| apps/sendfox | contact-list | new-contact | apps/sendfox/README.md Triggers section (verified 2026-11-09) | hand | contact-list filter[created_after] since-filter with overlap and page resume (https://sendfox.com/openapi.yaml) |
+| apps/sendpulse | pipelines-list | new-pipeline, new-mailing-list | apps/sendpulse/README.md Triggers section (verified 2026-11-09) | hand | snapshot triggers on pipelines-list (unpaged, tariff-bounded) and mailing-lists-list (https://api.sendpulse.com/.well-known/openapi/crm.yaml); deals-list and campaigns-list do not fit |
+| apps/sentry | issue-list | new-issue | apps/sentry/README.md Triggers section (verified 2026-11-09) | hand | issue-list sort=new (https://docs.sentry.io/api/events/list-an-organizations-issues/) |
 | apps/servicem8 | category-list | new-category-list | no | scan | list action category-list has pagination and order/since params |
 | apps/seven | contact-list | new-contact | apps/seven/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/sharetribe | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |

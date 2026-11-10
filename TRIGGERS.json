@@ -5550,23 +5550,25 @@
     "path": "apps/regfox",
     "mechanism": "poll",
     "candidates": [
-      "new-form-list"
+      "new-form",
+      "new-or-updated-form"
     ],
     "pollAction": "form-list",
-    "reason": "list action form-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "form-list: new-form sorts sort=desc (id-cursor listing); new-or-updated-form uses the dateUpdatedAfter since-filter with 2-minute overlap and a startingAfter resume (https://docs.webconnex.io/api/v2/)",
+    "verified": "apps/regfox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/relevanceai",
     "mechanism": "poll",
     "candidates": [
-      "new-agent-list"
+      "new-agent",
+      "new-or-updated-agent"
     ],
     "pollAction": "agent-list",
-    "reason": "list action agent-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "agent-list sort [{insert_date_:desc}] / [{update_date_:desc}] per ListAgentsInput.sort (https://api-f1db6c.stack.tryrelevance.com/latest/openapi_schema.json)",
+    "verified": "apps/relevanceai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/rendex",
@@ -5581,23 +5583,24 @@
     "path": "apps/replicate",
     "mechanism": "poll",
     "candidates": [
-      "new-prediction-list"
+      "new-prediction"
     ],
     "pollAction": "prediction-list",
-    "reason": "list action prediction-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "prediction-list is newest-first per the vendor (https://replicate.com/docs/reference/http#predictions.list)",
+    "verified": "apps/replicate/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/replyio",
     "mechanism": "poll",
     "candidates": [
-      "new-sequence-contact-list"
+      "new-contact",
+      "new-sequence-contact"
     ],
     "pollAction": "sequence-contact-list",
-    "reason": "list action sequence-contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "new-sequence-contact: sequence-contact-list sort_by=addingDate desc; new-contact: contact-filter sortBy=addedOn desc (https://docs.reply.io/api-reference/bundled.yaml); contact-list (GET /v3/contacts) has no sort or since filter and is not used",
+    "verified": "apps/replyio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/resend",
@@ -5621,12 +5624,13 @@
     "path": "apps/retellai",
     "mechanism": "poll",
     "candidates": [
-      "new-agents"
+      "new-agent",
+      "new-or-updated-agent"
     ],
     "pollAction": "list-agents",
-    "reason": "list action list-agents has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-agents sort_order=descending (default); sort field unnamed by the vendor, creation order unproven (https://docs.retellai.com/api-references/list-agents)",
+    "verified": "apps/retellai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ringcentral",
@@ -5652,23 +5656,25 @@
     "path": "apps/rippling",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-user",
+      "new-or-updated-user"
     ],
     "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users)",
+    "verified": "apps/rippling/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/rocketchat",
     "mechanism": "poll",
     "candidates": [
-      "new-users"
+      "new-user",
+      "new-or-updated-user"
     ],
     "pollAction": "list-users",
-    "reason": "list action list-users has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list)",
+    "verified": "apps/rocketchat/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/rocketreach",
@@ -5745,23 +5751,24 @@
     "path": "apps/salla",
     "mechanism": "poll",
     "candidates": [
-      "new-order-history-list"
+      "new-order",
+      "new-or-updated-order"
     ],
-    "pollAction": "order-history-list",
-    "reason": "list action order-history-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "order-list",
+    "reason": "order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md)",
+    "verified": "apps/salla/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/samcart",
     "mechanism": "poll",
     "candidates": [
-      "new-funnel-order-list"
+      "new-order"
     ],
-    "pollAction": "funnel-order-list",
-    "reason": "list action funnel-order-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "order-list",
+    "reason": "order-list created_at_min since-filter with overlap and offset resume (https://developer.samcart.com/specs/openapi.yaml)",
+    "verified": "apps/samcart/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sanity",
@@ -5785,12 +5792,12 @@
     "path": "apps/scoreapp",
     "mechanism": "poll",
     "candidates": [
-      "new-result-list"
+      "new-result"
     ],
     "pollAction": "result-list",
-    "reason": "list action result-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "result-list order_by=created_at order_dir=desc (https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started)",
+    "verified": "apps/scoreapp/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/seamlessai",
@@ -5847,34 +5854,36 @@
     "path": "apps/sender",
     "mechanism": "poll",
     "candidates": [
-      "new-field-list"
+      "new-subscriber",
+      "new-or-updated-subscriber"
     ],
-    "pollAction": "field-list",
-    "reason": "list action field-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "subscriber-list",
+    "reason": "subscriber-list order=created / modified direction=desc (https://api.sender.net/pagination/); key names unproven",
+    "verified": "apps/sender/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sendfox",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list filter[created_after] since-filter with overlap and page resume (https://sendfox.com/openapi.yaml)",
+    "verified": "apps/sendfox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sendpulse",
     "mechanism": "poll",
     "candidates": [
-      "new-deals-list"
+      "new-pipeline",
+      "new-mailing-list"
     ],
-    "pollAction": "deals-list",
-    "reason": "list action deals-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "pipelines-list",
+    "reason": "snapshot triggers on pipelines-list (unpaged, tariff-bounded) and mailing-lists-list (https://api.sendpulse.com/.well-known/openapi/crm.yaml); deals-list and campaigns-list do not fit",
+    "verified": "apps/sendpulse/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/sendy",
@@ -5889,12 +5898,12 @@
     "path": "apps/sentry",
     "mechanism": "poll",
     "candidates": [
-      "new-issue-list"
+      "new-issue"
     ],
     "pollAction": "issue-list",
-    "reason": "list action issue-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "issue-list sort=new (https://docs.sentry.io/api/events/list-an-organizations-issues/)",
+    "verified": "apps/sentry/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/servicem8",
