@@ -26,14 +26,12 @@ export default pollFromListAction<Params>({
   output: [
     { key: "branding_id", type: "string", label: "Brand ID" },
     { key: "name", type: "string", label: "Name" },
-    { key: "branding_url", type: "string", label: "Brand URL" },
     { key: "custom_domain", type: "string", label: "Custom domain" },
   ],
   sample: {
     branding_id: "brand_1",
     name: "Brand 1",
-    branding_url: "https://acme.example",
-    custom_domain: "ask.acme.example",
+    custom_domain: "ask.example.test",
   },
   maxPages: 1,
 });
