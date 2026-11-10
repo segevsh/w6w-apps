@@ -5,6 +5,7 @@ and forwards them. This app drives Formspark's management API: workspaces, forms
 templates and submissions.
 
 - App id: `io.w6w.formspark` · categories: `forms`, `developer-tools`
+- **Triggers** — 1 (webhook)
 - Host: `api.formspark.io` (the only entry in `network.allow`) · base `https://api.formspark.io/public/v1`
 - Source of truth: Formspark's OpenAPI 3.1 document, `https://api.formspark.io/public/v1/openapi.json`
   (37,463 bytes, 16 operations over 10 paths, fetched 2026-10-06), `documentation.formspark.io/llms.txt`
@@ -123,4 +124,37 @@ there is no SVG to ship. The manifest references it as `icon.url`.
 `unavailable` entries always report `unknown`, so both carry `severity: informational` or they would
 pin the app's verdict there forever.
 
-Triggers: not shipped — webhook candidate queued for a webhook node: submission.created (https://documentation.formspark.io/integration/webhooks.html).
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `new-submission` — New Submission | webhook (manual, signed) | a form submission Formspark accepts | the submission id, the time Formspark sent it and the submitted fields |
+
+### Setup
+
+Formspark has no webhook API: the URL is set per form in the dashboard, so subscribe one trigger per
+form.
+
+1. Subscribe the trigger in w6w and copy the callback URL it shows.
+2. In Formspark open the form's settings, find the **Webhook** row under **Integrations** and click
+   **Connect**.
+3. Paste the callback URL into the **URL** field and turn on **Sign deliveries**. Save.
+4. Copy the signing secret the row shows into the trigger's **Signing Secret** parameter.
+5. Submit the form once and check the run.
+
+To stop, clear the URL field in the Webhook row (Formspark's own instructions) and delete the
+subscription. A webhook only sees submissions that arrive after its URL is saved; spam and
+over-quota submissions are not delivered. The payload is only the fields the form submitted (control
+fields starting with `_` are left out) and does not name the form, which is why each form gets its own
+subscription. A retry repeats a delivery, with the same `submissionId`, until it gets through (every
+5 minutes, in order, for about a day).
+
+### Trust model
+
+Formspark makes signing optional, but this trigger requires it. Every delivery's `Formspark-Signature`
+header (`v1=` + the hex HMAC-SHA256 of `<Formspark-Timestamp>.<raw body>`, keyed by the signing secret)
+is verified before the body is parsed, and a timestamp more than five minutes from the clock is
+refused. An unsigned delivery, a missing or wrong signature, a stale timestamp, an absent raw body or
+an unset secret refuses the delivery (one failed row, no run).
+
+Docs (verified 2026-11-10): https://documentation.formspark.io/integration/webhooks.html
