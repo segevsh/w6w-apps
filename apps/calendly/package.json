@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/calendly",
   "version": "0.3.0",
-  "description": "Read Calendly users, event types, scheduled events and invitees; create single-use scheduling links and manage webhook subscriptions, plus triggers for bookings, cancellations, no-shows, event type changes, routing form submissions and any other Calendly event.",
+  "description": "Read Calendly users, event types, scheduled events and invitees; create scheduling links; manage webhooks. Triggers for bookings, cancellations, no-shows, event types, routing forms, any event.",
   "license": "MIT",
   "author": {
     "name": "w6w"

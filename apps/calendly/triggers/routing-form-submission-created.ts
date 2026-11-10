@@ -30,7 +30,7 @@ const routingFormSubmissionCreated = resourceTrigger({
     routingForm: "https://api.calendly.com/routing_forms/AAAAAAAAAAAAAAAA",
     submitter: null,
     questionsAndAnswers: [{ question: "Company size?", answer: "11-50" }],
-    result: { type: "event_type", value: "https://calendly.com/acme/sales" },
+    result: { type: "event_type", value: "calendly.com/acme/sales" },
     payload: {
       uri: "https://api.calendly.com/routing_form_submissions/AAAAAAAAAAAAAAAA",
       routing_form: "https://api.calendly.com/routing_forms/AAAAAAAAAAAAAAAA",

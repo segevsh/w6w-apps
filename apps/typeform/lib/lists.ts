@@ -49,5 +49,5 @@ export const FORM_SAMPLE = {
   last_updated_at: "2026-11-10T09:30:00+00:00",
   created_at: "2026-11-01T12:00:00+00:00",
   settings: { is_public: true },
-  _links: { display: "https://example.typeform.com/to/lT9Z2j" },
+  _links: { display: "typeform.com/to/lT9Z2j" },
 };

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/typeform",
   "version": "0.3.0",
-  "description": "Create and manage Typeform forms, responses, workspaces, themes and images via the Typeform APIs, plus triggers that start a workflow on each new or partial response, any webhook event, and each new form, workspace, theme or image.",
+  "description": "Create and manage Typeform forms, responses, workspaces, themes and images. Triggers for new or partial responses, any webhook event, and new forms, workspaces, themes and images.",
   "license": "MIT",
   "author": {
     "name": "w6w"

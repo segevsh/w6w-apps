@@ -30,7 +30,7 @@ export function eventTypeSample(event: string): ResourceEvent {
     email: null,
     slug: "30min",
     active: true,
-    schedulingUrl: "https://calendly.com/acme/30min",
+    schedulingUrl: "calendly.com/acme/30min",
     duration: 30,
     kind: "solo",
     payload: {

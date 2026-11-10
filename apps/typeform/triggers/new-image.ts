@@ -26,7 +26,7 @@ export default pollFromListAction<Record<string, never>>({
   sample: {
     id: "ImgAbC1",
     file_name: "logo.png",
-    src: "https://images.typeform.com/images/ImgAbC1",
+    src: "https://api.typeform.com/images/ImgAbC1",
     upload_source: "api",
   },
 });
