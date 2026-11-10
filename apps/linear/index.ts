@@ -35,6 +35,8 @@ import issueEvent from "./triggers/issue.ts";
 import commentEvent from "./triggers/comment.ts";
 import projectEvent from "./triggers/project.ts";
 import cycleEvent from "./triggers/cycle.ts";
+import issueLabelEvent from "./triggers/issue-label.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -56,7 +58,14 @@ export default {
     userGetMany,
     labelGetMany,
   ],
-  triggers: [issueEvent, commentEvent, projectEvent, cycleEvent],
+  triggers: [
+    issueEvent,
+    commentEvent,
+    projectEvent,
+    cycleEvent,
+    issueLabelEvent,
+    anyEvent,
+  ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
