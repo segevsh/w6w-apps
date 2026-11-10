@@ -1,13 +1,16 @@
 import type { HookContext, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "./window.ts";
 import bulkListFiles from "../actions/bulk-list-files.ts";
 
 const OVERLAP_MS = 120_000;
 const PAGE = 50;
+/** Pages one check reads; a bigger window resumes next check. */
+const MAX_PAGES = 3;
 export const clock = { now: (): number => Date.now() };
 
 interface FileRecord {
   fileId?: unknown;
+  createdAt?: unknown;
   updatedAt?: unknown;
 }
 
@@ -16,34 +19,50 @@ export function stamp(ms: number): string {
   return new Date(ms).toISOString().slice(0, 19).replace("T", " ");
 }
 
-async function check(
+/** The vendor's stamps are `yyyy-MM-dd HH:mm:ss` in UTC (the same form the filters take). */
+const parseStamp = (value: unknown): number | undefined => {
+  const ms = Date.parse(String(value ?? "").replace(" ", "T") + "Z");
+  return Number.isNaN(ms) ? undefined : ms;
+};
+
+/**
+ * Offset feed with an upper bound: continuation pages add `...To = window start`, so files that
+ * arrive while the window drains cannot shift an offset (the next window reads them). One check
+ * reads at most MAX_PAGES pages; the rest resumes next check (brief 9.8).
+ */
+function check(
   filter: "createdFrom" | "updatedAtFrom",
   idOf: (file: FileRecord) => string,
   state: unknown,
   ctx: HookContext,
 ) {
-  const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const { events, nextState } = await pollNewItems<FileRecord>({
+  const upper = filter === "createdFrom" ? "createdTo" : "updatedAtTo";
+  const stampKey = filter === "createdFrom" ? "createdAt" : "updatedAt";
+  return pollWindow<FileRecord, number>({
     state,
+    now: clock.now(),
+    overlapMs: OVERLAP_MS,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE,
+    seenWindow: 1000,
     idOf,
-    maxPages: 3,
-    async fetchPage(pageToken) {
-      const offset = pageToken === undefined ? 0 : Number(pageToken);
+    tsOf: (file) => parseStamp(file[stampKey]),
+    async load(since, offset, until) {
       const result = await bulkListFiles.execute(
-        { offset, limit: PAGE, [filter]: stamp(cursor - OVERLAP_MS) },
+        {
+          offset: offset ?? 0,
+          limit: PAGE,
+          [filter]: stamp(since),
+          ...(offset === undefined ? {} : { [upper]: stamp(until) }),
+        },
         ctx,
       ) as { files?: FileRecord[]; nextOffset?: number | null };
       return {
         items: result.files ?? [],
-        nextPageToken: typeof result.nextOffset === "number"
-          ? String(result.nextOffset)
-          : undefined,
+        next: typeof result.nextOffset === "number" ? result.nextOffset : undefined,
       };
     },
   });
-  return { events, nextState: { ...nextState, cursor: checkedAt } };
 }
 
 const OUTPUT: TriggerDefinition["output"] = [
