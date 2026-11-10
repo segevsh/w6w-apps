@@ -13,7 +13,23 @@ const itemList: ActionDefinition<InventoryListInput, InventoryListResult<Record<
     resource: "item",
     title: "List Items",
     description: "List the products and services in the item catalog.",
-    params: [organizationId, ...pageParams],
+    params: [
+      organizationId,
+      ...pageParams,
+      {
+        key: "sort_column",
+        label: "Sort column",
+        type: "string",
+        hint:
+          "name, sku, rate, purchase_rate, created_time, last_modified_time, reorder_level or stock_on_hand. Unset keeps Zoho's own order.",
+      },
+      {
+        key: "sort_order",
+        label: "Sort order",
+        type: "string",
+        hint: "A for ascending, D for descending. Unset keeps Zoho's own order.",
+      },
+    ],
     output: [
       { key: "data", type: "array", label: "Items" },
       { key: "pageContext", type: "object", label: "Pagination info" },

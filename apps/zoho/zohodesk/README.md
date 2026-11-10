@@ -277,4 +277,4 @@ Requests `sortBy=-createdTime`, 100 contacts. Set the `orgId` trigger parameter,
 
 **Vendor docs (verified 2026-11-09).**
 
-- List contacts — "sortBy … Parameter that sorts contacts by one of these attributes: firstName, lastName, phone, email, account, createdTime, modifiedTime" and "A - prefix denotes descending order": https://desk.zoho.com/DeskAPIDocument
+- List contacts — "Sort by a specific attribute: firstName, lastName, or createdTime. The default sorting order is ascending. A - prefix denotes descending order of sorting.": https://desk.zoho.com/DeskAPIDocument
