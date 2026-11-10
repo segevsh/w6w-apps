@@ -1,5 +1,15 @@
 # Hex
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-user` — New User | poll | `user-list` | Each new workspace user |
+
+Hex's OpenAPI document (https://static.hex.site/openapi.json, verified 2026-11-09) lists `GET /v1/users` with an `after` cursor, `limit` 1-500, and `sortBy` only `NAME`/`EMAIL`, so there is no newest-first order. The trigger is a snapshot (shape c): it walks every page (500 per page, `NAME` ascending) and diffs the user ids; the workspace member list is the bounded collection, and a walk past the 5000-row snapshot cap fails loudly rather than missing users.
+
 Run published Hex projects from a workflow, poll or cancel the runs, and read the workspace's
 projects, users, groups, collections and data connections.
 

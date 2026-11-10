@@ -1,5 +1,15 @@
 # Housecall Pro
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-customer` — New Customer | poll | `customer-list` | Each new customer |
+
+Housecall Pro documents customers at https://docs.housecallpro.com/ (verified 2026-11-09).
+
 Field-service management for home-service businesses — customers, jobs, estimates, leads, invoices,
 scheduling and dispatch — over the **Housecall v1 public API** (`api.housecallpro.com`).
 

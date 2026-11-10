@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ironclad",
-  "version": "0.1.0",
-  "description": "Launch and manage Ironclad contract workflows, read and write repository records and entities, and subscribe to contract events.",
+  "version": "0.2.0",
+  "description": "Launch and manage Ironclad contract workflows, read and write repository records and entities, subscribe to contract events, and trigger on new or updated records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -36,7 +36,8 @@
         "demo.ironcladapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

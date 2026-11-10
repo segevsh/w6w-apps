@@ -1,5 +1,15 @@
 # Harvest
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-task` — New Task | poll | `task-get-many` | Each new task |
+
+Harvest documents the task list at https://help.getharvest.com/api-v2/tasks-api/tasks/tasks/ (verified 2026-11-09).
+
 Track time entries, projects, tasks, clients, and users via the Harvest API v2.
 
 - **Categories** — productivity

@@ -100,6 +100,7 @@ import eventList from "./actions/event-list.ts";
 
 import service from "./health/service.ts";
 import apiVersion from "./health/api-version.ts";
+import newEvent from "./triggers/new-event.ts";
 
 export default {
   actions: [
@@ -135,4 +136,5 @@ export default {
   ],
   auth: [oauth2, oauth2Demo],
   healthChecks: [service, apiVersion],
+  triggers: [newEvent],
 } satisfies AppDefinition;

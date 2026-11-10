@@ -1,5 +1,15 @@
 # Hotmart
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-product` — New Product | poll | `product-list` | Each new product |
+
+Hotmart's product-list page (https://developers.hotmart.com/docs/en/v1/product/product-list/, verified 2026-11-09) documents `max_results`, `page_token` and `page_info.next_page_token` but no sort order, so the trigger is a snapshot: it walks every page of the creator's own product catalog (100 per page) and diffs the product ids. A creator's catalog is the bounded collection; a walk past the 5000-row snapshot cap fails loudly.
+
 Sell and manage online courses and digital products through Hotmart: sales, subscriptions,
 products and checkout coupons, over Hotmart's **Public API**.
 

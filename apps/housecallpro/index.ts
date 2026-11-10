@@ -112,6 +112,7 @@ import priceBookServiceList from "./actions/price-book-service-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -167,4 +168,5 @@ export default {
   // not. A Connection picks one.
   auth: [apiKey, oauth],
   healthChecks: [service, api, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;
