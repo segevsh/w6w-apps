@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, RechargeClient } from "../lib/client.ts";
-import { paginationParams } from "../lib/params.ts";
+import { paginationParams, timestampFilterParams, timestampFilterQuery } from "../lib/params.ts";
 
 interface Input {
   addressId?: string;
@@ -13,6 +13,10 @@ interface Input {
   processedAtMin?: string;
   processedAtMax?: string;
   sortBy?: string;
+  createdAtMin?: string;
+  createdAtMax?: string;
+  updatedAtMin?: string;
+  updatedAtMax?: string;
   limit?: number;
   cursor?: string;
 }
@@ -81,6 +85,7 @@ const chargeList: ActionDefinition<Input> = {
       ],
     },
     ...paginationParams(50),
+    ...timestampFilterParams("Charge"),
   ],
   output: [
     { key: "items", type: "array", label: "Charges" },
@@ -104,6 +109,7 @@ const chargeList: ActionDefinition<Input> = {
         sort_by: input.sortBy,
         limit: input.limit,
         cursor: input.cursor,
+        ...timestampFilterQuery(input),
       }),
     });
     return { items: page.items, nextCursor: page.nextCursor, previousCursor: page.previousCursor };

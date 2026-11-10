@@ -56,6 +56,11 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newPost from "./triggers/new-post.ts";
+import newDraftPost from "./triggers/new-draft-post.ts";
+import newBlogFollowing from "./triggers/new-blog-following.ts";
+import newPostNote from "./triggers/new-post-note.ts";
+import newQueuedPost from "./triggers/new-queued-post.ts";
+import newSubmission from "./triggers/new-submission.ts";
 import oauth2 from "./auth/oauth2.ts";
 
 import blogInfoGet from "./actions/blog-info-get.ts";
@@ -115,7 +120,7 @@ export default {
     userLike,
     userUnlike,
   ],
-  triggers: [newPost],
+  triggers: [newPost, newDraftPost, newBlogFollowing, newPostNote, newQueuedPost, newSubmission],
   auth: [oauth2],
   healthChecks: [service],
 } satisfies AppDefinition;

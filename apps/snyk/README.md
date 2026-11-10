@@ -4,7 +4,7 @@ Read Snyk issues, projects, targets and SBOMs, and audit an organization's
 security posture.
 
 - **Categories** — security, developer-tools
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 - **Auth methods** — api-token
 - **Actions** — 20
 - **Egress allowlist** — `api.snyk.io`
@@ -242,6 +242,13 @@ response shapes.
 |---|---|---|---|
 | `new-issue` — New Issue | poll | `issue-list` | Each issue Snyk newly finds in the organization. |
 | `new-or-updated-issue` — New or Updated Issue | poll | `issue-list` | Each issue that is newly found or updated (an edit is a new event). |
+| `new-group-issue` — New Group Issue | poll | `issue-list-group` | Each issue newly found in any organization of the chosen group. |
+| `new-or-updated-group-issue` — New or Updated Group Issue | poll | `issue-list-group` | Each group issue that is newly found or updated (an edit is a new event). |
+| `new-target` — New Target | poll | `target-list` | Each repository or source newly imported into the organization. |
+| `new-organization` — New Organization | poll | `org-list` | Each organization newly created (optionally within one group). |
+| `new-group` — New Group | poll | `group-list` | Each group newly visible to the token. |
+| `new-collection` — New Collection | poll | `collection-list` | Each collection newly created in the organization. |
+| `new-collection-project` — New Project in Collection | poll | `collection-project-list` | Each project newly added to the chosen collection. |
 
 Snyk documents no sort on `GET /rest/orgs/{org_id}/issues`, so these are **since-filter** polls, not
 newest-first reads. Each check calls the `issue-list` action (with Return All, which pages the
@@ -252,5 +259,8 @@ the one action call, so nothing is left to resume; the first check reads nothing
 OpenAPI document describes the filters as "A filter to select issues created after this date" and
 "A filter to select issues updated after this date" and caps `limit` at 100.
 
-Vendor documentation: https://api.snyk.io/rest/openapi/2026-03-25 (`listOrgIssues`) and
-https://docs.snyk.io/snyk-api (verified 2026-11-09).
+`new-group-issue` / `new-or-updated-group-issue` (`GET /rest/groups/{group_id}/issues`, documented `created_after` / `updated_after`, no sort) and `new-target` (`GET /rest/orgs/{org_id}/targets`, documented `created_gte`, no sort) use the same since-filter machinery (cursor, floor, Return All drain). `issue-list-group` gained an optional `createdAfter` and `target-list` an optional `createdGte` (default-preserving). `new-organization`, `new-group`, `new-collection` and `new-collection-project` read the whole bounded collection each check (Return All) and emit ids not seen before; the first check records them and emits nothing.
+
+Not covered: `project-list` (`GET /rest/orgs/{org_id}/projects` documents no created filter or sort and an organization's projects are unbounded; new repositories are delivered by `new-target`), `package-issues-list` (known-vulnerability lookup for one package URL: reference data), `audit-log-list` (audit log).
+
+Vendor documentation: https://api.snyk.io/rest/openapi/2026-03-25 (`listOrgIssues`, `listGroupIssues`, `getOrgsTargets`, `getOrgs`, `getGroups`, `getCollections`, `getProjectsOfCollection`) and https://docs.snyk.io/snyk-api (verified 2026-11-10).

@@ -41,6 +41,13 @@ const action: ActionDefinition = {
       default: "",
       hint: "Match on the target's display name.",
     },
+    {
+      key: "createdGte",
+      label: "Created At Or After",
+      type: "datetime",
+      default: "",
+      hint: "Only targets created at or after this time (`created_gte`).",
+    },
   ],
 
   async execute(input, ctx) {
@@ -53,6 +60,7 @@ const action: ActionDefinition = {
       origin: (p.origin as string) || undefined,
       exclude_empty: typeof p.excludeEmpty === "boolean" ? String(p.excludeEmpty) : undefined,
       display_name: (p.displayName as string) || undefined,
+      created_gte: (p.createdGte as string) || undefined,
     };
 
     ctx.log("info", "listing Snyk targets", { org, returnAll, limit });
