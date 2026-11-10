@@ -10,7 +10,7 @@ import { parseTopicList, type TriggerState } from "../../lib/triggers.ts";
 
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
 const HOST = "https://api.example.test";
-const SECRET = "shpss_0123456789abcdef0123456789abcdef";
+const SECRET = "test-shopify-shared-secret";
 
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
@@ -89,9 +89,9 @@ test("fixture: the body is not canonical JSON, so re-serialising would break the
   assertEquals(JSON.stringify(JSON.parse(BODY)) !== BODY, true);
 });
 
-test("the app declares ten webhook triggers, each with output, sample and the secret param", () => {
+test("the app declares eighteen webhook triggers, each with output, sample and the secret param", () => {
   const triggers = app.triggers ?? [];
-  assertEquals(triggers.length, 10);
+  assertEquals(triggers.length, 18);
   for (const t of triggers) {
     assertEquals(typeof t.handleIngest, "function", t.key);
     assertEquals(typeof t.onSubscribe, "function", t.key);

@@ -6,6 +6,7 @@ and forms.
 - **Categories** — crm, marketing
 - **Auth methods** — private-app-token, oauth2, api-key
 - **Actions** — 42
+- **Triggers** — 23 (webhook + poll)
 - **Egress allowlist** — `api.hubapi.com`, `api.hsforms.com`
 - **Website** — https://www.hubspot.com
 - **API docs** — https://developers.hubspot.com/docs/api/overview
@@ -75,16 +76,83 @@ reach a status host.
 
 ## Triggers
 
-| Key | Type | Source action | Ordering |
-|---|---|---|---|
-| `new-contact` | poll | `search-contacts` | `createdate DESCENDING` |
+Two kinds: **webhook** triggers that HubSpot calls (instant, set up once in HubSpot), and **poll**
+triggers that ask HubSpot every few minutes through the same search and list actions this app
+already has (nothing to set up).
 
-`new-contact` uses the existing CRM Search endpoint with a fixed
-`sorts: [{ propertyName: "createdate", direction: "DESCENDING" }]` request and an optional
-full-text query. HubSpot documents CRM Search and its sort support at
-https://developers.hubspot.com/docs/api-reference/search/guide and
-https://developers.hubspot.com/blog/when-to-use-crm-search-api-vs.-object-specific-apis
-(checked 2026-11-09).
+| Key | Type | HubSpot event or source action | The run gets |
+|---|---|---|---|
+| `contact-created` | webhook | `contact.creation` | the contact id, account id and change source |
+| `contact-updated` | webhook | `contact.propertyChange` | the contact id, the property name and its new value |
+| `contact-deleted` | webhook | `contact.deletion` | the id of the deleted contact |
+| `company-created` / `company-updated` / `company-deleted` | webhook | `company.creation` / `company.propertyChange` / `company.deletion` | the company id (and the property and new value for updates) |
+| `deal-created` / `deal-updated` / `deal-deleted` | webhook | `deal.creation` / `deal.propertyChange` / `deal.deletion` | the deal id (and the property and new value for updates) |
+| `ticket-created` / `ticket-updated` / `ticket-deleted` | webhook | `ticket.creation` / `ticket.propertyChange` / `ticket.deletion` | the ticket id (and the property and new value for updates) |
+| `any-event` | webhook | any notification the app is subscribed to, narrowed by the `events` param | event type, object id and the raw notification |
+| `new-contact` | poll | `search-contacts`, `createdate DESCENDING` | the new contact |
+| `new-company` | poll | `search-companies`, `createdate DESCENDING` | the new company |
+| `new-deal` | poll | `search-deals`, `createdate DESCENDING` | the new deal |
+| `new-ticket` | poll | `search-tickets`, `createdate DESCENDING` | the new ticket |
+| `new-or-updated-contact` | poll | `search-contacts`, `lastmodifieddate DESCENDING` | a contact created or edited since the last check |
+| `new-or-updated-company` | poll | `search-companies`, `hs_lastmodifieddate DESCENDING` | a company created or edited |
+| `new-or-updated-deal` | poll | `search-deals`, `hs_lastmodifieddate DESCENDING` | a deal created or edited |
+| `new-or-updated-ticket` | poll | `search-tickets`, `hs_lastmodifieddate DESCENDING` | a ticket created or edited |
+| `new-form` | poll (snapshot) | `list-forms` | a marketing form added to the account |
+| `new-owner` | poll (snapshot) | `list-owners` | an owner (portal user) added to the account |
+
+Each poll trigger sends the same request as its action, with one sort rule (CRM search takes one
+per request) and a page of 100. `list-contacts`, `list-companies`, `list-deals` and `list-tickets`
+return the same records as the search triggers, so those four are covered by `new-contact`,
+`new-company`, `new-deal` and `new-ticket`. Forms and owners are small configuration collections:
+each check walks every page (up to 2000 rows, and fails loudly beyond that) and reports rows that
+were not there before. The edit triggers identify a record by its id plus its `updatedAt`, so an
+edit is a new event. The first check of every poll trigger records what already exists and emits
+nothing.
+
+Not covered: `list-lists` calls the v1 contacts lists API (`/contacts/v1/lists`), which HubSpot
+sunset on 2026-04-30 and which no longer answers
+(https://developers.hubspot.com/docs/api-reference/legacy/crm/lists/v1-list-api-migration-guide),
+so no trigger can be built on it.
+
+### Setup for the webhook triggers (manual)
+
+HubSpot webhooks belong to a HubSpot **app**, and an app has **one** Target URL, so one trigger
+receives that app's notifications (use `any-event` with its `events` filter to take several event
+types in one workflow, or one HubSpot app per named trigger). A connection cannot create the
+subscription for you, so:
+
+1. Create the trigger and copy its callback URL.
+2. In HubSpot open the app that will send events: for an existing legacy private app,
+   **Development, Legacy apps**, the app, its **Webhooks** tab, **Edit webhooks**
+   (https://developers.hubspot.com/docs/apps/legacy-apps/private-apps/create-and-edit-webhook-subscriptions-in-private-apps);
+   for a public app, its **Webhooks** page
+   (https://developers.hubspot.com/docs/apps/legacy-apps/public-apps/create-generic-webhook-subscriptions).
+   HubSpot stopped letting new legacy private apps be created on 2026-10-26, so an account without
+   one needs a public app.
+3. Paste the callback URL as the **Target URL**, exactly as w6w shows it (HubSpot signs it).
+4. **Create subscription** for the objects and events you want, for example Contacts, Created, then
+   **Commit changes**.
+5. Paste the app's **client secret** (private app: its Auth tab, Show secret) into the trigger's
+   `signingSecret` param.
+
+HubSpot posts a batch of up to 100 notifications per request; each becomes one run. A property
+change arrives as one notification per changed property; `contact-updated` and the other update
+triggers take a `properties` param to keep only some. HubSpot does not guarantee a notification is
+sent once, so every event carries `eventId` and `attemptNumber`.
+
+**Trust model.** Every delivery is verified before it is read. When `X-HubSpot-Signature-v3` is
+present it is the only proof accepted: it must equal the base64 HMAC-SHA256, under the client
+secret, of the HTTP method, the Target URL, the exact raw body and `X-HubSpot-Request-Timestamp`,
+and the timestamp must be within five minutes. When it is absent the delivery must carry
+`X-HubSpot-Signature` with `X-HubSpot-Signature-Version: v1`, which is the hex SHA-256 of the
+client secret followed by the raw body. v1 has no timestamp, so it cannot reject a replay; switch on the **Require the v3 signature** param (`requireV3`) once your app sends v3 and v1 deliveries are refused.
+Any other signature version is refused, as is a missing or empty
+secret, a missing signature and a missing raw body. Nothing is accepted unsigned.
+
+Sources (verified 2026-11-10):
+https://developers.hubspot.com/docs/api-reference/legacy/webhooks/guide (event types, payload),
+https://developers.hubspot.com/docs/apps/legacy-apps/authentication/validating-requests (v1 and v3 signatures),
+https://developers.hubspot.com/docs/api-reference/legacy/crm/search-the-crm (search sorting and properties).
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.

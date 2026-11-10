@@ -51,8 +51,10 @@ test("fixture: the body is not canonical JSON", () => {
 });
 
 test("app: declares both triggers with output and sample, no unsigned path", () => {
-  assert.deepEqual(app.triggers.map((t) => t.key), ["new-message", "event"]);
-  for (const t of app.triggers) {
+  // The poll trigger (new-search-match) has no delivery to sign; every webhook trigger does.
+  const hooks = app.triggers.filter((t) => typeof t.poll !== "function");
+  assert.deepEqual(hooks.slice(0, 2).map((t) => t.key), ["new-message", "event"]);
+  for (const t of hooks) {
     assert.ok(t.output.length > 0);
     assert.notEqual(t.sample, undefined);
     assert.equal(t.params!.find((p) => p.key === "signingSecret")!.type, "secret");
@@ -78,8 +80,9 @@ test("onSubscribe makes no Slack call and returns the callback URL", async () =>
 test("valid signature over the raw body -> one event", async () => {
   const out = evs(await ingest(newMessage, signed(BODY)));
   assert.equal(out.length, 1);
+  const first = out[0] as { eventId: unknown; channel: unknown; text: unknown };
   assert.deepEqual(
-    { id: (out[0] as any).eventId, ch: (out[0] as any).channel, text: (out[0] as any).text },
+    { id: first.eventId, ch: first.channel, text: first.text },
     { id: "Ev0PV52K21", ch: "C2147483705", text: "Hello world" },
   );
 });

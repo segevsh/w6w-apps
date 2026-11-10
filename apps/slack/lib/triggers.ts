@@ -112,6 +112,11 @@ function asObject(v: unknown): Record<string, unknown> | null {
     : null;
 }
 
+/** The `id` of an object-valued field (`channel_created` carries a channel object, `team_join` a user). */
+function idOf(v: unknown): string | null {
+  return str(asObject(v)?.id);
+}
+
 /** Throws unless the delivery carries a valid, fresh Slack signature over the raw body. */
 export async function verifySlackSignature(
   raw: { rawBody?: unknown; headers: Record<string, string> },
@@ -143,8 +148,9 @@ function normalize(payload: Record<string, unknown>, ev: Record<string, unknown>
     apiAppId: str(payload.api_app_id),
     type: str(ev.type) ?? "unknown",
     subtype: str(ev.subtype),
-    channel: str(ev.channel),
-    user: str(ev.user),
+    channel: str(ev.channel) ?? idOf(ev.channel) ?? str(ev.channel_id) ??
+      str(asObject(ev.item)?.channel) ?? null,
+    user: str(ev.user) ?? idOf(ev.user) ?? str(ev.user_id) ?? null,
     text: str(ev.text),
     ts: str(ev.ts),
     threadTs: str(ev.thread_ts),
@@ -156,20 +162,53 @@ function normalize(payload: Record<string, unknown>, ev: Record<string, unknown>
 /** Message subtypes that are a new message a person could have written. */
 const NEW_MESSAGE_SUBTYPES = new Set(["file_share", "thread_broadcast", "bot_message"]);
 
+/** A sample run for a named trigger: the shared envelope around that trigger's own raw event. */
+function namedSample(ev: Record<string, unknown>): SlackEvent {
+  return normalize({
+    event_id: MESSAGE_SAMPLE.eventId,
+    event_time: MESSAGE_SAMPLE.eventTime,
+    team_id: MESSAGE_SAMPLE.teamId,
+    api_app_id: MESSAGE_SAMPLE.apiAppId,
+  }, ev);
+}
+
 export interface SlackTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** `message`: only new messages. Otherwise every event type named in the `eventTypes` param. */
-  kind: "message" | "event";
+  /**
+   * `message`: only new messages. `event`: every event type named in the `eventTypes` param.
+   * `named`: exactly the Events API types in `named.types` (narrowed by `named.subtypes` for the
+   * `message` event, whose edits and deletes are subtypes), optionally per channel.
+   */
+  kind: "message" | "event" | "named";
+  named?: {
+    types: string[];
+    subtypes?: string[];
+    /** Offer the optional `channelId` filter (events that happen in a channel). */
+    channelScoped?: boolean;
+    /** The raw `event` of the sample run. */
+    sampleEvent: Record<string, unknown>;
+  };
 }
 
 export function slackTrigger(
   spec: SlackTriggerSpec,
 ): TriggerDefinition<TriggerParams, SlackEvent, TriggerState> {
   const isMessage = spec.kind === "message";
+  const named = spec.kind === "named" ? spec.named : undefined;
   const params: Param[] = [SIGNING_SECRET_PARAM];
-  if (isMessage) {
+  if (named) {
+    if (named.channelScoped) {
+      params.push({
+        key: "channelId",
+        label: "Channel ID",
+        type: "string",
+        advanced: true,
+        hint: "Only events in this channel. Leave empty for every channel the app can see.",
+      });
+    }
+  } else if (isMessage) {
     params.push(
       {
         key: "channelId",
@@ -205,7 +244,7 @@ export function slackTrigger(
     description: spec.description,
     params,
     output: EVENT_OUTPUT,
-    sample: isMessage ? MESSAGE_SAMPLE : {
+    sample: named ? namedSample(named.sampleEvent) : isMessage ? MESSAGE_SAMPLE : {
       ...MESSAGE_SAMPLE,
       type: "reaction_added",
       text: null,
@@ -241,7 +280,14 @@ export function slackTrigger(
       if (!ev) return [];
       const event = normalize(payload, ev);
 
-      if (isMessage) {
+      if (named) {
+        if (!named.types.includes(event.type)) return [];
+        if (named.subtypes && (event.subtype === null || !named.subtypes.includes(event.subtype))) {
+          return [];
+        }
+        const channel = params?.channelId?.trim();
+        if (channel && event.channel !== channel) return [];
+      } else if (isMessage) {
         if (event.type !== "message") return [];
         if (event.subtype !== null && !NEW_MESSAGE_SUBTYPES.has(event.subtype)) return [];
         if (params?.ignoreBotMessages !== false && event.isBot) return [];
