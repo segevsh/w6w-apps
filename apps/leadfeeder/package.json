@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/leadfeeder",
-  "version": "0.1.0",
-  "description": "Identify website visitors, search companies and contacts, and manage lists, tags and campaigns through the Leadfeeder (Dealfront) API.",
+  "version": "0.2.0",
+  "description": "Identify website visitors, search companies and contacts, and manage lists, tags and campaigns through the Leadfeeder (Dealfront) API, and trigger workflows on new visitor companies.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.leadfeeder.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

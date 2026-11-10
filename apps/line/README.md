@@ -204,7 +204,7 @@ that its `<title>` and opening `<svg>` tag are unchanged.
 
 ```
 
-Triggers: not shipped — rich-menu configuration lists have no documented bounded collection or creation order; webhook candidate queued (https://developers.line.biz/en/reference/messaging-api/)
+Triggers: not shipped — the only list action is `rich-menu-list` (configuration, not activity); the useful events (messages, follows, postbacks) arrive as signed webhooks, which are queued for a webhook node (https://developers.line.biz/en/docs/messaging-api/receiving-messages/)
 line/
 ├── package.json                    # manifest — the `w6w` identity block
 ├── index.ts                        # entry: { actions, auth, healthChecks }

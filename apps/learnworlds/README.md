@@ -6,6 +6,7 @@ online school.
 - **Categories** — crm, commerce
 - **Auth methods** — client-credentials (OAuth2 Client Credentials grant)
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (per-school domain — see below)
 - **Website** — https://www.learnworlds.com
 - **API docs** — https://www.learnworlds.dev/docs/api (a JavaScript-rendered

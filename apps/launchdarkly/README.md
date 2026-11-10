@@ -6,6 +6,7 @@ them.
 - **Categories** — devops, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 21
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `app.launchdarkly.com`, `app.launchdarkly.us`
 - **Website** — https://launchdarkly.com
 - **API docs** — https://launchdarkly.com/docs/api ·
@@ -203,4 +204,13 @@ half — `unauthorized`, `not_found`, `invalid_request` — and the message name
 which instruction or field was rejected, which is what makes a failed semantic
 patch diagnosable.
 
-Triggers: not shipped — audit-log paging is an audit stream and has no stable newly-created resource collection (https://apidocs.launchdarkly.com/tag/Audit-log)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-flag` | poll | `flag-list` | Each feature flag newly created in a project (`sort=-creationDate`) |
+| `new-audit-log-entry` | poll | `audit-log-list` | Each new audit log entry (`after` = previous check minus a 2-minute overlap, deduped by entry id) |
+
+`GET /flags/{projectKey}` documents `creationDate` as a sort field and a leading dash as descending; `flag-list` gained an optional `sort` input (blank by default, behaviour unchanged) for it. `GET /auditlog` documents `after` as epoch milliseconds and a `limit` of 1 to 20, so the trigger reads at most 20 entries per check: a burst of more than 20 entries between two checks is not fully visible.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://launchdarkly.com/docs/api/feature-flags/get-feature-flags, https://launchdarkly.com/docs/api/audit-log/get-audit-log-entries (verified 2026-11-09).

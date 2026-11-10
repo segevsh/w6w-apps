@@ -81,4 +81,12 @@ Format with `deno task fmt`, never bare `deno fmt`.
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
 
-Triggers: not shipped — account-scoped lists are offset-paginated and no creation ordering is documented (https://docs.leadfeeder.com/api/)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-visitor-company` | poll | `visitor-company-list` | Each company that newly shows up as a website visitor (yesterday to today) |
+
+`GET /v1/web-visits/companies` takes a required date range and, with no `sort[...]` parameter, "the companies that visited most recently come first" (vendor OpenAPI, `getWebVisitsCompanies`). The trigger requests yesterday-to-today, 100 per page, and emits a company id it has not seen in its last 200; a company that returns after leaving that memory fires again.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.leadfeeder.com/openapi.yaml (verified 2026-11-09).

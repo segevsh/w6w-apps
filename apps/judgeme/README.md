@@ -55,7 +55,7 @@ string**, confirmed live against `api.judge.me`:
 {"error":"Failed to authenticate. Shop domain or Api Token is wrong"}
 ```
 
-Triggers: not shipped — review listing is paginated without a documented created-order or since filter; webhook candidate queued (https://judge.me/api/docs)
+Triggers: not shipped — `list-reviews` takes only `page`, `per_page` and equality filters (no sort, no created-after filter), so a poll cannot see new reviews reliably; Judge.me's `review/created` and `review/updated` webhooks are queued for a webhook node (https://judge.me/api/docs.yaml)
 
 `auth/api-key.ts`'s `test` hook reports this message verbatim and says so explicitly, rather than
 guessing which of the two fields is actually wrong — because Judge.me's own API doesn't say either.

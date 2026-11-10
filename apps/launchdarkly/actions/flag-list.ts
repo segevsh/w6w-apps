@@ -45,6 +45,15 @@ const action: ActionDefinition = {
       hint: "Archived flags are excluded from the normal listing.",
     },
     {
+      key: "sort",
+      label: "Sort",
+      type: "string",
+      default: "",
+      placeholder: "-creationDate",
+      hint: "LaunchDarkly's sort field; a leading dash sorts descending (e.g. `-creationDate`). " +
+        "Blank keeps LaunchDarkly's default order.",
+    },
+    {
       key: "summary",
       label: "Summary Only",
       type: "boolean",
@@ -69,6 +78,7 @@ const action: ActionDefinition = {
           env: csv(p.env),
           tag: (p.tag as string) || undefined,
           archived: p.archived === true ? "true" : undefined,
+          sort: (p.sort as string) || undefined,
           summary: p.summary === true ? "true" : undefined,
         },
       },

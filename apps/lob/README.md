@@ -6,6 +6,7 @@ manage address books, HTML templates and bank accounts, on the **Lob API**.
 - **Categories** — marketing, developer-tools
 - **Auth methods** — api-key (HTTP Basic: key as username, empty password)
 - **Actions** — 37
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, ~~`rate-limit`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.lob.com` (the `service` check adds `lob.statuspage.io` to its own hook
   allowlist, never to the app's)
@@ -164,4 +165,4 @@ Use `deno task fmt`, never bare `deno fmt` (the bare form rewrites `assets/icon.
 | --- | --- | --- | --- |
 | `new-address` | poll | `address-list` | Each newly saved address |
 
-Lob's address list is newest first and is polled every five minutes. Vendor API documentation: https://docs.lob.com/#tag/Addresses (verified 2026-11-09).
+Lob documents that the address list is "sorted by creation date, with the most recently created addresses appearing first", and it is polled every five minutes. Vendor API documentation: https://docs.lob.com/#tag/Addresses/operation/addresses_list (verified 2026-11-09).

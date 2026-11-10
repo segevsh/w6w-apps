@@ -6,6 +6,7 @@ Conversion Rules, their association with Campaigns, and the events themselves.
 - **Categories** — marketing, analytics
 - **Auth methods** — `oauth2` (`rw_conversions`, `r_ads`)
 - **Actions** — 7
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (`service`) + ~~`quota`~~ (declared absence) + 1 derived (`auth:oauth2`)
 - **Egress allowlist** — `api.linkedin.com` (the `service` check adds `www.linkedin-apistatus.com`
   to its own hook allowlist, never to the app's)
@@ -272,4 +273,12 @@ up `_tools/deno.json` instead and cannot resolve the `@w6w/types` value imports 
 `health/service.ts` and `lib/client.ts` use; this reproduces identically for the sibling `apify`,
 `paddle` and `linkedin-ads` apps, so it is a property of how the tool is invoked, not of this app.
 
-Triggers: not shipped — conversion rules are account-scoped offset-paginated configuration without a created-order feed (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversion-rule` | poll | `conversion-rule-list` | Each conversion rule newly created in an Ad Account (snapshot diff) |
+
+`GET /rest/conversions?q=account` returns every Conversion Rule of one Ad Account (a small, account-scoped set) with `start`/`count` paging and `paging.total`; the trigger reads every page and a new id is a new rule.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api (verified 2026-11-09).

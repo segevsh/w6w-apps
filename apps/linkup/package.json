@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/linkup",
-  "version": "0.1.0",
-  "description": "Search the web, fetch pages, run research and batch tasks through Linkup's AI web-search API.",
+  "version": "0.2.0",
+  "description": "Search the web, fetch pages, run research and batch tasks through Linkup's AI web-search API, and trigger workflows on new tasks, research tasks and extract tasks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.linkup.so"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -21,4 +21,4 @@ so there is no `quota` check.
 
 `assets/icon.svg` is a placeholder, not the TypeSafe brand mark.
 
-Triggers: not shipped — model evaluation and model catalog APIs expose no user-created records (https://docs.jev.ai/)
+Triggers: not shipped — stateless typed-evaluation API: `evaluate` is a compute call and `list-models` returns the static model catalog, so there are no user records that change (https://docs.typesafe.ai)

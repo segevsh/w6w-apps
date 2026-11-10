@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/instapaper",
-  "version": "0.1.1",
-  "description": "Save, organize and read articles with Instapaper — bookmarks, folders and highlights over its OAuth 1.0a xAuth API.",
+  "version": "0.2.0",
+  "description": "Save, organize and read articles with Instapaper — bookmarks, folders and highlights over its OAuth 1.0a xAuth API, and trigger workflows on new folders.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,7 +38,8 @@
         "www.instapaper.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

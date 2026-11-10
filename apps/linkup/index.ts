@@ -21,6 +21,9 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newTask from "./triggers/new-task.ts";
+import newResearchTask from "./triggers/new-research-task.ts";
+import newExtractTask from "./triggers/new-extract-task.ts";
 
 /**
  * Linkup — AI web search and fetch API (linkup.so; not "LinkupAPI", a different LinkedIn
@@ -59,6 +62,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newTask, newResearchTask, newExtractTask],
 };
 
 export default app;

@@ -5,6 +5,7 @@ Klaviyo profiles, lists, events, segments, campaigns, and templates.
 - **Categories** — marketing, email
 - **Auth methods** — api-key
 - **Actions** — 23
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `a.klaviyo.com`
 - **Website** — https://www.klaviyo.com
 - **API docs** — https://developers.klaviyo.com/en/reference/api_overview

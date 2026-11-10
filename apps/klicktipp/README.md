@@ -6,6 +6,7 @@ through a Listbuilding API key.
 - **Categories** — email, marketing
 - **Auth methods** — `session` (username + password), `listbuilding-key` (Listbuilding API key)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.klicktipp.com`
 - **Website** — https://www.klicktipp.com
 - **API docs** — https://developers.klicktipp.com (OpenAPI: `_bundle/management-api.yaml`,
@@ -116,4 +117,12 @@ taken from the OpenAPI example.
 https://developers.klicktipp.com/assets/klicktipp.c3f8114c33a76db3eaaef29c5d3baea243313b864d8f3e856a0f7af2cb88866e.9c1bb791.svg
 A unit test pins its size and hash. Format with `deno task fmt`, never bare `deno fmt`.
 
-Triggers: not shipped — changed-contact results contain only IDs and do not expose immutable creation records for a New trigger (https://developers.klicktipp.com/)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `contact-changed` | poll | `subscriber-changed` | The id of each contact KlickTipp lists as changed since the last check |
+
+`GET /subscriber/changed?from=<unix seconds>` lists contact ids changed since a timestamp with cursor paging. The feed returns ids only and does not say whether a change was a creation, so the trigger is `contact-changed`, not "new contact": it asks from the previous check's second, skips the boundary-second repeat of the previous listing, and works off a very large burst (more than 5 pages of 200 ids or 100 new ids) over the following checks.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://developers.klicktipp.com/ (verified 2026-11-09).

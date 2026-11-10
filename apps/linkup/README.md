@@ -71,4 +71,14 @@ streaming and the MCP server (`mcp.linkup.so`) are not part of the REST API and 
 
 `assets/icon.svg` is the vendor's mark, byte-for-byte from <https://docs.linkup.so/favicon.svg>.
 
-Triggers: not shipped — AI search, research, task, and extraction job APIs are request-scoped rather than a new-record feed (https://docs.linkup.so/)
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` | poll | `tasks-list` | Each task newly created in the organisation |
+| `new-research-task` | poll | `research-list` | Each research task newly created |
+| `new-extract-task` | poll | `extract-list` | Each extract task newly created |
+
+The task lists document `sortBy` (`createdAt` or `updatedAt`) and `sortDirection` (`asc` default, `desc`) with a page size up to 100; the triggers request `sortBy=createdAt&sortDirection=desc&pageSize=100`.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://api.linkup.so/v1/openapi.json (verified 2026-11-09).

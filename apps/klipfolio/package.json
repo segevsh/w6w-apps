@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/klipfolio",
-  "version": "0.1.0",
-  "description": "Manage Klipfolio data sources, Klips, dashboards, users, clients and groups, and queue data source refreshes.",
+  "version": "0.2.0",
+  "description": "Manage Klipfolio data sources, Klips, dashboards, users, clients and groups, and queue data source refreshes, and trigger workflows on new dashboards and data sources.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "app.klipfolio.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

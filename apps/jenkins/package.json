@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jenkins",
-  "version": "0.1.1",
-  "description": "Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance.",
+  "version": "0.2.0",
+  "description": "Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance, and trigger workflows on new builds and jobs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,7 +32,8 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
