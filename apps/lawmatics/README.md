@@ -89,4 +89,12 @@ See `packages/apps/HEALTHCHECKS.md` for the pack-wide conventions this follows.
 
 ## Triggers
 
-- **New Contact** wraps the existing `list-contacts` action and polls its newest-first feed. Vendor documentation: https://docs.lawmatics.com (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Contact (`new-contact`) | poll | `list-contacts` — by `created_at` descending | each newly created contact |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `list-contacts` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw (verified 2026-11-09). Its Param Guide documents `sort_by` ("Available sort_by columns are: id, created_at, updated_at") and `sort_order` (`asc` or `desc`). No new-or-updated trigger ships: the default field set returned without `fields` is not documented to include `updated_at`, so an edit stamp cannot be relied on.
