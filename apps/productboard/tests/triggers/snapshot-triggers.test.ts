@@ -6,6 +6,8 @@ import newOrUpdatedTeam from "../../triggers/new-or-updated-team.ts";
 import newMember from "../../triggers/new-member.ts";
 import newTeamMember from "../../triggers/new-team-member.ts";
 import newEntityRelationship from "../../triggers/new-entity-relationship.ts";
+import newJiraConnection from "../../triggers/new-jira-integration-connection.ts";
+import newPluginConnection from "../../triggers/new-plugin-integration-connection.ts";
 import newNoteRelationship from "../../triggers/new-note-relationship.ts";
 
 // Snapshot triggers (brief 9.1c): each check reads every page of the wrapped list and diffs it.
@@ -59,6 +61,20 @@ const cases = [
     method: "GET",
     mk: (n: number) => rel("link", `f${n}`),
   },
+  {
+    trigger: newJiraConnection,
+    params: { integrationId: "int-9" },
+    path: "/jira-integrations/int-9/connections",
+    method: "GET",
+    mk: (n: number) => byId(`e${n}`, { fields: { issueKey: `PROJ-${n}`, issueId: `${n}` } }),
+  },
+  {
+    trigger: newPluginConnection,
+    params: { integrationId: "int-9" },
+    path: "/plugin-integrations/int-9/connections",
+    method: "GET",
+    mk: (n: number) => byId(`e${n}`, { fields: { connection: { state: "connected" } } }),
+  },
 ] as const;
 
 for (const { trigger, params, path, method, mk } of cases) {
@@ -96,7 +112,13 @@ for (const { trigger, params, path, method, mk } of cases) {
       { length: 60 },
       (_, i) => envelope(path, [mk(i)], `t${i}`),
     );
-    await assertRejects(() => trigger.poll!({ ...input, state: {} }, mockCtx(forever).ctx));
+    const c = mockCtx(forever);
+    await assertRejects(
+      () => trigger.poll!({ ...input, state: {} }, c.ctx),
+      Error,
+      "more than 50 pages",
+    );
+    assertEquals(c.calls.length, 50);
   });
 }
 

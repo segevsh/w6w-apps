@@ -8,7 +8,7 @@ teams and members, and manage webhook subscriptions — over the **Productboard 
   checks** (plus 1 derived `auth:*`)
 - **Egress** `api.productboard.com` only. The status host is on the `service` check's own
   allowlist, never the app's.
-- **Triggers** — 10 (poll)
+- **Triggers** — 12 (poll)
 
 ## Which source this was built from
 
@@ -436,15 +436,17 @@ deno task test       # 221 unit tests, mocked HookContext, no network
 | `new-team-member` — New Team Member | Poll | `team-member-list` | Each member newly added to the team you pick |
 | `new-entity-relationship` — New Entity Relationship | Poll | `entity-relationship-list` | Each relationship newly added to the entity you pick |
 | `new-note-relationship` — New Note Relationship | Poll | `note-relationship-list` | Each customer or entity link newly added to the note you pick |
+| `new-jira-integration-connection` — New Jira Connection | Poll | `jira-integration-connection-list` | Each entity newly linked to a Jira issue in the integration you pick |
+| `new-plugin-integration-connection` — New Plugin Connection | Poll | `plugin-integration-connection-list` | Each entity newly connected through the plugin integration you pick |
 
 How each one polls:
 
 - The note triggers call `note-list` with `createdFrom` / `updatedFrom` set to the previous check minus 10 minutes (Productboard documents both as inclusive date bounds but no sort order) and de-duplicate by id.
 - The entity triggers call `entity-search` with `filter.createdAt.from` / `filter.updatedAt.from` set the same way (`EntitySearchFilter` date ranges in the entities OpenAPI document; `entity-list` has no date filter).
 - Both kinds only emit records created (or, for the updated ones, changed) after the trigger's first check, and a window that holds more than 5 pages of 100 drains across checks without skipping or repeating a record.
-- The team, member, team-member and relationship triggers read the whole (small, bounded) list on every check and emit ids that were not there before; `new-or-updated-team` also emits a team whose row changed. A list past 50 pages fails the check with a clear error instead of looping. Member rows have no timestamps, so there is no updated sibling; disabled and invitation-pending members are not in the list, as in `member-list`.
+- The team, member, team-member, relationship and integration-connection triggers read the whole (small, bounded) list on every check and emit ids that were not there before; `new-or-updated-team` also emits a team whose row changed. A list past 50 pages fails the check with a clear error instead of looping. Member rows have no timestamps, so there is no updated sibling; disabled and invitation-pending members are not in the list, as in `member-list`.
 
-Not covered (no trigger, by design): `entity-configuration-list`, `note-configuration-list`, `entity-field-value-list` (workspace field and option definitions); `member-activity-list` (analytics output); `jira-integration-list`, `plugin-integration-list`, `webhook-list` (integration and webhook configuration); `jira-integration-connection-list`, `plugin-integration-connection-list` (one mapping row per linked entity, unbounded, with no order or date filter in the vendor document).
+Not covered (no trigger, by design): `entity-configuration-list`, `note-configuration-list`, `entity-field-value-list` (workspace field and option definitions); `member-activity-list` (analytics output); `jira-integration-list`, `plugin-integration-list`, `webhook-list` (integration and webhook configuration).
 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 

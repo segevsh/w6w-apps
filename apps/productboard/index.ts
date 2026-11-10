@@ -51,9 +51,11 @@
 import type { AppDefinition } from "@w6w/types";
 import newEntity from "./triggers/new-entity.ts";
 import newEntityRelationship from "./triggers/new-entity-relationship.ts";
+import newJiraIntegrationConnection from "./triggers/new-jira-integration-connection.ts";
 import newMember from "./triggers/new-member.ts";
 import newNote from "./triggers/new-note.ts";
 import newNoteRelationship from "./triggers/new-note-relationship.ts";
+import newPluginIntegrationConnection from "./triggers/new-plugin-integration-connection.ts";
 import newOrUpdatedEntity from "./triggers/new-or-updated-entity.ts";
 import newOrUpdatedNote from "./triggers/new-or-updated-note.ts";
 import newOrUpdatedTeam from "./triggers/new-or-updated-team.ts";
@@ -176,12 +178,14 @@ export default {
   triggers: [
     newEntity,
     newEntityRelationship,
+    newJiraIntegrationConnection,
     newMember,
     newNote,
     newNoteRelationship,
     newOrUpdatedEntity,
     newOrUpdatedNote,
     newOrUpdatedTeam,
+    newPluginIntegrationConnection,
     newTeam,
     newTeamMember,
   ],

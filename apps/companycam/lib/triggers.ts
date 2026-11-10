@@ -37,6 +37,11 @@ export interface SinceSpec<P> {
   /** How far behind the cursor each window starts (re-read and de-duplicated by id). */
   overlapMs: number;
   /**
+   * How many emitted ids are remembered for de-duplication (default 1000). It must exceed the
+   * records a window can re-read: a long overlap on a busy account needs far more.
+   */
+  seenWindow?: number;
+  /**
    * Read one page of the wrapped list action with the vendor's date filter bound to `from`.
    * `pos` is the previous page's position (a page number, or a cursor), undefined for the first.
    */
@@ -68,7 +73,7 @@ export function sinceFilterTrigger<P = Record<string, unknown>>(
         overlapMs: spec.overlapMs,
         maxPages: MAX_PAGES,
         pageSize: PAGE_SIZE,
-        seenWindow: 1000,
+        seenWindow: spec.seenWindow ?? 1000,
         idOf: spec.idOf,
         tsOf: spec.tsOf,
         load: (since, pos) => spec.load({ from: since, params, pos }, ctx),

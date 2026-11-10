@@ -12,6 +12,8 @@ export default sinceFilterTrigger({
   title: "New Photo",
   description: "The run gets each newly uploaded photo.",
   overlapMs: 7_200_000,
+  // Remember every id a 2 h re-read can return (thousands on a busy account), so none repeats.
+  seenWindow: 20_000,
   load: cursored(
     photoList as unknown as ActionDefinition,
     (_p, from) => ({ startDate: String(Math.floor((from ?? 0) / 1000)) }),

@@ -11,6 +11,8 @@ export default sinceFilterTrigger({
   title: "New Video",
   description: "The run gets each newly uploaded video.",
   overlapMs: 7_200_000,
+  // Remember every id a 2 h re-read can return (thousands on a busy account), so none repeats.
+  seenWindow: 20_000,
   load: numbered(
     videoList as unknown as ActionDefinition,
     (_p, from) => ({ startDate: String(Math.floor((from ?? 0) / 1000)) }),
