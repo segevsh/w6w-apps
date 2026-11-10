@@ -367,3 +367,5 @@ Researched and endpoint-verified against Smartsheet's live OpenAPI document and 
 2026-08-03. Every path, parameter, enum and response envelope in this app was read out of that
 document rather than recalled. Status surfaces move; re-check with `_tools/audit.ts` conventions in
 mind if a probe starts failing for everyone at once.
+
+Triggers: not shipped — list-container-children is a scoped paginated hierarchy with no creation ordering or filter (https://developers.smartsheet.com/api/smartsheet/openapi)

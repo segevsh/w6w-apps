@@ -191,6 +191,7 @@ A test asserts `apiKey.oauth2` stays `undefined`.
 ## Two smaller ones
 
 - **`group_id` silently swallows `friend_id`.** "If provided, only expenses in that group will be
+- **Triggers** — 1 (poll)
   returned, and `friend_id` will be ignored." No error — the friend filter simply evaporates, and the
   result looks like a complete answer to a question nobody asked. **List Expenses** logs a `warn` when
   both are set.
@@ -508,3 +509,11 @@ run rejected unless `passed + failed` equalled the known 220:
 | equal split accepts `group_id: 0` | killed |
 | `users__i__prop` → `users_i_prop` | killed, 12 failures |
 | `get-expense` rewritten to call `ctx.fetch` directly | killed at the client-bypass guard |
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-expense` — New Expense | poll | `list-expenses` | Each newly created expense. |
+
+Vendor documentation: https://dev.splitwise.com/ (verified 2026-11-09).

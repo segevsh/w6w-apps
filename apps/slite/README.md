@@ -75,6 +75,7 @@ second create makes a second note). The other `perform` actions set a state and 
 ### Things that bite
 
 - **Pagination is two different things.** Notes, children, knowledge-management, users and groups
+- **Triggers** — 1 (poll)
   use an opaque `cursor`; read `nextCursor` from the output and pass it back as `cursor`. Note search
   uses a zero-based `page` plus `hitsPerPage` (1-100) and reports `nbPages`.
 - **`ask` can answer 202.** A slow answer is `{status: "processing", threadId, retryAfterSeconds}`,
@@ -123,3 +124,11 @@ second create makes a second note). The other `perform` actions set a state and 
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-note` — New Knowledge-management Note | poll | `km-note-list` | Each newly created knowledge-management note. |
+
+Vendor documentation: https://developers.slite.com/reference/listnotesforknowledgemanagement (verified 2026-11-09).

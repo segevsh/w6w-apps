@@ -4,6 +4,7 @@ Read Snyk issues, projects, targets and SBOMs, and audit an organization's
 security posture.
 
 - **Categories** — security, developer-tools
+- **Triggers** — 1 (poll)
 - **Auth methods** — api-token
 - **Actions** — 20
 - **Egress allowlist** — `api.snyk.io`
@@ -234,3 +235,11 @@ serves from its own API host (`https://api.snyk.io/rest/openapi/2026-03-25`,
 surfaces move, and so do API versions — if `api-version` starts reporting a
 sunset, that is this app's cue to move `DEFAULT_VERSION` and re-check the
 response shapes.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-issue` — New Issue | poll | `issue-list` | Each newly created issue. |
+
+Vendor documentation: https://docs.snyk.io/snyk-api/reference/orgs-v1 (verified 2026-11-09).

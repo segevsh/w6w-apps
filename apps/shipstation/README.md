@@ -4,6 +4,7 @@ Create shipments, get carrier rates, buy and void labels, and manage warehouses
 and carrier accounts — across every carrier connected to a ShipStation account.
 
 - **Categories** — commerce, developer-tools
+- **Triggers** — 1 (poll)
 - **Auth methods** — api-key
 - **Actions** — 18
 - **Egress allowlist** — `api.shipstation.com` (the `service` health check adds
@@ -212,3 +213,11 @@ an unauthenticated `GET /v2/labels`. `error_source` says who to blame
 (`shipengine` itself, vs. a third party like a `carrier`); `lib/client.ts`
 keeps it in every thrown error message because a carrier-sourced failure often
 means "call the carrier", not "fix the request".
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-shipment` — New Shipment | poll | `shipment-list` | Each newly created shipment. |
+
+Vendor documentation: https://docs.shipstation.com/openapi/shipments/list_shipments (verified 2026-11-09).

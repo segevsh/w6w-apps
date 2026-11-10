@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/servicem8",
-  "version": "0.1.0",
-  "description": "Manage jobs, clients, staff, scheduling and materials in ServiceM8, a field-service management platform for trades businesses.",
+  "version": "0.2.0",
+  "description": "Manage jobs, clients, staff, scheduling and materials in ServiceM8, a field-service management platform for trades businesses with poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.servicem8.com/docs"
     ],
-    "longDescription": "ServiceM8 manages the day-to-day of a field-service business — Jobs (Quotes, Work Orders and Completed jobs), Clients, staff scheduling, and the line items on a Job's Quote or Invoice — over ServiceM8's own REST API. Jobs and clients can be listed, read, created and updated, scheduling entries (job activities) can be listed and created, and quote/invoice line items and job notes can be added directly.\n\nBecause ServiceM8's API key carries no scope restriction, every action available to this app is available to any connection, and creating or updating a record returns only an acknowledgement — reading the fields back always means a follow-up read of the same record by its id. Deleting a job archives it rather than erasing it; the record and its full history stay reachable afterward.\n\nList actions expose ServiceM8's own generic filter and cursor-based pagination rather than inventing per-field parameters the vendor doesn't document. Attachments, webhook subscriptions and OAuth2 are left out, since each needs a wire format or a partner registration this integration can't yet verify end to end.",
+    "longDescription": "ServiceM8 manages the day-to-day of a field-service business — Jobs (Quotes, Work Orders and Completed jobs), Clients, staff scheduling, and the line items on a Job's Quote or Invoice — over ServiceM8's own REST API. Jobs and clients can be listed, read, created and updated, scheduling entries (job activities) can be listed and created, and quote/invoice line items and job notes can be added directly.\n\nBecause ServiceM8's API key carries no scope restriction, every action available to this app is available to any connection, and creating or updating a record returns only an acknowledgement — reading the fields back always means a follow-up read of the same record by its id. Deleting a job archives it rather than erasing it; the record and its full history stay reachable afterward.\n\nList actions expose ServiceM8's own generic filter and cursor-based pagination rather than inventing per-field parameters the vendor doesn't document. Attachments, webhook subscriptions and OAuth2 are left out, since each needs a wire format or a partner registration this integration can't yet verify end to end.\n\nPoll triggers emit new category rows from the existing category-list action.\n\nPoll triggers emit new category rows from the existing category-list action.",
     "categories": [
       "crm",
       "calendar",
@@ -34,7 +34,12 @@
         "api.servicem8.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

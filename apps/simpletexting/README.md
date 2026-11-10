@@ -4,6 +4,7 @@ Send SMS/MMS, manage contacts, lists, segments and custom fields, send campaigns
 webhooks to messaging events, on **SimpleTexting's API v2**.
 
 - **Categories** — communication, marketing
+- **Triggers** — 1 (poll)
 - **Auth methods** — api-key
 - **Actions** — 27
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
@@ -140,3 +141,11 @@ deno task lint        # deno lint
 deno task fmt         # format — always via this task, never a bare `deno fmt`
 deno task test        # unit tests, every action + auth + both health checks
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created contact. |
+
+Vendor documentation: https://api-doc.simpletexting.com/ (verified 2026-11-09).

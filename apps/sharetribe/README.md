@@ -5,6 +5,7 @@ Manage marketplace users, listings, transactions and stock through Sharetribe's
 **Asset Delivery API**.
 
 - **Categories** — commerce, developer-tools
+- **Triggers** — 1 (poll)
 - **Auth methods** — integration-app (Integration API application: Client ID + Client Secret)
 - **Actions** — 19 (17 Integration API + 2 Asset Delivery API, `requiresAuth: false`)
 - **Health checks** — 2 (`service`, ~~`request-rate`~~) + the derived `auth:integration-app`
@@ -272,3 +273,11 @@ deno task lint
 deno task fmt          # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-event` — New Event | poll | `event-list` | Each newly created event. |
+
+Vendor documentation: https://www.sharetribe.com/api-reference/integration.html (verified 2026-11-09).

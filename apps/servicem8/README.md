@@ -5,6 +5,7 @@ Clients, scheduling, staff, and the line items on a Job's Quote/Invoice — over
 API** (`api.servicem8.com/api_1.0`).
 
 - **18 actions** across Jobs, Clients, scheduling (Job Activities), Quote/Invoice line items
+- **Triggers** — 1 (poll)
   (Job Materials), Notes, Staff and reference data (Categories, Queues, the account itself).
 - **1 auth method**: an API Key (`X-Api-Key` header).
 - **2 declared health checks** plus 1 derived `auth:api-key` check.
@@ -297,3 +298,11 @@ deno task test
 
 The unit tests call every hook with a mocked `HookContext` — a fake `ctx.fetch` that queues responses
 and records requests, and a no-op `ctx.log`. No network, no server.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-category` — New Category | poll | `category-list` | Each newly created category. |
+
+Vendor documentation: https://developer.servicem8.com/docs/filtering (verified 2026-11-09).

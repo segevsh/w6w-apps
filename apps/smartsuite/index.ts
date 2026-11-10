@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newRecord from "./triggers/new-record.ts";
 import apiKey from "./auth/api-key.ts";
 
 // solutions
@@ -34,6 +35,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newRecord],
   actions: [
     // solutions
     listSolutions,

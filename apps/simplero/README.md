@@ -77,6 +77,7 @@ Of the 682 paths this app covers 35 operations. Left out, by choice or because S
 not have them:
 
 - **No contact delete.** v2 has only four `DELETE` operations in total (attachments, funnel
+- **Triggers** — 1 (poll)
   connectors, and two page-builder nodes). A contact can only be archived (`mark_as_archived`,
   not implemented here).
 - **No webhook management.** v2 has no webhooks resource. The only webhook-shaped operation is
@@ -150,3 +151,11 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 
 Run these from this directory (use `deno task fmt`, never bare `deno fmt`). Tests use a mocked
 `HookContext`: a fake `ctx.fetch` and a no-op `ctx.log`; nothing touches the network.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-purchase` — New Purchase | poll | `purchase-list` | Each newly created purchase. |
+
+Vendor documentation: https://simplero.com/api/v2/docs/openapi.json (verified 2026-11-09).

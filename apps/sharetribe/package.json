@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sharetribe",
-  "version": "0.1.0",
-  "description": "Manage marketplace users, listings, transactions and stock through Sharetribe's Integration API, plus read-only marketplace asset config.",
+  "version": "0.2.0",
+  "description": "Manage marketplace users, listings, transactions and stock through Sharetribe's Integration API, plus read-only marketplace asset config with poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://www.sharetribe.com/api-reference/index.html"
     ],
-    "longDescription": "Sharetribe is a marketplace-as-a-service platform: operators run a two-sided marketplace (listings, users, bookings/orders, payments) on it without building the marketplace engine themselves. This app covers Sharetribe's Integration API — the trusted, server-side surface meant for backend systems and marketplace operators, with full read/write access to marketplace data (as opposed to the Marketplace API, which is what the marketplace's own end-user-facing client authenticates as a single logged-in user against).\n\nIts centre of gravity is the marketplace lifecycle an operator automates: reading and querying users and listings; creating, updating, closing, opening and approving listings; querying and transitioning transactions through an operator-triggered step in the marketplace's transaction process; adjusting a listing's available stock with an optimistic compare-and-set; and polling the append-only event log that records every change in the marketplace. A small set of read-only actions also cover the separate, unauthenticated Asset Delivery API, which serves a marketplace's own published configuration and content assets by client ID.\n\nHealth checks track Sharetribe's own status page, which names the Integration, Marketplace, Authentication and Asset Delivery APIs as independent components.",
+    "longDescription": "Sharetribe is a marketplace-as-a-service platform: operators run a two-sided marketplace (listings, users, bookings/orders, payments) on it without building the marketplace engine themselves. This app covers Sharetribe's Integration API — the trusted, server-side surface meant for backend systems and marketplace operators, with full read/write access to marketplace data (as opposed to the Marketplace API, which is what the marketplace's own end-user-facing client authenticates as a single logged-in user against).\n\nIts centre of gravity is the marketplace lifecycle an operator automates: reading and querying users and listings; creating, updating, closing, opening and approving listings; querying and transitioning transactions through an operator-triggered step in the marketplace's transaction process; adjusting a listing's available stock with an optimistic compare-and-set; and polling the append-only event log that records every change in the marketplace. A small set of read-only actions also cover the separate, unauthenticated Asset Delivery API, which serves a marketplace's own published configuration and content assets by client ID.\n\nHealth checks track Sharetribe's own status page, which names the Integration, Marketplace, Authentication and Asset Delivery APIs as independent components.\n\nPoll triggers emit new event rows from the existing event-list action.\n\nPoll triggers emit new event rows from the existing event-list action.",
     "categories": [
       "commerce",
       "developer-tools"
@@ -38,7 +38,12 @@
         "cdn.st-api.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

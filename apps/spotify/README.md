@@ -138,3 +138,5 @@ host.
 Researched and endpoint-verified 2026-08-01 against
 developer.spotify.com. Status surfaces move; re-check if a probe starts
 failing for everyone at once.
+
+Triggers: not shipped — search is a query-dependent catalog endpoint with no creation ordering or since filter (https://developer.spotify.com/documentation/web-api/reference/search)

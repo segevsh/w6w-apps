@@ -52,6 +52,7 @@
  * to narrow it.
  */
 import type { AppDefinition } from "@w6w/types";
+import newExpense from "./triggers/new-expense.ts";
 import apiKey from "./auth/api-key.ts";
 
 import getCurrentUser from "./actions/get-current-user.ts";
@@ -91,6 +92,7 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newExpense],
   actions: [
     // Users
     getCurrentUser,

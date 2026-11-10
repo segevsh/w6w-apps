@@ -4,6 +4,7 @@ The merchant-side commerce APIs for **one Squarespace website**: its orders, inv
 store pages, customer profiles and transaction documents, on **`api.squarespace.com`**.
 
 - **Categories** — commerce, finance
+- **Triggers** — 1 (poll)
 - **Auth methods** — api-key
 - **Actions** — 21
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
@@ -151,3 +152,11 @@ Settings → Developer Tools → API Keys (tied to that one website), and OAuth,
 for registered Squarespace Extensions — not a fit for a workflow Connection. This app implements
 the API key, sent as `Authorization: Bearer <key>` (stamped only in `auth/api-key.ts`'s `sign`
 hook, never inside an action).
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-order` — New Order | poll | `list-orders` | Each newly created order. |
+
+Vendor documentation: https://developers.squarespace.com/commerce-apis/orders/retrieving-orders (verified 2026-11-09).

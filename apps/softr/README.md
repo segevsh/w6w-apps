@@ -5,6 +5,7 @@ structure, and manage the **users** signed up to a published Softr app — over 
 separately-hosted first-party APIs.
 
 - **Categories** — databases, spreadsheets, productivity
+- **Triggers** — 1 (poll)
 - **Auth methods** — api-key
 - **Actions** — 18
 - **Health checks** — 2 (~~`service`~~, ~~`quota`~~) + the derived `auth:api-key`
@@ -190,3 +191,11 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-record` — New Record | poll | `record-list` | Each newly created record. |
+
+Vendor documentation: https://docs.softr.io/softr-api/softr-database-api (verified 2026-11-09).
