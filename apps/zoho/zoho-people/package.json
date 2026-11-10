@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-people",
-  "version": "0.2.0",
-  "description": "Read and write Zoho People HR forms and employee records, trigger on new or updated records, attendance check-in/out, leave and time-tracker time logs, across every Zoho data centre.",
+  "version": "0.3.0",
+  "description": "Read and write Zoho People HR forms and employee records, trigger on new or updated records and new Time Tracker projects and jobs, attendance check-in/out, leave and time-tracker time logs, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
