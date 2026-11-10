@@ -2,35 +2,104 @@ import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-order.ts";
+import { clock } from "../../lib/triggers.ts";
 
+const T0 = Date.parse("2026-11-09T12:00:00.000Z");
+const T1 = T0 + 300_000;
 const input = { params: {}, subscriptionId: "sub-1" };
-const item = { id: "order-a" };
-const body = (items: unknown[]) => ({ result: items });
+const SINCE_OLD = "2026-11-09T11:00:00.000Z"; // before the window start (T0 - 120 s)
+const SINCE_NEW = "2026-11-09T12:03:00.000Z"; // inside the window
+const rec = (id: string, created: string, modified: string) => ({
+  id,
+  createdOn: created,
+  modifiedOn: modified,
+});
+const wrap = (result: unknown[]) => ({ result, pagination: { hasNextPage: false } });
+const next = (r: unknown) => (r as { nextState: unknown }).nextState;
+const events = (r: unknown) => (r as { events: unknown[] }).events;
+const cursor = (r: unknown) => (next(r) as { cursor: number }).cursor;
+const seed = async () => {
+  clock.now = () => T0;
+  const c = mockCtx([]);
+  const r = await trigger.poll!({ ...input, state: {} } as never, c.ctx);
+  return { r, calls: c.calls };
+};
 
-test("new-order: seeds, emits unseen rows, retries idempotently, and requests the wrapped feed", async () => {
-  const seededCtx = mockCtx([{ body: body([item]) }]);
-  const seeded = await trigger.poll!({ ...input, state: {} } as never, seededCtx.ctx);
-  assertEquals((seeded as { events: unknown[] }).events, []);
-  assertEquals((seeded as { nextState: { seeded?: boolean } }).nextState.seeded, true);
-  const added = {
-    ...item,
-    id: "new-id",
-    contactId: "new-id",
-    shipmentId: "new-id",
-    sequenceId: "new-id",
-  };
-  const page = body([added, item]);
-  const nextCtx = mockCtx([{ body: page }]);
+test("new-order: first check seeds the cursor without a request or events", async () => {
+  const { r, calls } = await seed();
+  assertEquals(events(r), []);
+  assertEquals((next(r) as { seeded?: boolean }).seeded, true);
+  assertEquals(cursor(r), T0);
+  assertEquals(calls.length, 0);
+});
+
+test("new-order: emits the new record and skips an old one; a retry is identical", async () => {
+  const { r: seeded } = await seed();
+  clock.now = () => T1;
+  const body = wrap([rec("fresh", SINCE_NEW, SINCE_NEW), rec("old", SINCE_OLD, SINCE_NEW)]);
   const first = await trigger.poll!(
-    { ...input, state: (seeded as { nextState: unknown }).nextState } as never,
-    nextCtx.ctx,
+    { ...input, state: next(seeded) } as never,
+    mockCtx([{ body }]).ctx,
   );
   const retry = await trigger.poll!(
-    { ...input, state: (seeded as { nextState: unknown }).nextState } as never,
-    mockCtx([{ body: page }]).ctx,
+    { ...input, state: next(seeded) } as never,
+    mockCtx([{ body }]).ctx,
   );
-  assertEquals((first as { events: unknown[] }).events, [added]);
+  assertEquals(events(first), [rec("fresh", SINCE_NEW, SINCE_NEW)]);
   assertEquals(retry, first);
-  assertEquals(nextCtx.calls[0].method, "GET");
-  assertEquals(nextCtx.calls[0].url, "https://api.squarespace.com/1.0/commerce/orders");
+  assertEquals(cursor(first), T1);
+});
+
+test("new-order: requests the since window with the vendor's filter", async () => {
+  const { r: seeded } = await seed();
+  clock.now = () => T1;
+  const c = mockCtx([{ body: wrap([]) }]);
+  await trigger.poll!({ ...input, state: next(seeded) } as never, c.ctx);
+  assertEquals(c.calls[0].method, "GET");
+  assertEquals(
+    c.calls[0].url,
+    "https://api.squarespace.com/1.0/commerce/orders?modifiedAfter=2026-11-09T11%3A58%3A00.000Z&modifiedBefore=2026-11-09T12%3A05%3A00.000Z",
+  );
+});
+
+test("new-order: an old record edited inside the window is not new", async () => {
+  const { r: seeded } = await seed();
+  clock.now = () => T1;
+  const edited = rec("old", SINCE_OLD, SINCE_NEW);
+  const r = await trigger.poll!(
+    { ...input, state: next(seeded) } as never,
+    mockCtx([{ body: wrap([edited]) }]).ctx,
+  );
+  assertEquals(events(r), []);
+});
+
+test("new-order: a window longer than maxPages is resumed, every record emitted once, then the cursor advances", async () => {
+  const { r: seeded } = await seed();
+  const N = 50;
+  const pages = [0, 1, 2, 3].map((p) =>
+    Array.from({ length: p < 3 ? N : 5 }, (_, i) => rec(`r${p}-${i}`, SINCE_NEW, SINCE_NEW))
+  );
+  clock.now = () => T1;
+  const c1 = mockCtx([
+    { body: { result: pages[0], pagination: { hasNextPage: 0 < 3, nextPageCursor: "c0" } } },
+    { body: { result: pages[1], pagination: { hasNextPage: 1 < 3, nextPageCursor: "c1" } } },
+    { body: { result: pages[2], pagination: { hasNextPage: 2 < 3, nextPageCursor: "c2" } } },
+  ]);
+  const a = await trigger.poll!({ ...input, state: next(seeded) } as never, c1.ctx);
+  assertEquals(events(a).length, 3 * N);
+  assertEquals(c1.calls.length, 3);
+  assertEquals(cursor(a), T0);
+  assertEquals((next(a) as { resume?: unknown }).resume !== undefined, true);
+  clock.now = () => T1 + 300_000;
+  const c2 = mockCtx([{
+    body: { result: pages[3], pagination: { hasNextPage: 3 < 3, nextPageCursor: "c3" } },
+  }]);
+  const b = await trigger.poll!({ ...input, state: next(a) } as never, c2.ctx);
+  assertEquals(c2.calls.length, 1);
+  assertEquals(c2.calls[0].url, "https://api.squarespace.com/1.0/commerce/orders?cursor=c2");
+  assertEquals(events(b).length, 5);
+  assertEquals(cursor(b), T1);
+  assertEquals((next(b) as { resume?: unknown }).resume, undefined);
+  const all = [...events(a), ...events(b)] as { id: string }[];
+  assertEquals(new Set(all.map((x) => x.id)).size, 3 * N + 5);
 });
