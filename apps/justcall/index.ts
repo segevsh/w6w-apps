@@ -70,7 +70,6 @@ import webhookDeleteUrl from "./actions/webhook-delete-url.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-
 import newContact from "./triggers/new-contact.ts";
 
 export default {
