@@ -1,6 +1,4 @@
 # DocuMerge
-Triggers: not shipped — document-list has no documented ordering, time filter, or bounded-account guarantee (https://documerge.ai/)
-
 [DocuMerge](https://documerge.ai) generates documents (PDF, Word, Excel, HTML, images, email) by
 merging data into templates. This app lets a workflow manage documents and routes, their fields and
 delivery methods, queue merges, and run the PDF tools, over the REST API at
@@ -89,3 +87,13 @@ Every endpoint in the vendor's reference is covered.
 - `auth:api-token` — derived from the auth `test` hook (`GET /api/documents`, requiring the `data`
   envelope).
 - No quota check: no balance or rate-limit endpoint or header exists.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | Poll | `document-list` | Each newly created document (merge template) |
+
+`GET /api/documents` takes no paging or filter parameters, so one request returns the account's whole collection; each check compares it with the previous one and emits added ids. The first check only records.
+
+Source: [DocuMerge OpenAPI](https://app.documerge.ai/api-docs/openapi.yaml) (verified 2026-11-09).

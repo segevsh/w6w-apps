@@ -1,11 +1,10 @@
 # Drip
-Triggers: not shipped — subscriber listing filters by subscription date but does not document a newest-first feed order (https://developer.drip.com/)
-
 Manage Drip subscribers, tags, events and email series campaigns.
 
 - **Categories** — marketing
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.getdrip.com`
 - **Website** — https://www.getdrip.com
 - **API docs** — https://developer.drip.com
@@ -109,3 +108,13 @@ because they are a different node type entirely — not inferred from a sibling 
 Researched and endpoint-verified 2026-09-01 directly against developer.drip.com (the
 vendor's own single-page REST API reference) and status.drip.com's live Statuspage API.
 Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | Poll | `list-subscribers` | Each newly created subscriber |
+
+Each check calls `list-subscribers` with `status=all` and the documented `subscribed_after` filter set two minutes before the previous check, and de-duplicates by id; the first check only records.
+
+Source: [Drip API: list all subscribers](https://developer.drip.com/#list-all-subscribers) (verified 2026-11-09).

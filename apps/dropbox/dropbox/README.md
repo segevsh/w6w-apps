@@ -1,11 +1,10 @@
 # Dropbox
-Triggers: not shipped — list-folder paginates a folder snapshot but does not provide a created-record ordering or since filter (https://www.dropbox.com/developers/documentation/http/documentation)
-
 Upload, download, and manage files and folders in Dropbox.
 
 - **Categories** — storage
 - **Auth methods** — access-token, oauth2
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.dropboxapi.com`, `content.dropboxapi.com`
 - **Website** — https://www.dropbox.com
 - **API docs** — https://www.dropbox.com/developers
@@ -81,3 +80,13 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-file` — New File or Folder | Poll | `list-folder` | Each file or subfolder newly added to a named folder |
+
+Each check lists one folder (not recursive, up to 600 entries over three pages; a larger folder fails the check with a clear error) and emits ids that were not there at the previous check. The first check only records.
+
+Source: [Dropbox HTTP API: files/list_folder](https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder) (verified 2026-11-09).

@@ -61,6 +61,7 @@ import toolPdfCompress from "./actions/tool-pdf-compress.ts";
 import toolPdfConvert from "./actions/tool-pdf-convert.ts";
 import toolPdfEncrypt from "./actions/tool-pdf-encrypt.ts";
 import toolPdfSplit from "./actions/tool-pdf-split.ts";
+import newDocument from "./triggers/new-document.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -101,6 +102,7 @@ const app: AppDefinition = {
     toolPdfEncrypt,
     toolPdfSplit,
   ],
+  triggers: [newDocument],
   auth: [apiToken],
   healthChecks: [api, service],
 };

@@ -105,6 +105,7 @@ import folderCreate from "./actions/folder-create.ts";
 
 import instance from "./health/instance.ts";
 import quota from "./health/quota.ts";
+import newEnvelope from "./triggers/new-envelope.ts";
 
 export default {
   actions: [
@@ -135,6 +136,7 @@ export default {
     folderList,
     folderCreate,
   ],
+  triggers: [newEnvelope],
   auth: [apiKey],
   healthChecks: [instance, quota],
 } satisfies AppDefinition;

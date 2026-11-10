@@ -1,11 +1,10 @@
 # DeepL
-Triggers: not shipped — glossary listing is account metadata, not a documented created-record feed (https://developers.deepl.com/api-reference/glossaries)
-
 Translate text and documents, manage glossaries, and check quota via the DeepL API.
 
 - **Categories** — ai
 - **Auth methods** — api-key
 - **Actions** — 8
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api-free.deepl.com`, `api.deepl.com`
 - **Website** — https://www.deepl.com
 - **API docs** — https://developers.deepl.com/docs
@@ -180,3 +179,13 @@ load time, so a credential can never reach a status host.
 Researched and endpoint-verified 2026-08-01 against developers.deepl.com and DeepL's status page.
 Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts
 failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-glossary` — New Glossary | Poll | `glossary-list` | Each newly created glossary |
+
+`GET /v2/glossaries` returns every glossary in one response; each check compares it with the previous one and emits added ids. The first check only records.
+
+Source: [DeepL API: glossaries](https://developers.deepl.com/api-reference/glossaries) (verified 2026-11-09).

@@ -1,6 +1,4 @@
 # Dixa
-Triggers: not shipped — conversation search requires a text query and is not a created-record feed (https://docs.dixa.io/)
-
 Work Dixa customer-service conversations from a workflow: open an email conversation, read it and
 its messages and notes, reply, add a private note, assign it, move it between queues, tag it, set
 custom attributes, and close or reopen it — plus the end users, agents, tags, queues and custom
@@ -81,3 +79,13 @@ metrics and records, and `GET /organization`.
 `rel="apple-touch-icon"` link on `www.dixa.com` (a Webflow CDN file named `logo dark.jpeg` that is
 in fact a PNG). `www.dixa.com/favicon.svg` and `/apple-touch-icon.png` both 404, and the 32 px PNG
 on `docs.dixa.io` is the same mark at lower resolution.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-agent` — New Agent | Poll | `agent-list` | Each agent or admin newly added to the organisation |
+
+Each check reads the whole agent roster (following `pageKey`, at most 20 pages) and emits ids that were not there at the previous check. The first check only records.
+
+Source: [Dixa API: agents](https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) (verified 2026-11-09).
