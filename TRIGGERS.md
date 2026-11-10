@@ -12,16 +12,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1251 triggers, 3211 unaccounted list actions in 604 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
 | apps/bigcommerce | 1 | 17 | 16 |
-| apps/greenhouse | 1 | 17 | 16 |
 | apps/heartbeat | 8 | 16 | 16 |
-| apps/productive | 1 | 17 | 16 |
 | apps/superchat | 1 | 17 | 16 |
 | apps/vanta | 1 | 17 | 16 |
 | apps/ashby | 1 | 16 | 15 |
@@ -638,6 +636,7 @@ depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-p
 | apps/everhour | 10 | 23 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
+| apps/greenhouse | 2 | 17 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
@@ -663,6 +662,7 @@ depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-p
 | apps/paystack | 3 | 0 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
+| apps/productive | 2 | 17 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
 | apps/shopify | 18 | 4 | 0 |
@@ -977,7 +977,7 @@ depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-p
 | apps/grain | 1 | recording-list | new-recording | apps/grain/README.md Triggers section (verified 2026-11-09) | hand | Recording list documents no order; polled with filter.after_datetime since-filter plus id dedupe (shape b); filter direction unverifiable live. |
 | apps/granola | 1 | audit-event-list | new-audit-event | apps/granola/README.md Triggers section (verified 2026-11-09) | hand | Audit log is oldest-first with page_size max 30; polled with occurred_after since-filter plus id dedupe (shape b). |
 | apps/gravityforms | 2 | entry-get-many | new-entry, new-or-updated-entry | apps/gravityforms/README.md Triggers section (verified 2026-11-09) | hand | Entries support created and updated descending ordering. |
-| apps/greenhouse | 1 | list-interviews | new-interview | apps/greenhouse/README.md Triggers section (verified 2026-11-09) | hand | Harvest v3 interviews documents no order; polled with created_at gte since-filter, cursor paging and id dedupe (shape b). |
+| apps/greenhouse | 2 | list-applications | new-interview, new-application-stage, new-application, new-attachment, new-candidate, new-department, new-job-interview-stage, new-job-post, new-job, new-note, new-offer, new-office, new-opening, new-rejection-reason, new-scorecard, new-source, new-user, new-or-updated-application-stage, new-or-updated-application, new-or-updated-attachment, new-or-updated-candidate, new-or-updated-department, new-or-updated-interview, new-or-updated-job-interview-stage, new-or-updated-job-post, new-or-updated-job, new-or-updated-note, new-or-updated-offer, new-or-updated-office, new-or-updated-opening, new-or-updated-rejection-reason, new-or-updated-scorecard, new-or-updated-source, new-or-updated-user | apps/greenhouse/README.md Triggers section (verified 2026-11-10) | hand | Each Harvest v3 list action is covered by a created_at or updated_at since-filter poll with cursor continuation and id dedupe. |
 | apps/guru | 1 | card-search | new-card | apps/guru/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action card-search |
 | apps/gusto | 1 | event-list | new-event | apps/gusto/README.md Triggers section (verified 2026-11-09) | hand | shape a: event-list now takes sort_order and the trigger sends sort_order=desc (https://docs.gusto.com/app-integrations/docs/events: asc default, desc supported, 30-day window) |
 | apps/hackernews | 1 | list-new-stories | new-story | apps/hackernews/README.md Triggers section (verified 2026-11-09) | hand | the official API documents /v0/newstories.json as the newest stories, capped at 500 ids; event is {id} (https://github.com/HackerNews/API) |
@@ -1123,7 +1123,7 @@ depth: 682 apps, 1249 triggers, 3243 unaccounted list actions in 606 apps, n8n-p
 | apps/printnode | 1 | printjob-list | new-printjob | apps/printnode/README.md Triggers section (verified 2026-11-09) | hand | GET /printjobs is documented newest first |
 | apps/processstreet | 1 | workflow-run-list | new-workflow-run | apps/processstreet/README.md Triggers section (verified 2026-11-09) | hand | Polls the documented newest-created workflow run list. |
 | apps/productboard | 12 | note-list | new-entity, new-entity-relationship, new-jira-integration-connection, new-member, new-note, new-note-relationship, new-or-updated-entity, new-or-updated-note, new-or-updated-team, new-plugin-integration-connection, new-team, new-team-member | apps/productboard/README.md Triggers section (verified 2026-11-10) | hand | 12 poll triggers: since-filter notes (createdFrom/updatedFrom) and entities (entity-search filter.createdAt/updatedAt), plus bounded snapshots of teams, members, team members and entity/note relationships and Jira/plugin integration connections (https://developer.productboard.com/openapi/entities.yaml) |
-| apps/productive | 1 | deal-list | new-deal | apps/productive/README.md Triggers section (verified 2026-11-09) | hand | poll: deal-list sorted -created_at (newest first); no honest update stamp (only -last_activity_at) |
+| apps/productive | 2 | deal-list | new-deal, new-booking, new-comment, new-company, new-deal-status, new-invoice, new-page, new-person, new-project, new-task, new-or-updated-booking, new-or-updated-page, new-or-updated-task, new-or-updated-time-entry | apps/productive/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers use a vendor-documented creation/update sort (pages, tasks, time entries) or a documented created_at/updated_at date filter (bookings, people); lists with no creation order or filter are skipped with the OpenAPI premise. |
 | apps/pushbullet | 2 | chat-list | new-chat, new-or-updated-chat | apps/pushbullet/README.md Triggers section (verified 2026-11-09) | hand | chat-list is modified-first (docs.pushbullet.com): new-or-updated-chat reads it; new-chat is a snapshot diff, added only |
 | apps/pylon | 1 | issue-list | new-issue | apps/pylon/README.md Triggers section (verified 2026-11-09) | hand | GET /issues lists issues created inside start_time..end_time; polled over a short window per check |
 | apps/qdrant | 1 | collection-list | new-collection | apps/qdrant/README.md Triggers section (verified 2026-11-09) | hand | the complete collection directory is returned in one bounded GET /collections response |
