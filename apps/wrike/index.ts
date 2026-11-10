@@ -71,6 +71,7 @@ import versionGet from "./actions/version-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import account from "./health/account.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -115,4 +116,5 @@ export default {
   // preferred over OAuth2 for a workflow Connection.
   auth: [permanentToken],
   healthChecks: [service, quota, account],
+  triggers: [newTask],
 } satisfies AppDefinition;

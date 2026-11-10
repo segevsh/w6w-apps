@@ -1,5 +1,15 @@
 # Vimeo
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-video` — New Video | Poll | `video-list` | Each newly uploaded video |
+
+Polled newest-first through `video-list`. Source: https://developer.vimeo.com/api/reference/videos#get_videos (verified 2026-11-09).
+
 Videos, folders, showcases, comments and likes on the Vimeo REST API.
 
 - **Categories** — video, social-media

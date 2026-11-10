@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/upsales",
-  "version": "0.1.0",
-  "description": "Manage Upsales CRM data: contacts, companies, opportunities and orders, activities, appointments, products, tickets and more.",
+  "version": "0.2.0",
+  "description": "Manage Upsales CRM data and trigger workflows on new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "integration.upsales.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
