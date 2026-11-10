@@ -116,8 +116,12 @@ import backupCreate from "./actions/backup-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBackup from "./triggers/new-backup.ts";
 import newBookmark from "./triggers/new-bookmark.ts";
+import newCollaborator from "./triggers/new-collaborator.ts";
 import newCollection from "./triggers/new-collection.ts";
+import newSubCollection from "./triggers/new-sub-collection.ts";
+import newTag from "./triggers/new-tag.ts";
 
 export default {
   actions: [
@@ -172,5 +176,5 @@ export default {
   // installation needs.
   auth: [testToken, oauth2],
   healthChecks: [service, quota],
-  triggers: [newBookmark, newCollection],
+  triggers: [newBookmark, newCollection, newSubCollection, newTag, newBackup, newCollaborator],
 } satisfies AppDefinition;
