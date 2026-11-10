@@ -52,6 +52,13 @@ import projectList from "./actions/project-list.ts";
 import projectGet from "./actions/project-get.ts";
 import newInvoice from "./triggers/new-invoice.ts";
 import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newCompany from "./triggers/new-company.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newProduct from "./triggers/new-product.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import newProject from "./triggers/new-project.ts";
+import newTask from "./triggers/new-task.ts";
+import newQuotation from "./triggers/new-quotation.ts";
 
 export default {
   actions: [
@@ -87,7 +94,17 @@ export default {
     projectList,
     projectGet,
   ],
-  triggers: [newInvoice, newOrUpdatedInvoice],
+  triggers: [
+    newInvoice,
+    newOrUpdatedInvoice,
+    newCompany,
+    newEmployee,
+    newProduct,
+    newOpportunity,
+    newProject,
+    newTask,
+    newQuotation,
+  ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

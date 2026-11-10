@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/axonaut",
-  "version": "0.2.0",
-  "description": "Axonaut CRM and invoicing, including polling new and updated invoices.",
+  "version": "0.3.0",
+  "description": "Axonaut CRM and invoicing, including polling new and updated invoices and new companies, contacts, products, opportunities, projects, tasks and quotations.",
   "license": "MIT",
   "author": {
     "name": "w6w"
