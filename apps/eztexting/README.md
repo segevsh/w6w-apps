@@ -6,7 +6,7 @@ Send SMS/MMS, manage contacts and groups, read the two-way inbox, and subscribe 
 - **Categories** - communication, marketing
 - **Auth methods** - basic (HTTP Basic)
 - **Actions** - 31
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** - 2 (`service`, `quota`) + the derived `auth:basic`
 - **Egress allowlist** - `a.eztexting.com` (the `service` health check adds `status.eztexting.com`
   to its own hook allowlist, never to the app's)
@@ -148,9 +148,17 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
 |---|---|---|---|
 | `new-contact` — New Contact | poll | List Contacts (`GET /v1/contacts`, `sort=created,desc`) | each newly created contact |
+| `new-message` — New Message | poll | List Messages (`GET /v1/messages`, `sort=sentAt,desc`, `size=100`) | each text sent or received |
+| `new-media-file` — New Media File | poll | List Media Files (`GET /v1/media-files`, `sort=uploadAt,desc`, `size=100`) | each newly uploaded media file |
+| `new-contact-group` — New Contact Group | poll (snapshot) | List Contact Groups (`GET /v1/contact-groups`, `size=200`, every page) | each newly created contact group |
+| `new-keyword` — New Keyword | poll (snapshot) | Get Keywords (`GET /v1/keywords`, `size=200`, every page) | each newly purchased keyword |
 
 Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
 
 Trust model: the `contact-list` action is called with the documented `sort=created,desc`; the contact is identified by its phone number. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
 
-Vendor docs: https://developers.eztexting.com/reference/list-1 (List Contacts) (verified 2026-11-09).
+Messages and media files are read newest first with the sort field named in the vendor's response schema (`sentAt`, `uploadAt`); the vendor's docs give only the example `sort=created,desc` and do not list the sortable fields. Contact groups and keywords have no documented creation stamp, so those triggers walk every page (at most 25 pages of 200) and diff the ids; a longer collection fails the check instead of reporting a partial snapshot. New messages cover the replies thread too: `conversation-message-list` returns the same messages, so it has no trigger of its own.
+
+Not covered: `conversation-list` (a conversation is a number pair with no id, the schema has no creation stamp to sort by, and a new conversation always starts with a message that `new-message` delivers) and `webhook-list` (account integration configuration, not business records).
+
+Vendor docs (verified 2026-11-10): https://developers.eztexting.com/reference/list-1 (List Contacts), https://developers.eztexting.com/reference/list_6-1 (List Messages), https://developers.eztexting.com/reference/list_5-1 (List Media Files), https://developers.eztexting.com/reference/list_2-1 (List Contact Groups), https://developers.eztexting.com/reference/list_4-1 (Get Keywords).
