@@ -232,3 +232,7 @@ deno task test
 ```
 
 `deno task validate` passes `--config ./deno.json` explicitly, matching the sibling `apify` app.
+
+## Triggers
+
+- New Record (new-record) — poll; wraps search-records; the run gets each new record. Vendor API reference: https://api.streamtime.net/swagger.json (verified 2026-11-09).

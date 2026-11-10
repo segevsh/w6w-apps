@@ -218,3 +218,7 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus four specific to this app: **no action writes the policy file**,
 the irreversible actions **require a confirmation**, `device-routes-set` gates
 approving an **exit node**, and no action logs a key, an address or a login name.
+
+## Triggers
+
+- New User (new-user) — poll; wraps user-list; the run gets each new record. Vendor API reference: https://tailscale.com/api#tag/users/GET/tailnet/%7Btailnet%7D/users (verified 2026-11-09).

@@ -40,6 +40,7 @@
  * concrete workflow needs it.
  */
 import type { AppDefinition } from "@w6w/types";
+import newUser from "./triggers/new-user.ts";
 import apiKey from "./auth/api-key.ts";
 
 import courseList from "./actions/course-list.ts";
@@ -105,4 +106,5 @@ export default {
   // API is out of scope.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newUser],
 } satisfies AppDefinition;

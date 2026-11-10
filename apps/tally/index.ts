@@ -35,6 +35,7 @@
  *     ships one yet.
  */
 import type { AppDefinition } from "@w6w/types";
+import newSubmission from "./triggers/new-submission.ts";
 import apiKey from "./auth/api-key.ts";
 
 import userGet from "./actions/user-get.ts";
@@ -139,4 +140,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newSubmission],
 } satisfies AppDefinition;

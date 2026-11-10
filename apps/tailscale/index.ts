@@ -12,6 +12,7 @@
  * belongs in a reviewed commit rather than a workflow step. See `lib/client.ts`.
  */
 import type { AppDefinition } from "@w6w/types";
+import newUser from "./triggers/new-user.ts";
 
 import apiKey from "./auth/api-key.ts";
 import oauthClient from "./auth/oauth-client.ts";
@@ -57,6 +58,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey, oauthClient],
   healthChecks: [service, quota],
+  triggers: [newUser],
 };
 
 export default app;

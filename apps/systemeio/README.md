@@ -155,3 +155,7 @@ Every action, the auth method, the health check, and the entry module (`index.ts
 under `tests/`. `tests/_helpers.ts` provides `mockCtx()` (a queued fake `ctx.fetch`), `page()` and
 `problemBody()` (the vendor's own response envelopes), and `pathOf()`/`queryOf()` for asserting on the
 recorded request.
+
+## Triggers
+
+- New Contact (new-contact) — poll; wraps contact-list; the run gets each new record. Vendor API reference: https://developer.systeme.io/reference/get-api-contacts (verified 2026-11-09).

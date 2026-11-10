@@ -197,3 +197,5 @@ per second, so the client names the limit in the error instead.
 - **Page settings, branding and custom domains.** Configured once, by a human.
 - **Postmortems.** Written prose with a publication workflow of their own; an
   automation has nothing useful to say in one.
+
+Triggers: not shipped — no existing list action fits the documented new-record polling shapes (https://developer.statuspage.io/).

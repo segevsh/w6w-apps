@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/tally",
-  "version": "0.1.2",
-  "description": "Build and manage Tally forms, questions, blocks, submissions, analytics, workspaces, folders, webhooks and organization members via the Tally API.",
+  "version": "0.2.2",
+  "description": "Build and manage Tally forms, questions, blocks, submissions, analytics, workspaces, folders, webhooks and organization members via the Tally API. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "api.tally.so"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

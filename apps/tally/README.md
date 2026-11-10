@@ -327,3 +327,7 @@ than throwing.
 Researched and endpoint-verified against the vendor's OpenAPI document on 2026-08-03. Status
 surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for
 everyone at once.
+
+## Triggers
+
+- New Submission (new-submission) — poll; wraps submission-get-many; the run gets each new record. Vendor API reference: https://developers.tally.so/api-reference/submissions/get-submissions (verified 2026-11-09).

@@ -40,6 +40,7 @@
  *     "invalid api key"}`. See `auth/api-key.ts`.
  */
 import type { AppDefinition } from "@w6w/types";
+import newBox from "./triggers/new-box.ts";
 import apiKey from "./auth/api-key.ts";
 
 import userGetCurrent from "./actions/user-get-current.ts";
@@ -151,4 +152,5 @@ export default {
   // authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newBox],
 } satisfies AppDefinition;

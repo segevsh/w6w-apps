@@ -75,3 +75,7 @@ surface and can be added in a follow-up.
 `assets/icon.svg` embeds the vendor's own mark verbatim: the 256x256 PNG served at
 `https://docs.synthflow.ai/api/fern-docs/favicon.ico` (despite the `.ico` name the bytes are
 `PNG image data`), base64-embedded in an SVG `<image>`.
+
+## Triggers
+
+- New Call (new-call) — poll; wraps call-list; the run gets each new record. Vendor API reference: https://docs.synthflow.ai/api-reference/calls/list-calls (verified 2026-11-09).

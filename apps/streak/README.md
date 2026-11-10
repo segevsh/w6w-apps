@@ -77,6 +77,10 @@ callers of this app's `task-create` action supply `boxKey` exactly once.
 
 ```
 
+## Triggers
+
+- New Box (new-box) — poll; wraps box-list; the run gets each new record. Vendor API reference: https://streak.readme.io/reference/list-boxes (verified 2026-11-09).
+
 Triggers: not shipped — `box-list` accepts `sortBy=creationTimestamp` but neither the action nor Streak's published reference (https://streak.readme.io/, JS-rendered, unreadable 2026-11-09) states the sort direction, and a poll needs newest-first guaranteed (https://streak.readme.io/).
 $ curl -s https://api.streak.com/api/v1/users/me
 {"error":"Authentication required"}

@@ -95,3 +95,7 @@ building: pass a filter name or id instead); `/revisions` and `/posts/{ids}/revi
 - `quota` — signed `GET /info?site=stackoverflow`, `quota_remaining` / `quota_max`: `degraded` at
   90% used, `down` at zero. No reset instant is documented, so none is reported.
 - `auth:api-key` (derived) — the same `/info` read with the key; the verdict is taken from the body.
+
+## Triggers
+
+- New Answer (new-answer) — poll; wraps user-answer-list; the run gets each new record. Vendor API reference: https://api.stackexchange.com/docs/answers-on-users (verified 2026-11-09).

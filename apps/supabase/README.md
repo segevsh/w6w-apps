@@ -139,3 +139,7 @@ Researched and endpoint-verified 2026-07-31 against Supabase's and PostgREST's o
 (`supabase.com/docs`, `postgrest.org/en/stable`). Icon sourced from n8n's own (MIT-licensed)
 `nodes-base` package (`packages/nodes-base/nodes/Supabase/supabase.svg`), matching Supabase's
 documented brand green `#3ECF8E` and bolt logomark.
+
+## Triggers
+
+- New Row (new-row) — poll; wraps rows-list; the run gets each new record. Vendor API reference: https://postgrest.org/en/stable/references/api/tables_views.html#ordering (verified 2026-11-09).

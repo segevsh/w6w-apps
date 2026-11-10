@@ -92,3 +92,7 @@ fetch is identical). Format with `deno task fmt`, never bare `deno fmt`.
   if a 2xx body is an `ok:false` envelope.
 - **Tests.** Every action has a mocked-`ctx.fetch` unit test; no live credential was available, so
   success-path response shapes are from the OpenAPI schema, not from a live account.
+
+## Triggers
+
+- New Project (new-project) — poll; wraps my-project-list; the run gets each new record. Vendor API reference: https://developers.taskade.com/docs/api/projects (verified 2026-11-09).

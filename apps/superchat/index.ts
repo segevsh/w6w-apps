@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newConversationMessage from "./triggers/new-conversation-message.ts";
 import apiKey from "./auth/api-key.ts";
 import meGet from "./actions/me-get.ts";
 import userList from "./actions/user-list.ts";
@@ -115,4 +116,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newConversationMessage],
 } satisfies AppDefinition;

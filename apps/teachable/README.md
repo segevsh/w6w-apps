@@ -104,3 +104,7 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests (mocked HookContext, no network)
 deno task validate       # manifest + behavior audit
 ```
+
+## Triggers
+
+- New User (new-user) — poll; wraps user-list; the run gets each new record. Vendor API reference: https://docs.teachable.com/reference/list-users (verified 2026-11-09).

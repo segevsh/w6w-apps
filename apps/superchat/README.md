@@ -94,3 +94,7 @@ deno task fmt          # never bare `deno fmt` — it rewrites assets/icon.svg
 `assets/icon.svg` is the vendor's own mark, cropped verbatim from the logo SVG at
 `files.readme.io/6102345-logo_developers.svg` (the three chevron paths and their gradients; the
 wordmark paths dropped, only the `viewBox`/size changed).
+
+## Triggers
+
+- New Conversation Message (new-conversation-message) — poll; wraps conversation-messages-list; the run gets each new record. Vendor API reference: https://docs.superchat.com/api-reference/messages/list-messages (verified 2026-11-09).

@@ -117,3 +117,5 @@ wrong.
   in addition to the PAT flow. A PAT is scoped, named and revocable without
   handing a workflow an account password, and a JWT sign-in needs a Tableau
   Connected App configured server-side — out of scope for a first version.
+
+Triggers: not shipped — no existing list action fits the documented new-record polling shapes (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm).

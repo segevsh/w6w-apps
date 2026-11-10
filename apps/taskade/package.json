@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/taskade",
-  "version": "0.1.0",
-  "description": "Manage Taskade workspaces, folders, projects, tasks, assignees, due dates, notes and AI agents through the Taskade REST API v1.",
+  "version": "0.2.0",
+  "description": "Manage Taskade workspaces, folders, projects, tasks, assignees, due dates, notes and AI agents through the Taskade REST API v1. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "taskade.statuspage.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

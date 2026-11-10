@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/synthflow",
-  "version": "0.1.0",
-  "description": "Place single and batch voice AI calls, read call transcripts, and manage contacts, chats and the agent, phone-number, voice and knowledge-base catalogs on Synthflow AI.",
+  "version": "0.2.0",
+  "description": "Place single and batch voice AI calls, read call transcripts, and manage contacts, chats and the agent, phone-number, voice and knowledge-base catalogs on Synthflow AI. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "api.eu.synthflow.ai"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/streamtime",
-  "version": "0.1.0",
-  "description": "Read and write Streamtime jobs, job items, quotes, invoices, logged time and expenses, and run filtered searches and reports against the Public API.",
+  "version": "0.2.0",
+  "description": "Read and write Streamtime jobs, job items, quotes, invoices, logged time and expenses, and run filtered searches and reports against the Public API. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "streamtime.statuspage.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

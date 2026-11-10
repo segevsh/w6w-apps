@@ -69,6 +69,7 @@
  * one.
  */
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
 import apiKey from "./auth/api-key.ts";
 
 import contactList from "./actions/contact-list.ts";
@@ -179,4 +180,5 @@ export default {
   // API key only. systeme.io publishes no OAuth2 surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newContact],
 } satisfies AppDefinition;

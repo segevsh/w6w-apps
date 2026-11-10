@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/superchat",
-  "version": "0.1.0",
-  "description": "Send WhatsApp, SMS, email and social messages, and manage contacts, conversations, notes, templates and webhooks in Superchat.",
+  "version": "0.2.0",
+  "description": "Send WhatsApp, SMS, email and social messages, and manage contacts, conversations, notes, templates and webhooks in Superchat. Includes a poll trigger for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.superchat.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -3,6 +3,7 @@
  * at `api.supadata.ai/v1`. See `README.md` and `lib/client.ts` for what was verified.
  */
 import type { AppDefinition } from "@w6w/types";
+import newYoutubeResult from "./triggers/new-youtube-result.ts";
 import apiKey from "./auth/api-key.ts";
 import transcriptGet from "./actions/transcript-get.ts";
 import transcriptJobGet from "./actions/transcript-job-get.ts";
@@ -51,4 +52,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newYoutubeResult],
 } satisfies AppDefinition;

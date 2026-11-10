@@ -36,6 +36,7 @@
  * — that Streamtime publishes no quota or rate-limit surface at all.
  */
 import type { AppDefinition } from "@w6w/types";
+import newRecord from "./triggers/new-record.ts";
 import apiToken from "./auth/api-token.ts";
 
 import organisationGet from "./actions/organisation-get.ts";
@@ -255,4 +256,5 @@ export default {
   // in a connection form — see auth/api-token.ts.
   auth: [apiToken],
   healthChecks: [service, credential, quota],
+  triggers: [newRecord],
 } satisfies AppDefinition;

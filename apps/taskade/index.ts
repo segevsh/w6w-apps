@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newProject from "./triggers/new-project.ts";
 import agentConversationList from "./actions/agent-conversation-list.ts";
 import agentGet from "./actions/agent-get.ts";
 import folderAgentList from "./actions/folder-agent-list.ts";
@@ -83,6 +84,7 @@ const app: AppDefinition = {
   ],
   auth: [personalToken],
   healthChecks: [service, api, quota],
+  triggers: [newProject],
 };
 
 export default app;
