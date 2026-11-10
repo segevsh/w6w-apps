@@ -74,6 +74,7 @@ import projectGet from "./actions/project-get.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newComment from "./triggers/new-comment.ts";
 
 export default {
   actions: [
@@ -97,6 +98,7 @@ export default {
     projectGetMany,
     projectGet,
   ],
+  triggers: [newComment],
   auth: [personalAccessToken, basic],
   healthChecks: [instance, service, quota],
 } satisfies AppDefinition;

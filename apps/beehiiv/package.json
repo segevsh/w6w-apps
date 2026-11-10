@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/beehiiv",
-  "version": "0.1.0",
-  "description": "Manage beehiiv publications, posts, subscriptions and segments — the newsletter platform's core content and audience surface.",
+  "version": "0.2.0",
+  "description": "Manage beehiiv publications, posts, subscriptions and segments — the newsletter platform's core content and audience surface, including polling newly created posts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.beehiiv",
     "displayName": "beehiiv",
     "apiDocs": [

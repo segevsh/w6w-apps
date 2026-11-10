@@ -42,6 +42,7 @@ import authorizePayment from "./actions/authorize-payment.ts";
 import capturePayment from "./actions/capture-payment.ts";
 import refundPayment from "./actions/refund-payment.ts";
 import voidPayment from "./actions/void-payment.ts";
+import newCustomerTransaction from "./triggers/new-customer-transaction.ts";
 
 export default {
   actions: [
@@ -86,6 +87,7 @@ export default {
     refundPayment,
     voidPayment,
   ],
+  triggers: [newCustomerTransaction],
   auth: [apiCredentials],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

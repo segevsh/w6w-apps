@@ -77,6 +77,7 @@ import smsInvalidPhoneNumberList from "./actions/sms-invalid-phone-number-list.t
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
 
 export default {
   actions: [
@@ -112,6 +113,7 @@ export default {
     // SMS
     smsInvalidPhoneNumberList,
   ],
+  triggers: [newOrUpdatedCampaign],
   // REST API key only. Braze's fetched spec declares exactly one security
   // scheme (BearerAuth) for every operation.
   auth: [apiKey],

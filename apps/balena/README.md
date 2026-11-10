@@ -3,6 +3,7 @@
 Manage fleets of Linux devices on balenaCloud — inspect them, configure them,
 choose what they run, and reach into them.
 
+- **Triggers** — 1 (poll)
 - **Categories** — iot, devops
 - **Auth methods** — api-key
 - **Actions** — 16
@@ -12,6 +13,14 @@ choose what they run, and reach into them.
 
 Built against balena's **v7** API and its supervisor documentation, probed live
 on 2026-08-19.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-release` — New Release | poll | `release-list` (`$orderby=created_at desc`, successful builds only; params: `fleet`) | Each newly successful release of the fleet |
+
+Vendor reference: https://docs.balena.io/reference/api/resources/release/ (verified 2026-11-09). The action sends `$orderby=created_at desc` explicitly (an OData query option), so the trigger does not depend on a default order. A release is emitted once it succeeds (running and failed builds are skipped until then). `device-list` is not wrapped: it is ordered by `device_name asc`.
 
 ## The obvious listing endpoint answers 200 with no credential
 
