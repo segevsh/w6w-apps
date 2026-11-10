@@ -1,5 +1,5 @@
 import type { ActionDefinition, HookContext, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollWindow } from "./window.ts";
 import leadsList from "../actions/leads-list.ts";
 import salesList from "../actions/sales-list.ts";
 
@@ -9,7 +9,6 @@ export const OVERLAP_SECONDS = 120;
 export const PAGE_SIZE = 250;
 /** Per-check ceiling on pages (1,250 records inside one window). */
 export const MAX_PAGES = 5;
-export const MAX_EVENTS = 500;
 /** Room for MAX_EVENTS plus an overlap re-list, so an overlap never re-emits an id. */
 export const SEEN_WINDOW = 2000;
 
@@ -18,60 +17,43 @@ export const clock = { now: (): number => Date.now() };
 
 type Row = Record<string, unknown>;
 
-export interface HyrosPollState {
-  v: 1;
-  kind: "ids";
-  seeded: true;
-  ids: string[];
-  /** Epoch ms of the last check that read the whole window. */
-  cursor: number;
-}
-
 function isoSeconds(ms: number): string {
   return new Date(ms).toISOString().replace(/\.\d+Z$/, "Z");
 }
 
 /**
- * Hyros documents `fromDate` as "only [records] whose join date is more recent than this" and an
+ * One check reads up to MAX_PAGES pages of the window; a larger window keeps its `pageId` cursor in
+ * state and continues from it next check (`pollWindow`, brief 9.8). Hyros documents `fromDate` as "only [records] whose join date is more recent than this" and an
  * opaque `pageId` cursor, but no result order — so every page of the (small) window is read and
  * the id dedupe decides what is new.
  */
-async function check(
+function check(
   action: ActionDefinition<Record<string, unknown>>,
   state: unknown,
   ctx: HookContext,
-): Promise<{ events: Row[]; nextState: HyrosPollState }> {
-  const checkedAt = clock.now();
-  const prior = state as { cursor?: unknown } | null;
-  const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
-  const fromDate = isoSeconds(cursor - OVERLAP_SECONDS * 1000);
-  let truncated = false;
-
-  const { events, nextState } = await pollNewItems<Row>({
+) {
+  return pollWindow<Row, string>({
     state,
-    maxPages: 1,
-    maxEvents: MAX_EVENTS,
+    now: clock.now(),
+    overlapMs: OVERLAP_SECONDS * 1000,
+    maxPages: MAX_PAGES,
+    pageSize: PAGE_SIZE,
     seenWindow: SEEN_WINDOW,
     idOf: (r) => String(r.id),
-    async fetchPage() {
-      const items: Row[] = [];
-      let pageId: string | undefined;
-      for (let page = 0; page < MAX_PAGES; page++) {
-        const res = await action.execute({ fromDate, pageSize: PAGE_SIZE, pageId }, ctx) as {
-          result?: Row[];
-          nextPageId?: string | null;
-        };
-        items.push(...(res.result ?? []));
-        if (!res.nextPageId) return { items };
-        pageId = res.nextPageId;
-      }
-      truncated = true;
-      return { items };
+    // `creationDate` is the field `fromDate` filters on; one that does not parse is kept.
+    tsOf: (r) => {
+      const ms = Date.parse(String(r.creationDate ?? ""));
+      return Number.isNaN(ms) ? undefined : ms;
+    },
+    async load(since, pageId) {
+      const res = await action.execute({
+        fromDate: isoSeconds(since),
+        pageSize: PAGE_SIZE,
+        pageId,
+      }, ctx) as { result?: Row[]; nextPageId?: string | null };
+      return { items: res.result ?? [], next: res.nextPageId || undefined };
     },
   });
-
-  const capped = truncated || events.length >= MAX_EVENTS;
-  return { events, nextState: { ...nextState, cursor: capped ? cursor : checkedAt } };
 }
 
 function build(

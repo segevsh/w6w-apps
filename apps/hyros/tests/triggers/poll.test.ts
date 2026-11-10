@@ -17,26 +17,25 @@ for (
 ) {
   test(`${trig.key}: seeds, emits the new record, retries idempotently, requests the literal fromDate window`, async () => {
     clock.now = () => T0;
-    const seedCtx = mockCtx([page([{ id: "a", creationDate: "x" }])]);
-    const seeded = await trig.poll!({ ...input, state: {} }, seedCtx.ctx);
+    const seeded = await trig.poll!({ ...input, state: {} }, mockCtx([]).ctx);
     assertEquals(seeded.events, []);
     assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
-    assertEquals(seedCtx.calls[0].method, "GET");
-    assertEquals(pathOf(seedCtx.calls[0].url), path);
-    assertEquals(queryOf(seedCtx.calls[0].url), {
+
+    clock.now = () => T1;
+    const a = { id: "a", creationDate: "2026-11-09T09:59:00Z" };
+    const b = { id: "b", creationDate: "2026-11-09T10:02:00Z" };
+    const checkCtx = mockCtx([page([a, b])]);
+    const run = () =>
+      trig.poll!({ ...input, state: seeded.nextState }, mockCtx([page([a, b])]).ctx);
+    const first = await trig.poll!({ ...input, state: seeded.nextState }, checkCtx.ctx);
+    const retry = await run();
+    assertEquals(checkCtx.calls[0].method, "GET");
+    assertEquals(pathOf(checkCtx.calls[0].url), path);
+    assertEquals(queryOf(checkCtx.calls[0].url), {
       fromDate: "2026-11-09T09:58:00Z",
       pageSize: "250",
     });
-
-    clock.now = () => T1;
-    const run = () =>
-      trig.poll!(
-        { ...input, state: seeded.nextState },
-        mockCtx([page([{ id: "a" }, { id: "b" }])]).ctx,
-      );
-    const first = await run();
-    const retry = await run();
-    assertEquals(first.events, [{ id: "b" }]);
+    assertEquals(first.events, [b]);
     assertEquals(retry, first);
     assertEquals((first.nextState as { cursor: number }).cursor, T1);
   });
@@ -44,18 +43,23 @@ for (
 
 test("new-lead follows nextPageId and sends the opaque cursor back", async () => {
   clock.now = () => T0;
-  const { ctx, calls } = mockCtx([page([{ id: "a" }], "cur1"), page([{ id: "b" }])]);
-  const seeded = await newLead.poll!({ ...input, state: {} }, ctx);
+  const seeded = await newLead.poll!({ ...input, state: {} }, mockCtx([]).ctx);
+  clock.now = () => T1;
+  const a = { id: "a", creationDate: "2026-11-09T10:01:00Z" };
+  const b = { id: "b", creationDate: "2026-11-09T10:02:00Z" };
+  const { ctx, calls } = mockCtx([page([a], "cur1"), page([b])]);
+  const out = await newLead.poll!({ ...input, state: seeded.nextState }, ctx);
   assertEquals(calls.length, 2);
   assertEquals(queryOf(calls[1].url).pageId, "cur1");
-  assertEquals((seeded.nextState as { ids: string[] }).ids.toSorted(), ["a", "b"]);
+  assertEquals(out.events.length, 2);
 });
 
-test("new-sale holds the cursor when the page ceiling is hit", async () => {
+test("new-sale holds the cursor and a resume position when the page ceiling is hit", async () => {
   clock.now = () => T0;
-  const seeded = await newSale.poll!({ ...input, state: {} }, mockCtx([page([{ id: "a" }])]).ctx);
+  const seeded = await newSale.poll!({ ...input, state: {} }, mockCtx([]).ctx);
   clock.now = () => T1;
   const pages = Array.from({ length: 5 }, (_, i) => page([{ id: `s${i}` }], `c${i}`));
   const out = await newSale.poll!({ ...input, state: seeded.nextState }, mockCtx(pages).ctx);
   assertEquals((out.nextState as { cursor: number }).cursor, T0);
+  assertEquals((out.nextState as { resume: { pos: string } }).resume.pos, "c4");
 });
