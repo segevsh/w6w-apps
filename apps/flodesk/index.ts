@@ -36,6 +36,8 @@ import newSegment from "./triggers/new-segment.ts";
 import newSubscriber from "./triggers/new-subscriber.ts";
 import subscriberUnsubscribed from "./triggers/subscriber-unsubscribed.ts";
 import subscriberAddedToSegment from "./triggers/subscriber-added-to-segment.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newWorkflow from "./triggers/new-workflow.ts";
 
 /**
  * Flodesk — one Action per documented endpoint, and no more.
@@ -78,5 +80,12 @@ export default {
   ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
-  triggers: [newSegment, newSubscriber, subscriberUnsubscribed, subscriberAddedToSegment],
+  triggers: [
+    newSegment,
+    newSubscriber,
+    subscriberUnsubscribed,
+    subscriberAddedToSegment,
+    anyEvent,
+    newWorkflow,
+  ],
 } satisfies AppDefinition;

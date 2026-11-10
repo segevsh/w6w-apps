@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mailerlite",
-  "version": "0.2.0",
-  "description": "Manage MailerLite subscribers, groups, fields, segments, and email campaigns, and start workflows on new, updated and unsubscribed subscribers and sent campaigns.",
+  "version": "0.3.0",
+  "description": "Manage MailerLite subscribers, groups, fields, segments and campaigns; triggers on any MailerLite event and on new groups, segments and campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"
