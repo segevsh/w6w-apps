@@ -6,7 +6,7 @@ organizations and tasks — built directly on Gmail, over the **Streak API v1**.
 - **Categories** — crm
 - **Auth methods** — api-key (HTTP Basic, key as username, no password)
 - **Actions** — 40
-- **Triggers** — 2 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.streak.com` (the `service` check adds `status.streak.com` to its own
   hook allowlist, never to the app's)
@@ -314,5 +314,14 @@ deno task test
 | --- | --- | --- | --- |
 | `new-box` — New Box | Poll (newest first) | `box-list` | Each newly created box in a pipeline |
 | `new-or-updated-box` — New or Updated Box | Poll (last updated first) | `box-list` | Each box that is new or was just edited |
+| `new-pipeline` — New Pipeline | Poll (newest first) | `pipeline-list` | Each pipeline newly created in the account |
+| `new-or-updated-pipeline` — New or Updated Pipeline | Poll (last updated first) | `pipeline-list` | Each pipeline that is new or was just edited |
+| `new-stage` — New Stage | Poll (snapshot) | `stage-list` | Each stage newly added to the selected pipeline (`pipelineKey` param) |
+| `new-task` — New Task | Poll (snapshot) | `task-list` | Each task newly added to the selected box (`boxKey` param) |
+| `new-team` — New Team | Poll (snapshot) | `team-list` | Each team the connected user newly belongs to |
+
+Pipelines are polled through `pipeline-list` with `sortBy=creationTimestamp` (new) and `sortBy=lastUpdatedTimestamp` (new or updated; the id includes `lastUpdatedTimestamp`); the reference says "What order to sort the pipelines by. There are two valid sorts: creationTimestamp and lastUpdatedTimestamp. Both are in descending order." ([List all pipelines](https://streak.readme.io/reference/list-all-pipelines), verified 2026-11-10). Stages, tasks and teams come back whole in one unpaged response (the list-envelope table above), so they are watched as a snapshot: added rows only, an edited row is not an event.
+
+Not triggers: `field-list` returns the custom-field definitions of a pipeline (configuration, not records); `search` and `box-search-by-name` are free-text searches with a required query, not a record feed -- boxes are delivered by `new-box` and `new-or-updated-box` for each pipeline.
 
 Polled through the `box-list` action with `sortBy=creationTimestamp` (new) and `sortBy=lastUpdatedTimestamp` (new or updated; the id includes `lastUpdatedTimestamp`). The first check records what exists without firing. Source: the reference says "What order to sort the boxes by. There are two valid sorts: creationTimestamp and lastUpdatedTimestamp. Both are in descending order." ([List all boxes in pipeline](https://streak.readme.io/reference/list-all-boxes-in-pipeline), verified 2026-11-09).
