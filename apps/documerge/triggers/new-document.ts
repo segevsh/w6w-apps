@@ -4,8 +4,8 @@ import documentList from "../actions/document-list.ts";
 
 /**
  * Wraps `document-list` (`GET /api/documents`). The endpoint takes no paging or filter
- * parameters (`parameters: []` in https://app.documerge.ai/api-docs/openapi.yaml), so one request
- * returns the account's whole document (merge template) collection: a bounded snapshot, and the
+ * parameters (`parameters: []` in https://app.documerge.ai/api-docs/openapi.yaml), so this treats one
+ * request as the account's whole document (merge template) collection (an inference from the spec): a bounded snapshot, and the
  * kit refuses a collection above 5000 rows.
  */
 const trigger: TriggerDefinition = {

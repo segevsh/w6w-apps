@@ -94,6 +94,6 @@ Every endpoint in the vendor's reference is covered.
 | --- | --- | --- | --- |
 | `new-document` — New Document | Poll | `document-list` | Each newly created document (merge template) |
 
-`GET /api/documents` takes no paging or filter parameters, so one request returns the account's whole collection; each check compares it with the previous one and emits added ids. The first check only records.
+The OpenAPI lists no pagination or filter parameters for `GET /api/documents` (`parameters: []`), so this trigger treats one response as the whole collection (an inference from the spec, not a vendor statement); each check compares it with the previous one and emits added ids. The first check only records.
 
 Source: [DocuMerge OpenAPI](https://app.documerge.ai/api-docs/openapi.yaml) (verified 2026-11-09).

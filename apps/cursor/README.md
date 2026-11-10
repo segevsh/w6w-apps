@@ -1,5 +1,4 @@
 # Cursor
-Triggers: not shipped — audit-logs-list sends startDate/endDate, but the current admin API documents the window as startTime/endTime and returns events oldest first, so the action's date range cannot be trusted as a since-filter without changing the action (https://cursor.com/docs/account/teams/admin-api)
 
 Manage a Cursor team programmatically: members, usage and spend, repo context blocklists,
 Enterprise billing groups, and model-access policy — over Cursor's **Admin API**.
@@ -7,6 +6,7 @@ Enterprise billing groups, and model-access policy — over Cursor's **Admin API
 - **Categories** — developer-tools, ai, finance
 - **Auth methods** — api-key (HTTP Basic, key as username, empty password)
 - **Actions** — 24
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (`service`, capped at `degraded`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.cursor.com` (the `service` check adds `status.cursor.com` to its own
   hook allowlist, never to the app's)
@@ -129,6 +129,22 @@ Two response shapes in the model-access sub-surface (`model-access-provider-upda
 only the request and the `409`/`400` error cases are. Those two actions return Cursor's response
 body unmodified rather than a shape invented for them; everything else in this app has a verified
 example response behind its `output` fields.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-member` — New Team Member | Poll | `members-list` | Each member newly added to the team |
+
+`GET /teams/members` returns every team member in one response (the reference lists no paging), so
+each check compares the whole roster with the previous one and emits ids that were not there; removed
+members are left out. The first check only records.
+
+Not shipped: a trigger on `audit-logs-list`. The action sends `startDate`/`endDate`, but the
+reference documents the window as `startTime`/`endTime` and returns events oldest first, so its date
+range cannot serve as a since-filter without changing the action.
+
+Source: [Cursor Admin API](https://cursor.com/docs/account/teams/admin-api) (verified 2026-11-09).
 
 ## Development
 

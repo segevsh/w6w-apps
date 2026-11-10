@@ -1,9 +1,20 @@
-import type { TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition, TriggerDefinition } from "@w6w/types";
+import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import requestList from "../actions/request-list.ts";
 
 export const clock = { now: (): number => Date.now() };
 
+const PAGE_LIMIT = 1000;
+const MAX_PAGES = 5;
+const day = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
+
+/**
+ * Wraps `request-list` (`GET /v1/projects/{id}/requests`). Deepgram filters that log by DATE, not
+ * time (the action truncates to `YYYY-MM-DD`) and documents no result order, so the trigger reads
+ * every request of the current UTC day (and of the previous day for the first two minutes after
+ * midnight) at the action's maximum page size of 1000, follows `page`, and snapshots the ids. A
+ * full final page after 5 pages (5000 requests) throws instead of silently dropping requests.
+ */
 const trigger: TriggerDefinition = {
   key: "new-request",
   title: "New Request",
@@ -13,27 +24,36 @@ const trigger: TriggerDefinition = {
   sample: { request_id: "req_123" },
   minIntervalMs: 300_000,
   async poll({ state }, ctx) {
-    const checkedAt = clock.now();
-    const prior = state as { cursor?: unknown };
-    const cursor = typeof prior.cursor === "number" ? prior.cursor : checkedAt;
-    const response = await requestList.execute({
-      start: new Date(cursor - 120_000).toISOString(),
-      end: new Date(checkedAt).toISOString(),
-      limit: 100,
-      page: 0,
-    }, ctx) as { requests?: unknown[] };
-    const polled = await pollNewItems({
+    const now = clock.now();
+    const start = day(now - 120_000);
+    const end = day(now);
+    const rows: Array<Record<string, unknown>> = [];
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const response = await (requestList as ActionDefinition).execute({
+        start,
+        end,
+        limit: PAGE_LIMIT,
+        page,
+      }, ctx) as { requests?: Array<Record<string, unknown>> };
+      const batch = response.requests ?? [];
+      rows.push(...batch);
+      if (batch.length < PAGE_LIMIT) break;
+      if (page === MAX_PAGES - 1) {
+        throw new Error(
+          `Deepgram request log for ${start}..${end} holds more than ${PAGE_LIMIT * MAX_PAGES} ` +
+            "requests; refusing to poll it",
+        );
+      }
+    }
+    const { events, nextState } = await pollSnapshot({
       state,
-      maxPages: 1,
-      maxEvents: 100,
-      idOf: (item) =>
-        String(
-          (item as { request_id?: unknown; id?: unknown }).request_id ??
-            (item as { id?: unknown }).id ?? "",
-        ),
-      fetchPage: () => Promise.resolve({ items: response.requests ?? [] }),
+      rows: rows.map((item) => ({
+        key: String(item.request_id ?? item.id ?? ""),
+        values: item,
+      })),
+      emit: { added: true, updated: false },
     });
-    return { ...polled, nextState: { ...polled.nextState, cursor: checkedAt } };
+    return { events: events.map((change) => change.values), nextState };
   },
 };
 

@@ -223,8 +223,12 @@ where it can be acted on: on the `429` itself.
 | --- | --- | --- | --- |
 | `new-request` — New Request | Poll | `request-list` | Each newly recorded API request |
 
-The request log is read through its documented bounded time window. The first check records the
-window without firing; later checks deduplicate request ids over a two-minute overlap. Source:
+Deepgram filters the request log by date, not time (`request-list` truncates `start`/`end` to
+`YYYY-MM-DD`), and the OpenAPI documents no result order. So each check reads every request of the
+current UTC day (the previous day too for two minutes after midnight) at the maximum page size of
+1000, following `page`, and emits ids that were not in the previous check. The first check only
+records. Guarantee: complete for up to 5000 requests per day; beyond that the check fails with an
+error naming the cap rather than dropping requests. Source:
 [Deepgram API reference](https://developers.deepgram.com/openapi.json) (verified 2026-11-09).
 
 A failure carries whichever of Deepgram's three shapes it arrived in, with the
