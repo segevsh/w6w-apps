@@ -8563,12 +8563,22 @@
     "mechanism": "poll",
     "candidates": [
       "new-conversation",
-      "new-or-updated-conversation"
+      "new-or-updated-conversation",
+      "new-call",
+      "new-message",
+      "new-user",
+      "new-phone-number"
     ],
     "pollAction": "conversation-list",
-    "reason": "GET /v1/conversations takes createdAfter and updatedAfter; call/message webhooks also exist (see webhooks file)",
-    "verified": "apps/quo/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter (createdAfter) polls over conversations, calls and messages; id snapshots over the bounded user and phone-number lists; call/message webhooks also exist (see webhooks file); users are read 50 per page (the documented maximum)",
+    "verified": "apps/quo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-list": "GET /v1/contacts documents only externalIds/sources filters and maxResults/pageToken: no date filter or sort order and unbounded (https://www.quo.com/docs/mdx/api-reference/contacts/list-contacts)",
+      "task-list": "GET /v1/tasks documents only maxResults/pageToken: no date filter or sort order and unbounded (https://www.quo.com/docs/mdx/api-reference/tasks/list-tasks)",
+      "contact-custom-field-list": "custom contact field definitions: reference data, editable only in the Quo app",
+      "webhook-list": "legacy webhook subscriptions: account configuration, not records"
+    }
   },
   {
     "path": "apps/raindrop",
@@ -9178,12 +9188,22 @@
     "path": "apps/sendblue",
     "mechanism": "poll",
     "candidates": [
-      "new-message"
+      "new-message",
+      "new-contact",
+      "new-seat",
+      "new-verification",
+      "new-verified-contact"
     ],
     "pollAction": "message-list",
-    "reason": "shipped poll trigger(s) over list action message-list",
-    "verified": "apps/sendblue/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "newest-first message and contact feeds (order_by created_at / createdAt desc) plus an id snapshot over the bounded seat list (https://docs.sendblue.com/api-v2/contacts, https://docs.sendblue.com/api-v2/seats); since-filter (updated_at_gte, offset paging) over verifications and an id snapshot over verified contacts (https://docs.sendblue.com/api/resources/verify/subresources/verifications/methods/list/, https://docs.sendblue.com/api/resources/verified_contacts/methods/list/)",
+    "verified": "apps/sendblue/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "verify-service-list": "Verify service definitions: account configuration, unpaginated, not event records",
+      "webhook-list": "webhook configuration keyed by event type with no record ids",
+      "totp-secret-list": "stored TOTP secrets: credential material (values never returned), no order or timestamp documented (https://docs.sendblue.com/api-v2/totp)",
+      "location-list": "GET /api/location needs a from_number V2 line and returns current Find My positions of contacts sharing with it: live state that changes between reads, not an event record feed (https://docs.sendblue.com/api-v2/location-sharing)"
+    }
   },
   {
     "path": "apps/sender",
@@ -9233,11 +9253,19 @@
     "path": "apps/sentry",
     "mechanism": "poll",
     "candidates": [
-      "new-issue"
+      "new-issue",
+      "new-release",
+      "new-project",
+      "new-team",
+      "new-member",
+      "new-organization",
+      "new-deploy",
+      "new-event",
+      "new-issue-event"
     ],
     "pollAction": "issue-list",
-    "reason": "issue-list sort=new (https://docs.sentry.io/api/events/list-an-organizations-issues/)",
-    "verified": "apps/sentry/README.md Triggers section (verified 2026-11-09)",
+    "reason": "issue-list sort=new and release-list (sorted by most recent) newest-first; id snapshots over the bounded project, team, member, organization and per-release deploy lists (https://docs.sentry.io/api/); start/end window polls over project events and one issue's events, drained through the action's Link cursor (returnAll)",
+    "verified": "apps/sentry/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -9721,12 +9749,21 @@
     "mechanism": "poll",
     "candidates": [
       "new-contact",
-      "new-or-updated-contact"
+      "new-or-updated-contact",
+      "new-message",
+      "new-campaign",
+      "new-contact-list",
+      "new-segment"
     ],
     "pollAction": "contact-list",
-    "reason": "since-filter window on GET /api/contacts (vendor sorts/filters by updated, no created filter): new-contact keeps created in window; resumes by page",
-    "verified": "apps/simpletexting/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter windows on contacts, messages (since) and campaigns (startDateFrom, type=ALL) with page resume and seed floor; id snapshots over the bounded contact-list and segment collections (https://api-doc.simpletexting.com/)",
+    "verified": "apps/simpletexting/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "custom-field-list": "custom field definitions: reference data",
+      "phone-list": "the account's sender numbers: reference data for accountPhone, provisioned by SimpleTexting",
+      "webhook-list": "webhook subscriptions: account configuration, not records"
+    }
   },
   {
     "path": "apps/simplybook",
@@ -9937,8 +9974,20 @@
     ],
     "pollAction": "note-list",
     "reason": "GET /v1/notes?orderBy=lastEditedAt_DESC (documented enum); no created-time order is documented so no new-note",
-    "verified": "apps/slite/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "verified": "apps/slite/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "note-search": "new-or-updated-note",
+      "note-children-list": "new-or-updated-note"
+    },
+    "skipped": {
+      "user-search": "query is required (https://developers.slite.com/reference/searchusers): the directory cannot be listed without a guessed search term",
+      "group-search": "query is required (https://developers.slite.com/reference/searchgroups): the directory cannot be listed without a guessed search term",
+      "km-note-list": "knowledge-management review report (review state/owner/channel/recency filters, no sort): report output, not a record feed",
+      "km-public-note-list": "knowledge-management report of public notes: report output, no sort order",
+      "km-inactive-note-list": "knowledge-management report of inactive notes: report output",
+      "km-empty-note-list": "knowledge-management report of empty notes: report output"
+    }
   },
   {
     "path": "apps/smartsheet",
