@@ -43,6 +43,7 @@ import sobjectDescribe from "./actions/sobject-describe.ts";
 import sobjectList from "./actions/sobject-list.ts";
 import limitsGet from "./actions/limits-get.ts";
 import newRecord from "./triggers/new-record.ts";
+import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -65,6 +66,6 @@ export default {
     limitsGet,
   ],
   auth: [accessToken, oauth2],
-  triggers: [newRecord],
+  triggers: [newRecord, newOrUpdatedRecord],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
