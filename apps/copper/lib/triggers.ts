@@ -25,7 +25,7 @@ import { CopperClient } from "./client.ts";
  */
 
 export type CopperEntity = "person" | "lead" | "company" | "opportunity" | "task";
-export type CopperEvent = "new" | "update";
+export type CopperEvent = "new" | "update" | "delete";
 
 /** The key under which this trigger's secret rides in the subscription's `secret` object. */
 export const SECRET_FIELD = "w6w_secret";
@@ -53,7 +53,7 @@ export interface CopperRecordEvent {
 export const EVENT_OUTPUT: OutputField[] = [
   { key: "id", type: "number", label: "Record ID" },
   { key: "type", type: "string", label: "Record type" },
-  { key: "event", type: "string", label: "Event (new, update)" },
+  { key: "event", type: "string", label: "Event (new, update, delete)" },
   { key: "subscriptionId", type: "number", label: "Subscription ID" },
   { key: "timestamp", type: "string", label: "Event time (ISO 8601)" },
   { key: "updatedAttributes", type: "object", label: "Changed fields as [old, new] (updates)" },
@@ -69,11 +69,11 @@ function num(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-function str(v: unknown): string | null {
+export function str(v: unknown): string | null {
   return typeof v === "string" && v !== "" ? v : typeof v === "number" ? String(v) : null;
 }
 
-async function deleteSubscription(client: CopperClient, id: string): Promise<void> {
+export async function deleteSubscription(client: CopperClient, id: string): Promise<void> {
   try {
     await client.request(`/webhooks/${encodeURIComponent(id)}`, { method: "DELETE" });
   } catch (err) {
@@ -130,28 +130,46 @@ export function webhookTrigger(
     },
 
     handleIngest({ raw, state }) {
-      const expected = requireSecret(state?.secret);
-      const body = requireRawBody(raw);
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new Error("Copper delivery refused: the body is not JSON.");
-      }
-      const delivery = asObject(parsed);
-      if (!delivery || !timingSafeEqual(delivery[SECRET_FIELD] as string, expected)) {
-        throw new Error("Copper delivery refused: the secret does not match.");
-      }
+      const delivery = verifiedDelivery(raw, state?.secret);
       if (delivery.type !== spec.type || delivery.event !== spec.event) return [];
-      const ids = Array.isArray(delivery.ids) ? delivery.ids.filter((i) => num(i) !== null) : [];
-      return (ids as number[]).map((id) => ({
-        id,
-        type: spec.type as string,
-        event: spec.event as string,
-        subscriptionId: num(delivery.subscription_id),
-        timestamp: str(delivery.timestamp),
-        updatedAttributes: asObject(delivery.updated_attributes),
-      }));
+      return recordEvents(delivery);
     },
   };
+}
+
+/**
+ * Verify one Copper delivery against the stored secret and return its parsed body. The secret is
+ * required before any compare (an unset secret can never equal an absent field); the body is the
+ * raw text, never re-serialised.
+ */
+export function verifiedDelivery(
+  raw: { rawBody?: unknown },
+  storedSecret: unknown,
+): Record<string, unknown> {
+  const expected = requireSecret(storedSecret);
+  const body = requireRawBody(raw);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Copper delivery refused: the body is not JSON.");
+  }
+  const delivery = asObject(parsed);
+  if (!delivery || !timingSafeEqual(delivery[SECRET_FIELD] as string, expected)) {
+    throw new Error("Copper delivery refused: the secret does not match.");
+  }
+  return delivery;
+}
+
+/** One event per record id named by a verified delivery. */
+export function recordEvents(delivery: Record<string, unknown>): CopperRecordEvent[] {
+  const ids = Array.isArray(delivery.ids) ? delivery.ids.filter((i) => num(i) !== null) : [];
+  return (ids as number[]).map((id) => ({
+    id,
+    type: String(delivery.type),
+    event: String(delivery.event),
+    subscriptionId: num(delivery.subscription_id),
+    timestamp: str(delivery.timestamp),
+    updatedAttributes: asObject(delivery.updated_attributes),
+  }));
 }
