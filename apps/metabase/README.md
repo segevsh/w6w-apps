@@ -562,4 +562,4 @@ checking for a 200.
   page-indicator vocabularies this app maps
 - **Icon provenance** — https://github.com/n8n-io/n8n/blob/master/packages/nodes-base/nodes/Metabase/metabase.svg
 
-Triggers: not shipped — existing list/search actions have neither a created-time order nor a created-since filter (https://www.metabase.com/docs/latest/api-documentation).
+Triggers: not shipped — `collection-items` (sort `last_edited_at`) is the only update-ordered list but the item payload documents no edit timestamp to key an edited item on, so an edit could never be a new event, and the other list/search actions have neither a created-time order nor a created-since filter (https://www.metabase.com/docs/latest/api/collection).
