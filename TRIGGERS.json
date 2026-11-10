@@ -6044,12 +6044,32 @@
     "path": "apps/microsoft/onedrive",
     "mechanism": "poll",
     "candidates": [
-      "file-changed"
+      "file-changed",
+      "new-file",
+      "new-folder",
+      "file-updated",
+      "folder-updated",
+      "item-deleted",
+      "new-permission",
+      "new-drive"
     ],
     "pollAction": "list-changes",
-    "reason": "shipped poll trigger(s) over list action list-changes",
-    "verified": false,
-    "source": "hand"
+    "reason": "poll triggers over list-changes (delta: created/updated/deleted files and folders), list-permissions and list-drives (bounded snapshots); Graph drive webhooks not shipped: notifications carry no item data and expire in under 30 days with no renewal hook (https://learn.microsoft.com/en-us/graph/api/resources/subscription)",
+    "verified": "apps/microsoft/onedrive/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-children": "new-file",
+      "search-items": "new-file"
+    },
+    "skipped": {
+      "list-shared-with-me": "Microsoft deprecated drive/sharedWithMe and says it stops returning data after November 2026 (https://learn.microsoft.com/en-us/graph/api/drive-sharedwithme)"
+    },
+    "n8n": {
+      "fileCreated": "new-file",
+      "fileUpdated": "file-updated",
+      "folderCreated": "new-folder",
+      "folderUpdated": "folder-updated"
+    }
   },
   {
     "path": "apps/microsoft/onenote",

@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1858 triggers, 2461 unaccounted list actions in 526 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1865 triggers, 2456 unaccounted list actions in 525 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -236,7 +236,6 @@ depth: 682 apps, 1858 triggers, 2461 unaccounted list actions in 526 apps, n8n-p
 | apps/mailchimp/mandrill | 1 | 5 | 5 |
 | apps/mailgun | 1 | 5 | 5 |
 | apps/metricool | 0 | 5 | 5 |
-| apps/microsoft/onedrive | 1 | 6 | 5 |
 | apps/murf | 0 | 5 | 5 |
 | apps/netlify | 3 | 5 | 5 |
 | apps/nocodb | 1 | 6 | 5 |
@@ -626,6 +625,7 @@ depth: 682 apps, 1858 triggers, 2461 unaccounted list actions in 526 apps, n8n-p
 | apps/manus | 7 | 10 | 0 |
 | apps/meistertask | 12 | 12 | 0 |
 | apps/mercury | 9 | 10 | 0 |
+| apps/microsoft/onedrive | 8 | 6 | 0 |
 | apps/microsoft/outlook | 4 | 5 | 0 |
 | apps/microsoft/teams | 8 | 8 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
@@ -1062,7 +1062,7 @@ depth: 682 apps, 1858 triggers, 2461 unaccounted list actions in 526 apps, n8n-p
 | apps/microsoft/azuredevops | 3 | build-list | new-build, new-work-item, new-or-updated-work-item | apps/microsoft/azuredevops/README.md Triggers section (verified 2026-11-09) | hand | build-list takes a minTime filter (id dedupe, no default-order reliance); work-item-query runs trigger-built WIQL with explicit ORDER BY CreatedDate/ChangedDate DESC (https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) |
 | apps/microsoft/excel | 2 | list-workbooks | new-workbook, new-or-updated-workbook | apps/microsoft/excel/README.md Triggers section (verified 2026-11-09) | hand | list-workbooks with createdDateTime desc and lastModifiedDateTime desc (id includes the stamp). |
 | apps/microsoft/microsoft-entra-id | 1 | list-deleted-items | new-deleted-item | apps/microsoft/microsoft-entra-id/README.md Triggers section (verified 2026-11-09) | hand | Deleted items are requested by deletedDateTime descending. |
-| apps/microsoft/onedrive | 1 | list-changes | file-changed | no | hand | shipped poll trigger(s) over list action list-changes |
+| apps/microsoft/onedrive | 8 | list-changes | file-changed, new-file, new-folder, file-updated, folder-updated, item-deleted, new-permission, new-drive | apps/microsoft/onedrive/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over list-changes (delta: created/updated/deleted files and folders), list-permissions and list-drives (bounded snapshots); Graph drive webhooks not shipped: notifications carry no item data and expire in under 30 days with no renewal hook (https://learn.microsoft.com/en-us/graph/api/resources/subscription) |
 | apps/microsoft/onenote | 1 | list-pages | new-or-updated-page | apps/microsoft/onenote/README.md Triggers section (verified 2026-11-09) | hand | Page feed is documented as last-modified descending; update stamp is part of id. |
 | apps/microsoft/outlook | 4 | list-messages | new-email, new-event, new-calendar, new-mail-folder | apps/microsoft/outlook/README.md Triggers section (verified 2026-11-10) | hand | polls over list-messages and list-events (newest first) and list-calendars and list-mail-folders (snapshots); no webhook: Graph subscriptions expire in under 7 days and need renewal (https://learn.microsoft.com/en-us/graph/change-notifications-overview) |
 | apps/microsoft/powerbi | 2 | list-refresh-history | new-refresh, new-or-updated-refresh | apps/microsoft/powerbi/README.md Triggers section (verified 2026-11-09) | hand | refresh history is a bounded collection (20-60 entries per dataset) with stable requestId (https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/get-refresh-history) |
