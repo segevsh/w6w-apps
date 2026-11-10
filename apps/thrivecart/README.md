@@ -228,3 +228,5 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+Triggers: not shipped — webhook candidate queued for a webhook node: ThriveCart subscription events; product/bump/upsell/downsell lists are catalogs, not created feeds (https://apidocs.thrivecart.com/)

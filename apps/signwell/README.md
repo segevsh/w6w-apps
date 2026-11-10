@@ -125,3 +125,5 @@ were not observed on an authenticated 200. A 429 body names the limit and reset 
 `https://developers.signwell.com/favicon.ico` — which is an SVG (695 bytes, `file(1)`: "SVG Scalable
 Vector Graphics image"), not an ICO. Format with `deno task fmt`, never bare `deno fmt`, which
 rewrites it.
+
+Triggers: not shipped — bulk-send-list documents only page/limit/user_email/api_application_id: no sort order and no since filter, and no document-list action exists (https://developers.signwell.com/openapi/resources-and-endpoints.json)

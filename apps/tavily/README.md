@@ -79,3 +79,5 @@ List-valued params (domains, URLs, paths) are text fields: comma or newline sepa
 - **`quota`** — reads `GET /usage` (signed): plan credits, pay-as-you-go credits and the per-key cap.
   90% consumed is `degraded`, 100% is `down`. A `null` or zero limit means no ceiling, not
   exhausted. Tavily documents no rate-limit headers, so there is no request-rate check.
+
+Triggers: not shipped — Tavily exposes stateless search, crawl, extract and research-job operations, not an account record collection (https://docs.tavily.com/documentation/api-reference/introduction)

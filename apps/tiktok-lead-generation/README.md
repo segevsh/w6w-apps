@@ -171,3 +171,5 @@ Researched and endpoint-verified live 2026-09-05 by direct HTTP probing of
 (`github.com/tiktok/tiktok-business-api-sdk`) — **not** by reading the docs portal's
 rendered content, which this app's tooling could not fetch. Re-verify against the live
 portal directly (in a real browser session) before extending this app's scope.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: lead-generation events; the existing paged lead retrievals have no verified order or since filter (https://business-api.tiktok.com/portal/docs)
