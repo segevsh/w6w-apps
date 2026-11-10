@@ -1,6 +1,6 @@
 # Productive.io
 
-- **Triggers** — 17 (poll)
+- **Triggers** — 14 (poll)
 
 Project, resource and financial management for agencies. 57 actions over the Productive REST API
 (`https://api.productive.io/api/v2`, JSON:API). Every path, filter, attribute and enum was read
@@ -133,11 +133,16 @@ Left out on purpose; none is a limitation of the app's design, only unbuilt:
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-deal` — New Deal | Poll | `deal-list` | Each newly created deal (and budget) |
-| `new-board`, `new-booking`, `new-comment`, `new-company`, `new-deal-status`, `new-invoice`, `new-page`, `new-person`, `new-project`, `new-service`, `new-task`, `new-tasklist`, `new-time-entry`, `new-todo`, `new-webhook`, `new-workflow-status` | Poll | Matching `*-list` action | Each newly listed record |
+| `new-comment`, `new-company`, `new-deal-status`, `new-invoice`, `new-page`, `new-project`, `new-task` | Poll | Matching `*-list` action, `sort=-created_at` | Each newly created record |
+| `new-or-updated-page`, `new-or-updated-task`, `new-or-updated-time-entry` | Poll | Matching `*-list` action, `sort=-updated_at` | Each new or edited record (id plus `updated_at` is the dedupe key) |
+| `new-booking`, `new-person` | Poll | `booking-list`, `person-list` with `filter[created_at][gt_eq]` | Each newly created record |
+| `new-or-updated-booking` | Poll | `booking-list` with `filter[updated_at][gt_eq]` | Each new or edited booking |
 
-- `deal-list` (`GET /deals`) is called with `sort=-created_at` (newest first), page size 100, page 1; the first check records the page without firing, later checks emit unseen ids. The action's own sort parameter documents `-created_at` (descending prefix `-`) from Productive's OpenAPI document `api-master.yaml`.
-- No `new-or-updated-deal`: the only documented update-ordered sort is `-last_activity_at`, which moves on activity (comments, tasks), not on edits to the deal, so it is not an honest update stamp.
+- `deal-list` (`GET /deals`) is called with `sort=-created_at` (newest first), page size 100, page 1; the first check records the page without firing, later checks emit unseen ids. No `new-or-updated-deal`: the only documented update-ordered sort is `-last_activity_at`, which moves on activity (comments, tasks), not on edits to the deal, so it is not an honest update stamp.
+- Sorts are quoted from the sort enums in the vendor OpenAPI document (<https://developer.productive.io/openapi.yaml>, read 2026-11-10): `created_at` is in the enums of comments, companies, deal statuses, invoices, pages, projects and tasks; `updated_at` is in the enums of pages, tasks and time entries. A time entry has no creation sort, so its only feed is `new-or-updated-time-entry` (a new entry is also an update).
+- Bookings and people have no creation sort (bookings: `draft`, `last_activity_at`, `started_on`; people: no `created_at`), but both document a `filter[created_at]` date filter (`gt_eq`, `format: date`) and bookings also `filter[updated_at]`. These triggers filter from one UTC day before the last check minus two minutes (day granularity, unknown organization time zone), read up to 5 pages of 100, and dedupe by id. The first check stores a time floor without reading, so existing records never flood later.
+- Not covered (`board-list`: `GET /boards` is not a path in the vendor OpenAPI document, which lists only `/dashboards`; `service-list`: sorts `budget`, `company`, `name`, `project_name` only, and the response carries no `created_at`/`updated_at` attribute to dedupe or floor on; `tasklist-list`: sorts by board/company/folder/project name only, `filter` has `status` only, unbounded; `todo-list`, `webhook-list`: free-form `sort` with no documented order and no date filter, unbounded; `workflow-status-list`: workflow state definitions, sorts `name`/`position` only, static configuration).
 
 Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
 
-Sources (verified 2026-11-10): https://developer.productive.io (JS-rendered; the sort values are quoted from the OpenAPI document cited in each wrapped action).
+Sources (verified 2026-11-10): https://developer.productive.io and the OpenAPI document https://developer.productive.io/openapi.yaml (sort enums and date filters per list endpoint, e.g. `/api/v2/pages`, `/api/v2/bookings`, `/api/v2/time_entries`).
