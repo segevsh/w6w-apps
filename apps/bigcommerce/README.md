@@ -5,14 +5,15 @@ webhooks** from a workflow, over the REST Management API (`api.bigcommerce.com`)
 
 38 actions, one auth method, five declared health checks.
 
+- **Triggers** — 9 (poll)
+
 ## Sources
 
 Everything in this app was verified on **2026-08-11** against, in order of authority:
 
 1. **BigCommerce's own machine-readable OpenAPI 3.1 documents** — the primary source. The vendor
    publishes **78 distinct** specification documents, one per API family, at
-   `https://docs.bigcommerce.com/openapi/<name>.json`, indexed at
-   `https://docs.bigcommerce.com/docs/rest-catalog/openapi.json`. Twenty of them cover this app's
+   `https://docs.bigcommerce.com/openapi/<name>.json`. Twenty of them cover this app's
    surface; `admin-catalog-products.json` alone is 457,109 bytes. Every path, verb, query
    parameter, request-body field, required-field list and enum here is copied from them.
 2. **The prose reference and guides** at `https://docs.bigcommerce.com/developer` — for the things
@@ -268,11 +269,57 @@ Every `perform` action declares `idempotent` explicitly, and honestly:
 
 ## Triggers
 
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| Trigger key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+| `new-order` — New Order | Poll | `order-list`, `sort=date_created:desc` | Each newly created order |
+| `new-product` — New Product | Poll | `product-list`, `sort=id`, `direction=desc` | Each newly created product |
+| `new-or-updated-product` — New or Updated Product | Poll | `product-list`, `sort=date_modified`, `direction=desc` | Each product whose modification time changes |
+| `new-customer` — New Customer | Poll | `customer-list`, `sort=date_created:desc` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list`, `sort=date_modified:desc` | Each customer whose modification time changes |
+| `new-price-list` — New Price List | Poll (snapshot) | `price-list-list`, all pages | Each price list first seen |
+| `new-or-updated-price-list` — New or Updated Price List | Poll (snapshot) | `price-list-list`, all pages | Each price list first seen or whose values change |
+| `new-brand` — New Brand | Poll (snapshot) | `brand-list`, all pages | Each brand first seen |
+| `new-inventory-location` — New Inventory Location | Poll (snapshot) | `inventory-location-list`, all pages | Each inventory location first seen |
+| `new-category-tree` — New Category Tree | Poll (snapshot) | `category-tree-list` | Each category tree first seen |
+| `new-or-updated-price-list-record` — New or Updated Price List Record | Poll (since-filter) | `price-list-record-list`, `date_modified:min` | Each price (variant and currency) in one chosen price list that is added or changed |
 
-Polled newest-first through the `order-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developer.bigcommerce.com/docs/rest-management/orders) (verified 2026-11-09).
+Order, product and customer triggers poll newest-first through their listed actions; the first check
+records what exists without firing, later checks emit only unseen items. `new-product` sorts by `id`
+descending because the vendor says "Since ID increments when new products are added, you can use the
+ID value to sort by product create date" — a bulk edit of other products cannot push a new one off
+the page, as a `date_modified` sort would. The snapshot triggers read the whole (small, bounded)
+collection, up to 5000 rows, and diff per-row hashes; `category-tree-list` is one request, as the
+vendor page documents no paging for it.
+
+`new-or-updated-price-list-record` takes a required `priceListId` (the price list to watch). Each
+check asks for records with `date_modified:min` set to the last check minus a two-minute overlap, reads at
+most five pages of 100, and resumes a longer window on the next check instead of stalling. The first
+check stores the moment it ran as a floor and emits nothing, so prices that existed before the
+trigger was switched on never fire. A price record has no id of its own, so it is identified by
+price list, variant, currency and modification time.
+
+Sources, opened 2026-11-10:
+[products](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/products/get-products) (`sort` enum, `direction`),
+[customers](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/customers/v3/get-customers) (`sort` enum),
+[price lists](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/get-price-lists),
+[price list records](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/price-lists/price-lists-records/get-price-list-records) (`date_modified:min`, `date_modified:max`, `date_created:min`),
+[brands](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/brands/get-brands),
+[inventory locations](https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/inventory/locations/get-locations),
+[category trees](https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/category-trees/get-category-trees) (only `id:in`, `channel_id:in`).
+
+Not covered, by reason:
+
+- **Sub-lists of one individual order or customer** (`order-product-list`,
+  `order-shipping-address-list`, `order-transaction-list`, `customer-address-list`): the parent is a
+  single order or customer record, not a container a user would choose to watch, and the vendor
+  pages document only `page` and `limit` (the transactions page documents no query parameters at all), so
+  no date filter.
+  New orders and customers are delivered by `new-order` and `new-customer`.
+- **Reference or administration output** (`order-status-list`, `webhook-list`).
+- **No usable date filter or creation order, and no documented size bound** (`category-list`:
+  `GET /v3/catalog/trees/categories` documents only id, uuid, tree, parent, name, title, keyword and
+  visibility filters; `inventory-item-list`, `variant-list`: only `page`, `limit` and id, SKU
+  filters).
 
 ## Health checks
 
