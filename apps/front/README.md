@@ -7,7 +7,7 @@ behind it current.
 - **Categories** — support, communication, productivity
 - **Auth methods** — api-token
 - **Actions** — 30
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Egress allowlist** — `api2.frontapp.com`
 - **Website** — https://front.com
 - **API docs** — https://dev.frontapp.com/reference ·
@@ -257,14 +257,24 @@ are surfaced rather than the top-level status alone.
 
 ## Triggers
 
-Poll triggers built on the app's existing `contact-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+Poll triggers built on the app's existing list actions (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each Front contact that is newly created or edited, once per edit. |
+| `new-conversation` — New Conversation | poll | `conversation-list` | Each conversation created after the trigger was switched on. |
+| `new-or-updated-conversation` — New or Updated Conversation | poll | `conversation-list` | Each conversation that is created or changes (its `updated_at` moves), once per change. |
+| `new-inbox` — New Inbox | poll | `inbox-list` | Each inbox newly added to the company. |
+| `new-channel` — New Channel | poll | `channel-list` | Each channel newly connected. |
+| `new-tag` — New Tag | poll | `tag-list` | Each company tag newly created. |
+| `new-teammate` — New Teammate | poll | `teammate-list` | Each teammate newly added. |
 
-How the feed is read: `GET /contacts` with the `q[updated_after]` filter only: the action exposes no sort, so the trigger is a since-filter poll. Each check reads its whole window in one go, at most 2000 contacts and with no way to resume; a window longer than that (only after a long outage of the checks) fires the first 2000 and the surplus is not guaranteed.
+How the feeds are read: `new-or-updated-contact` is a since-filter poll (`GET /contacts` with `q[updated_after]`; the action exposes no sort), reading its whole window in one go, at most 2000 contacts with no way to resume. The two conversation triggers read `GET /conversations?sort_order=desc`, 100 per check: Front returns "the most recently updated first" and honours the company's bump settings, so the first check stores a floor (`now`) and later checks drop every conversation stamped before it — a reply that bumps an old conversation to the top never announces it as new. Inbox, channel, tag and teammate lists are small company-level collections read whole (one request, at most 5000 rows) and compared check to check; only added rows fire.
+
+Also delivered by `new-conversation`: `conversation-search`, `inbox-conversation-list` and `contact-conversation-list` return narrower views of the same conversations.
+
+Not covered: `status-list` (company ticket-status definitions — reference data); `conversation-message-list`, `conversation-comment-list` and `conversation-event-list` (the messages, comments and events of ONE conversation — a thread is a record, not a feed a user subscribes to; a company-wide message feed needs Front webhooks, queued for a webhook node).
 
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 
-Vendor docs: <https://dev.frontapp.com/reference/list-contacts> (verified 2026-11-09).
+Vendor docs: <https://dev.frontapp.com/reference/list-conversations>, <https://dev.frontapp.com/reference/list-inboxes>, <https://dev.frontapp.com/reference/list-channels>, <https://dev.frontapp.com/reference/list-company-tags>, <https://dev.frontapp.com/reference/list-teammates>, <https://dev.frontapp.com/reference/list-contacts> (verified 2026-11-10).
