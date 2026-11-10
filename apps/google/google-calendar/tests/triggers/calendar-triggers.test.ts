@@ -197,17 +197,146 @@ test("event-ended: requests end > cursor - 1s and emits only events ending insid
   });
 });
 
-test("event-ended: an all-day event ends at UTC midnight of its end date", async () => {
+// A fake server that applies Google's documented rule: an all-day event is bracketed by midnight in
+// the CALENDAR time zone ("Matching all-day events to time-bracketed queries"), so it is returned
+// for a window when end > timeMin and start < timeMax. Offsets are hard-coded (standard time on
+// 2026-11-10/11), independent of the code under test.
+const ZONES = { "America/Los_Angeles": -8, "Europe/Berlin": 1 } as const;
+const midnightUtc = (date: string, tz: keyof typeof ZONES) =>
+  Date.parse(`${date}T00:00:00Z`) - ZONES[tz] * 3_600_000;
+const iso = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
+const allDay = {
+  id: "d",
+  status: "confirmed",
+  start: { date: "2026-11-10" },
+  end: { date: "2026-11-11" },
+};
+function serve(tz: keyof typeof ZONES, from: number, until: number, edgeKey: "start" | "end") {
+  const s = midnightUtc("2026-11-10", tz);
+  const e = midnightUtc("2026-11-11", tz);
+  const timeMin = edgeKey === "start" ? from : from - 1000;
+  const hit = e > timeMin && s < until;
+  return mockCtx([{ body: { timeZone: tz, items: hit ? [allDay] : [] } }]);
+}
+
+for (const tz of Object.keys(ZONES) as Array<keyof typeof ZONES>) {
+  for (
+    const [t, edgeKey, date] of [[eventStarted, "start", "2026-11-10"], [
+      eventEnded,
+      "end",
+      "2026-11-11",
+    ]] as const
+  ) {
+    test(`${t.key}: an all-day event fires at midnight in ${tz}, not at UTC midnight`, async () => {
+      const at = midnightUtc(date, tz);
+      const state = { v: 1, kind: "window", seeded: true, cursor: at - 60_000 };
+      clock.now = () => at + 240_400;
+      const r = await run(t, state, serve(tz, at - 60_000, at + 240_000, edgeKey).ctx);
+      assertEquals(r.events, [allDay]);
+    });
+
+    test(`${t.key}: an all-day event is not emitted around UTC midnight in ${tz}`, async () => {
+      const utcMidnight = Date.parse(`${date}T00:00:00Z`);
+      const state = { v: 1, kind: "window", seeded: true, cursor: utcMidnight - 60_000 };
+      clock.now = () => utcMidnight + 240_400;
+      const r = await run(
+        t,
+        state,
+        serve(tz, utcMidnight - 60_000, utcMidnight + 240_000, edgeKey).ctx,
+      );
+      assertEquals(r.events, []);
+    });
+  }
+}
+
+test("an all-day event falls back to UTC midnight when Google returns no time zone", async () => {
+  const at = Date.parse("2026-11-11T00:00:00Z");
+  clock.now = () => at + 240_400;
+  const state = { v: 1, kind: "window", seeded: true, cursor: at - 60_000 };
+  const r = await run(eventEnded, state, mockCtx([{ body: { items: [allDay] } }]).ctx);
+  assertEquals(r.events, [allDay]);
+});
+
+test("event-ended: seed stores a whole-second cursor and makes no request", async () => {
+  clock.now = () => T0;
+  const { ctx, calls } = mockCtx([]);
+  const r = await run(eventEnded, {}, ctx);
+  assertEquals(r.events, []);
+  assertEquals(r.nextState, {
+    v: 1,
+    kind: "window",
+    seeded: true,
+    cursor: Date.parse("2026-11-10T10:00:00Z"),
+  });
+  assertEquals(calls.length, 0);
+});
+
+test("event-ended: the same state and responses twice give deep-equal results", async () => {
   clock.now = () => T1;
-  const state = { v: 1, kind: "window", seeded: true, cursor: Date.parse("2026-11-09T23:59:00Z") };
-  const day = {
-    id: "d",
-    status: "confirmed",
-    start: { date: "2026-11-09" },
-    end: { date: "2026-11-10" },
-  };
-  const r = await run(eventEnded, state, mockCtx([{ body: { items: [day] } }]).ctx);
-  assertEquals(r.events, [day]);
+  const state = { v: 1, kind: "window", seeded: true, cursor: Date.parse("2026-11-10T10:00:00Z") };
+  const page = { body: { items: [ev("done", "2026-11-10T09:00:00Z", "2026-11-10T10:03:00Z")] } };
+  const once = await run(eventEnded, state, mockCtx([page]).ctx);
+  assertEquals(once.events.length, 1);
+  assertEquals(once, await run(eventEnded, state, mockCtx([page]).ctx));
+});
+
+test("event-ended: a window of maxPages + 1 full pages is drained across checks, none twice", async () => {
+  clock.now = () => T1;
+  const cursor = Date.parse("2026-11-10T10:00:00Z");
+  const mk = (n: number) =>
+    ev(`e${n}`, "2026-11-10T09:00:00Z", `2026-11-10T10:0${1 + (n % 4)}:00Z`);
+  const first = await run(
+    eventEnded,
+    { v: 1, kind: "window", seeded: true, cursor },
+    mockCtx([
+      { body: { items: [mk(0)], nextPageToken: "p2" } },
+      { body: { items: [mk(1)], nextPageToken: "p3" } },
+      { body: { items: [mk(2)], nextPageToken: "p4" } },
+    ]).ctx,
+  );
+  assertEquals(first.events.map((e) => e.id), ["e0", "e1", "e2"]);
+  assertEquals(first.nextState, {
+    v: 1,
+    kind: "window",
+    seeded: true,
+    cursor,
+    until: Date.parse("2026-11-10T10:05:00Z"),
+    pageToken: "p4",
+  });
+  clock.now = () => T1 + 600_000;
+  const { ctx, calls } = mockCtx([{ body: { items: [mk(3)] } }]);
+  const second = await run(eventEnded, first.nextState, ctx);
+  assertEquals(second.events.map((e) => e.id), ["e3"]);
+  assertEquals(second.nextState, {
+    v: 1,
+    kind: "window",
+    seeded: true,
+    cursor: Date.parse("2026-11-10T10:05:00Z"),
+  });
+  const q = req(calls[0]).query;
+  assertEquals([q.pageToken, q.timeMin, q.timeMax], [
+    "p4",
+    "2026-11-10T09:59:59Z",
+    "2026-11-10T10:05:00Z",
+  ]);
+});
+
+test("event-ended: events that ended before the seed are never emitted, however many pages", async () => {
+  clock.now = () => T0;
+  const seeded = await run(eventEnded, {}, mockCtx([]).ctx);
+  clock.now = () => T1;
+  const old = (n: number) => ev(`old${n}`, "2026-11-10T07:00:00Z", "2026-11-10T09:00:00Z");
+  const pages = [1, 2, 3].map((p) => ({
+    body: { items: [old(p)], nextPageToken: `p${p + 1}` },
+  }));
+  const r1 = await run(eventEnded, seeded.nextState, mockCtx(pages).ctx);
+  assertEquals(r1.events, []);
+  const r2 = await run(eventEnded, r1.nextState, mockCtx([{ body: { items: [old(9)] } }]).ctx);
+  assertEquals(r2.events, []);
+  clock.now = () => T1 + 300_000;
+  const fresh = ev("fresh", "2026-11-10T09:00:00Z", "2026-11-10T10:07:00Z");
+  const r3 = await run(eventEnded, r2.nextState, mockCtx([{ body: { items: [fresh] } }]).ctx);
+  assertEquals(r3.events, [fresh]);
 });
 
 test("event-started: a window of maxPages + 1 full pages is drained across checks, none twice", async () => {

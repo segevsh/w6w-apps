@@ -27,7 +27,8 @@ previous check. The first check only records what is already there; it starts no
 tab ids between checks, and does not report renames or removed tabs.
 
 Not covered: Google's push channels (Drive `files.watch`) say only that the file changed, never which
-rows, and need a verified HTTPS receiving domain; the row triggers poll instead.
+rows, and the channel expires with nothing in the trigger lifecycle to renew it; the row triggers poll
+instead.
 
 Row-trigger parameters: `spreadsheetId`, `sheetName` (the tab; row 1 must be its header row) and an optional
 `keyColumn` (a header name).

@@ -9,8 +9,9 @@ import listEvents from "../actions/list-events.ts";
  *
  * Why polls and not push channels: `events.watch` notifications carry NO body ("they do not contain
  * specific information about updated resources"), the channel expires and must be re-created, and
- * the receiving URL has to be a verified HTTPS domain — see
- * https://developers.google.com/workspace/calendar/api/guides/push (verified 2026-11-10).
+ * nothing in the trigger lifecycle renews it — see
+ * https://developers.google.com/workspace/calendar/api/guides/push (verified 2026-11-10). (The page
+ * requires only a valid SSL certificate on the receiving URL, not a verified domain.)
  *
  *   - created / updated / cancelled → the incremental sync feed (`syncToken`), one trigger per kind;
  *   - started / ended → a time window over `timeMin`/`timeMax`, advanced only once drained;
@@ -34,6 +35,8 @@ interface ListResult {
   items?: CalendarEvent[];
   nextPageToken?: string;
   nextSyncToken?: string;
+  /** The calendar's time zone (IANA name), as Google returns it on every events.list page. */
+  timeZone?: string;
 }
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
@@ -93,6 +96,12 @@ function isGone(err: unknown): boolean {
   return err instanceof Error && / 410 /.test(err.message);
 }
 
+/**
+ * `created` only when the feed item's `updated` is within two seconds of its `created`. A sync-feed
+ * item shows the latest state only, so an event created and edited again before the next check (or a
+ * guest added to an older event) reads as `updated`: `new-event` can miss it and `event-updated`
+ * emits it instead.
+ */
 export function changeType(event: CalendarEvent): ChangeType {
   if (event.status === "cancelled") return "cancelled";
   const created = Date.parse(event.created ?? "");
@@ -176,10 +185,44 @@ export interface WindowState {
   pageToken?: string;
 }
 
-/** Event time as epoch ms; an all-day `date` is read as UTC midnight. */
-function moment(t: { dateTime?: string; date?: string } | undefined): number {
-  const raw = t?.dateTime ?? (t?.date ? `${t.date}T00:00:00Z` : "");
-  return Date.parse(raw);
+/** Offset (ms, local minus UTC) of an IANA zone at an instant; throws on an unknown zone. */
+function zoneOffset(at: number, tz: string): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  }).formatToParts(new Date(at));
+  const n = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  const local = Date.UTC(n("year"), n("month") - 1, n("day"), n("hour"), n("minute"), n("second"));
+  return local - Math.floor(at / 1000) * 1000;
+}
+
+/** Epoch ms of 00:00 on a `YYYY-MM-DD` date in `tz` (UTC when `tz` is missing or unknown). */
+export function zonedMidnight(date: string, tz?: string): number {
+  const utc = Date.parse(`${date}T00:00:00Z`);
+  if (Number.isNaN(utc) || !tz) return utc;
+  try {
+    const guess = utc - zoneOffset(utc, tz);
+    return utc - zoneOffset(guess, tz);
+  } catch {
+    return utc;
+  }
+}
+
+/**
+ * Event time as epoch ms. An all-day `date` starts at midnight in the CALENDAR's time zone (the
+ * `timeZone` of the events.list response), which is the rule Google applies to its own `timeMin`/
+ * `timeMax` matching — https://developers.google.com/workspace/calendar/api/concepts/events-calendars
+ * ("Matching all-day events to time-bracketed queries"). UTC only when no zone is available.
+ */
+function moment(t: { dateTime?: string; date?: string } | undefined, tz?: string): number {
+  if (t?.dateTime) return Date.parse(t.dateTime);
+  return t?.date ? zonedMidnight(t.date, tz) : NaN;
 }
 
 const wholeSecond = (ms: number) => Math.floor(ms / 1000) * 1000;
@@ -198,7 +241,7 @@ export function windowTrigger(spec: {
     params: [{
       ...CALENDAR_PARAM,
       hint:
-        `The calendar to watch. Fires on the first check after an event's ${spec.edge} time passes; events whose ${spec.edge} passed before the trigger was first checked are not emitted. All-day events count as UTC midnight.`,
+        `The calendar to watch. Fires on the first check after an event's ${spec.edge} time passes; events whose ${spec.edge} passed before the trigger was first checked are not emitted. All-day events count from midnight in the calendar's time zone.`,
     }],
     output: EVENT_OUTPUT,
     sample: EVENT_SAMPLE,
@@ -224,6 +267,7 @@ export function windowTrigger(spec: {
       const timeMin = spec.edge === "start" ? from : from - 1000;
       let pageToken = prior.pageToken;
       const found: CalendarEvent[] = [];
+      let tz: string | undefined;
       for (let i = 0; i < WINDOW_MAX_PAGES; i++) {
         const res = await listEvents.execute({
           calendarId,
@@ -234,6 +278,7 @@ export function windowTrigger(spec: {
           maxResults: WINDOW_PAGE_SIZE,
           pageToken,
         } as never, ctx) as ListResult;
+        tz ??= res.timeZone;
         found.push(...(res.items ?? []));
         pageToken = res.nextPageToken;
         if (!pageToken) break;
@@ -242,12 +287,12 @@ export function windowTrigger(spec: {
       const events = found
         .filter((e) => e.status !== "cancelled")
         .filter((e) => {
-          const at = moment(spec.edge === "start" ? e.start : e.end);
+          const at = moment(spec.edge === "start" ? e.start : e.end, tz);
           return !Number.isNaN(at) && at >= from && at < until;
         })
         .sort((a, b) =>
-          moment(spec.edge === "start" ? a.start : a.end) -
-          moment(spec.edge === "start" ? b.start : b.end)
+          moment(spec.edge === "start" ? a.start : a.end, tz) -
+          moment(spec.edge === "start" ? b.start : b.end, tz)
         );
       const nextState: WindowState = pageToken
         ? { v: 1, kind: "window", seeded: true, cursor: from, until, pageToken }

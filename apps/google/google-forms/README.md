@@ -71,9 +71,10 @@ unwrapped — that `e/` id is a different identifier and the API rejects it.
 ### Not implemented, and why
 
 - **`forms.watches.*`** (`create` / `list` / `delete` / `renew`) exist and were verified, but
-  a watch only delivers to a **Cloud Pub/Sub topic** you own (`projects/<p>/topics/<t>`), and
-  expires after seven days. Nothing in this app can receive that delivery, so the four
-  actions would produce a subscription with no consumer. Left out rather than shipped as a
+  a watch delivers to a **Cloud Pub/Sub topic** (`projects/<p>/topics/<t>`) owned by the Cloud
+  project that calls the API, carries no response data, and expires after seven days. This app has
+  no trigger that renews it or verifies a Pub/Sub push, so the four actions would produce a
+  subscription with no consumer. Left out rather than shipped as a
   half-feature; if you already run a Pub/Sub → HTTP bridge, `form-batch-update`'s sibling
   methods are a small addition to make.
 - **Responder management** is Drive's `permissions.create` / `permissions.delete` with
@@ -220,9 +221,12 @@ responses are de-duplicated by `responseId`). It reads at most 3 pages per check
 continues on the next check and the cursor only moves once the last page was read. An edited response
 (a new `lastSubmittedTime`) is not emitted again. The trigger checks at most every 5 minutes.
 
-Not covered: Forms watches (`forms.watches`) deliver only to a Cloud Pub/Sub topic, which a w6w user
-cannot receive from; the response poll delivers the same submissions.
+Not covered: Forms watches (`forms.watches`). Pub/Sub can push to a web hook, but a ping carries no
+response data, the topic must be owned by the Cloud project that calls the API, a watch expires with
+nothing in the trigger lifecycle to renew it, and Pub/Sub push authenticates with a Google-signed
+RS256 JWT that the shared webhook helpers (HMAC only) do not verify; the response poll delivers the
+same submissions.
 
 Sources (verified 2026-11-10): https://developers.google.com/workspace/forms/api/reference/rest/v1/forms.responses/list
 (filter `timestamp > N` / `>= N`, RFC 3339 UTC, up to 5000 per page, no documented order) and
-https://developers.google.com/workspace/forms/api/guides/push-notifications (Pub/Sub is the only target).
+https://developers.google.com/workspace/forms/api/guides/push-notifications (delivery is Cloud Pub/Sub).

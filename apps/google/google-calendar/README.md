@@ -90,7 +90,8 @@ check sends one `events.list` page with `syncToken=<stored token>` and `maxResul
 Google forbids alongside a sync token (`timeMin`, `timeMax`, `updatedMin`, `q`, `iCalUID`, `orderBy`).
 Cancelled events are emitted with `changeType: "cancelled"` (Google always returns deleted entries on
 an incremental sync). `changeType` is `created` when the event's `updated` is within two seconds of
-its `created`, otherwise `updated`. If Google answers `410 GONE` the token is invalid and the
+its `created`, otherwise `updated`. So an event created and edited again before the next check is `updated`: `new-event`
+misses it and `event-updated` emits it (the feed shows the latest state only). If Google answers `410 GONE` the token is invalid and the
 trigger re-syncs from scratch and emits nothing for that check, so changes made in between are not
 reported. If a changes page has a following page, the next check continues from it.
 `new-event`, `event-updated` and `event-cancelled` share that sync feed and each keeps its own sync
@@ -99,13 +100,13 @@ token, so each emits only its own kind of change. `event-started` and `event-end
 exclusive bound on an event's end and `timeMax` as an exclusive bound on its start), emit the events
 whose start (or end) falls inside it, and move the window forward only after every page of it was
 read (at most 3 pages of 100 per check; a bigger window continues on the next check). The first check
-emits nothing, and events whose start/end passed before it are never emitted. All-day events count
-as UTC midnight. `new-calendar` reads the whole calendar list (up to 2,500 calendars, else an error)
+emits nothing, and events whose start/end passed before it are never emitted. All-day events start and end at midnight in the calendar's time zone (the
+`timeZone` Google returns with the listing; UTC if it returns none). `new-calendar` reads the whole calendar list (up to 2,500 calendars, else an error)
 and emits ids not in the seeded snapshot.
 
 Not covered: Google's push channels (`events.watch`) — a notification carries no event data, only
-headers, the channel expires and must be renewed, and the receiving URL must be a verified HTTPS
-domain, so a w6w user cannot run it safely; polling the sync feed delivers the same changes.
+headers, the channel expires and nothing in the trigger lifecycle renews it, so a w6w user cannot run it
+safely; polling the sync feed delivers the same changes.
 
 Trust model: the trigger only reads the calendar through the connection's own credential; nothing is
 received from outside.

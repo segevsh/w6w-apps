@@ -15,8 +15,11 @@ import { extractFormId } from "./client.ts";
  *   - the seed stores `floor = now` and reads nothing; a response CREATED before the floor is never
  *     emitted, so a form with a long backlog never floods the first real check.
  *
- * Not covered: `forms.watches` delivers only to a Cloud Pub/Sub topic, which a w6w user cannot
- * receive from — https://developers.google.com/workspace/forms/api/guides/push-notifications
+ * Not covered: `forms.watches`. Google can deliver Pub/Sub messages to a web hook, but a ping names
+ * the form and event type and carries no response data, the topic must be owned by the Cloud project
+ * that calls the API (not the w6w user's), a watch expires and nothing in the trigger lifecycle
+ * renews it, and Pub/Sub push authenticates with a Google-signed RS256 JWT while `_shared/webhook`
+ * only has HMAC helpers — https://developers.google.com/workspace/forms/api/guides/push-notifications
  * (verified 2026-11-10).
  */
 
