@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/attio",
   "version": "0.3.0",
-  "description": "Read and write Attio CRM records, list entries, attributes, notes, tasks and workspace members through the Attio REST API v2. Poll triggers: new tasks, records, list entries, lists, members.",
+  "description": "Read and write Attio CRM records, list entries, attributes, notes, tasks and workspace members through the Attio REST API v2. Poll triggers: new tasks, records, lists, members.",
   "license": "MIT",
   "author": {
     "name": "w6w"

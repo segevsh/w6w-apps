@@ -40,7 +40,6 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newTask from "./triggers/new-task.ts";
 import newRecord from "./triggers/new-record.ts";
-import newListEntry from "./triggers/new-list-entry.ts";
 import newList from "./triggers/new-list.ts";
 import newWorkspaceMember from "./triggers/new-workspace-member.ts";
 
@@ -86,7 +85,7 @@ export default {
     listWorkspaceMembers,
     getIdentity,
   ],
-  triggers: [newTask, newRecord, newListEntry, newList, newWorkspaceMember],
+  triggers: [newTask, newRecord, newList, newWorkspaceMember],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

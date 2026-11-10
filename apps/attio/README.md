@@ -16,17 +16,15 @@ API v2**.
 | --- | --- | --- | --- |
 | `new-task` — New Task | poll | `list-tasks` with `sort=created_at:desc` pinned (params: linked record, assignee, completion) | Each newly created task |
 | `new-record` — New Record | poll | `list-records` with `sorts: created_at desc` pinned (params: object, filter) | Each newly created record of the chosen object (people, companies, deals, custom) |
-| `new-list-entry` — New List Entry | poll | `list-entries` with `sorts: created_at desc` pinned (params: list, filter) | Each record newly added to the chosen list |
 | `new-list` — New List | poll | `list-lists` | Each list that newly becomes visible to the token |
 | `new-workspace-member` — New Workspace Member | poll | `list-workspace-members` | Each person who newly gets a seat in the workspace |
 
 Vendor reference: https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks (verified 2026-11-10). The vendor documents `sort=created_at:desc` as returning the newest results first (the default is `created_at:asc`), so the trigger sends it explicitly. The task id is `id.task_id`.
 
-Records and list entries are queried with an explicit `sorts: [{"direction": "desc", "attribute": "created_at"}]` and `limit: 50`
+Records are queried with an explicit `sorts: [{"direction": "desc", "attribute": "created_at"}]` and `limit: 50`
 ([List records](https://docs.attio.com/rest-api/endpoint-reference/records/list-records),
-[List entries](https://docs.attio.com/rest-api/endpoint-reference/entries/list-entries),
 [Filtering and sorting](https://docs.attio.com/rest-api/guides/filtering-and-sorting), verified 2026-11-10); the
-ids are `id.record_id` and `id.entry_id`. Records and entries carry no update stamp, so there is no new-or-updated trigger.
+id is `id.record_id`. Records carry no update stamp, so there is no new-or-updated trigger.
 Lists and workspace members are small bounded collections ([List all lists](https://docs.attio.com/rest-api/endpoint-reference/lists/list-all-lists),
 [List workspace members](https://docs.attio.com/rest-api/endpoint-reference/workspace-members/list-workspace-members), verified 2026-11-10):
 each check reads all of them and diffs the ids against the previous check.
@@ -34,8 +32,12 @@ each check reads all of them and diffs the ids against the previous check.
 Not covered (no trigger), by reason:
 
 - same records as a trigger above — `search-records` (fuzzy, eventually consistent; `new-record` delivers the records),
-  `list-record-entries` (`new-list-entry` delivers the entries)
+  (`list-record-entries` is skipped below)
 - object, list and attribute definitions (reference data) — `list-objects`, `list-attributes`, `list-select-options`, `list-statuses`
+- no documented creation sort for list entries: `list-entries` and `list-record-entries`. The entry object has
+  a `created_at`, but the sort takes only "a slug or ID to identify the attribute" (or a `path` through a
+  parent record) and no page names a creation attribute of a list
+  ([List entries](https://docs.attio.com/rest-api/endpoint-reference/entries/list-entries), verified 2026-11-10)
 - no id of its own: the values (with history) of one attribute of one record — `list-record-attribute-values`
 - no sort parameter and no documented order, 10 per page (max 50) — `list-notes`
   ([List notes](https://docs.attio.com/rest-api/endpoint-reference/notes/list-notes))

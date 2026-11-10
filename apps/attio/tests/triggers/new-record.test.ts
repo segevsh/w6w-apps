@@ -2,9 +2,8 @@ import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import newRecord from "../../triggers/new-record.ts";
-import newListEntry from "../../triggers/new-list-entry.ts";
 
-// Table-driven: the two newest-first query triggers share one case set.
+// Table-driven: the newest-first query trigger(s) share one case set.
 const specs = [
   {
     name: "new-record",
@@ -12,13 +11,6 @@ const specs = [
     params: { object: "people" },
     url: "https://api.attio.com/v2/objects/people/records/query",
     item: (id: string) => ({ id: { workspace_id: "w", object_id: "o", record_id: id } }),
-  },
-  {
-    name: "new-list-entry",
-    trigger: newListEntry,
-    params: { list: "sales" },
-    url: "https://api.attio.com/v2/lists/sales/entries/query",
-    item: (id: string) => ({ id: { workspace_id: "w", list_id: "l", entry_id: id } }),
   },
 ];
 

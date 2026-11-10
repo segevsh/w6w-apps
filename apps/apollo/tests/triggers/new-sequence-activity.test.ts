@@ -49,3 +49,28 @@ test("new-sequence-activity posts the literal activity-feed request for the chos
     per_page: 50,
   });
 });
+
+// The event id is [sequence_id, type, occurred_at, emailer_message_id]: an event that differs from
+// a seen one in ONLY one component is a different event and must still be emitted.
+const base = { ...event("opened", "2026-07-26T10:00:00Z"), emailer_message_id: "m-1" };
+for (
+  const [component, variant] of [
+    ["sequence_id", { sequence_id: "seq-2" }],
+    ["type", { type: "clicked" }],
+    ["occurred_at", { occurred_at: "2026-07-26T10:00:01Z" }],
+    ["emailer_message_id", { emailer_message_id: "m-2" }],
+  ] as const
+) {
+  test(`new-sequence-activity treats a different ${component} as a new event`, async () => {
+    const seeded = await trigger.poll!(
+      { ...input, state: {} },
+      mockCtx([{ body: { contact_id: "contact-1", events: [base] } }]).ctx,
+    );
+    const fresh = { ...base, ...variant };
+    const next = await trigger.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([{ body: { contact_id: "contact-1", events: [fresh, base] } }]).ctx,
+    );
+    assertEquals(next.events, [fresh]);
+  });
+}

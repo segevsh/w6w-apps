@@ -5,11 +5,13 @@ import newProgram from "../../triggers/new-program.ts";
 import newAffiliateGroup from "../../triggers/new-affiliate-group.ts";
 import newAffiliatePayment from "../../triggers/new-affiliate-payment.ts";
 import newAffiliateProgram from "../../triggers/new-affiliate-program.ts";
+import newProgramAffiliate from "../../triggers/new-program-affiliate.ts";
+import newAffiliate from "../../triggers/new-affiliate.ts";
 
 const JSON_H = { "content-type": "application/json" };
 const ids = (events: unknown[]) => events.map((e) => (e as { id: string }).id);
 
-// Table-driven: the four bounded-collection (pollSnapshot) triggers share one case set.
+// Table-driven: the bounded-collection (pollSnapshot) triggers share one case set.
 const specs = [
   {
     name: "new-program",
@@ -42,6 +44,22 @@ const specs = [
     url: "https://api.tapfiliate.com/1.6/affiliates/u_JaN3-J0n/programs/",
     old: [{ id: "alpha-program", approved: true }],
     fresh: { id: "beta-program", approved: false },
+  },
+  {
+    name: "new-program-affiliate",
+    trigger: newProgramAffiliate,
+    params: { programId: "john-s-program" },
+    url: "https://api.tapfiliate.com/1.6/programs/john-s-program/affiliates/",
+    old: [{ id: "aff_one", email: "one@example.com" }],
+    fresh: { id: "aff_two", email: "two@example.com" },
+  },
+  {
+    name: "new-affiliate",
+    trigger: newAffiliate,
+    params: {},
+    url: "https://api.tapfiliate.com/1.6/affiliates/",
+    old: [{ id: "aff_one", email: "one@example.com" }],
+    fresh: { id: "aff_two", email: "two@example.com" },
   },
 ];
 
@@ -109,3 +127,35 @@ test("new-program follows the Link header to the next page and sees a program fo
   assertEquals(m.calls[0].url, "https://api.tapfiliate.com/1.6/programs/");
   assertEquals(queryOf(m.calls[1].url), { page: "2" });
 });
+
+for (
+  const [name, trigger, params, path] of [
+    [
+      "new-program-affiliate",
+      newProgramAffiliate,
+      { programId: "p1" },
+      "/1.6/programs/p1/affiliates/",
+    ],
+    ["new-affiliate", newAffiliate, {}, "/1.6/affiliates/"],
+  ] as const
+) {
+  test(`${name} follows the Link header to a second page and sees an affiliate found there`, async () => {
+    const link = { ...JSON_H, link: linkHeader(2, path) };
+    const seeded = await trigger.poll!(
+      { params, subscriptionId: "sub-1", state: {} },
+      mockCtx([{ body: [{ id: "a1" }], headers: link }, { body: [{ id: "a2" }] }]).ctx,
+    );
+    assertEquals(seeded.events, []);
+    const m = mockCtx([
+      { body: [{ id: "a1" }], headers: link },
+      { body: [{ id: "a2" }, { id: "a3" }] },
+    ]);
+    const next = await trigger.poll!(
+      { params, subscriptionId: "sub-1", state: seeded.nextState },
+      m.ctx,
+    );
+    assertEquals(ids(next.events), ["a3"]);
+    assertEquals(m.calls.length, 2);
+    assertEquals(queryOf(m.calls[1].url), { page: "2" });
+  });
+}

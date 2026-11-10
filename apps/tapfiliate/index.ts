@@ -113,6 +113,8 @@ import newProgram from "./triggers/new-program.ts";
 import newAffiliateGroup from "./triggers/new-affiliate-group.ts";
 import newAffiliatePayment from "./triggers/new-affiliate-payment.ts";
 import newAffiliateProgram from "./triggers/new-affiliate-program.ts";
+import newProgramAffiliate from "./triggers/new-program-affiliate.ts";
+import newAffiliate from "./triggers/new-affiliate.ts";
 
 export default {
   actions: [
@@ -185,5 +187,7 @@ export default {
     newAffiliateGroup,
     newAffiliatePayment,
     newAffiliateProgram,
+    newProgramAffiliate,
+    newAffiliate,
   ],
 } satisfies AppDefinition;
