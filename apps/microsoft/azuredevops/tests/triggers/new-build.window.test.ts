@@ -11,7 +11,7 @@ const setNow = (iso: string) => {
   clock.now = () => Date.parse(iso);
 };
 const mk = (id: string, iso: string) => ({ id, finishTime: iso });
-const page = (items: unknown[], tok?: string) => ({ body: { value: items } });
+const page = (items: unknown[], _tok?: string) => ({ body: { value: items } });
 const fullPage = (n: number, iso: string, more: boolean) =>
   page(Array.from({ length: 100 }, (_, i) => mk(`p${n}-${i}`, iso)), more ? `tok${n}` : undefined);
 const idOf = (e: unknown) => String((e as { id: string }).id);

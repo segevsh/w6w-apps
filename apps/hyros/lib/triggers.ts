@@ -27,6 +27,46 @@ function isoSeconds(ms: number): string {
  * opaque `pageId` cursor, but no result order — so every page of the (small) window is read and
  * the id dedupe decides what is new.
  */
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+/** UTC offsets (hours) of the zone abbreviations a Hyros date can carry; an unknown one is not guessed. */
+const ZONES: Record<string, number> = {
+  UTC: 0,
+  GMT: 0,
+  Z: 0,
+  ART: -3,
+  BRT: -3,
+  EST: -5,
+  EDT: -4,
+  CST: -6,
+  CDT: -5,
+  MST: -7,
+  MDT: -6,
+  PST: -8,
+  PDT: -7,
+  CET: 1,
+  CEST: 2,
+  BST: 1,
+};
+
+/**
+ * Milliseconds of a Hyros `creationDate`. The documented format is `Thu Nov 17 10:51:54 ART 2022`
+ * (Java `Date.toString`), which `Date.parse` rejects; ISO strings are accepted too. A value whose
+ * zone abbreviation is unknown is `undefined` (kept, not floored) rather than a guessed offset.
+ */
+export function creationMs(value: unknown): number | undefined {
+  const text = String(value ?? "").trim();
+  const iso = Date.parse(text);
+  if (!Number.isNaN(iso)) return iso;
+  const m =
+    /^[A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\s+([A-Za-z]+)\s+(\d{4})$/
+      .exec(text);
+  if (!m) return undefined;
+  const month = MONTHS.indexOf(m[1].toLowerCase());
+  const zone = ZONES[m[6].toUpperCase()];
+  if (month < 0 || zone === undefined) return undefined;
+  return Date.UTC(+m[7], month, +m[2], +m[3], +m[4], +m[5]) - zone * 3_600_000;
+}
+
 function check(
   action: ActionDefinition<Record<string, unknown>>,
   state: unknown,
@@ -41,10 +81,7 @@ function check(
     seenWindow: SEEN_WINDOW,
     idOf: (r) => String(r.id),
     // `creationDate` is the field `fromDate` filters on; one that does not parse is kept.
-    tsOf: (r) => {
-      const ms = Date.parse(String(r.creationDate ?? ""));
-      return Number.isNaN(ms) ? undefined : ms;
-    },
+    tsOf: (r) => creationMs(r.creationDate),
     async load(since, pageId) {
       const res = await action.execute({
         fromDate: isoSeconds(since),

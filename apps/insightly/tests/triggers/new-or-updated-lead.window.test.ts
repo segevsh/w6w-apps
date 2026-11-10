@@ -15,7 +15,7 @@ const mk = (id: string, iso: string) => ({
   DATE_CREATED_UTC: iso.replace("T", " ").replace("Z", ""),
   DATE_UPDATED_UTC: iso.replace("T", " ").replace("Z", ""),
 });
-const page = (items: unknown[], tok?: string) => ({ body: items });
+const page = (items: unknown[], _tok?: string) => ({ body: items });
 const fullPage = (n: number, iso: string, more: boolean) =>
   page(Array.from({ length: 500 }, (_, i) => mk(`p${n}-${i}`, iso)), more ? `tok${n}` : undefined);
 const idOf = (e: unknown) => String((e as { LEAD_ID: string }).LEAD_ID);
@@ -69,6 +69,10 @@ test("new-or-updated-lead: a window of 5+1 full pages is emitted once across two
       page(Array.from({ length: 50 }, (_, i) => mk(`z${i}`, "2026-11-09T11:12:00Z"))),
     ]);
     const r2 = await trigger.poll!({ ...input, state: r1.nextState }, c2.ctx);
+    // The continuation asks for the position the previous check returned, not page 1.
+    const resumePos = mid.resume?.pos;
+    assertEquals(resumePos !== undefined, true);
+    assertEquals(new URL(c2.calls[0].url).searchParams.get("skip"), String(resumePos));
     assertEquals(c2.calls.length, 1);
     seen.push(...r2.events.map(idOf));
     const next = r2.nextState as { cursor?: number; resume?: unknown };

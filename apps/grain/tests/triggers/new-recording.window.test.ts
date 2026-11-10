@@ -64,6 +64,10 @@ test("new-recording: a window of 5+1 full pages is emitted once across two check
     setNow("2026-11-09T11:35:00Z");
     const c2 = mockCtx([fullPage(5 + 1, "2026-11-09T11:12:00Z", false)]);
     const r2 = await trigger.poll!({ ...input, state: r1.nextState }, c2.ctx);
+    // The continuation asks for the position the previous check returned, not page 1.
+    const resumePos = mid.resume?.pos;
+    assertEquals(resumePos !== undefined, true);
+    assertEquals(JSON.parse(c2.calls[0].body ?? "{}").cursor, resumePos);
     assertEquals(c2.calls.length, 1);
     seen.push(...r2.events.map(idOf));
     const next = r2.nextState as { cursor?: number; resume?: unknown };

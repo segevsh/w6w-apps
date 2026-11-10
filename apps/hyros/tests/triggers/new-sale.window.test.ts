@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
-import { clock } from "../../lib/triggers.ts";
+import { clock, creationMs } from "../../lib/triggers.ts";
 import trigger from "../../triggers/new-sale.ts";
 
 // Brief 9.8 (no stall) and 9.9 (seed floor) for new-sale.
@@ -65,6 +65,10 @@ test("new-sale: a window of 5+1 full pages is emitted once across two checks and
     setNow("2026-11-09T11:35:00Z");
     const c2 = mockCtx([fullPage(5 + 1, "2026-11-09T11:12:00Z", false)]);
     const r2 = await trigger.poll!({ ...input, state: r1.nextState }, c2.ctx);
+    // The continuation asks for the position the previous check returned, not page 1.
+    const resumePos = mid.resume?.pos;
+    assertEquals(resumePos !== undefined, true);
+    assertEquals(new URL(c2.calls[0].url).searchParams.get("pageId"), String(resumePos));
     assertEquals(c2.calls.length, 1);
     seen.push(...r2.events.map(idOf));
     const next = r2.nextState as { cursor?: number; resume?: unknown };
@@ -72,6 +76,30 @@ test("new-sale: a window of 5+1 full pages is emitted once across two checks and
     assertEquals(next.resume, undefined);
     assertEquals(seen.length, 250 * (5 + 1));
     assertEquals(new Set(seen).size, 250 * (5 + 1));
+  } finally {
+    clock.now = realNow;
+  }
+});
+
+test("new-sale: a creationDate in the vendor's documented format (zone abbreviation) is floored at the seed", async () => {
+  assertEquals(creationMs("Thu Nov 17 10:51:54 ART 2022"), Date.parse("2022-11-17T13:51:54Z"));
+  assertEquals(creationMs("Thu Nov 17 10:51:54 XYZ 2022"), undefined);
+  assertEquals(creationMs("2026-11-09T11:59:00Z"), Date.parse("2026-11-09T11:59:00Z"));
+  try {
+    setNow("2026-11-09T12:00:00Z");
+    const seed = await trigger.poll!({ ...input, state: {} }, mockCtx([]).ctx);
+    setNow("2026-11-09T12:05:00Z");
+    // 08:59 ART is 11:59Z: before the seed, so not an event.
+    const old = page([mk("old", "Mon Nov 09 08:59:00 ART 2026")]);
+    const r1 = await trigger.poll!({ ...input, state: seed.nextState }, mockCtx([old]).ctx);
+    assertEquals(r1.events, []);
+    // 09:06 ART is 12:06Z: after the seed, so it is.
+    const fresh = mk("fresh", "Mon Nov 09 09:06:00 ART 2026");
+    const r2 = await trigger.poll!(
+      { ...input, state: r1.nextState },
+      mockCtx([page([fresh])]).ctx,
+    );
+    assertEquals(r2.events, [fresh]);
   } finally {
     clock.now = realNow;
   }
