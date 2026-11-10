@@ -1,14 +1,32 @@
 # Upsales
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 17 (poll)
 
 ## Triggers
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+| `new-activity` — New Activity | Poll | `activity-list` | Each newly created activity |
+| `new-appointment` — New Appointment | Poll | `appointment-list` | Each newly created appointment |
+| `new-campaign` — New Campaign | Poll | `campaign-list` | Each newly created campaign |
+| `new-comment` — New Comment | Poll | `comment-list` | Each newly created comment |
+| `new-company` — New Company | Poll | `company-list` | Each newly created company |
+| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+| `new-product` — New Product | Poll | `product-list` | Each newly created product |
+| `new-subscription` — New Subscription | Poll | `subscription-list` | Each newly created subscription |
+| `new-ticket` — New Ticket | Poll | `ticket-list` | Each newly created ticket |
+| `new-user` — New User | Poll | `user-list` | Each newly created user |
+| `new-or-updated-activity` — New or Updated Activity | Poll | `activity-list` | Each activity when created or edited |
+| `new-or-updated-appointment` — New or Updated Appointment | Poll | `appointment-list` | Each appointment when created or edited |
+| `new-or-updated-company` — New or Updated Company | Poll | `company-list` | Each company when created or edited |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-list` | Each contact when created or edited |
+| `new-or-updated-order` — New or Updated Order | Poll | `order-list` | Each order when created or edited |
+| `new-or-updated-subscription` — New or Updated Subscription | Poll | `subscription-list` | Each subscription when created or edited |
 
-Polled through `contact-list` as an id crawl: `sort=id` with `id=gt:<last contact id>` (the documented full-crawl form; Upsales documents no descending sort), keeping the last id read as the resume position. The first check stores a floor (now) and reads nothing; a contact whose `regDate` is before the floor is never emitted, and a window over 5 pages (1000 each) is drained across successive checks. Source: https://api.upsales.com (verified 2026-11-09).
+Polled through each list action as an id crawl: `sort=id` with `id=gt:<last id>` (the documented full-crawl form; Upsales documents no descending sort), keeping the last id read as the resume position. The first check stores a floor (now) and the newest existing id (read as `limit=1`, then `sort=id&offset=total-1`), so rows that already exist are never emitted, whether or not the collection shows a creation stamp; a window over 5 pages (1000 each) is drained across successive checks. The `new-or-updated-*` triggers (activity, appointment, company, contact, order, subscription; the collections whose examples return `modDate`) ask for `modDate=gte:<window start>` with the same id paging and treat id plus `modDate` as the event key, so an edit emits again. Source: https://api.upsales.com, Postman collection `api.upsales.com/api/collections/4421023/RW87rVf1` (verified 2026-11-10).
+
+The remaining list actions are reference data rather than event feeds: activity and appointment types, currencies, custom-field definitions, order stages, price lists, and product categories. Campaigns, comments, tickets, products and users show no documented `modDate`, so they have only the `new-*` trigger.
 
 Manage the core objects of **Upsales**, the Nordic sales and marketing CRM, over the Upsales API v2.
 
