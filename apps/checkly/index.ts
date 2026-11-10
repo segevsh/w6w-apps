@@ -90,6 +90,12 @@ import accountEntitlementsGet from "./actions/account-entitlements-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCheckResult from "./triggers/new-check-result.ts";
+import newCheck from "./triggers/new-check.ts";
+import newOrUpdatedCheck from "./triggers/new-or-updated-check.ts";
+import newCheckGroup from "./triggers/new-check-group.ts";
+import newAlertChannel from "./triggers/new-alert-channel.ts";
+import newMaintenanceWindow from "./triggers/new-maintenance-window.ts";
+import newCheckAlert from "./triggers/new-check-alert.ts";
 
 export default {
   actions: [
@@ -128,5 +134,13 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newCheckResult],
+  triggers: [
+    newCheckResult,
+    newCheck,
+    newOrUpdatedCheck,
+    newCheckGroup,
+    newAlertChannel,
+    newMaintenanceWindow,
+    newCheckAlert,
+  ],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/checkly",
-  "version": "0.2.0",
-  "description": "Run and inspect Checkly synthetic monitors, their results, alerts and maintenance windows, and trigger workflows on new check results.",
+  "version": "0.3.0",
+  "description": "Run and inspect Checkly synthetic monitors, their results, alerts and maintenance windows, and trigger workflows on new check results, alerts, checks (new or edited), check groups, alert channels and maintenance windows.",
   "license": "MIT",
   "author": {
     "name": "w6w"
