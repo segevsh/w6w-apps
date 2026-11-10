@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1896 triggers, 2412 unaccounted list actions in 520 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1908 triggers, 2399 unaccounted list actions in 519 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -20,7 +20,6 @@ depth: 682 apps, 1896 triggers, 2412 unaccounted list actions in 520 apps, n8n-p
 | apps/heartbeat | 8 | 16 | 16 |
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
-| apps/copper | 7 | 13 | 13 |
 | apps/chatbase | 0 | 12 | 12 |
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
@@ -570,6 +569,7 @@ depth: 682 apps, 1896 triggers, 2412 unaccounted list actions in 520 apps, n8n-p
 | apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
+| apps/copper | 19 | 13 | 0 |
 | apps/customerio | 4 | 0 | 0 |
 | apps/dbtcloud | 11 | 12 | 0 |
 | apps/deel | 8 | 12 | 0 |
@@ -702,7 +702,7 @@ depth: 682 apps, 1896 triggers, 2412 unaccounted list actions in 520 apps, n8n-p
 | apps/clickup | 20 | any-event, folder-created, folder-deleted, folder-updated, list-created, list-deleted, list-updated, task-assignee-updated, task-comment-posted, task-comment-updated, task-created, task-deleted, task-due-date-updated, task-moved, task-priority-updated, task-status-updated, task-tag-updated, task-time-estimate-updated, task-time-tracked-updated, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | 6 | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
-| apps/copper | 7 | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/copper | 19 | any-event, deleted-company, deleted-lead, deleted-opportunity, deleted-person, deleted-task, new-activity, new-company, new-lead, new-opportunity, new-person, new-related-item, new-task, new-user, updated-company, updated-lead, updated-opportunity, updated-person, updated-task | apps/copper/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (created/updated/deleted for person, lead, company, opportunity, task, plus any-event) and polls for new activities, users and related items |
 | apps/elastic-email | 7 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept. |
 | apps/eventbrite | 27 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated, new-or-updated-attendee, new-organizer, new-venue, new-ticket-group, new-inventory-tier, new-seat-map, new-event-team, new-discount, new-custom-question, new-default-question, new-organization-member | apps/eventbrite/README.md Triggers section (verified 2026-11-10) | hand | shipped: 16 webhook triggers registered through the vendor API (unsigned deliveries; callback URL is the secret, https://www.eventbrite.com/platform/docs/webhooks) plus 11 poll triggers for records with no webhook |
 | apps/exa | 2 | new-webset-item, webset-item-enriched | apps/exa/README.md Triggers section (verified 2026-11-10) | hand | shipped: Websets webhooks registered through POST /websets/v0/webhooks (webset.item.created, webset.item.enriched); Exa-Signature t=,v1= HMAC-SHA256 of '<t>.<raw body>' with the secret returned once at creation, 5-minute window. The research note 'unsigned monitors' was wrong: Exa signs both Monitors and Websets webhooks. |

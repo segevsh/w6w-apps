@@ -2150,18 +2150,70 @@
     "path": "apps/copper",
     "mechanism": "webhook-api",
     "candidates": [
+      "any-event",
+      "deleted-company",
+      "deleted-lead",
+      "deleted-opportunity",
+      "deleted-person",
+      "deleted-task",
+      "new-activity",
       "new-company",
       "new-lead",
       "new-opportunity",
       "new-person",
+      "new-related-item",
       "new-task",
+      "new-user",
+      "updated-company",
+      "updated-lead",
       "updated-opportunity",
-      "updated-person"
+      "updated-person",
+      "updated-task"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/copper/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "search-activities",
+    "reason": "shipped: webhooks registered through the vendor API (created/updated/deleted for person, lead, company, opportunity, task, plus any-event) and polls for new activities, users and related items",
+    "verified": "apps/copper/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "search-people": "new-person",
+      "find-person-by-email": "new-person",
+      "search-companies": "new-company",
+      "search-leads": "new-lead",
+      "search-opportunities": "new-opportunity",
+      "search-tasks": "new-task"
+    },
+    "skipped": {
+      "list-pipelines": "reference data: the account's pipeline definitions (configuration, not records)",
+      "list-pipeline-stages": "reference data: stage definitions of the account's pipelines (configuration, not records)",
+      "list-activity-types": "reference data: the account's activity type catalogue (configuration, not records)",
+      "list-custom-field-definitions": "field definitions: account schema for custom fields (configuration, not records)"
+    },
+    "events": {
+      "lead.new": "new-lead",
+      "lead.update": "updated-lead",
+      "lead.delete": "deleted-lead",
+      "person.new": "new-person",
+      "person.update": "updated-person",
+      "person.delete": "deleted-person",
+      "company.new": "new-company",
+      "company.update": "updated-company",
+      "company.delete": "deleted-company",
+      "opportunity.new": "new-opportunity",
+      "opportunity.update": "updated-opportunity",
+      "opportunity.delete": "deleted-opportunity",
+      "task.new": "new-task",
+      "task.update": "updated-task",
+      "task.delete": "deleted-task",
+      "project.new": "any",
+      "project.update": "any",
+      "project.delete": "any",
+      "activity_log.new": "new-activity"
+    },
+    "n8n": {
+      "new": "any-event",
+      "update": "any-event",
+      "delete": "any-event"
+    }
   },
   {
     "path": "apps/creditrepaircloud",
