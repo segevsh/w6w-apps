@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/goto-webinar",
   "version": "0.3.0",
-  "description": "Schedule and manage GoTo Webinar webinars, registrants, panelists and attendance, plus webhook triggers for registrations, joins, webinar changes and surveys (and an any-event trigger), and polls for new sessions and panelists.",
+  "description": "Schedule and manage GoTo Webinar webinars, registrants, panelists and attendance, and start workflows on registrations, joins, webinar changes and surveys.",
   "license": "MIT",
   "author": {
     "name": "w6w"

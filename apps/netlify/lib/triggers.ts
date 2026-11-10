@@ -293,16 +293,17 @@ const SUBMISSION_OUTPUT: OutputField[] = [
 ];
 
 /** The Netlify form-submission notification (Forms > Submission notifications > Outgoing webhook). */
-export function submissionTrigger(): TriggerDefinition<
+export function submissionTrigger(
+  spec: { key: string; title: string; description: string },
+): TriggerDefinition<
   { signingSecret?: string; formName?: string },
   NetlifySubmissionEvent,
   TriggerState
 > {
   return {
-    key: "submission-created",
-    title: "Form Submission Received",
-    description:
-      "Fires when a Netlify form receives a verified submission (point a Form submission outgoing webhook at it). The run gets the submitter, the form fields and the submission.",
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
     params: [
       OPTIONAL_SECRET_PARAM,
       {

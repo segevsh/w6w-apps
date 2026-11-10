@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mandrill",
   "version": "0.3.0",
-  "description": "Send transactional email and manage templates, tags, rejects and whitelist entries via Mandrill, plus signed webhook triggers for message events (sent, delivered, bounced, opened, clicked, spam, unsubscribed, rejected), reject-list changes, and a poll for new templates.",
+  "description": "Send transactional email and manage templates, tags and rejects via Mandrill, and start workflows on message events, reject-list changes and new templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"

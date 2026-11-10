@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/thrivecart",
   "version": "0.3.0",
-  "description": "Read ThriveCart's products, transactions, customers and affiliates, and manage subscriptions, affiliates, students and webhook subscriptions, plus event triggers for purchases, refunds, subscriptions, carts and affiliates and polls for new products and offers.",
+  "description": "Read ThriveCart's products, transactions, customers and affiliates, manage subscriptions and affiliates, and start workflows on purchase, refund, cart and affiliate events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
