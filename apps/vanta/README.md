@@ -16,13 +16,13 @@
 | `new-policy` — New Policy | Poll (snapshot) | `policy-list` | Policies newly added |
 | `new-risk-scenario` — New Risk Scenario | Poll (snapshot) | `risk-scenario-list` | Risk scenarios newly added to the register |
 | `new-test` — New Test | Poll (snapshot) | `test-list` | Tests newly added, of any status |
-| `new-test-entity` — New Test Entity | Poll (snapshot) | `test-entity-list` | Resources newly tested by the test you pick |
+| `new-test-entity` — New Test Entity | Poll (snapshot) | `test-entity-list` | Resources that newly start failing the test you pick (the vendor lists FAILING entities by default) |
 | `new-user` — New User | Poll (snapshot) | `user-list` | Users newly added to the Vanta account |
 | `new-vendor` — New Vendor | Poll (snapshot) | `vendor-list` | Vendors newly added to the inventory |
 | `new-vulnerability` — New Vulnerability | Poll (since-filter) | `vulnerability-list` | Newly detected vulnerabilities that carry an SLA deadline (`slaDeadlineAfterDate` window) |
 | `new-vulnerability-remediation` — New Vulnerability Remediation | Poll (since-filter) | `vulnerability-remediation-list` | Vulnerabilities newly recorded as remediated (`remediatedAfterDate` window) |
 
-Every trigger reads the same endpoint as the action it wraps (https://developer.vanta.com/reference/manage-vanta, verified 2026-11-10). `GET /v1/issues` sorts by created date; `/vulnerabilities` and `/vulnerability-remediations` take `slaDeadlineAfterDate` / `remediatedAfterDate`; the other lists have no sort order or created-since filter, so each is read whole (at most 5000 rows) and diffed for additions. `new-vulnerability` only sees findings with an SLA deadline, and `new-person` follows `person-list`'s default of current employees; `new-test` watches tests of any status.
+Every trigger reads the same endpoint as the action it wraps (https://developer.vanta.com/reference/manage-vanta, verified 2026-11-10). `GET /v1/issues` sorts by created date; `/vulnerabilities` and `/vulnerability-remediations` take `slaDeadlineAfterDate` / `remediatedAfterDate`; the other lists have no sort order or created-since filter, so each is read whole (at most 5000 rows) and diffed for additions. `new-vulnerability` only sees findings with an SLA deadline, and its `slaDeadlineAfterDate` window is a deadline filter, not a detection filter: every check reads the whole open, not-yet-overdue backlog (up to 5 pages of 100, resumed on the next check), so latency grows with the backlog; and `new-person` follows `person-list`'s default of current employees; `new-test` watches tests of any status.
 
 Not covered: `event-log-list` (an audit log of what users did in Vanta, not a record feed); `framework-control-list` is delivered by `new-control`.
 

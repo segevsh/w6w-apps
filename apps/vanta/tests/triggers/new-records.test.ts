@@ -95,3 +95,18 @@ test("snapshot triggers: a collection past the 5000-row cap fails loudly instead
   assertEquals(m.calls.length, 50);
   assert(message.includes("exceed 5000 rows"), message);
 });
+
+test("snapshot triggers: read every page (returnAll) and seed without the cap error", async () => {
+  const m = mockCtx(
+    [
+      page([{ id: "v1" }], { hasNextPage: true, endCursor: "c1" }),
+      page([{ id: "v2" }], { hasNextPage: false }),
+    ],
+    { display },
+  );
+  const out = await newVendor.poll!({ params: {}, state: {} }, m.ctx);
+  assertEquals(out.events, []);
+  assertEquals(m.calls.length, 2);
+  assertEquals(m.calls[0].url, "https://api.vanta.com/v1/vendors?pageSize=100");
+  assertEquals(m.calls[1].url, "https://api.vanta.com/v1/vendors?pageSize=100&pageCursor=c1");
+});
