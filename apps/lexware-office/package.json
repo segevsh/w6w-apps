@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lexware-office",
   "version": "0.2.0",
-  "description": "Read and manage a Lexware Office (formerly lexoffice) account: contacts, articles, invoices, quotations, order confirmations, credit notes, the voucher list, payment data and reference lists. Includes a new voucher poll trigger.",
+  "description": "Manage Lexware Office contacts, articles, invoices, quotations, credit notes and vouchers. Includes a new voucher poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
