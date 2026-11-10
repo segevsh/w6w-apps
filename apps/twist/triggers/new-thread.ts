@@ -5,11 +5,13 @@ import threadList from "../actions/thread-list.ts";
 export default pollFromListAction({
   key: "new-thread",
   title: "New Thread",
-  description: "The run gets each new thread in the Twist channel you choose.",
+  description: "The run gets each thread newly created in the Twist channel you choose.",
   action: threadList as unknown as ActionDefinition,
   input: (params: { channelId?: number }) => ({
     channelId: params.channelId,
     limit: 100,
+    // Twist: order is by thread id (not last_updated) "if before_id or after_id are used".
+    afterId: 1,
     orderBy: "desc",
   }),
   params: [threadList.params![0]],

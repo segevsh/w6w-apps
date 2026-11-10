@@ -7,7 +7,7 @@ workspace users only).
 - **Categories** — communication, productivity
 - **Auth methods** — oauth2, api-token (bearer test token)
 - **Actions** — 111
-- **Triggers** — 8 (poll)
+- **Triggers** — 11 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:oauth2` and `auth:api-token`
 - **Egress allowlist** — `api.twist.com` (the `service` check adds `status.twist.io` to its own hook
   allowlist, never to the app's)
@@ -87,15 +87,34 @@ does it, and the two actions here are thin wrappers around that.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `message-list` | Each new message in the conversation you choose |
-| `new-channel` — New Channel | Poll | `channel-list` | Each new channel in the workspace you choose |
 | `new-comment` — New Comment | Poll | `comment-list` | Each new comment in the thread you choose |
-| `new-conversation` — New Conversation | Poll | `conversation-list` | Each new conversation in the workspace you choose |
-| `new-group` — New Group | Poll | `group-list` | Each new group in the workspace you choose |
-| `new-thread` — New Thread | Poll | `thread-list` | Each new thread in the channel you choose |
-| `new-workspace` — New Workspace | Poll | `workspace-list` | Each workspace newly visible to the current user |
-| `new-workspace-user` — New Workspace User | Poll | `workspace-user-list` | Each user newly added to the workspace you choose |
+| `new-thread` — New Thread | Poll | `thread-list` | Each thread newly created in the channel you choose |
+| `new-or-updated-thread` — New or Updated Thread | Poll | `thread-list` | A thread in the channel you choose each time it is created or gets new activity |
+| `new-conversation` — New Conversation | Poll | `conversation-list` | Each conversation newly created in the workspace you choose |
+| `new-or-updated-conversation` — New or Updated Conversation | Poll | `conversation-list` | A conversation in the workspace you choose each time it is created or becomes active again |
+| `new-or-updated-inbox-thread` — New or Updated Inbox Thread | Poll | `inbox-list` | A thread in your inbox for the workspace you choose each time it arrives or gets new activity, across all channels |
+| `new-channel` — New Channel | Poll (snapshot) | `channel-list` | Each new channel in the workspace you choose |
+| `new-group` — New Group | Poll (snapshot) | `group-list` | Each new group in the workspace you choose |
+| `new-workspace` — New Workspace | Poll (snapshot) | `workspace-list` | Each workspace newly visible to the current user |
+| `new-workspace-user` — New Workspace User | Poll (snapshot) | `workspace-user-list` | Each user newly added to the workspace you choose |
 
-Polled through the listed action using the app's own connection; newest-first record feeds request
-`order_by=desc`, while bounded workspace collections retain their ids in the poll state. The first
-check records what exists without firing, and later checks emit only unseen items. Nothing to set up
-on the vendor side. Source: [Twist API v3](https://developer.twist.com/v3/) (verified 2026-11-10).
+- Comments and messages are ordered by `obj_index`, so `order_by=desc&limit=100` is newest first
+  ([comments/get](https://developer.twist.com/v3/), [conversation_messages/get](https://developer.twist.com/v3/)).
+- Threads and conversations are ordered by `last_updated` / `last_active` unless `before_id` or
+  `after_id` is given, "or the thread id if before_id or after_id are used"
+  ([threads/get](https://developer.twist.com/v3/), [conversations/get](https://developer.twist.com/v3/)).
+  `new-thread` and `new-conversation` therefore send `after_id=1`, which orders by id, newest created
+  first, so a reply to an old thread is not reported as new. The `new-or-updated-…` triggers send no id
+  bound, so Twist orders by activity, and report a record again whenever its `last_updated_ts` /
+  `last_active_ts` changes. `inbox/get` is documented as ordered by `last_updated`.
+- `channels/get`, `groups/get`, `workspaces/get` and `workspace_users/get` answer the whole collection
+  with no order and no limit, so those four triggers read it all each check and emit only ids not seen
+  in the previous check (up to 5000; more throws). Source for all: [Twist API v3](https://developer.twist.com/v3/).
+- The first check records what exists without firing. Nothing to set up on the vendor side.
+
+Not covered: `search`, `search-thread` and `search-conversation` (query-required full-text search),
+`thread-unread-list` and `conversation-unread-list` (per-user unread markers, not records), and
+`workspace-public-channels-list` and `workspace-user-ids-list` (covered by `new-channel` and
+`new-workspace-user`).
+
+(Verified 2026-11-10.)

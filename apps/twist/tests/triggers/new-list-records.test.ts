@@ -8,8 +8,29 @@ import newGroup from "../../triggers/new-group.ts";
 import newThread from "../../triggers/new-thread.ts";
 import newWorkspace from "../../triggers/new-workspace.ts";
 import newWorkspaceUser from "../../triggers/new-workspace-user.ts";
+import newOrUpdatedConversation from "../../triggers/new-or-updated-conversation.ts";
+import newOrUpdatedInboxThread from "../../triggers/new-or-updated-inbox-thread.ts";
+import newOrUpdatedThread from "../../triggers/new-or-updated-thread.ts";
 
 const cases = [
+  {
+    key: "new-or-updated-thread",
+    trigger: newOrUpdatedThread,
+    params: { channelId: 5 },
+    url: "https://api.twist.com/api/v3/threads/get?channel_id=5&limit=100&order_by=desc",
+  },
+  {
+    key: "new-or-updated-conversation",
+    trigger: newOrUpdatedConversation,
+    params: { workspaceId: 5 },
+    url: "https://api.twist.com/api/v3/conversations/get?workspace_id=5&limit=100&order_by=desc",
+  },
+  {
+    key: "new-or-updated-inbox-thread",
+    trigger: newOrUpdatedInboxThread,
+    params: { workspaceId: 5 },
+    url: "https://api.twist.com/api/v3/inbox/get?workspace_id=5&limit=100&order_by=desc",
+  },
   {
     key: "new-channel",
     trigger: newChannel,
@@ -26,7 +47,8 @@ const cases = [
     key: "new-conversation",
     trigger: newConversation,
     params: { workspaceId: 5 },
-    url: "https://api.twist.com/api/v3/conversations/get?workspace_id=5&limit=100&order_by=desc",
+    url:
+      "https://api.twist.com/api/v3/conversations/get?workspace_id=5&limit=100&after_id=1&order_by=desc",
   },
   {
     key: "new-group",
@@ -38,7 +60,7 @@ const cases = [
     key: "new-thread",
     trigger: newThread,
     params: { channelId: 5 },
-    url: "https://api.twist.com/api/v3/threads/get?channel_id=5&limit=100&order_by=desc",
+    url: "https://api.twist.com/api/v3/threads/get?channel_id=5&limit=100&after_id=1&order_by=desc",
   },
   {
     key: "new-workspace",

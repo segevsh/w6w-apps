@@ -149,6 +149,9 @@ import newGroup from "./triggers/new-group.ts";
 import newThread from "./triggers/new-thread.ts";
 import newWorkspace from "./triggers/new-workspace.ts";
 import newWorkspaceUser from "./triggers/new-workspace-user.ts";
+import newOrUpdatedThread from "./triggers/new-or-updated-thread.ts";
+import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
+import newOrUpdatedInboxThread from "./triggers/new-or-updated-inbox-thread.ts";
 
 export default {
   actions: [
@@ -293,5 +296,8 @@ export default {
     newThread,
     newWorkspace,
     newWorkspaceUser,
+    newOrUpdatedThread,
+    newOrUpdatedConversation,
+    newOrUpdatedInboxThread,
   ],
 } satisfies AppDefinition;
