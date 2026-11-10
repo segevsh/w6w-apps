@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -23,8 +23,6 @@ depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-pa
 | apps/linkupapi | 1 | 20 | 19 |
 | apps/productboard | 2 | 20 | 19 |
 | apps/companycam | 2 | 20 | 18 |
-| apps/housecallpro | 1 | 19 | 18 |
-| apps/kajabi | 1 | 19 | 18 |
 | apps/samcart | 1 | 19 | 18 |
 | apps/upsales | 1 | 18 | 17 |
 | apps/bigcommerce | 1 | 17 | 16 |
@@ -651,9 +649,11 @@ depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-pa
 | apps/dice | 3 | 0 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
+| apps/housecallpro | 14 | 19 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
 | apps/insightly | 8 | 4 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
+| apps/kajabi | 18 | 19 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
 | apps/knack | 1 | 1 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
@@ -987,7 +987,7 @@ depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-pa
 | apps/hospitable | 1 | reservation-list | new-reservation | apps/hospitable/README.md Triggers section (verified 2026-11-09) | hand | Reservations can be requested newest booked first with stable IDs. |
 | apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
 | apps/hotmart | 1 | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
-| apps/housecallpro | 1 | customer-list | new-customer | apps/housecallpro/README.md Triggers section (verified 2026-11-09) | hand | Customers are sorted newest created first with stable IDs. |
+| apps/housecallpro | 14 | customer-list | new-customer, new-employee, new-estimate, new-or-updated-estimate, new-estimate-option-line-item, new-event, new-or-updated-event, new-invoice, new-job-appointment, new-job-invoice, new-job-line-item, new-job, new-or-updated-job, new-lead | apps/housecallpro/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover operational records; the listed static or derived lists are intentionally skipped. |
 | apps/hubspot | 1 | search-contacts | new-contact | apps/hubspot/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-contacts |
 | apps/hubstaff | 1 | project-list | new-project | apps/hubstaff/README.md Triggers section (verified 2026-11-09) | hand | shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs) |
 | apps/huggingface | 1 | inference-model-list | new-inference-model | apps/huggingface/README.md Triggers section (verified 2026-11-09) | hand | shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api) |
@@ -1007,7 +1007,7 @@ depth: 682 apps, 964 triggers, 3475 unaccounted list actions in 627 apps, n8n-pa
 | apps/jobtread | 1 | list-jobs | new-job | no | hand | shipped poll trigger(s) over list action list-jobs |
 | apps/jumpcloud | 1 | user-list | new-user | apps/jumpcloud/README.md Triggers section (verified 2026-11-09) | hand | user-list (V1 /systemusers) sorted -created; V2 user-group-list dropped, UserGroup schema has no creation field (https://docs.jumpcloud.com/api/2.0/index.yaml) |
 | apps/justcall | 1 | contact-list | new-contact | apps/justcall/README.md Triggers section (verified 2026-11-09) | hand | contact-list order=desc by contact id, documented as most-recently-added first (https://developer.justcall.io/reference/contacts_list_v21) |
-| apps/kajabi | 1 | contact-list | new-contact | apps/kajabi/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=-created_at, default documented newest-first (https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml) |
+| apps/kajabi | 18 | contact-list | new-contact, new-customer, new-order, new-order-item, new-purchase, new-or-updated-purchase, new-form-submission, new-contact-note, new-or-updated-contact-note, new-transaction, new-payout, new-offer, new-product, new-course, new-form, new-contact-tag, new-contact-offer, new-offer-product | apps/kajabi/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover the record feeds; reference lists (sites, tag names, custom-field definitions) are intentionally skipped. |
 | apps/keap | 1 | contact-list | new-contact | apps/keap/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/kintone | 1 | comments-list | new-comment | apps/kintone/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action comments-list |
 | apps/kit | 1 | list-subscribers | new-subscriber | apps/kit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-subscribers |

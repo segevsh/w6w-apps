@@ -3052,12 +3052,35 @@
     "path": "apps/housecallpro",
     "mechanism": "poll",
     "candidates": [
-      "new-customer"
+      "new-customer",
+      "new-employee",
+      "new-estimate",
+      "new-or-updated-estimate",
+      "new-estimate-option-line-item",
+      "new-event",
+      "new-or-updated-event",
+      "new-invoice",
+      "new-job-appointment",
+      "new-job-invoice",
+      "new-job-line-item",
+      "new-job",
+      "new-or-updated-job",
+      "new-lead"
     ],
     "pollAction": "customer-list",
-    "reason": "Customers are sorted newest created first with stable IDs.",
-    "verified": "apps/housecallpro/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll triggers cover operational records; the listed static or derived lists are intentionally skipped.",
+    "verified": "apps/housecallpro/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "booking-window-list": "dynamic availability calculation has no stable booking-window id",
+      "job-type-list": "reference/static data: company job-type vocabulary",
+      "lead-source-list": "reference/static data: company lead-source vocabulary",
+      "pipeline-status-list": "reference/static data: configured pipeline-stage vocabulary",
+      "price-book-service-list": "reference/static data: company price-book service catalog",
+      "route-list": "Day-scoped aggregate: `GET /routes` takes a `date` that defaults to today and returns that day's routes with mutable embedded jobs/appointments; there is no cross-day feed to poll, so no trigger can floor or dedupe it (partner-only endpoint).",
+      "service-zone-list": "reference/static data: company service-zone definitions",
+      "tag-list": "reference/static data: company tag vocabulary"
+    }
   },
   {
     "path": "apps/htmlcsstoimage",
@@ -3359,12 +3382,34 @@
     "path": "apps/kajabi",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-customer",
+      "new-order",
+      "new-order-item",
+      "new-purchase",
+      "new-or-updated-purchase",
+      "new-form-submission",
+      "new-contact-note",
+      "new-or-updated-contact-note",
+      "new-transaction",
+      "new-payout",
+      "new-offer",
+      "new-product",
+      "new-course",
+      "new-form",
+      "new-contact-tag",
+      "new-contact-offer",
+      "new-offer-product"
     ],
     "pollAction": "contact-list",
-    "reason": "contact-list sort=-created_at, default documented newest-first (https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml)",
-    "verified": "apps/kajabi/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Poll triggers cover the record feeds; reference lists (sites, tag names, custom-field definitions) are intentionally skipped.",
+    "verified": "apps/kajabi/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "site-list": "reference/static data: the account's sites, used only to pick a site id",
+      "tag-list": "reference/static data: tag name vocabulary (tag attachment is delivered by new-contact-tag)",
+      "custom-field-list": "reference/static data: custom field definitions"
+    }
   },
   {
     "path": "apps/keap",
