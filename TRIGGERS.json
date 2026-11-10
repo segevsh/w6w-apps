@@ -5123,7 +5123,7 @@
       "card-moved"
     ],
     "pollAction": "pipe-list",
-    "reason": "API-registered webhooks (createWebhook GraphQL mutation) for card.create / card.done / card.move; Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks)",
+    "reason": "poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks)",
     "verified": "apps/pipefy/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
