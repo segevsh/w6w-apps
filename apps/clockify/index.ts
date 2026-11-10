@@ -33,6 +33,16 @@ import timerStopped from "./triggers/timer-stopped.ts";
 import newProject from "./triggers/new-project.ts";
 import newClient from "./triggers/new-client.ts";
 import newTask from "./triggers/new-task.ts";
+import timeEntryUpdated from "./triggers/time-entry-updated.ts";
+import timeEntryDeleted from "./triggers/time-entry-deleted.ts";
+import projectUpdated from "./triggers/project-updated.ts";
+import projectDeleted from "./triggers/project-deleted.ts";
+import clientUpdated from "./triggers/client-updated.ts";
+import clientDeleted from "./triggers/client-deleted.ts";
+import taskUpdated from "./triggers/task-updated.ts";
+import taskDeleted from "./triggers/task-deleted.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
 
 export default {
   actions: [
@@ -47,7 +57,24 @@ export default {
     workspaceList,
     clientList,
   ],
-  triggers: [newTimeEntry, timerStarted, timerStopped, newProject, newClient, newTask],
+  triggers: [
+    newTimeEntry,
+    timerStarted,
+    timerStopped,
+    newProject,
+    newClient,
+    newTask,
+    timeEntryUpdated,
+    timeEntryDeleted,
+    projectUpdated,
+    projectDeleted,
+    clientUpdated,
+    clientDeleted,
+    taskUpdated,
+    taskDeleted,
+    anyEvent,
+    newWorkspace,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
