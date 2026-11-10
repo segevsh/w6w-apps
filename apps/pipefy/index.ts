@@ -91,10 +91,20 @@ import tableRecordDelete from "./actions/table-record-delete.ts";
 import graphqlQuery from "./actions/graphql-query.ts";
 
 import service from "./health/service.ts";
+import anyEvent from "./triggers/any-event.ts";
+import cardCommentCreated from "./triggers/card-comment-created.ts";
+import cardDeleted from "./triggers/card-deleted.ts";
 import cardDone from "./triggers/card-done.ts";
+import cardExpired from "./triggers/card-expired.ts";
+import cardFieldUpdated from "./triggers/card-field-updated.ts";
+import cardLate from "./triggers/card-late.ts";
 import cardMoved from "./triggers/card-moved.ts";
+import cardOverdue from "./triggers/card-overdue.ts";
 import newCard from "./triggers/new-card.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newPhase from "./triggers/new-phase.ts";
 import newPipe from "./triggers/new-pipe.ts";
+import newTable from "./triggers/new-table.ts";
 
 export default {
   actions: [
@@ -136,5 +146,20 @@ export default {
   ],
   auth: [clientCredentials, personalAccessToken],
   healthChecks: [service],
-  triggers: [newPipe, newCard, cardDone, cardMoved],
+  triggers: [
+    newPipe,
+    newCard,
+    cardDone,
+    cardMoved,
+    cardDeleted,
+    cardFieldUpdated,
+    cardCommentCreated,
+    cardLate,
+    cardOverdue,
+    cardExpired,
+    anyEvent,
+    newPhase,
+    newTable,
+    newOrganization,
+  ],
 } satisfies AppDefinition;

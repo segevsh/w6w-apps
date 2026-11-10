@@ -65,6 +65,7 @@ import requestRate from "./health/request-rate.ts";
 import jobFinished from "./triggers/job-finished.ts";
 import jobFailed from "./triggers/job-failed.ts";
 import jobCreated from "./triggers/job-created.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -98,6 +99,6 @@ export default {
   // authenticates as the connecting account itself, so a bearer API key — CloudConvert's
   // own recommended path for that case — is the whole authentication story.
   auth: [apiToken],
-  triggers: [jobFinished, jobFailed, jobCreated],
+  triggers: [jobFinished, jobFailed, jobCreated, anyEvent],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;
