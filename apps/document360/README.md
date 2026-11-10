@@ -28,12 +28,12 @@ on the **Document360 Customer API v3**.
 | `new-article` | poll | `workspace-article-list` | Each article newly added to the workspace |
 | `new-or-updated-article` | poll | `workspace-article-list` | Each article added, or whose list summary (including its content hash) changed |
 | `new-article-version` | poll | `article-version-list` | Each new version of the article you choose |
-| `new-drive-folder` | poll | `drive-folder-list` | Each new Drive folder in the project you choose |
+| `new-drive-folder` | poll | `drive-folder-list` | Each new Drive folder, at any depth, in the project you choose |
 | `new-project` | poll | `project-list` | Each project newly visible to the API key |
 | `new-reader` | poll | `reader-list` | Each new private-knowledge-base reader |
 | `new-team-group` | poll | `user-group-list` | Each new team-account group |
 | `new-team-account` | poll | `user-list` | Each new team account |
-| `new-workspace-category` | poll | `workspace-category-list` | Each new category in the workspace you choose |
+| `new-workspace-category` | poll | `workspace-category-list` | Each new category or sub-category, at any depth, in the workspace you choose |
 | `new-workspace` | poll | `workspace-list` | Each new workspace in the project you choose |
 
 Params: `workspaceId` (required) and an optional `projectId`. Each check pages the existing
@@ -46,8 +46,13 @@ check with a clear error instead of silently missing articles. Deleted articles 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same
 authenticated request the wrapped action makes, with the connection's own credential.
 
-The additional bounded collections use the same snapshot behaviour and refuse a collection over
-1,000 records rather than truncating it. Vendor reference: <https://apidocs.document360.com/> (verified 2026-11-10).
+The other collections use the same snapshot behaviour: each check reads every page (`page_size` 100,
+following `pagination.has_more`, per the v3 OpenAPI) and refuses a collection over 1,000 records
+rather than truncating it. Drive folders and workspace categories come back as trees (`sub_folders`,
+`child_categories`); the trigger flattens the tree, so a new nested folder or category fires too, and
+each emitted row is the node without its nested children. The triggers do not offer the paging params
+(`page`, `pageSize`, `cursor`, `includeTotalCount`), since the trigger pages by itself. Vendor
+reference: <https://apidocs.document360.com/> (verified 2026-11-10).
 
 ## The things most likely to go wrong
 
