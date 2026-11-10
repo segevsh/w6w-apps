@@ -85,3 +85,8 @@ Contact or Client only — Lawmatics doesn't offer Company there).
 | `auth:oauth2` | derived | Projected automatically from `auth/oauth2.ts`'s `test` hook (`GET /v1/users/me`). |
 
 See `packages/apps/HEALTHCHECKS.md` for the pack-wide conventions this follows.
+
+
+## Triggers
+
+- **New Contact** wraps the existing `list-contacts` action and polls its newest-first feed. Vendor documentation: https://docs.lawmatics.com (verified 2026-11-09).

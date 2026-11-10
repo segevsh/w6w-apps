@@ -284,3 +284,8 @@ deno task lint
 deno task fmt        # never bare `deno fmt` — the task's file list excludes assets/
 deno task test
 ```
+
+
+## Triggers
+
+- **New Contact** wraps the existing `contact-list` action and polls its newest-first feed. Vendor documentation: https://developer.justcall.io (verified 2026-11-09).

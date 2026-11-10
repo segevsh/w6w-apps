@@ -595,3 +595,8 @@ checking for a 200.
 > The API docs site is served behind Cloudflare and rejects requests without a browser-shaped
 > `User-Agent` and `Accept` header with a 403. That is a fetching quirk, not an access restriction —
 > the content is public.
+
+
+## Triggers
+
+- **New Invoice** wraps the existing `invoice-list` action and polls its newest-first feed. Vendor documentation: https://developer.getjobber.com/docs (verified 2026-11-09).

@@ -240,3 +240,8 @@ deno task lint
 deno task validate   # @w6w/validator manifest checks
 deno task fmt        # NEVER bare `deno fmt` — it rewrites assets/*.svg
 ```
+
+
+## Triggers
+
+- **New Order** wraps the existing `order-list` action and polls its newest-first feed. Vendor documentation: https://docs.lemonsqueezy.com/api (verified 2026-11-09).

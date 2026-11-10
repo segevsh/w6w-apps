@@ -32,6 +32,8 @@ import api from "./health/api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newVoucher from "./triggers/new-voucher.ts";
+
 export default {
   actions: [
     articleCreate,
@@ -58,5 +60,6 @@ export default {
     voucherList,
   ],
   auth: [apiKey],
+  triggers: [newVoucher],
   healthChecks: [api, service, quota],
 } satisfies AppDefinition;

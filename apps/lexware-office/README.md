@@ -125,3 +125,8 @@ saved verbatim. `deno task fmt` is scoped to the code directories and never touc
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+
+## Triggers
+
+- **New Voucher** wraps the existing `voucher-list` action and polls its newest-first feed. Vendor documentation: https://developers.lexware.io/docs/ (verified 2026-11-09).

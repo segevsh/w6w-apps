@@ -199,3 +199,6 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **every listing action sets
 confidentiality explicitly**, **every write requires a `performAs`**, and no
 action hardcodes a host — the sandbox is a separate account with separate data.
+
+
+Triggers: not shipped — posting-list has no documented created-order or since filter (undefined)

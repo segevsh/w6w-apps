@@ -86,6 +86,8 @@ import quota from "./health/quota.ts";
  * `lib/client.ts` for the wire-level contract, `auth/client-credentials.ts` for
  * the OAuth2 grant, and `README.md` for what is deliberately not covered.
  */
+import newContact from "./triggers/new-contact.ts";
+
 export default {
   actions: [
     // Account and sites
@@ -152,5 +154,6 @@ export default {
     formSubmissionGet,
   ],
   auth: [clientCredentials],
+  triggers: [newContact],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

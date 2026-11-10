@@ -347,3 +347,8 @@ deno task test
 up `_tools/deno.json` instead and cannot resolve the `@w6w/types` value imports this app's
 `health/service.ts` and `lib/client.ts` use; this reproduces identically for the sibling `apify` and
 `paddle` apps, so it is a property of how the tool is invoked, not of this app.
+
+
+## Triggers
+
+- **New Ad Account** wraps the existing `ad-account-list` action and polls its newest-first feed. Vendor documentation: https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-campaigns (verified 2026-11-09).

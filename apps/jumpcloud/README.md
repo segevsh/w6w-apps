@@ -241,3 +241,8 @@ Exhaustion is only visible as a `429` at the moment it happens.
 JumpCloud's envelope is `{"error": "...", "message": "..."}`, and `message` is
 the useful half — *"Unauthorized: api key user not found"* rather than just
 *"Unauthorized"*. Failures surface the status and the whole envelope.
+
+
+## Triggers
+
+- **New User Group** wraps the existing `user-group-list` action and polls its newest-first feed. Vendor documentation: https://docs.jumpcloud.com/api (verified 2026-11-09).

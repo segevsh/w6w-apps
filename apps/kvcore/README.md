@@ -149,3 +149,8 @@ the UI's native `boolean` param type in `lib/params.ts` (`contactBody`/`entityBo
 32×32 RGBA), downloaded verbatim and never redrawn or resampled — pinned byte-for-byte in
 `tests/index.test.ts`. Every icon path on the marketing domains (`insiderealestate.com`, `kvcore.com`,
 apex and `www`) answers a fake `200` zero-byte image; none of those was used.
+
+
+## Triggers
+
+- **New User** wraps the existing `user-list` action and polls its newest-first feed. Vendor documentation: https://developer.insiderealestate.com/publicv2 (verified 2026-11-09).

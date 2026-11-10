@@ -135,3 +135,8 @@ Resources" and "Access Management" categories, plus the Getting Started, Authent
 Pagination, Rate limiting and Errors reference pages) and status.kustomer.com. Status
 surfaces and per-org limits move; re-check if a probe starts failing for everyone at
 once.
+
+
+## Triggers
+
+- **New Customer** wraps the existing `customer-list` action and polls its newest-first feed. Vendor documentation: https://developer.kustomer.com (verified 2026-11-09).

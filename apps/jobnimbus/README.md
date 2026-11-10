@@ -247,3 +247,8 @@ the `@w6w/runtime` value import `_tools/audit.ts` also uses (`hostAllowed`) — 
 this app; running the auditor from `_tools/` directly (`deno run --no-check -A audit.ts jobnimbus`),
 which picks up `_tools/deno.json`'s own import map, is what was actually used to validate this app
 (0 errors, 0 warnings).
+
+
+## Triggers
+
+- **New Contact** wraps the existing `contact-list` action and polls its newest-first feed. Vendor documentation: https://documenter.getpostman.com/view/3919598/S11PpG4x (verified 2026-11-09).

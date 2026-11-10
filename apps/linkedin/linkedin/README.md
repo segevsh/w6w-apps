@@ -152,3 +152,8 @@ Researched and endpoint-verified 2026-07-31 against LinkedIn's own developer doc
 (`learn.microsoft.com/en-us/linkedin/...`). API versions and status surfaces move — LinkedIn
 deprecates each `LinkedIn-Version` roughly 12 months after release, so bump `API_VERSION` in
 `lib/client.ts` periodically.
+
+
+## Triggers
+
+- **New Post** wraps the existing `list-posts-by-author` action and polls its newest-first feed. Vendor documentation: https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api (verified 2026-11-09).

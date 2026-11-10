@@ -110,6 +110,8 @@ import organizationList from "./actions/organization-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newUserGroup from "./triggers/new-user-group.ts";
+
 export default {
   actions: [
     // users — the directory record and its lifecycle (V1)
@@ -150,5 +152,6 @@ export default {
     organizationList,
   ],
   auth: [apiKey],
+  triggers: [newUserGroup],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

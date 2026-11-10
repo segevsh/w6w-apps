@@ -88,6 +88,8 @@ import graphqlQuery from "./actions/graphql-query.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newInvoice from "./triggers/new-invoice.ts";
+
 export default {
   actions: [
     // client
@@ -129,5 +131,6 @@ export default {
     graphqlQuery,
   ],
   auth: [oauth2],
+  triggers: [newInvoice],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

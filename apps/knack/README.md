@@ -169,3 +169,6 @@ deno task lint
 deno task fmt        # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 deno task validate   # @w6w/validator manifest audit
 ```
+
+
+Triggers: not shipped — record-list requires a caller-selected sort field, so it cannot guarantee created-order polling (undefined)

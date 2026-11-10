@@ -59,6 +59,8 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
 
+import newCustomer from "./triggers/new-customer.ts";
+
 export default {
   actions: [
     // customer
@@ -93,5 +95,6 @@ export default {
     satisfactionResponseGet,
   ],
   auth: [apiKey],
+  triggers: [newCustomer],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

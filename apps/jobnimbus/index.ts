@@ -59,6 +59,8 @@ import activityCreate from "./actions/activity-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newContact from "./triggers/new-contact.ts";
+
 export default {
   actions: [
     // Contacts
@@ -83,5 +85,6 @@ export default {
   // A single static API Key is the whole authentication story — JobNimbus
   // publishes no OAuth surface for third-party apps.
   auth: [bearerToken],
+  triggers: [newContact],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

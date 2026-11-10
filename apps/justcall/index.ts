@@ -71,6 +71,8 @@ import webhookDeleteUrl from "./actions/webhook-delete-url.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newContact from "./triggers/new-contact.ts";
+
 export default {
   actions: [
     // Calls
@@ -104,5 +106,6 @@ export default {
   // API Key + Secret only. JustCall publishes no OAuth surface for
   // third-party apps.
   auth: [apiKey],
+  triggers: [newContact],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

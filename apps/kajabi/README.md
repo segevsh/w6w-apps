@@ -455,3 +455,8 @@ OpenAPI document or from a live request to `api.kajabi.com` / `status.kajabi.com
 Where the vendor is quoted, it is the document's own wording. Where something could not be verified
 — Kajabi's rate limits, the predicate governing whether a purchase can be reactivated, the
 serialisation of the repeated product-type filter — the app says so rather than shipping a guess.
+
+
+## Triggers
+
+- **New Contact** wraps the existing `contact-list` action and polls its newest-first feed. Vendor documentation: https://developer.kajabi.com (verified 2026-11-09).
