@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/plaid",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read bank data through Plaid — accounts, balances, transactions, identity and liabilities — and manage the Items that connect them.",
   "license": "MIT",
   "author": {
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://plaid.com/docs/api"
     ],
-    "longDescription": "Plaid brings bank data into a workflow — account details, balances, transactions, identity information and liabilities — and manages the Items that connect a person's bank to an application. Reading transactions uses Plaid's sync model rather than a fixed date range: each call returns exactly what changed since the last cursor, so a workflow stays correct as pending charges settle, amounts get corrected and transactions occasionally get removed, without re-reading or double-counting anything.\n\nAccount actions distinguish a cached balance, fast and free of the bank's own rate limits, from a live balance fetched fresh from the institution for anything approaching a payment decision. Identity and liabilities actions return what a bank itself believes about an account holder and their loans or cards — evidence rather than self-reported data. Connecting a new bank still requires a human in Plaid's own Link flow, but this app handles both server-side halves: minting the token Link needs and exchanging what it returns for a working connection.\n\nItem management actions read a connection's health (including when a user's bank login has expired and needs re-authentication), point a connection's webhook at a new URL, and disconnect a bank entirely when access should end.",
+    "longDescription": "Plaid brings bank data into a workflow — account details, balances, transactions, identity information and liabilities — and manages the Items that connect a person's bank to an application. Reading transactions uses Plaid's sync model rather than a fixed date range: each call returns exactly what changed since the last cursor, so a workflow stays correct as pending charges settle, amounts get corrected and transactions occasionally get removed, without re-reading or double-counting anything.\n\nAccount actions distinguish a cached balance, fast and free of the bank's own rate limits, from a live balance fetched fresh from the institution for anything approaching a payment decision. Identity and liabilities actions return what a bank itself believes about an account holder and their loans or cards — evidence rather than self-reported data. Connecting a new bank still requires a human in Plaid's own Link flow, but this app handles both server-side halves: minting the token Link needs and exchanging what it returns for a working connection.\n\nItem management actions read a connection's health (including when a user's bank login has expired and needs re-authentication), point a connection's webhook at a new URL, and disconnect a bank entirely when access should end.\n\nA trigger fires for each new transaction added to a connected account: it follows the same sync cursor, so a workflow starts the moment a bank reports a new charge without re-reading history.",
     "categories": [
       "finance",
       "databases"
@@ -34,7 +34,12 @@
         "production.plaid.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
