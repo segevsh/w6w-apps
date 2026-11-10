@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/givebutter",
   "version": "0.3.0",
-  "description": "Manage Givebutter campaigns, contacts, transactions, funds, households and webhooks — the nonprofit fundraising and donor-CRM platform. Poll triggers fire on new or updated contacts and transactions and on new campaigns, funds, payouts and messages.",
+  "description": "Givebutter nonprofit fundraising: campaigns, contacts, transactions, funds, households. Poll triggers fire on new or updated contacts and transactions and on new campaigns, funds and payouts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
