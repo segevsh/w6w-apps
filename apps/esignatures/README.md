@@ -7,6 +7,7 @@ content, and manage templates and their collaborators on [eSignatures.com](https
 - Built against the API reference at <https://esignatures.com/docs/api> (version 1.3, fetched
   2026-10-06) and live probes on the same day. Nothing here is inferred from another app.
 - Network: `esignatures.com` only.
+- **Triggers** — 5 (webhook)
 
 ## Authentication
 
@@ -62,10 +63,11 @@ create/duplicate, `collaborator-add`) is `idempotent: false`, so the runtime wil
 
 ### Left out, and why
 
-- **Webhooks / triggers.** The vendor posts events to one URL configured in its dashboard (or
+- **Webhook subscription.** The vendor posts events to one URL configured in its dashboard (or
   per contract via `custom_webhook_url`), signed `X-Signature-SHA256` with the secret token. There
-  is no API to subscribe, so this app declares no triggers. `custom_webhook_url` is a
-  `contract-create` parameter, so a workflow endpoint can be wired per contract.
+  is no API to subscribe, so the webhook triggers (see Triggers below) are manual receivers.
+  `custom_webhook_url` is a `contract-create` parameter, so a workflow endpoint can be wired per
+  contract.
 - **Embedded signing** is a front-end iframe feature (`sign_page_url` + `embedded=yes`), not an API
   call; the URL is returned by `contract-create` / `contract-get`.
 
@@ -94,4 +96,41 @@ No quota check: the API exposes no usage or rate-limit headers in its reference.
 the 24 actions against a mocked `HookContext` (fake `ctx.fetch`, no-op `ctx.log`).
 Gate: `deno task fmt && deno task validate && deno task check && deno task lint && deno task test`.
 
-Triggers: not shipped — the vendor tells integrators to avoid repeatedly polling the API and to use webhook notifications instead (frequent polling can lead to blocked requests), and templates and collaborators have no created-since filter; contract webhooks are queued separately (https://esignatures.com/docs/api).
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `contract-event` — Contract Event | webhook (manual, signed) | every notification | the notification status, the contract, the signer(s) and the raw data |
+| `contract-sent` — Contract Sent to Signer | webhook (manual, signed) | `contract-sent-to-signer` | the contract and the signer it was sent to |
+| `contract-signed` — Contract Signed | webhook (manual, signed) | `contract-signed` (all signers have signed) | the contract, every signer and a link to the signed PDF (valid 3 days) |
+| `signer-signed` — Signer Signed | webhook (manual, signed) | `signer-signed` | the contract and the signer, with the values they entered |
+| `signer-declined` — Signer Declined | webhook (manual, signed) | `signer-declined` | the contract, the signer and the reason given |
+
+### Setup
+
+eSignatures.com has no webhook-management API, and its dashboard holds **one** webhook URL per
+account, so one subscription owns that URL:
+
+1. Subscribe the trigger in w6w and copy the callback URL it shows.
+2. In eSignatures.com open the **API** page of your account and paste the URL as the Webhook URL.
+3. Paste the account's **Secret Token** (same page; it is the token the connection uses) into the
+   trigger's **Secret Token** parameter.
+
+Because the dashboard URL is single, prefer `Contract Event` when more than one kind of notification
+matters and branch on `status` in the workflow; the specific triggers each keep only their own
+notification and acknowledge the rest without a run. To route different contracts to different
+workflows, pass the callback URL of another subscription as `custom_webhook_url` when creating the
+contract (`contract-create` accepts it); that overrides the dashboard URL for that contract.
+Failed deliveries are retried hourly, up to six times, with a 15 second timeout per request.
+
+### Trust model
+
+Every delivery carries `X-Signature-SHA256`, an HMAC-SHA256 of the exact request body keyed by your
+Secret Token. The trigger verifies it against the raw bytes, in constant time, before it parses the
+body; a missing or wrong signature, an absent raw body or an unset secret refuses the delivery (one
+failed row, no run). The vendor's reference does not state how the digest is encoded, so the lower-case
+hex and the base64 form of that same HMAC are both accepted. The scheme carries no timestamp, so a
+captured delivery could be replayed within the signature's lifetime; eSignatures.com also publishes the
+source IP addresses of its webhook calls (listed in the reference) for allow-listing at your edge.
+
+Docs (verified 2026-11-10): https://esignatures.com/docs/api (Webhooks section)

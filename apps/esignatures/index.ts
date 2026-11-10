@@ -28,6 +28,11 @@ import collaboratorRemove from "./actions/collaborator-remove.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
+import contractEvent from "./triggers/contract-event.ts";
+import contractSent from "./triggers/contract-sent.ts";
+import contractSigned from "./triggers/contract-signed.ts";
+import signerSigned from "./triggers/signer-signed.ts";
+import signerDeclined from "./triggers/signer-declined.ts";
 
 export default {
   actions: [
@@ -59,4 +64,5 @@ export default {
   // Secret Token over HTTP Basic only. eSignatures publishes no OAuth surface.
   auth: [secretToken],
   healthChecks: [service, api],
+  triggers: [contractEvent, contractSent, contractSigned, signerSigned, signerDeclined],
 } satisfies AppDefinition;
