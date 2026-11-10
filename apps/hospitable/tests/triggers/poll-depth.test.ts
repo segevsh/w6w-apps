@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import nodeAssert from "node:assert/strict";
-import { assertEquals, assertRejects } from "../_assert.ts";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import newPayout from "../../triggers/new-payout.ts";
 import newProperty from "../../triggers/new-property.ts";
@@ -240,5 +240,5 @@ test("new-property: 5000 rows exactly compare; a 5001st row is refused", async (
     ...Array.from({ length: 50 }, (_, n) => full(n)),
     { body: { data: [{ id: "extra" }] } },
   ]);
-  await assertRejects(() => newProperty.poll!({ ...input, state: {} }, over.ctx));
+  await nodeAssert.rejects(() => newProperty.poll!({ ...input, state: {} }, over.ctx));
 });
