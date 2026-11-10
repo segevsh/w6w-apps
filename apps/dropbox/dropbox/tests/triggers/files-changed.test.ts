@@ -87,6 +87,27 @@ describe("files-changed (signed manual webhook)", () => {
     );
   });
 
+  test("a flipped LAST character, a truncated or an extended signature -> refused", async () => {
+    const good = sign(BODY);
+    const last = good.slice(-1) === "a" ? "b" : "a";
+    for (
+      const bad of [good.slice(0, -1) + last, good.slice(0, 8), good.slice(0, 32), good + "0"]
+    ) {
+      assert.notEqual(bad, good);
+      await assert.rejects(
+        ingest(post(BODY, { "x-dropbox-signature": bad })),
+        /signature does not match/,
+      );
+    }
+  });
+
+  test("only POST (and the verification GET) is accepted, even with a valid signature", async () => {
+    for (const method of ["PUT", "DELETE", "PATCH"]) {
+      const raw = { ...post(BODY, { "x-dropbox-signature": sign(BODY) }), method };
+      await assert.rejects(ingest(raw), /with POST/);
+    }
+  });
+
   test("one flipped byte of the BODY, or a signature over re-serialised JSON -> refused", async () => {
     await assert.rejects(
       ingest(post(BODY.replace("account-1", "account-9"), { "x-dropbox-signature": sign(BODY) })),
