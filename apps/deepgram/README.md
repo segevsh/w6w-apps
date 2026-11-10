@@ -225,9 +225,10 @@ where it can be acted on: on the `429` itself.
 
 Deepgram filters the request log by date, not time (`request-list` truncates `start`/`end` to
 `YYYY-MM-DD`), and the OpenAPI documents no result order. So each check reads every request of the
-current UTC day (the previous day too for two minutes after midnight) at the maximum page size of
-1000, following `page`, and emits ids that were not in the previous check. The first check only
-records. Guarantee: complete for up to 5000 requests per day; beyond that the check fails with an
+previous and current UTC day (always both, so a check just after midnight still sees late requests
+from the old day) at the maximum page size of 1000, following `page`, and emits ids that were not
+in the previous check. The first check only records. Guarantee: complete for up to 5000 requests
+across those two days; beyond that the check fails with an
 error naming the cap rather than dropping requests. Source:
 [Deepgram API reference](https://developers.deepgram.com/openapi.json) (verified 2026-11-09).
 
