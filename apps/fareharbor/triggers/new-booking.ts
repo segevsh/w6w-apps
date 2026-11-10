@@ -9,6 +9,13 @@ interface Booking {
 }
 
 const DAY_MS = 86_400_000;
+/**
+ * Every id of the two-day window must stay remembered, or a booking that is still listed would be
+ * emitted again (or, at the seed, a pre-seed booking would flood a later check). The minimal booking
+ * record has no creation time to floor on, so the id memory is the whole guard: sized well above a
+ * busy company's two days. A company with more than this many bookings in two days is unsupported.
+ */
+export const SEEN_WINDOW = 5000;
 const utcDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
 /**
@@ -41,7 +48,7 @@ const trigger: TriggerDefinition<{ shortname: string }> = {
       state,
       maxPages: 1,
       maxEvents: 100,
-      seenWindow: 1000,
+      seenWindow: SEEN_WINDOW,
       idOf: (booking) => String(booking.pk ?? ""),
       async fetchPage() {
         const items: Booking[] = [];

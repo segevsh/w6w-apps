@@ -169,7 +169,7 @@ failing for everyone at once.
 
 `GET /admin/bookings` has no sort order and only a day-granular `filter[record_date_from]` /
 `filter[record_date_to]` in the company time zone, which each check reads from `GET /admin/company/info`
-(`timezone`). The check asks for the window one day wider on both sides and keeps a booking only if its
+(`timezone`; a company with none set is read as UTC). The check asks for the window one day wider on both sides and keeps a booking only if its
 own `record_date` (read in that zone) lies in the exact window. The first check stores the start time and
 reads nothing; later checks read from two minutes before the previous check (never before the start),
 100 per page, one page per check, resume a larger window from the saved page on the next check, and drop

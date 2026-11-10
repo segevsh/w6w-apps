@@ -19,10 +19,20 @@ interface State {
 }
 export const clock = { now: (): number => Date.now() };
 
+/**
+ * SamCart documents `order_date` as UTC but writes no zone marker (`2026-11-09 00:06:00`), and
+ * `Date.parse` reads a marker-less date-time as HOST-local time. Read it as UTC explicitly.
+ */
+export function parseUtc(value: string): number {
+  const s = value.trim();
+  const bare = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)$/.exec(s);
+  return Date.parse(bare ? `${bare[1]}T${bare[2]}Z` : s);
+}
+
 /** True when the item's own timestamp is before the floor; an unparseable stamp keeps the item. */
 const beforeFloor = (item: unknown, floor: number | undefined, field: string) => {
   if (floor === undefined) return false;
-  const t = Date.parse(String((item as Record<string, unknown>)[field] ?? ""));
+  const t = parseUtc(String((item as Record<string, unknown>)[field] ?? ""));
   return Number.isFinite(t) && t < floor;
 };
 

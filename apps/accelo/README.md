@@ -20,12 +20,13 @@ Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, iss
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-activity` | poll | `activity-list` | Each newly created activity. |
+| `new-or-updated-activity` | poll | `activity-list` | Each activity newly created or edited (an edit is a new event). |
 | `new-company` | poll | `company-list` | Each newly created company. |
 | `new-job` | poll | `job-list` | Each newly created job. |
 
 Each check asks the list endpoint for 100 rows with the documented `order_by_desc(id)` filter (ids rise with creation) and emits the ids it has not seen. Source: https://api.accelo.com/docs/ (list filters `order_by_asc(<field>)` / `order_by_desc(<field>)`; verified 2026-11-10).
 
-No `new-or-updated-*` trigger ships: the activity list does not return `date_modified` unless it is requested explicitly, which is not yet verified against Accelo's docs.
+`new-or-updated-activity` requests the activity's `date_modified` (a documented activity field, unix ts) with `_fields=date_modified` and orders by `order_by_desc(date_modified)`, keying each event on `id:date_modified`. Source: https://api.accelo.com/docs/ (`GET /activities`: additional fields via `_fields`, order and date filters over `date_modified`; verified 2026-11-10).
 
 ## Connecting
 

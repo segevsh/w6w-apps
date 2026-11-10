@@ -170,7 +170,7 @@ could point at a real documented example for. See finding #1.
 | --- | --- | --- | --- |
 | `new-candidate` — New Candidate | Poll | `candidate-list` | Each newly created candidate |
 
-- Recruitee API, List all candidates: "created_after string (optional) — Show only candidates created after given date". The trigger calls `candidate-list` with `created_after = last check − 120 s`, `limit=200`, following `offset` up to 3 pages, deduping by id.
+- Recruitee API, List all candidates: "created_after string (optional) — Show only candidates created after given date". The trigger calls `candidate-list` with `created_after = last check − 120 s`, `limit=200`, following `offset` up to 5 pages per check (a longer window is resumed on the next check), deduping by id, and never emitting a candidate created before the first check.
 - No `new-or-updated-candidate`: the list has no updated-since filter or sort (only `by_date` / `by_last_message`).
 
 Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.

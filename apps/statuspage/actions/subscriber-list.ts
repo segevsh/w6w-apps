@@ -49,6 +49,16 @@ const action: ActionDefinition = {
         { value: "", label: "All" },
       ],
     },
+    {
+      key: "newestFirst",
+      label: "Newest first",
+      type: "boolean",
+      default: false,
+      advanced: true,
+      hint:
+        "Sort by creation time, newest first (`sort_field=created_at`, `sort_direction=desc`), " +
+        "paging with the documented zero-based `page` and `limit`. Off keeps the vendor's order.",
+    },
     PAGE_PARAM,
     ...LIST_PARAMS,
   ],
@@ -64,17 +74,44 @@ const action: ActionDefinition = {
     const returnAll = p.returnAll === true;
     const limit = Number(p.limit ?? 50);
 
+    const query = {
+      type: String(p.type ?? "") || undefined,
+      // The host applies a param `default`; a bare execute() call does not,
+      // and "active" is the meaningful default. An explicit "" still means
+      // every state.
+      state: (p.state === undefined ? "active" : String(p.state)) || undefined,
+    };
+
+    if (p.newestFirst === true) {
+      // `GET /pages/{page}/subscribers` pages by a ZERO-based `page` and `limit` (the generic
+      // `page=1&per_page=` helper would skip the first page), and sorts by `created_at`.
+      const want = returnAll ? Infinity : limit;
+      const newest: unknown[] = [];
+      for (let page = 0; newest.length < want; page++) {
+        const perPage = Math.min(100, Math.max(1, want - newest.length));
+        const chunk = await client.request<unknown[]>(
+          `/pages/${encodeURIComponent(pageId)}/subscribers`,
+          {
+            query: {
+              ...query,
+              sort_field: "created_at",
+              sort_direction: "desc",
+              limit: perPage,
+              page,
+            },
+          },
+        );
+        if (!Array.isArray(chunk) || chunk.length === 0) break;
+        newest.push(...chunk);
+        if (chunk.length < perPage) break;
+      }
+      const subscribers = Number.isFinite(want) ? newest.slice(0, want) : newest;
+      return { subscribers, count: subscribers.length };
+    }
+
     const subscribers = await client.requestAll(
       `/pages/${encodeURIComponent(pageId)}/subscribers`,
-      {
-        query: {
-          type: String(p.type ?? "") || undefined,
-          // The host applies a param `default`; a bare execute() call does not,
-          // and "active" is the meaningful default. An explicit "" still means
-          // every state.
-          state: (p.state === undefined ? "active" : String(p.state)) || undefined,
-        },
-      },
+      { query },
       returnAll ? Infinity : limit,
     );
     return { subscribers, count: subscribers.length };

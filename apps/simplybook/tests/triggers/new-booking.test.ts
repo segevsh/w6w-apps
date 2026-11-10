@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx, TEST_DISPLAY } from "../_helpers.ts";
-import trigger, { zonedToMs } from "../../triggers/new-booking.ts";
+import trigger, { zonedToMs, zoneOf } from "../../triggers/new-booking.ts";
 import { clock } from "../../lib/since-poll.ts";
 
 // Company time zone Europe/Berlin = UTC+1 in November: 13:00 company time is 12:00 UTC.
@@ -174,4 +174,62 @@ test("new-booking keeps only rows stamped inside the exact window (not before it
     ]).ctx,
   );
   assertEquals(ids(r2.events), [2]);
+});
+
+test("zonedToMs resolves the DST transition hours exactly (Europe/Berlin, America/New_York)", () => {
+  const z = (t: string, zone: string) => new Date(zonedToMs(t, zone)).toISOString();
+  // Autumn change 2026-10-25: 03:00 CEST -> 02:00 CET. The hour before is CEST (+2), after it CET (+1).
+  assertEquals(z("2026-10-25 01:59:59", "Europe/Berlin"), "2026-10-24T23:59:59.000Z");
+  assertEquals(z("2026-10-25 03:00:00", "Europe/Berlin"), "2026-10-25T02:00:00.000Z");
+  // 02:30 happens twice (00:30Z and 01:30Z); either reading is right, a third value is not.
+  assertEquals(
+    ["2026-10-25T00:30:00.000Z", "2026-10-25T01:30:00.000Z"].includes(
+      z("2026-10-25 02:30:00", "Europe/Berlin"),
+    ),
+    true,
+  );
+  // Spring change 2026-03-29: 02:00 CET -> 03:00 CEST. 02:30 does not exist; it must land in the gap.
+  assertEquals(z("2026-03-29 01:59:59", "Europe/Berlin"), "2026-03-29T00:59:59.000Z");
+  assertEquals(z("2026-03-29 03:00:00", "Europe/Berlin"), "2026-03-29T01:00:00.000Z");
+  const gap = zonedToMs("2026-03-29 02:30:00", "Europe/Berlin");
+  assertEquals(
+    gap >= Date.parse("2026-03-29T00:59:59Z") &&
+      gap <= Date.parse("2026-03-29T01:00:00Z") + 3_600_000,
+    true,
+  );
+  assertEquals(z("2026-11-01 01:30:00", "America/New_York").slice(0, 13) <= "2026-11-01T06", true);
+  assertEquals(z("2026-03-08 03:00:00", "America/New_York"), "2026-03-08T07:00:00.000Z");
+  assertEquals(z("2026-03-08 01:59:59", "America/New_York"), "2026-03-08T06:59:59.000Z");
+});
+
+test("new-booking compares record_date in the summer offset just before the autumn DST change", async () => {
+  const seedAt = Date.parse("2026-10-24T23:30:00.000Z"); // 01:30 CEST on the change day
+  at(seedAt);
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctxOf([]).ctx);
+  at(seedAt + 1_200_000); // 23:50Z = 01:50 CEST
+  // 01:20 Berlin = 23:20Z is before the seed (dropped); 01:35 = 23:35Z is inside the window (kept).
+  // A fixed +1 (winter) reading puts both after the check time and would drop the new one too.
+  const res = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    ctxOf([info, page([book(1, "2026-10-25 01:20:00"), book(2, "2026-10-25 01:35:00")], 1)]).ctx,
+  );
+  assertEquals(ids(res.events), [2]);
+});
+
+test("zoneOf falls back to UTC for a missing, blank or unknown time zone", () => {
+  assertEquals(zoneOf(null), "UTC");
+  assertEquals(zoneOf(undefined), "UTC");
+  assertEquals(zoneOf("  "), "UTC");
+  assertEquals(zoneOf("Mars/Olympus"), "UTC");
+  assertEquals(zoneOf("Europe/Berlin"), "Europe/Berlin");
+});
+
+test("new-booking with no company time zone reads record_date as UTC instead of failing", async () => {
+  const state = await seedState();
+  at(T1);
+  // 12:05 UTC is after the 12:00Z seed; read in Berlin it would be 11:05Z and dropped.
+  const m = ctxOf([{ body: { timezone: null } }, page([book(5, "2026-11-09 12:05:00")], 1)]);
+  const res = await trigger.poll!({ ...input, state }, m.ctx);
+  assertEquals(ids(res.events), [5]);
+  assertEquals(m.calls[1].url, window(1));
 });

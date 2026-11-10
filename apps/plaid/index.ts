@@ -96,6 +96,8 @@ import itemRemove from "./actions/item-remove.ts";
 import webhookUpdate from "./actions/webhook-update.ts";
 import institutionList from "./actions/institution-list.ts";
 
+import newTransaction from "./triggers/new-transaction.ts";
+
 import service from "./health/service.ts";
 import credentials from "./health/credentials.ts";
 
@@ -121,6 +123,7 @@ export default {
     // where it can connect to
     institutionList,
   ],
+  triggers: [newTransaction],
   auth: [clientSecret, clientSecretSandbox],
   healthChecks: [service, credentials],
 } satisfies AppDefinition;
