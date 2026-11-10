@@ -12,15 +12,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1008 triggers, 3399 unaccounted list actions in 623 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/notion | 1 | 30 | 29 |
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
-| apps/everhour | 2 | 23 | 21 |
-| apps/linkupapi | 1 | 20 | 19 |
 | apps/productboard | 2 | 20 | 19 |
 | apps/companycam | 2 | 20 | 18 |
 | apps/samcart | 1 | 19 | 18 |
@@ -649,6 +647,7 @@ depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-pa
 | apps/dice | 3 | 0 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
+| apps/everhour | 10 | 23 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
 | apps/insightly | 8 | 4 | 0 |
@@ -659,6 +658,7 @@ depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-pa
 | apps/lexware-office | 2 | 0 | 0 |
 | apps/linkedin/linkedin | 2 | 1 | 0 |
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
+| apps/linkupapi | 7 | 20 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
@@ -924,7 +924,7 @@ depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-pa
 | apps/emailoctopus | 3 | list-contacts | new-contact, new-or-updated-contact, new-list | apps/emailoctopus/README.md Triggers section (verified 2026-11-09) | hand | new-contact/new-or-updated-contact poll created_at.gte / last_updated_at.gte following paging.next up to 5 pages (idOf id:last_updated_at); new-list diffs the paginated lists collection; the v2 API publishes no webhooks. |
 | apps/encharge | 1 | segment-people-list | new-segment-person | apps/encharge/README.md Triggers section (verified 2026-11-09) | hand | segment-people-list sort+order=desc on a user-named creation-time person field (sort field name is user-supplied, not documented by the vendor) |
 | apps/erpnext | 2 | list-documents | new-document, new-or-updated-document | apps/erpnext/README.md Triggers section (verified 2026-11-09) | hand | list-documents order_by creation desc / modified desc over a user-chosen DocType |
-| apps/everhour | 2 | client-list | new-client, new-invoice | apps/everhour/README.md Triggers section (verified 2026-11-09) | hand | GET /clients and GET /invoices return the full collection unpaginated (https://developers.everhour.com/pagination.md); shipped as pollSnapshot; webhook (POST /hooks, https://developers.everhour.com/webhooks.md) queued separately |
+| apps/everhour | 10 | project-list | new-client, new-invoice, new-project, new-task, new-section, new-expense, new-user, new-assignment, new-time-record, new-timecard | apps/everhour/README.md Triggers section (verified 2026-11-10) | hand | Bounded snapshot polls over every record list Everhour offers (lists are bare arrays with no order or since filter, https://developers.everhour.com/pagination.md); time records and timecards diff a look-back window of work dates. Webhooks are queued separately. |
 | apps/expensify | 1 | list-policies | new-policy | apps/expensify/README.md Triggers section (verified 2026-11-09) | hand | New Policy diffs the unpaginated get/policyList job (pollSnapshot, added only); export-reports is an export job with no created-since cursor and the Integration Server documents no webhooks. |
 | apps/eztexting | 1 | contact-list | new-contact | apps/eztexting/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1) |
 | apps/fareharbor | 1 | booking-list-by-create-date | new-booking | apps/fareharbor/README.md Triggers section (verified 2026-11-09) | hand | New Booking polls bookings-by-create-date for today and yesterday (UTC) and dedupes by pk; support-configured booking notifications are queued as an upgrade. |
@@ -1031,7 +1031,7 @@ depth: 682 apps, 994 triggers, 3439 unaccounted list actions in 625 apps, n8n-pa
 | apps/linkedin/linkedin-ads | 1 | ad-account-list | new-ad-account | apps/linkedin/linkedin-ads/README.md Triggers section (verified 2026-11-09) | hand | ad-account-list read as a bounded whole-collection snapshot via pageToken (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts) |
 | apps/linkedin/linkedin-conversions | 1 | conversion-rule-list | new-conversion-rule | apps/linkedin/linkedin-conversions/README.md Triggers section (verified 2026-11-09) | hand | conversion-rule-list returns every rule of one Ad Account through start/count with paging.total (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api) |
 | apps/linkup | 6 | tasks-list | new-task, new-research-task, new-extract-task, new-or-updated-task, new-or-updated-research-task, new-or-updated-extract-task | apps/linkup/README.md Triggers section (verified 2026-11-09) | hand | tasks-list, research-list and extract-list document sortBy=createdAt\|updatedAt and sortDirection=desc; task outputs carry updatedAt, so new-or-updated-* de-duplicate on id:updatedAt (https://api.linkup.so/v1/openapi.json) |
-| apps/linkupapi | 1 | job-candidates-list | new-candidate | no | hand | shipped poll trigger(s) over list action job-candidates-list |
+| apps/linkupapi | 7 | account-list | new-candidate, new-connection, new-profile-post, new-account, new-invitation, new-job, new-webhook-event | apps/linkupapi/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (accounts, stored connections, profile posts, candidates), bounded snapshots (received invitations, job postings) and the stored webhook-event stream by event_id cursor. Webhook push is queued separately. |
 | apps/littlegreenlight | 2 | constituent-search | new-constituent, new-or-updated-constituent | apps/littlegreenlight/README.md Triggers section (verified 2026-11-09) | hand | constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key) |
 | apps/livechat | 1 | list-archives | new-chat-thread | apps/livechat/README.md Triggers section (verified 2026-11-09) | hand | list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api) |
 | apps/livestorm | 2 | event-list | new-event, new-or-updated-event | apps/livestorm/README.md Triggers section (verified 2026-11-09) | hand | since-filter poll: filter[created_since]/[updated_since]=cursor-120s over event-list, page[number] 0-indexed, id dedupe |

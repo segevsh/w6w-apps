@@ -1938,12 +1938,37 @@
     "mechanism": "poll",
     "candidates": [
       "new-client",
-      "new-invoice"
+      "new-invoice",
+      "new-project",
+      "new-task",
+      "new-section",
+      "new-expense",
+      "new-user",
+      "new-assignment",
+      "new-time-record",
+      "new-timecard"
     ],
-    "pollAction": "client-list",
-    "reason": "GET /clients and GET /invoices return the full collection unpaginated (https://developers.everhour.com/pagination.md); shipped as pollSnapshot; webhook (POST /hooks, https://developers.everhour.com/webhooks.md) queued separately",
-    "verified": "apps/everhour/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "project-list",
+    "reason": "Bounded snapshot polls over every record list Everhour offers (lists are bare arrays with no order or since filter, https://developers.everhour.com/pagination.md); time records and timecards diff a look-back window of work dates. Webhooks are queued separately.",
+    "verified": "apps/everhour/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "project-task-search": "new-task",
+      "task-search": "new-task",
+      "project-time-list": "new-time-record",
+      "task-time-list": "new-time-record",
+      "user-time-list": "new-time-record",
+      "user-timecard-list": "new-timecard"
+    },
+    "skipped": {
+      "allocation-list": "reference data: per-user time-off quota settings, not an event record (https://developers.everhour.com/api-reference/time-off/get-all-allocations.md)",
+      "expense-category-list": "reference data: expense category definitions (https://developers.everhour.com/api-reference/expenses/get-all-categories.md)",
+      "field-list": "reference data: custom-field definitions of a project (https://developers.everhour.com/api-reference/custom-fields/get-project-fields-configuration.md)",
+      "time-off-type-list": "reference data: time-off type definitions (https://developers.everhour.com/api-reference/time-off/get-time-off-types.md)",
+      "timer-team-list": "live status view of running timers, one entry per active user with no record id or history (https://developers.everhour.com/api-reference/timers/get-all-team-timers.md)",
+      "timesheet-list": "report output: weekly timesheet roll-up grouped by user (https://developers.everhour.com/api-reference/timesheets/get-team-timesheets.md)",
+      "user-timesheet-list": "report output: weekly timesheet roll-up for one user (https://developers.everhour.com/api-reference/timesheets/get-user-timesheets.md)"
+    }
   },
   {
     "path": "apps/exa",
@@ -3728,12 +3753,33 @@
     "path": "apps/linkupapi",
     "mechanism": "poll",
     "candidates": [
-      "new-candidate"
+      "new-candidate",
+      "new-connection",
+      "new-profile-post",
+      "new-account",
+      "new-invitation",
+      "new-job",
+      "new-webhook-event"
     ],
-    "pollAction": "job-candidates-list",
-    "reason": "shipped poll trigger(s) over list action job-candidates-list",
-    "verified": false,
-    "source": "hand"
+    "pollAction": "account-list",
+    "reason": "Newest-first polls (accounts, stored connections, profile posts, candidates), bounded snapshots (received invitations, job postings) and the stored webhook-event stream by event_id cursor. Webhook push is queued separately.",
+    "verified": "apps/linkupapi/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "company-search": "credit-billed search, not a change feed (https://docs.linkupapi.com/api-reference/v2/profiles/search-companies-nav.md)",
+      "inbox-list": "credit-billed list of conversations (1 credit per 10); the stored webhook-event stream (new-webhook-event) carries message events only for a webhook the user already created, so it is not the same records (https://docs.linkupapi.com/api-reference/v2/messages/list-inbox.md)",
+      "invitation-sent-list": "no documented order and unbounded (outreach accounts hold thousands of pending sent invitations), billed per 50 results (https://docs.linkupapi.com/api-reference/v2/network/list-sent.md)",
+      "log-list": "admin/audit API log output, not a record feed (https://docs.linkupapi.com/api-reference/v2/logs/list-logs.md)",
+      "network-recommendations-list": "credit-billed derived suggestions, not stored records (https://docs.linkupapi.com/api-reference/v2/network/recommendations.md)",
+      "people-search": "credit-billed search, not a change feed (https://docs.linkupapi.com/api-reference/v2/profiles/search-people.md)",
+      "post-comments-list": "no documented order, unbounded on a busy post, billed per 10 results (https://docs.linkupapi.com/api-reference/v2/content/get-comments.md)",
+      "post-reactions-list": "no documented order, unbounded on a busy post, billed per 10 results (https://docs.linkupapi.com/api-reference/v2/content/get-reactions.md)",
+      "post-search": "credit-billed search, not a change feed (https://docs.linkupapi.com/api-reference/v2/content/search.md)",
+      "profile-comments-list": "no documented order, unbounded activity history, billed per 10 results (https://docs.linkupapi.com/api-reference/v2/profiles/get-comments.md)",
+      "profile-reactions-list": "no documented order, unbounded activity history, billed per 10 results (https://docs.linkupapi.com/api-reference/v2/profiles/get-reactions.md)",
+      "profile-viewers-list": "Premium analytics output with blurred entries and no stable id, billed per 10 results (https://docs.linkupapi.com/api-reference/v2/profiles/get-viewers.md)",
+      "webhook-list": "reference data: webhook registration configuration (https://docs.linkupapi.com/api-reference/v2/webhooks/list.md)"
+    }
   },
   {
     "path": "apps/littlegreenlight",
