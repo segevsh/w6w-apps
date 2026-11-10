@@ -10,15 +10,41 @@ local businesses) from a workflow, over the Podium API v4 at `api.podium.com/v4`
 - **Actions** — 49: contacts, contact tags and attributes, conversations, messages, locations,
   organizations, users, reviews, feedback, calls, appointments, campaigns, templates, data-feed
   events and webhooks. Each action's description names the OAuth scope it needs.
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-conversation` — New Conversation | poll | `conversation-list` | Newly listed conversations |
+| `new-feedback` — New Feedback | poll | `feedback-list` | Each new feedback survey response (newest first) |
+| `new-review` — New Review | poll | `review-list` | Each new review (newest first) |
+| `new-review-invite` — New Review Invite | poll | `review-invite-list` | Each new review invite (newest first) |
+| `new-or-updated-appointment` — New or Updated Appointment | poll | `appointment-list` (`order=desc`) | Each appointment that is new or changed |
+| `new-or-updated-call` — New or Updated Call | poll | `call-list` (`order=desc`) | Each Podium Phones call that is new or changed |
+| `new-or-updated-campaign` — New or Updated Campaign | poll | `campaign-list` | Each automated campaign that is new or changed |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` (`updated_at` filter) | Each contact that is new or was updated |
+| `new-or-updated-review` — New or Updated Review | poll | `review-list` (`updatedAt[gte]` filter) | Each review that is new or was updated |
+| `new-location` — New Location | poll | `location-list` | Each location added to the organisation |
+| `new-user` — New User | poll | `user-list` | Each user added to a location the token can access |
 
-Source: https://developer.podium.com (verified 2026-11-09).
+Feedback, reviews and review invites rely on the newest-first order the `feedback-list`, `review-list`
+and `review-invite-list` actions document for those endpoints; appointments and calls send `order=desc`
+(ordered by last change, so an edit is a new event, keyed `<uid>:<updatedAt>`). `campaign-list`
+is described as most-recently-updated first and takes no page size, so one default page is read.
+Contacts and updated reviews use the updated-after filter with a rolling cursor, a 120 s overlap, a
+saved page cursor when a window holds more than 5 pages of 100, and a `floor` set at the first check so
+nothing that predates the trigger fires. Locations and users are small whole collections read page by
+page (up to 1000) and diffed by uid; a longer list fails the check instead of diffing a cut-off list.
+
+Not covered, by reason: definitions and configuration, not events — `contact-attribute-list`,
+`contact-tag-list`, `template-list`, `webhook-list`; analytics — `review-summary-list`; a list scoped to
+one conversation, which is not a parent a user would pick — `message-list`. Podium webhooks are managed
+by the `webhook-*` actions; their delivery is not a trigger here.
+
+Source: https://developer.podium.com (verified 2026-11-10). The order and filter claims above come from the
+actions' own documentation of the `/v4` endpoints (docs.podium.com rate-limited this host on 2026-11-10, so
+the reference pages were not re-fetched).
 
 ## Getting credentials
 
