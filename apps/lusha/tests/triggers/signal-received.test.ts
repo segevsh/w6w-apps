@@ -64,7 +64,9 @@ test("fixture body has non-canonical whitespace", () => {
 });
 
 test("app declares the webhook trigger with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["signal-received"]);
+  // More triggers were added later (named-signals.test.ts, new-subscription.test.ts); this one stays first.
+  assertEquals(app.triggers[0].key, "signal-received");
+  assert(app.triggers[0] === trigger);
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(trigger.poll, undefined);

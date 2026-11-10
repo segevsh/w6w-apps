@@ -39,9 +39,50 @@ import contactCreated from "./triggers/contact-created.ts";
 import opportunityCreated from "./triggers/opportunity-created.ts";
 import appointmentCreated from "./triggers/appointment-created.ts";
 import inboundMessage from "./triggers/inbound-message.ts";
+import contactUpdated from "./triggers/contact-updated.ts";
+import contactDeleted from "./triggers/contact-deleted.ts";
+import contactTagUpdated from "./triggers/contact-tag-updated.ts";
+import opportunityUpdated from "./triggers/opportunity-updated.ts";
+import opportunityDeleted from "./triggers/opportunity-deleted.ts";
+import opportunityStageChanged from "./triggers/opportunity-stage-changed.ts";
+import opportunityStatusChanged from "./triggers/opportunity-status-changed.ts";
+import appointmentUpdated from "./triggers/appointment-updated.ts";
+import appointmentDeleted from "./triggers/appointment-deleted.ts";
+import outboundMessage from "./triggers/outbound-message.ts";
+import locationCreated from "./triggers/location-created.ts";
+import locationUpdated from "./triggers/location-updated.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import conversationActive from "./triggers/conversation-active.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
+import newCalendar from "./triggers/new-calendar.ts";
+import newForm from "./triggers/new-form.ts";
 
 export default {
-  triggers: [contactCreated, opportunityCreated, appointmentCreated, inboundMessage],
+  triggers: [
+    contactCreated,
+    opportunityCreated,
+    appointmentCreated,
+    inboundMessage,
+    contactUpdated,
+    contactDeleted,
+    contactTagUpdated,
+    opportunityUpdated,
+    opportunityDeleted,
+    opportunityStageChanged,
+    opportunityStatusChanged,
+    appointmentUpdated,
+    appointmentDeleted,
+    outboundMessage,
+    locationCreated,
+    locationUpdated,
+    anyEvent,
+    newOpportunity,
+    conversationActive,
+    newPipeline,
+    newCalendar,
+    newForm,
+  ],
   auth: [oauth2],
   actions: [
     // contact
