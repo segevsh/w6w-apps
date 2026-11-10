@@ -151,4 +151,6 @@ a raster source.
 | --- | --- | --- | --- |
 | `new-task` — New Task | Poll | `task-list` | Each newly created task |
 
-Polled through the `task-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://open.manus.im/docs/api) (verified 2026-11-09).
+Calls `task-list` with `order=desc` ("Sort direction by creation time … newest first"), `limit=100`, first page. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: task.list](https://open.manus.ai/docs/v2/task.list) (verified 2026-11-10).

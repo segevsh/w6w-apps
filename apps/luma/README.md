@@ -139,6 +139,8 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-calendar-event` — New Calendar Event | Poll | `calendar-events-list` | Each newly created calendar event |
+| `new-calendar-event` — New Calendar Event | Poll | `calendar-events-list` | Each calendar event at the top of the start-time order |
 
-Polled through the `calendar-events-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://docs.lu.ma/reference/list-calendar-events) (verified 2026-11-09).
+Calls `calendar-events-list` with `sortDirection=desc`, `paginationLimit=100`. **Limit:** the vendor's only sort column is `start_at`, so the feed is ordered by event START time, not creation time. A new event that starts earlier than the 100 latest-starting events (for example a past-dated event added later) is not seen. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list calendar events](https://docs.luma.com/reference/get_v1-calendars-events-list) (verified 2026-11-10).

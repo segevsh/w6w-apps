@@ -111,6 +111,8 @@ import keyList from "./actions/key-list.ts";
 import statsGet from "./actions/stats-get.ts";
 import versionGet from "./actions/version-get.ts";
 
+import newTask from "./triggers/new-task.ts";
+
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 
@@ -149,4 +151,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [instance, service],
+  triggers: [newTask],
 } satisfies AppDefinition;

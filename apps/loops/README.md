@@ -187,4 +187,6 @@ the whole body is surfaced because `error` sometimes carries per-field detail.
 | --- | --- | --- | --- |
 | `new-transactional` — New Transactional Email | Poll | `transactional-list` | Each newly created transactional email |
 
-Polled through the `transactional-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://loops.so/docs/api-reference/transactional-emails/list-transactional-emails) (verified 2026-11-09).
+`transactional-list` is documented as returning transactional emails "most recently created first", so the first page (`limit=100`) is the newest feed. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list transactional emails](https://loops.so/docs/api-reference/list-transactional-emails) (verified 2026-11-10).

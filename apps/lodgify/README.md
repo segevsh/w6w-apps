@@ -91,11 +91,4 @@ coherent:
   fields you set are sent.
 - Date inputs are passed through as written; `YYYY-MM-DD` is accepted for the date-time fields.
 
-## Triggers
-
-| Trigger — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-or-updated-booking` — New or Updated Booking | Poll | `booking` | Each new or updated record |
-| `new-booking` — New Booking | Poll | `list-bookings` | Each newly created booking |
-
-Polled through the `list-bookings` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://docs.lodgify.com/docs/bookings) (verified 2026-11-09).
+Triggers: not shipped — `list-bookings` is the only booking feed and has no sort order and no created-since filter, only `updatedSince`, with no documented booking created/updated stamp to tell a new booking from an edited one; the vendor docs return 403 to curl, so the default order could not be verified (https://docs.lodgify.com/reference/list-bookings).

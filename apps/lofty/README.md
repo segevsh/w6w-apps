@@ -8,6 +8,7 @@ pipelines).
 - **Categories** — crm, communication
 - **Auth methods** — api-key
 - **Actions** — 32
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.lofty.com` (the `service` health check adds `status.lofty.com` to
   its own hook allowlist, never to the app's — no action ever reaches it)
@@ -130,4 +131,12 @@ Unit tests mock `HookContext` (`ctx.fetch`, no-op `ctx.log`) via
 [`tests/_helpers.ts`](tests/_helpers.ts) — no network access, no real credential. Run with
 `deno task test` from this directory.
 
-Triggers: not shipped — lead-activity-list rows have no stable activity id for durable polling (https://help.lofty.com/hc/en-us/articles/360039677152-API-documentation).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | Poll | `lead-list` | Each newly created lead |
+
+Calls `lead-list` with `sort=CreateTime&desc=true&limit=100` (first page), id from `leadId`. The vendor reference is a client-rendered page that curl cannot read, so the `CreateTime` sort value rests on the action's own documented sort list. `lead-activity-list` is not used: its rows carry no stable activity id. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API reference](https://api.lofty.com/docs/reference) (verified 2026-11-10).

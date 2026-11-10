@@ -11,7 +11,7 @@ export default pollFromListAction({
     checklistId: (params as { checklistId: number }).checklistId,
     items: 100,
     page: 1,
-    sort: "created_at:desc",
+    sort: "-id",
   }),
   items: (r) => Array.isArray(r) ? r : [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),

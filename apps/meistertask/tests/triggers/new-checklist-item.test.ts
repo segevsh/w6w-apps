@@ -20,7 +20,7 @@ test("new-checklist-item: seeds, emits only new items, retries idempotently, and
   }, {
     method: "GET",
     path: "/api/checklists/1/checklist_items",
-    query: { items: "100", page: "1", sort: "created_at:desc" },
+    query: { items: "100", page: "1", sort: "-id" },
   });
   const first = await trigger.poll!({ ...input, state: seeded.nextState }, ctx(["b", "a"]).ctx);
   const retry = await trigger.poll!({ ...input, state: seeded.nextState }, ctx(["b", "a"]).ctx);

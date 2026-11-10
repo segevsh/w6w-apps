@@ -307,4 +307,6 @@ app's health check needs (`worstHealthState`).
 | --- | --- | --- | --- |
 | `new-checklist-item` — New Checklist Item | Poll | `checklist-item-list` | Each newly created checklist item |
 
-Polled through the `checklist-item-list` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://developers.meistertask.com/reference/get-checklist-items) (verified 2026-11-09).
+Calls `checklist-item-list` for the configured checklist with `sort=-id` (a `-` prefix is descending; without `sort` the vendor lists ascending by id), `items=100`, `page=1`. Item ids grow with creation. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: checklist items](https://developers.meistertask.com/reference/get-checklist-items), [vendor docs: sorting](https://developers.meistertask.com/reference/sorting) (verified 2026-11-10).

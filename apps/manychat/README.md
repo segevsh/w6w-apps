@@ -472,6 +472,8 @@ assuming a 200.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-flow` — New Flow | Poll | `list-flows` | Each newly created flow |
+| `new-flow` — New Flow | Poll | `list-flows` | Each flow newly added to the Page |
 
-Polled through the `list-flows` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.manychat.com/swagger) (verified 2026-11-09).
+Collection shape: `GET /fb/page/getFlows` takes no paging parameters and returns the Page's whole flow set in one response, so the check diffs the full set of flow `ns` keys with the snapshot kit and emits only `added` flows (a rename or removal is not an event). The snapshot is capped at 5000 rows. The vendor reference is a client-rendered page curl cannot read; the single-response shape rests on the action. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API reference](https://api.manychat.com/swagger) (verified 2026-11-10).

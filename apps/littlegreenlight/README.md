@@ -124,7 +124,6 @@ code — asserted directly in
 
 | Key | Type | Endpoint | Notes |
 | --- | --- | --- | --- |
-| `new-or-updated-constituent` — New or Updated Constituent | Poll | `constituent` | Each new or updated record |
 | `constituent-search` | search | `GET /api/v1/constituents/search.json` | required `filters` (`q[]`), `expand`, `sort`, pagination |
 | `constituent-get` | read | `GET /api/v1/constituents/{id}.json` | |
 | `constituent-create` | perform | `POST /api/v1/constituents.json` | `first_name`/`last_name` required per schema |
@@ -187,4 +186,6 @@ deno task validate       # @w6w/validator conformance audit
 | --- | --- | --- | --- |
 | `new-constituent` — New Constituent | Poll | `constituent-search` | Each newly created constituent |
 
-Polled through the `constituent-search` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.littlegreenlight.com/api-docs/) (verified 2026-11-09).
+Both triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:date_updated`, so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor constituents API](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/constituents.json) (verified 2026-11-10).

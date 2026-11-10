@@ -89,4 +89,6 @@ verbatim, 1079 bytes. Format with `deno task fmt`, never bare `deno fmt`.
 | --- | --- | --- | --- |
 | `new-sender-identity` — New Sender Identity | Poll | `list-sender-identities` | Each newly created sender identity |
 
-Polled through the `list-sender-identities` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://developers.mailersend.com/api/v1/sender-identities.html) (verified 2026-11-09).
+Calls `list-sender-identities` with `order_by=created_at&order=desc` (the vendor default is ascending, so the order is set explicitly), first page of 100. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: sender identities](https://developers.mailersend.com/api/v1/email/sender-identity.html) (verified 2026-11-10).

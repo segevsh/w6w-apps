@@ -224,6 +224,8 @@ deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-post` — New Post | Poll | `posts-for-channel` | Each newly created post |
+| `new-post` — New Post | Poll | `posts-for-channel` | Each new post in a channel |
 
-Polled through the `posts-for-channel` action; the first check records what exists without firing, and later checks emit only unseen items. Source: [vendor docs](https://api.mattermost.com/#tag/posts/operation/GetPostsForChannel) (verified 2026-11-09).
+Calls `posts-for-channel` with `since=<stored cursor - 120 s>` (Unix ms): the vendor returns every post modified since then, ordered by create time, up to 1000, with no paging. The records are read through `order` (`order.map(id => posts[id])`), never `Object.values(posts)`, and a post only edited (its `create_at` is before the window) is not a new post. Ids are deduped, the first check records the cursor and emits nothing. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API spec: posts](https://raw.githubusercontent.com/mattermost/mattermost/master/api/v4/source/posts.yaml) (verified 2026-11-10).
