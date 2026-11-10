@@ -1,5 +1,6 @@
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
+import newPerson, { newOrUpdatedPerson } from "./triggers/new-person.ts";
 
 import personGet from "./actions/person-get.ts";
 import personList from "./actions/person-list.ts";
@@ -157,4 +158,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newPerson, newOrUpdatedPerson],
 } satisfies AppDefinition;

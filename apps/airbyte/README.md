@@ -167,3 +167,5 @@ deno task check && deno task test && deno task lint && deno task validate
 The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus two specific to this app: **`sync-trigger` cannot send a reset**,
 and the job actions **never fold `incomplete` into success or failure**.
+
+Triggers: not shipped — List destinations documents pagination but no creation order, update filter, or bounded collection size for a safe poll (https://reference.airbyte.com/reference/listdestinations)

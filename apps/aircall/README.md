@@ -7,6 +7,7 @@ Workspace, and manage the users, teams, numbers, tags and webhooks behind them �
 - **API**: `https://api.aircall.io`, version in the path (`/v1`, `/v2`)
 - **Auth**: HTTP Basic — `api_id` as the username, `api_token` as the password
 - **Actions**: 38 · **Health checks**: `service` · `quota` · 1 derived (`auth:basic`)
+- **Triggers** — 1 (poll)
 
 Every path, verb, query parameter, body field and enum below was verified on **2026-08-11** against
 Aircall's own reference (`developer.aircall.io/api-references/`, which 301s to
@@ -435,3 +436,11 @@ checks, and the client and params libraries. Every hook is exercised against a m
 
 The size, viewBox, colours and the absence of text elements are all asserted by a test, so a redraw
 or a bare `deno fmt` rewriting the asset fails the suite rather than shipping.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-call` — New Call | Poll | `call-list` | Each newly created call |
+
+Polled through `call-list` with `order=desc`. Source: [Aircall API reference](https://developer.aircall.io/api-references/) (verified 2026-11-09).

@@ -11,6 +11,7 @@ update or block chats, emails and tickets.
   form) plus the introduction and get-started guides, fetched 2026-10-06. Aidbase publishes no
   OpenAPI document and no `llms.txt` (both 404). No deprecated endpoints are documented; the
   API is labelled beta.
+- **Triggers** — 1 (poll)
 
 ## Actions (43)
 
@@ -80,3 +81,11 @@ false and `trained_at` is set, then Add Knowledge to a chatbot / inbox / form.
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-ticket` — New Ticket | Poll | `ticket-list` | Each newly created ticket |
+
+Polled through `ticket-list` with the documented `created_after` filter and a two-minute overlap. Source: [Aidbase Ticket Form API reference](https://docs.aidbase.ai/apis/ticket-form-api/reference/) (verified 2026-11-09).

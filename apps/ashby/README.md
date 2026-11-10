@@ -12,6 +12,7 @@ stages, read interviews, feedback and offers, and sync all of it incrementally.
 - **API docs** — https://developers.ashbyhq.com/reference/introduction ·
   per-endpoint OpenAPI at `developers.ashbyhq.com/reference/<endpoint>.md`,
   index at `developers.ashbyhq.com/llms.txt`
+- **Triggers** — 1 (poll)
 
 Every endpoint this app calls was checked against those documents on
 2026-08-18.
@@ -281,3 +282,11 @@ A refusal reads as `Ashby refused <endpoint>: <message> (<code>) [requestId …]
 Transport failures keep their own meaning: `401` means no key arrived, and `403`
 means the key is deactivated or lacks that endpoint's module permission, which
 is granted in the Ashby app rather than here.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | Poll | `candidate-list` | Each candidate created since the prior check |
+
+`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check requests at most 100 candidates; a busier interval is retried with the overlap window. Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-09).

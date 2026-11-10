@@ -9,6 +9,7 @@ Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks.
 - **Website** — https://www.atlassian.com/software/confluence
 - **API docs** — https://developer.atlassian.com/cloud/confluence/rest/v2/ ·
   schema: https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json
+- **Triggers** — 2 (poll)
 
 ## Setup
 
@@ -260,3 +261,12 @@ Cloud REST API v2 OpenAPI document (151 paths), the v1 document alongside it,
 and a live probe of `confluence.status.atlassian.com`. The connection model and
 health checks follow this pack's `jira` app. Status surfaces move; re-check if
 a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-page` — New Page | Poll | `page-list` | Each newly created page |
+| `new-or-updated-page` — New or Updated Page | Poll | `page-list` | Each newly created or modified page |
+
+Polled through `page-list` with `sort=-created-date` and `sort=-modified-date`. Source: [Confluence OpenAPI](https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json) (verified 2026-11-09).

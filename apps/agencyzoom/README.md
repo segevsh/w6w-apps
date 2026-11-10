@@ -10,14 +10,13 @@ management CRM, over its **API v1**.
 - **Egress allowlist** — `api.agencyzoom.com`
 - **Website** — https://agencyzoom.com/
 - **OpenAPI** — https://app.agencyzoom.com/openapi/agencyzoom.yaml
+- **Triggers** — 1 (poll)
 
 > **Everything below was verified against AgencyZoom's own sources on 2026-09-05** — its
 > machine-readable OpenAPI 3.0 document
 > ([`app.agencyzoom.com/openapi/agencyzoom.yaml`](https://app.agencyzoom.com/openapi/agencyzoom.yaml),
 > 316,160 bytes, `info.version` `1.0.0`) plus live probes against `api.agencyzoom.com`. Nothing here
 > came from a third-party integration directory.
-
-Triggers: not shipped — lead-list has no creation-time sort (only name, last stage change, last activity), so a lead that merely moves stage would re-emit as new (https://app.agencyzoom.com/openapi/agencyzoom.yaml)
 
 ## The things most likely to cost someone a day
 
@@ -171,3 +170,11 @@ are hard to add later; they just aren't here yet:
   not implement alongside the plain username/password exchange.
 - **Task batch-delete, reopen** (`/tasks/batch-delete`, `/tasks/{taskId}/reopened`) and
   **dashboard/analytics data** (`/dashboard-data/sales-data`).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | Poll | `lead-list` | Each lead created since the prior check |
+
+`lead-list` filters on its documented `startDate` lead-creation-date range and fetches all matching pages before id deduplication. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-09).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ahrefs",
-  "version": "0.1.0",
-  "description": "Query Ahrefs SEO data — domain rating, backlinks, referring domains, organic keywords, top pages, keyword research, SERP overview, Rank Tracker and Site Audit — and check API unit usage.",
+  "version": "0.2.0",
+  "description": "Query Ahrefs SEO data, including backlinks, keywords, Site Audit and project collection changes, and check API unit usage.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.ahrefs.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
