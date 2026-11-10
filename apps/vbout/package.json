@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vbout",
-  "version": "0.2.0",
-  "description": "VBOUT marketing automation: contact lists, contacts, tags, email campaigns, social channels and goals. A poll trigger starts a workflow on each new contact list.",
+  "version": "0.3.0",
+  "description": "VBOUT marketing automation: contact lists, contacts, tags, email campaigns, social channels and goals. Poll triggers start a workflow on each new contact list, contact, audience, email campaign, email template, goal or connected social channel.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://api.vbout.com/1"
     ],
-    "longDescription": "VBOUT is an all-in-one digital marketing platform: email marketing, marketing automation, social media publishing, landing pages and a CRM-style contact timeline. This app drives its REST API from a workflow, centred on the email-marketing surface.\n\nManage contact lists, create, update, sync, move and delete contacts (with list custom fields), tag contacts, record custom timeline activities and read a contact's timeline. Read email campaigns and their open, bounce, unsubscribe and click statistics, audiences and email templates, plus connected social channels, social link statistics and conversion goals.\n\nAuthentication is a single VBOUT API key, sent as the key query parameter by the host so a workflow never handles it. Health checks cover API reachability and credential validity; VBOUT publishes no status page and no usage endpoint, and both are declared as such. A poll trigger starts a workflow on each new contact list.",
+    "longDescription": "VBOUT is an all-in-one digital marketing platform: email marketing, marketing automation, social media publishing, landing pages and a CRM-style contact timeline. This app drives its REST API from a workflow, centred on the email-marketing surface.\n\nManage contact lists, create, update, sync, move and delete contacts (with list custom fields), tag contacts, record custom timeline activities and read a contact's timeline. Read email campaigns and their open, bounce, unsubscribe and click statistics, audiences and email templates, plus connected social channels, social link statistics and conversion goals.\n\nAuthentication is a single VBOUT API key, sent as the key query parameter by the host so a workflow never handles it. Health checks cover API reachability and credential validity; VBOUT publishes no status page and no usage endpoint, and both are declared as such. Poll triggers start a workflow on each new contact list, contact, audience, email campaign, email template, goal or connected social channel.",
     "categories": [
       "marketing",
       "email"
