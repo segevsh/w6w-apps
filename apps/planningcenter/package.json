@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/planningcenter",
-  "version": "0.1.0",
-  "description": "Manage People, Giving, Calendar and Check-Ins records in Planning Center, the church/ministry management suite.",
+  "version": "0.2.0",
+  "description": "Manage People, Giving, Calendar and Check-Ins records in Planning Center, the church/ministry management suite. Includes a poll trigger for newly created event instance.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "api.planningcenteronline.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

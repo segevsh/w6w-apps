@@ -14,6 +14,8 @@ embedding and reranking models.
   schemas: [`pinecone-io/pinecone-api`](https://github.com/pinecone-io/pinecone-api)
   (`2026-04/db_control`, `db_data`, `inference`, fetched 2026-08-18)
 
+Triggers: not shipped — record-list enumerates prefix-scoped ids in lexicographic pagination, not a newest-created record feed (https://docs.pinecone.io/reference/api/latest/data-plane/list-records)
+
 ## Setup
 
 ### API Key

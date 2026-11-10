@@ -6,6 +6,7 @@ account/ad-account info via the Pinterest REST API v5.
 - **Categories** — social-media, marketing
 - **Auth methods** — oauth2
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Health checks** — service, quota (2, plus 1 derived `auth:oauth2`)
 - **Egress allowlist** — `api.pinterest.com`
 - **Website** — https://www.pinterest.com
@@ -130,3 +131,12 @@ Every Pinterest v5 error answers `{"code": <int>, "message": "...", "status": "f
 (the `status` field was observed live in addition to the two the OpenAPI description states).
 `code` has no published table, so this app's error messages lead with the HTTP status and
 Pinterest's own `message` text rather than trying to interpret `code`.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-pin` — New Pin | Poll | `pin-list` | Each newly created record |
+
+This poll wraps the existing `pin-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.pinterest.com/docs/api/v5/) (verified 2026-11-09).

@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newSubmittal from "./triggers/new-submittal.ts";
 import oauth2 from "./auth/oauth2.ts";
 import oauth2Sandbox from "./auth/oauth2-sandbox.ts";
 import meGet from "./actions/me-get.ts";
@@ -50,4 +51,5 @@ export default {
   ],
   auth: [oauth2, oauth2Sandbox],
   healthChecks: [service, api, quota],
+  triggers: [newSubmittal],
 } satisfies AppDefinition;

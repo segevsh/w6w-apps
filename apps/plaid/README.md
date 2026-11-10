@@ -9,9 +9,18 @@ liabilities — and manage the Items that connect them.
 - **Egress allowlist** — `sandbox.plaid.com`, `production.plaid.com`
 - **Website** — https://plaid.com
 - **API docs** — https://plaid.com/docs/api
+- **Triggers** — 1 (poll)
 
 Paths come from Plaid's reference; the hosts, credential placement and error
 taxonomy were verified live on 2026-08-18.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-institution` — New Institution | Poll | `institution-list` | Each newly added supported institution |
+
+The bounded institution catalog is snapshotted through `institution-list`; initial polling seeds without events and later polls emit added institutions only. Source: [Plaid Institutions API docs](https://plaid.com/docs/api/products/auth/) (verified 2026-11-09).
 
 ## Everything is a POST, and the credential goes in the body
 

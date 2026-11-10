@@ -419,3 +419,12 @@ deno task lint
 deno task fmt
 deno task test       # 221 unit tests, mocked HookContext, no network
 ```
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-note` — New Note | Poll | `note-list` | Each newly created record |
+
+This poll wraps the existing `note-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.productboard.com/v2/openapi) (verified 2026-11-09).

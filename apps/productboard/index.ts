@@ -49,6 +49,7 @@
  * is an array of `{eventType}` objects (not of strings).
  */
 import type { AppDefinition } from "@w6w/types";
+import newNote from "./triggers/new-note.ts";
 import apiToken from "./auth/api-token.ts";
 
 // Entities — the unified product-hierarchy surface
@@ -163,4 +164,5 @@ export default {
   // the write scope). See `auth/api-token.ts` for the measurement.
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newNote],
 } satisfies AppDefinition;

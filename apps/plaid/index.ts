@@ -77,6 +77,7 @@
  *     concern, and belongs to whatever serves the endpoint.
  */
 import type { AppDefinition } from "@w6w/types";
+import newInstitution from "./triggers/new-institution.ts";
 import clientSecret from "./auth/client-secret.ts";
 import clientSecretSandbox from "./auth/client-secret-sandbox.ts";
 
@@ -123,4 +124,5 @@ export default {
   ],
   auth: [clientSecret, clientSecretSandbox],
   healthChecks: [service, credentials],
+  triggers: [newInstitution],
 } satisfies AppDefinition;

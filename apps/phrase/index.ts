@@ -25,6 +25,7 @@
  *     "Phrase Strings" `API` component decides the verdict.
  */
 import type { AppDefinition } from "@w6w/types";
+import newJob from "./triggers/new-job.ts";
 import accessToken from "./auth/access-token.ts";
 
 import userGet from "./actions/user-get.ts";
@@ -100,4 +101,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, quota],
+  triggers: [newJob],
 } satisfies AppDefinition;

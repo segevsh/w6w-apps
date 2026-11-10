@@ -10,6 +10,8 @@ standalone web search, and text embeddings via the Perplexity API.
 - **Website** — https://www.perplexity.ai
 - **API docs** — https://docs.perplexity.ai
 
+Triggers: not shipped — web-search is an ad-hoc ranked search, not a persistent record feed (https://docs.perplexity.ai/docs/search/overview)
+
 ## Read this before building anything else on Sonar
 
 Perplexity's platform, as of 2026-08-16, is organized into several distinct products that

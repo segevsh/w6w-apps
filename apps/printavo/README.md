@@ -6,6 +6,7 @@ tasks, inquiries and payments, over Printavo's GraphQL API v2.
 - **Categories** — crm, finance, commerce
 - **Auth methods** — `credentials` (`custom`: Printavo email + API token, sent as the `email` and `token` headers)
 - **Actions** — 38
+- **Triggers** — 1 (poll)
 - **Health checks** — ~~`service`~~, ~~`quota`~~ (both declared unavailable, informational) + the derived `auth:credentials`
 - **Egress allowlist** — `www.printavo.com`
 - **API docs** — https://www.printavo.com/docs/api/v2 (GraphQL reference; every field, argument and
@@ -70,3 +71,12 @@ Printavo publishes no status page: `status.printavo.com` answers a hosting provi
 "Unknown Domain" 404 and the Statuspage/Better Stack/Atom paths all 404, so `service` is a declared
 absence. `quota` is a declared absence too (limit documented, no headroom signal). Credential
 liveness is the derived `auth:credentials` check.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | Poll | `task-list` | Each newly created record |
+
+This poll wraps the existing `task-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://www.printavo.com/docs/api/v2) (verified 2026-11-09).

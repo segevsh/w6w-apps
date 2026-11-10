@@ -8,6 +8,7 @@ REST APIs.
   `/calendar/v2`, `/giving/v2`, `/check-ins/v2`, `/current/v2`)
 - **Auth**: Personal Access Token — HTTP Basic, `client_id` as the username, `secret` as the password
 - **Actions**: 6 · **Health checks**: `service` · `quota` · 1 derived (`auth:personal-access-token`)
+- **Triggers** — 1 (poll)
 
 Everything below was verified on **2026-09-05** against Planning Center's own machine-readable
 OpenAPI documents — fetched live from `https://api.planningcenteronline.com/{product}/v2/open_api/{version}`
@@ -126,3 +127,12 @@ logs and previews, so this action does not surface that trio by default — see 
 - **`auth:personal-access-token`** (derived) — `GET /current/v2/me`, chosen because the guide states it
   explicitly works "without requiring any scopes and without imposing any access or permission rules"
   beyond being a valid credential — the narrowest possible probe across every product this app touches.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event-instance` — New Event Instance | Poll | `list-event-instances` | Each newly created record |
+
+This poll wraps the existing `list-event-instances` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.planning.center/docs/) (verified 2026-11-09).

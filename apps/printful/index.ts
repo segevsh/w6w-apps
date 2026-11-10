@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newOrder from "./triggers/new-order.ts";
 import catalogProductGet from "./actions/catalog-product-get.ts";
 import catalogProductList from "./actions/catalog-product-list.ts";
 import catalogSizeGuideGet from "./actions/catalog-size-guide-get.ts";
@@ -68,6 +69,7 @@ const app: AppDefinition = {
   ],
   auth: [accessToken],
   healthChecks: [service, api, quota],
+  triggers: [newOrder],
 };
 
 export default app;

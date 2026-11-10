@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/plaid",
-  "version": "0.1.0",
-  "description": "Read bank data through Plaid — accounts, balances, transactions, identity and liabilities — and manage the Items that connect them.",
+  "version": "0.2.0",
+  "description": "Read bank data through Plaid — accounts, balances, transactions, identity and liabilities — manage the Items that connect them, and trigger on new institutions.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,10 @@
         "production.plaid.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

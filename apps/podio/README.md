@@ -401,3 +401,12 @@ deno task lint
 deno task fmt
 deno task test
 ```
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | Poll | `task-list` | Each newly created record |
+
+This poll wraps the existing `task-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.podio.com/doc) (verified 2026-11-09).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/phrase",
-  "version": "0.1.0",
-  "description": "Manage Phrase Strings localization projects: locales, keys, translations, file uploads and downloads, and jobs.",
+  "version": "0.2.0",
+  "description": "Manage Phrase Strings localization projects: locales, keys, translations, file uploads and downloads, and jobs. Includes a poll trigger for newly created job.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "api.us.app.phrase.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

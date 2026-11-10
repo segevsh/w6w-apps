@@ -7,6 +7,7 @@ Personnel Data API.
 - **Auth method** — `client-credentials` (Personio's own naming; the wire format is a
   custom REST call, not standard OAuth2 — see below)
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (Statuspage, "Public API" component) + ~~`quota`~~
   (declared absence) + 1 derived (`auth:client-credentials`)
 - **Egress allowlist** — `api.personio.de` (the `service` check adds
@@ -195,3 +196,12 @@ route it through the configured flow instead.
   which returns a binary image, not JSON) — real and documented; left out of
   this pass. `list-absence-periods` already covers the read side of hourly
   absences.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-employee` — New Employee | Poll | `list-employees` | Each newly created record |
+
+This poll wraps the existing `list-employees` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developer.personio.de/reference/introduction) (verified 2026-11-09).

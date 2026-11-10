@@ -68,3 +68,13 @@ prevCursor, perPage}`; feed `nextCursor` back as `cursor`.
 ```
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-template` — New Template | Poll | `template-list` | Each newly created record |
+| `new-or-updated-template` — New or Updated Template | Poll | `template-list` | Each newly created or updated template |
+
+This poll wraps the existing `template-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://placid.app/docs) (verified 2026-11-09).

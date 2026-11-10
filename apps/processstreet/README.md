@@ -6,6 +6,7 @@ Start and manage **Process Street** Workflow Runs (the vendor's UI still calls t
 - **Categories** — productivity, project-management
 - **Auth methods** — api-key
 - **Actions** — 15
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `public-api.process.st`
 - **Website** — https://www.process.st/
@@ -176,3 +177,12 @@ deno task fmt          # never bare `deno fmt` — see repo root CLAUDE.md
 deno task validate     # manifest against spec rules
 deno task test         # unit tests
 ```
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-workflow-run` — New Workflow Run | Poll | `workflow-run-list` | Each newly created record |
+
+This poll wraps the existing `workflow-run-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://public-api.process.st/api/v1.1/docs/index.html) (verified 2026-11-09).

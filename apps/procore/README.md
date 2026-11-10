@@ -6,6 +6,7 @@ observations, punch items and project documents.
 - **Categories** — project-management, documents
 - **Auth methods** — oauth2 (production), oauth2-sandbox
 - **Actions** — 20
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.procore.com`, `sandbox.procore.com` (OAuth hosts `login.procore.com` /
   `login-sandbox.procore.com` are allowed implicitly by the runtime)
 - **Website** — https://www.procore.com
@@ -107,3 +108,12 @@ webhooks (`hooks`), and project/company configuration (custom fields, locations,
 - **Short-lived tokens.** Procore access tokens expire quickly; refresh uses the same
   `/oauth/token` endpoint (`grant_type=refresh_token`).
 - **No OAuth scopes.** A token can do whatever the signed-in user's Procore permissions allow.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-submittal` — New Submittal | Poll | `submittal-list` | Each newly created record |
+
+This poll wraps the existing `submittal-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.procore.com/reference/rest/docs/rest-api-overview) (verified 2026-11-09).

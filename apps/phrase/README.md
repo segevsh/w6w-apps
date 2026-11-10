@@ -121,3 +121,12 @@ spaces and teams, members and invitations, comments, custom metadata, variables,
 scores, machine-translation settings, collection-wide key/translation operations, the async
 `locale_download` export, and upload batches. These are left out to keep the surface focused,
 not because they are unavailable.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job` — New Job | Poll | `job-list` | Each newly created record |
+
+This poll wraps the existing `job-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.phrase.com/en/api/strings/introduction) (verified 2026-11-09).
