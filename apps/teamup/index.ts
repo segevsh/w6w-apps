@@ -77,6 +77,8 @@ import courseSessionsList from "./actions/course-sessions-list.ts";
 import providersList from "./actions/providers-list.ts";
 import offeringTypesList from "./actions/offering-types-list.ts";
 
+import newInvoice from "./triggers/new-invoice.ts";
+
 const app: AppDefinition = {
   actions: [
     // customers
@@ -118,6 +120,7 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [host, quota],
+  triggers: [newInvoice],
 };
 
 export default app;

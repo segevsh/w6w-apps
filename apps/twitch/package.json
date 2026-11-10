@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/twitch",
-  "version": "0.1.2",
-  "description": "Read Twitch channels, streams, videos, clips, chat metadata and schedules over the Helix API, and update a broadcaster's own channel.",
+  "version": "0.2.0",
+  "description": "Read Twitch channels, streams, videos, clips, chat metadata and schedules over the Helix API, and update a broadcaster's own channel. Poll trigger: new followers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.twitch",
     "displayName": "Twitch",
     "apiDocs": [
@@ -19,7 +20,7 @@
       "https://dev.twitch.tv/docs/authentication/",
       "https://dev.twitch.tv/docs/api/guide/"
     ],
-    "longDescription": "Twitch is a live-streaming platform, and this app reads channel, stream, video, clip, chat and schedule data over Twitch's Helix API, plus lets a broadcaster update their own channel.\n\nIt covers channel information (read and update), live stream and followed-stream lookups, video and clip listings including creating a new clip, category and channel search, chat settings, emotes, badges and cheermotes, and team and moderator lookups. A stream marker action lets a workflow flag a moment during a live broadcast for later reference.\n\nGood for posting a notification when a channel goes live, pulling recent clips or videos into a highlights feed, keeping channel title and category current from a content calendar, and building a dashboard of chat and moderation metadata without touching Twitch's own creator tools.",
+    "longDescription": "Twitch is a live-streaming platform, and this app reads channel, stream, video, clip, chat and schedule data over Twitch's Helix API, plus lets a broadcaster update their own channel.\n\nIt covers channel information (read and update), live stream and followed-stream lookups, video and clip listings including creating a new clip, category and channel search, chat settings, emotes, badges and cheermotes, and team and moderator lookups. A stream marker action lets a workflow flag a moment during a live broadcast for later reference.\n\nGood for posting a notification when a channel goes live, pulling recent clips or videos into a highlights feed, keeping channel title and category current from a content calendar, and building a dashboard of chat and moderation metadata without touching Twitch's own creator tools. Poll trigger: new followers.",
     "categories": [
       "video",
       "social-media",

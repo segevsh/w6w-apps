@@ -6,6 +6,7 @@ Send and schedule text messages, and manage contacts, lists, templates and two-w
 - **Categories** — communication, marketing
 - **Auth methods** — basic
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + ~~`request-rate`~~ + the derived `auth:basic`
 - **Egress allowlist** — `rest.textmagic.com` (the `service` check adds `status.textmagic.com` to
   its own hook allowlist, never to the app's)
@@ -130,3 +131,11 @@ deno task lint         # deno lint
 deno task test          # unit tests
 deno task fmt            # format (use this, never bare `deno fmt` — see CLAUDE.md)
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled newest-first through the `contact-list` action (`orderBy=id&direction=desc`); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [TextMagic API](https://docs.textmagic.com/) (verified 2026-11-09).

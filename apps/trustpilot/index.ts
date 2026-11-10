@@ -62,6 +62,7 @@ import invitationSendEmail from "./actions/invitation-send-email.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newReview from "./triggers/new-review.ts";
 
 export default {
   actions: [
@@ -84,4 +85,5 @@ export default {
   // for Business Units / Product Reviews actions and `client-credentials` for Invitations.
   auth: [apiKey, clientCredentials],
   healthChecks: [service, quota],
+  triggers: [newReview],
 } satisfies AppDefinition;

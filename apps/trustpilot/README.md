@@ -6,6 +6,7 @@ lists, and send review invitations, on Trustpilot's own API.
 - **Categories** — marketing, support, commerce
 - **Auth methods** — `api-key` (public endpoints), `client-credentials` (private endpoints)
 - **Actions** — 11
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (Statuspage) + ~~`quota`~~ (declared absence) + 2 derived
   (`auth:api-key`, `auth:client-credentials`)
 - **Egress allowlist** — `api.trustpilot.com`, `invitations-api.trustpilot.com` (the `service`
@@ -240,3 +241,11 @@ deno task lint
 deno task fmt         # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-review` — New Review | Poll | `business-unit-reviews-list` | Each new review of the Business Unit you choose |
+
+Polled newest-first through the `business-unit-reviews-list` action (`orderBy=createdat.desc`, for the Business Unit you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Trustpilot Business Units API](https://developers.trustpilot.com/) (verified 2026-11-09).
