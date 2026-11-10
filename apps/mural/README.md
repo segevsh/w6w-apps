@@ -58,8 +58,9 @@ comment, area, arrow, file, image and shape; assets.
 | Key — title | Mechanism | Wraps | The run gets |
 | --- | --- | --- | --- |
 | `new-mural` — New Mural | poll | `mural-list` | each newly created mural in the chosen workspace (`sortBy=lastCreated`, most recent first) |
+| `new-or-updated-mural` — New or Updated Mural | poll | `mural-list` | each mural created or changed (`sortBy=lastModified`, most recently modified first; the dedupe id includes `updatedOn`) |
 
-Setup: set the **Workspace ID** trigger parameter. Each check lists the 99 newest murals and emits those not seen before; the first check only records what exists.
+Setup: set the **Workspace ID** trigger parameter. Each check lists the 99 newest murals and emits those not seen before (the updated trigger re-emits a mural whose `updatedOn` changed); the first check only records what exists.
 
 Trust model: Poll only: nothing is registered with Mural and no inbound URL exists. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
 

@@ -46,14 +46,22 @@ const sample = {
   updated_at: "2026-11-09T10:00:05.000Z",
 };
 
+/** A card with no parseable `created_at` is kept: its age cannot be told. */
+function createdRecently(c: DocumentCard, cursor: number): boolean {
+  const created = Date.parse(c.created_at ?? "");
+  return Number.isNaN(created) || created / 1000 >= cursor - OVERLAP_SECONDS;
+}
+
 /**
  * One check: list documents updated since `cursor − OVERLAP_SECONDS` (the SAME `list-documents`
- * request, `q[updated_since]`), dedupe by `idOf`. The first check only records the cursor and ids.
+ * request, `q[updated_since]`), dedupe by `idOf`
+ * (`onlyCreatedSince` also drops cards created before that window). The first check only records the cursor and ids.
  */
 async function check(
   state: unknown,
   ctx: HookContext,
   idOf: (c: DocumentCard) => string,
+  onlyCreatedSince = false,
 ) {
   const checkedAt = Math.floor(clock.now() / 1000);
   const prior = state as { cursor?: unknown } | null;
@@ -75,7 +83,9 @@ async function check(
       };
       const more = (res.meta?.current_page ?? page) < (res.meta?.total_pages ?? 0);
       return {
-        items: res.document_cards ?? [],
+        items: (res.document_cards ?? []).filter((c) =>
+          !onlyCreatedSince || createdRecently(c, cursor)
+        ),
         nextPageToken: more ? String(page + 1) : undefined,
       };
     },
@@ -86,11 +96,12 @@ async function check(
 export const newDocumentTrigger: TriggerDefinition = {
   key: "new-document",
   title: "New Document",
-  description: "The run gets each document PDFMonkey newly lists as created.",
+  description:
+    "The run gets each document PDFMonkey newly lists as created (older documents that are merely edited are ignored).",
   minIntervalMs: 300_000,
   output,
   sample,
-  poll: ({ state }, ctx) => check(state, ctx, (c) => String(c.id ?? "")),
+  poll: ({ state }, ctx) => check(state, ctx, (c) => String(c.id ?? ""), true),
 };
 
 export const newOrUpdatedDocumentTrigger: TriggerDefinition = {

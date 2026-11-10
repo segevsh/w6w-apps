@@ -67,3 +67,28 @@ test("new-or-updated-document: a changed document is a new event; same updated_s
   assertEquals(first.events, [card("a", "2026-11-09T12:01:00.000Z")]);
   assertEquals(retry, first);
 });
+
+test("new-document: an old document with a fresh updated_at is not emitted; a new one is", async () => {
+  at(1794225600);
+  const seeded = await newDocument.poll!({ ...input, state: {} }, ctx([card("a")]).ctx);
+
+  at(1794225900); // window starts 1794225780 = 2026-11-09T12:03:00Z
+  const old = {
+    ...card("old", "2026-11-09T12:04:00.000Z"),
+    created_at: "2026-11-01T10:00:00.000Z",
+  };
+  const fresh = {
+    ...card("fresh", "2026-11-09T12:04:30.000Z"),
+    created_at: "2026-11-09T12:04:00.000Z",
+  };
+  const first = await newDocument.poll!(
+    { ...input, state: seeded.nextState },
+    ctx([fresh, old]).ctx,
+  );
+  assertEquals(first.events, [fresh]);
+  const updated = await newOrUpdated.poll!(
+    { ...input, state: seeded.nextState },
+    ctx([fresh, old]).ctx,
+  );
+  assertEquals(updated.events, [old, fresh]);
+});

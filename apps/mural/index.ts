@@ -51,6 +51,7 @@ import tagCreate from "./actions/tag-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMural from "./triggers/new-mural.ts";
+import newOrUpdatedMural from "./triggers/new-or-updated-mural.ts";
 
 export default {
   actions: [
@@ -87,5 +88,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newMural],
+  triggers: [newMural, newOrUpdatedMural],
 } satisfies AppDefinition;
