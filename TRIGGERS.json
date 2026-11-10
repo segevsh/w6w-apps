@@ -4627,48 +4627,60 @@
   },
   {
     "path": "apps/ontraport",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact",
+      "new-purchase",
+      "new-or-updated-order"
+    ],
+    "pollAction": "contact-list",
+    "reason": "contact-list sorts by date (Date Added) / dlm (Date Modified) with sortDir=desc (api.ontraport.com/doc/); purchase-list sorts by date, order-list by dlm; task-list not wrapped (sort on date_assigned not documented as accepted); Subscribe-to-a-webhook API recorded in webhooks file.",
+    "verified": "apps/ontraport/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/openai",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-file",
+      "new-model"
+    ],
+    "pollAction": "files-list",
+    "reason": "files-list gained additive limit/order inputs; /files documents order=created_at default desc (listFiles in openai-openapi); list-models snapshot (one unpaginated request) emits added models only.",
+    "verified": "apps/openai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/openrouter",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-models is offset-paged (limit up to 1000) with no total, so one request cannot be shown to hold the whole catalog for a snapshot; the other actions are inference, usage or single-resource lookups with no record feed; no webhook offering found in the API reference.",
+    "verified": "apps/openrouter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/opusclip",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "project.created"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: project-creation notifications (X-Opus-Signature HMAC-SHA256); clip-list needs a project/collection and has no order or since filter, collection-list and brand-template-list expose no size bound for a snapshot.",
+    "verified": "apps/opusclip/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/otter",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation"
+    ],
+    "pollAction": "conversation-list",
+    "reason": "conversation-list is documented most recent first (limit 1-20 per the same article); stable conversation ids; request uses limit=20.",
+    "verified": "apps/otter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/outreach",
@@ -4684,12 +4696,18 @@
   },
   {
     "path": "apps/outseta",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-account",
+      "new-person",
+      "new-deal",
+      "new-case",
+      "new-invoice"
+    ],
+    "pollAction": "list-accounts",
+    "reason": "list endpoints take orderBy=PropertyName+DESC and Created__gt (docs.outseta.com/api-reference/overview); triggers sort by Created DESC on accounts, people, deals, cases and invoices; Activity Notifications webhooks recorded in webhooks file.",
+    "verified": "apps/outseta/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/paddle",
@@ -4727,12 +4745,15 @@
   },
   {
     "path": "apps/paperform",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-submission",
+      "new-form"
+    ],
+    "pollAction": "list-form-submissions",
+    "reason": "list-form-submissions and list-forms are documented sorted by created_at, default DESC; form webhook recorded in webhooks file.",
+    "verified": "apps/paperform/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pardot",
@@ -4770,21 +4791,29 @@
   },
   {
     "path": "apps/patreon",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "members:pledge:create",
+      "posts:publish"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: member and post events (HMAC-MD5 X-Patreon-Signature); members/posts feeds document no order or filter and list-campaigns returns the creator's one or few campaigns.",
+    "verified": "apps/patreon/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/payhip",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "paid",
+      "refunded",
+      "subscription.created",
+      "subscription.deleted"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: paid, refunded, subscription.created and subscription.deleted (help.payhip.com/article/115-webhooks); the Public API only verifies and manages a supplied license key, so no list action exists.",
+    "verified": "apps/payhip/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/paypal",
@@ -4804,21 +4833,25 @@
   },
   {
     "path": "apps/paystack",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-transaction",
+      "new-customer",
+      "new-refund"
+    ],
+    "pollAction": "transaction-list",
+    "reason": "transaction-list, customer-list and refund-list take documented from/to date filters (since-filter shape, dedupe by id); charge.success webhook upgrade queued.",
+    "verified": "apps/paystack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pdfco",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "stateless conversion/job API: no list action returns account records; the only event offering is a per-request async-job callback URL (recorded in webhooks file), not a subscription.",
+    "verified": "apps/pdfco/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pdfmonkey",
@@ -4834,12 +4867,14 @@
   },
   {
     "path": "apps/pendo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-guide"
+    ],
+    "pollAction": "list-guides",
+    "reason": "GET /api/v1/guide returns the whole hand-authored guide list in one response (snapshot, additions only); list-features/list-pages not wrapped (auto-discovered, no documented cap, can pass the 5000-row snapshot limit); no webhook offering found on developers.pendo.io.",
+    "verified": "apps/pendo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pennylane",
@@ -4857,9 +4892,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "search/enrichment endpoints query PDL's external dataset, not an account-owned record feed; PDL webhooks (person data updates) are enterprise-only and registered through PDL staff (recorded in webhooks file).",
+    "verified": "apps/peopledatalabs/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/perplexity",
@@ -4897,12 +4932,14 @@
   },
   {
     "path": "apps/phantombuster",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-agent"
+    ],
+    "pollAction": "agent-list",
+    "reason": "agents/fetch-all returns all agents in one response (snapshot, additions only); container-list only has beforeEndedAt so no run feed; per-agent end-of-run webhook recorded in webhooks file.",
+    "verified": "apps/phantombuster/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/phrase",
@@ -4952,12 +4989,14 @@
   },
   {
     "path": "apps/pipefy",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-pipe"
+    ],
+    "pollAction": "pipe-list",
+    "reason": "pipe-list reads one organization's pipes in a single GraphQL query (snapshot, additions only); card-list filters by title only so cards stay a webhook candidate (recorded in webhooks file); organization-list/table-list not wrapped.",
+    "verified": "apps/pipefy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/placid",
@@ -4999,18 +5038,21 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "transcription-get and device-binding-get need a supplied resource id; docs.plaud.ai/llms.txt lists no list endpoint and no webhook offering.",
+    "verified": "apps/plaud/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/plivo",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-message",
+      "new-call"
+    ],
+    "pollAction": "list-messages",
+    "reason": "list-messages (message_time__gt) and list-calls (end_time__gte) take documented time filters (since-filter shape, dedupe by uuid); signed message/call callbacks recorded in webhooks file.",
+    "verified": "apps/plivo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/podio",
