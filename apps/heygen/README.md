@@ -6,7 +6,7 @@ avatars, voices, assets and templates that feed those jobs, on the **HeyGen v3 E
 - **Categories** — ai, video, marketing
 - **Auth methods** — api-key
 - **Actions** — 18
-- **Triggers** — 2 (webhook)
+- **Triggers** — 8 (5 webhook, 3 poll)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.heygen.com` (the `service` check adds `status.heygen.com` to its own
   hook allowlist, never to the app's)
@@ -24,16 +24,26 @@ avatars, voices, assets and templates that feed those jobs, on the **HeyGen v3 E
 
 ## Triggers
 
-| Trigger | Mechanism | Vendor event | The run gets |
+| Trigger | Mechanism | Vendor event / list call | The run gets |
 |---|---|---|---|
 | `video-completed` — Video Completed | webhook (API-registered, signed) | `avatar_video.success` | video id, pre-signed download URL, HeyGen page URL, `callback_id`, full event data |
 | `video-failed` — Video Failed | webhook (API-registered, signed) | `avatar_video.fail` | video id and `callback_id` where sent, full event data with the failure details |
+| `video-translation-completed` — Video Translation Completed | webhook (API-registered, signed) | `video_translate.success` | event type and id, full event data |
+| `video-translation-failed` — Video Translation Failed | webhook (API-registered, signed) | `video_translate.fail` | event type and id, full event data with the failure details |
+| `any-event` — Any Event | webhook (API-registered, signed) | every event type, or the ones named in `events` | event type and id, video id and `callback_id` where sent, full event data |
+| `new-template` — New Template | poll (5 min) | `GET /v3/templates` (`template-list`) | each API-ready template newly added to the workspace |
+| `new-avatar-group` — New Avatar | poll (5 min) | `GET /v3/avatars?ownership=private` (`avatar-group-list`) | each avatar the account newly created or trained |
+| `new-avatar-look` — New Avatar Look | poll (5 min) | `GET /v3/avatars/looks?ownership=private` (`avatar-look-list`) | each look newly added to the account's own avatars |
 
-**Setup.** Nothing to paste. Subscribing registers the trigger's URL with `POST /v3/webhooks/endpoints` for its one event type (the account API key the app already uses is the only credential); unsubscribing deletes the endpoint (`DELETE /v3/webhooks/endpoints/{id}`; one HeyGen no longer has counts as deleted). HeyGen returns the endpoint's signing secret only once, at creation, so the trigger keeps it in its subscription state; if HeyGen does not return one the endpoint is removed again and the subscribe fails. These triggers cover the whole account's videos, not only those created through w6w. Only the `avatar_video.*` events are wired; HeyGen also sends video agent, translation and avatar events, which can be added the same way.
+**Setup.** Nothing to paste. Subscribing registers the trigger's URL with `POST /v3/webhooks/endpoints` for its one event type (the account API key the app already uses is the only credential); unsubscribing deletes the endpoint (`DELETE /v3/webhooks/endpoints/{id}`; one HeyGen no longer has counts as deleted). HeyGen returns the endpoint's signing secret only once, at creation, so the trigger keeps it in its subscription state; if HeyGen does not return one the endpoint is removed again and the subscribe fails. These triggers cover the whole account's videos, not only those created through w6w. **Any Event** registers one endpoint with no `events` list, which HeyGen documents as "receive all events" (32 types listed on 2026-11-10: avatar video, GIF and caption, video translation, video agent, instant and photo avatar, live avatar, HyperFrames, AI clipping, filler-word removal, proofread, batch; `GET /v3/webhooks/event-types` is the live list), or with exactly the comma-separated types you name in `events`; HeyGen refuses a type it does not know when the endpoint is created. For events other than `avatar_video.success` HeyGen documents only that the webhook is a completion signal: fetch the record from the matching detail endpoint (a translation from `GET /v3/video-translations/{id}`, a look from `GET /v3/avatars/looks/{id}`).
+
+**Polls.** `new-template`, `new-avatar-group` and `new-avatar-look` list the whole collection each check (HeyGen documents no order on them), following `next_token` for up to 20 pages, and emit rows that were not there at the previous check; the first check only records them. A collection still `has_more` after 20 pages fails the check with an error instead of diffing a partial list. The avatar polls ask for `ownership=private` (the account's own avatars): the `public` preset library is reference data.
+
+**Not covered.** `video-list` and `video-translation-list` (HeyGen documents no order or since filter on either, so they are delivered by `video-completed` / `video-failed` and `video-translation-completed` / `video-translation-failed`). Skipped: `voice-list` (reference data, and the action calls `GET /v3/voices` while HeyGen's current docs list voices under `GET /v3/models/audio/voices`) and `video-translation-languages-list` (the static list of target languages).
 
 **Trust model.** HeyGen signs the exact request body: the `signature` header is the hex HMAC-SHA256 of the body under the endpoint secret. The trigger checks it in constant time before it parses anything, and refuses a delivery whose signature is missing or wrong, whose raw body is unavailable, or whose stored secret is empty. HeyGen documents no timestamp in the scheme, so there is no freshness window; it retries failed deliveries for up to 24 hours, so the same event can arrive twice: de-duplicate on `eventType` plus `videoId` (or your own `callback_id`).
 
-Docs (verified 2026-11-10): https://developers.heygen.com/docs/webhooks and https://developers.heygen.com/docs/webhook-events
+Docs (verified 2026-11-10): https://developers.heygen.com/docs/webhooks , https://developers.heygen.com/docs/webhook-events , https://developers.heygen.com/reference/create-webhook-endpoint , https://developers.heygen.com/reference/list-templates , https://developers.heygen.com/reference/list-avatar-groups , https://developers.heygen.com/reference/list-avatar-looks
 
 ## The findings that would have cost someone a day
 

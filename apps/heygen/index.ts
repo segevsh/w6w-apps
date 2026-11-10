@@ -27,6 +27,12 @@ import requestRate from "./health/request-rate.ts";
 
 import videoCompleted from "./triggers/video-completed.ts";
 import videoFailed from "./triggers/video-failed.ts";
+import videoTranslationCompleted from "./triggers/video-translation-completed.ts";
+import videoTranslationFailed from "./triggers/video-translation-failed.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newAvatarGroup from "./triggers/new-avatar-group.ts";
+import newAvatarLook from "./triggers/new-avatar-look.ts";
 
 export default {
   actions: [
@@ -49,7 +55,16 @@ export default {
     templateGet,
     templateVideoGenerate,
   ],
-  triggers: [videoCompleted, videoFailed],
+  triggers: [
+    videoCompleted,
+    videoFailed,
+    videoTranslationCompleted,
+    videoTranslationFailed,
+    anyEvent,
+    newTemplate,
+    newAvatarGroup,
+    newAvatarLook,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/heygen",
-  "version": "0.2.0",
-  "description": "Generate AI avatar videos, translate videos into new languages, and manage voices, avatars, assets and templates on HeyGen, plus webhook triggers for finished and failed videos.",
+  "version": "0.3.0",
+  "description": "Generate AI avatar videos, translate videos, manage voices, avatars, assets and templates on HeyGen. Triggers fire on video, translation and any other event, and poll for new templates and avatars.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.heygen.com/docs",
       "https://developers.heygen.com/docs/error-codes#unauthorized"
     ],
-    "longDescription": "HeyGen brings AI avatar video generation into a workflow — turning a script into a talking avatar video, translating an existing video into new languages with voice cloning and lip-sync, and generating speech from text. Video actions create, poll, list and delete avatar videos, while translation actions submit a video for translation into one or more target languages and track each language's job independently.\n\nSupporting actions let a workflow browse the avatars, voice options and templates already available in a HeyGen account before generating from them — a template action fetches its variable schema so a workflow can fill in the right fields, and rendering from a template applies those substitutions directly. Assets like images or audio can be uploaded and referenced by ID in later generation steps, and account details are available for checking billing and plan information.\n\nEvery video and translation job is asynchronous: creating one returns immediately with an ID to poll or a webhook to wait on, while text-to-speech is the one exception, returning a ready audio file directly.\n\nTriggers start a workflow when a video finishes rendering or fails. Subscribing registers the trigger's URL as a HeyGen webhook endpoint (POST /v3/webhooks/endpoints) and unsubscribing removes it; every delivery is verified with the endpoint's signing secret.",
+    "longDescription": "HeyGen brings AI avatar video generation into a workflow — turning a script into a talking avatar video, translating an existing video into new languages with voice cloning and lip-sync, and generating speech from text. Video actions create, poll, list and delete avatar videos, while translation actions submit a video for translation into one or more target languages and track each language's job independently.\n\nSupporting actions let a workflow browse the avatars, voice options and templates already available in a HeyGen account before generating from them — a template action fetches its variable schema so a workflow can fill in the right fields, and rendering from a template applies those substitutions directly. Assets like images or audio can be uploaded and referenced by ID in later generation steps, and account details are available for checking billing and plan information.\n\nEvery video and translation job is asynchronous: creating one returns immediately with an ID to poll or a webhook to wait on, while text-to-speech is the one exception, returning a ready audio file directly.\n\nTriggers start a workflow when a video or translation finishes or fails, on any other HeyGen webhook event you choose, or when a new template, avatar or avatar look appears. Subscribing registers the trigger's URL as a HeyGen webhook endpoint (POST /v3/webhooks/endpoints) and unsubscribing removes it; every delivery is verified with the endpoint's signing secret.",
     "categories": [
       "ai",
       "video",
