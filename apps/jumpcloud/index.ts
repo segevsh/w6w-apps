@@ -109,8 +109,7 @@ import organizationList from "./actions/organization-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
-
-import newUserGroup from "./triggers/new-user-group.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -152,6 +151,6 @@ export default {
     organizationList,
   ],
   auth: [apiKey],
-  triggers: [newUserGroup],
+  triggers: [newUser],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

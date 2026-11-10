@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jumpcloud",
   "version": "0.2.0",
-  "description": "Manage JumpCloud users, devices, groups and remote commands from one directory. Includes a new user group poll trigger.",
+  "description": "Manage JumpCloud users, devices, groups and remote commands from one directory. Includes a new user poll trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.jumpcloud.com/api"
     ],
-    "longDescription": "JumpCloud is a cloud directory, and this app manages the users, devices, groups, and remote commands that make it one: creating, updating, and offboarding users; enrolling and inspecting devices; running saved commands against them; and managing the static and dynamic groups that bind users and systems together. It is built for identity and device-lifecycle workflows — provisioning a new hire, suspending someone who's left, or pushing a command out to a fleet of machines — across whichever regional console an organization's directory lives in.\n\nA few actions are deliberately separated from their safer neighbors because of what they can undo: wiping a device, permanently deleting a user, and deleting a group that carries every application and device binding it granted are each their own action requiring explicit confirmation, distinct from suspending a user or simply unenrolling a device. Command results are read separately from running them, since a queued command against an offline device can report success without having done anything yet.\n\nA new user group poll trigger starts workflows from the existing user-group-list action.",
+    "longDescription": "JumpCloud is a cloud directory, and this app manages the users, devices, groups, and remote commands that make it one: creating, updating, and offboarding users; enrolling and inspecting devices; running saved commands against them; and managing the static and dynamic groups that bind users and systems together. It is built for identity and device-lifecycle workflows — provisioning a new hire, suspending someone who's left, or pushing a command out to a fleet of machines — across whichever regional console an organization's directory lives in.\n\nA few actions are deliberately separated from their safer neighbors because of what they can undo: wiping a device, permanently deleting a user, and deleting a group that carries every application and device binding it granted are each their own action requiring explicit confirmation, distinct from suspending a user or simply unenrolling a device. Command results are read separately from running them, since a queued command against an offline device can report success without having done anything yet.\n\nA new user poll trigger starts workflows from the existing user-list action.",
     "categories": [
       "security",
       "devops",
