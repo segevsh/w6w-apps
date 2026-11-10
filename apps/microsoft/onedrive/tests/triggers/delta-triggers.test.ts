@@ -152,15 +152,19 @@ describe("new-file: created classification", () => {
     assertEquals(r.events, []);
   });
 
-  test("an id already emitted as created is not emitted again", async () => {
+  test("an id already emitted as created is not emitted again when it reappears in the overlap", async () => {
+    // Created 30 s before the first check; the check after it still sees it as 'created'
+    // because its window starts 60 s before the previous round (10:04).
+    const late = {
+      value: [{ id: "file-late", createdDateTime: "2026-11-10T10:04:30Z", file: {} }],
+      "@odata.deltaLink": DELTA,
+    };
     clock.now = () => T1;
-    const first = await newFile.poll!(input(seeded()), mockCtx([{ body: page }]).ctx);
-    assertEquals(first.events.length, 1);
+    const first = await newFile.poll!(input(seeded()), mockCtx([{ body: late }]).ctx);
+    assertEquals((first.events as Array<{ id: string }>).map((e) => e.id), ["file-late"]);
+    assertEquals(first.nextState?.since, T1);
     clock.now = () => T2;
-    const again = await newFile.poll!(
-      input(first.nextState),
-      mockCtx([{ body: page }]).ctx,
-    );
+    const again = await newFile.poll!(input(first.nextState), mockCtx([{ body: late }]).ctx);
     assertEquals(again.events, []);
   });
 
