@@ -126,7 +126,48 @@ import authOauthClient from "./auth/oauth-client.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import anyEvent from "./triggers/any-event.ts";
+import commentCreated from "./triggers/comment-created.ts";
+import commentDeleted from "./triggers/comment-deleted.ts";
+import commentUpdated from "./triggers/comment-updated.ts";
+import dataSourceContentUpdated from "./triggers/data-source-content-updated.ts";
+import dataSourceCreated from "./triggers/data-source-created.ts";
+import dataSourceDeleted from "./triggers/data-source-deleted.ts";
+import dataSourceSchemaUpdated from "./triggers/data-source-schema-updated.ts";
+import databaseCreated from "./triggers/database-created.ts";
+import databaseDeleted from "./triggers/database-deleted.ts";
+import fileUploadCompleted from "./triggers/file-upload-completed.ts";
+import fileUploadCreated from "./triggers/file-upload-created.ts";
+import fileUploadExpired from "./triggers/file-upload-expired.ts";
+import fileUploadUploadFailed from "./triggers/file-upload-upload-failed.ts";
+import newAgent from "./triggers/new-agent.ts";
+import newBlock from "./triggers/new-block.ts";
+import newComment from "./triggers/new-comment.ts";
+import newDataSourceTemplate from "./triggers/new-data-source-template.ts";
 import newDatabasePage from "./triggers/new-database-page.ts";
+import newFileUpload from "./triggers/new-file-upload.ts";
+import newMeetingNote from "./triggers/new-meeting-note.ts";
+import newOrUpdatedDataSource from "./triggers/new-or-updated-data-source.ts";
+import newOrUpdatedDatabase from "./triggers/new-or-updated-database.ts";
+import newOrUpdatedDatabasePage from "./triggers/new-or-updated-database-page.ts";
+import newOrUpdatedMeetingNote from "./triggers/new-or-updated-meeting-note.ts";
+import newOrUpdatedPage from "./triggers/new-or-updated-page.ts";
+import newOrUpdatedPlugin from "./triggers/new-or-updated-plugin.ts";
+import newOrUpdatedSession from "./triggers/new-or-updated-session.ts";
+import newSession from "./triggers/new-session.ts";
+import newSessionEvent from "./triggers/new-session-event.ts";
+import newView from "./triggers/new-view.ts";
+import newWorkspaceUser from "./triggers/new-workspace-user.ts";
+import pageContentUpdated from "./triggers/page-content-updated.ts";
+import pageCreated from "./triggers/page-created.ts";
+import pageDeleted from "./triggers/page-deleted.ts";
+import pageMoved from "./triggers/page-moved.ts";
+import pagePropertiesUpdated from "./triggers/page-properties-updated.ts";
+import pageTranscriptDeleted from "./triggers/page-transcript-deleted.ts";
+import pageUndeleted from "./triggers/page-undeleted.ts";
+import viewCreated from "./triggers/view-created.ts";
+import viewDeleted from "./triggers/view-deleted.ts";
+import viewUpdated from "./triggers/view-updated.ts";
 
 export default {
   actions: [
@@ -258,5 +299,48 @@ export default {
     authOauthClient,
   ],
   healthChecks: [service, quota],
-  triggers: [newDatabasePage],
+  triggers: [
+    anyEvent,
+    commentCreated,
+    commentDeleted,
+    commentUpdated,
+    dataSourceContentUpdated,
+    dataSourceCreated,
+    dataSourceDeleted,
+    dataSourceSchemaUpdated,
+    databaseCreated,
+    databaseDeleted,
+    fileUploadCompleted,
+    fileUploadCreated,
+    fileUploadExpired,
+    fileUploadUploadFailed,
+    newAgent,
+    newBlock,
+    newComment,
+    newDataSourceTemplate,
+    newDatabasePage,
+    newFileUpload,
+    newMeetingNote,
+    newOrUpdatedDataSource,
+    newOrUpdatedDatabase,
+    newOrUpdatedDatabasePage,
+    newOrUpdatedMeetingNote,
+    newOrUpdatedPage,
+    newOrUpdatedPlugin,
+    newOrUpdatedSession,
+    newSession,
+    newSessionEvent,
+    newView,
+    newWorkspaceUser,
+    pageContentUpdated,
+    pageCreated,
+    pageDeleted,
+    pageMoved,
+    pagePropertiesUpdated,
+    pageTranscriptDeleted,
+    pageUndeleted,
+    viewCreated,
+    viewDeleted,
+    viewUpdated,
+  ],
 } satisfies AppDefinition;

@@ -3,23 +3,47 @@
 Run a [Mighty Networks](https://www.mightynetworks.com) community — members, spaces, posts,
 comments, events and RSVPs, invitations, tags, plans and course content — through the **Admin API**.
 
-31 actions · 1 auth method · 2 declared health checks (+1 derived) · 217 unit tests.
+31 actions · 21 triggers (17 webhook, 4 poll) · 1 auth method · 2 declared health checks (+1 derived) · 282 unit tests.
 
 ## Triggers
 
-3 webhook triggers (manual setup, shared-secret bearer token).
+17 webhook triggers (manual setup, shared-secret bearer token) and 4 polls.
 
-| Trigger | Mechanism | Vendor event | The run gets |
+| Trigger | Mechanism | Vendor event or wrapped list action | The run gets |
 |---|---|---|---|
 | `member-joined` — Member Joined | webhook (manual) | `MemberJoined` | event id, type and time; the payload (member, space id, network id) |
+| `member-left` — Member Left | webhook (manual) | `MemberLeft` | the member, space id, network id, reason |
+| `member-updated` — Member Updated | webhook (manual) | `MemberUpdated` | the member (profile), space id, network id |
+| `member-purchased` — Member Purchased | webhook (manual) | `MemberPurchased` | the member, the plan, the purchase |
+| `member-subscription-canceled` — Subscription Canceled | webhook (manual) | `MemberSubscriptionCanceled` | the member, the plan, the subscription |
+| `member-tag-added` — Member Tag Added | webhook (manual) | `MemberTagAdded` | the member, the tag, network id |
+| `member-tag-removed` — Member Tag Removed | webhook (manual) | `MemberTagRemoved` | the member, the tag, network id |
+| `member-lesson-completed` — Lesson Completed | webhook (manual) | `MemberLessonCompleted` | the member, the course, the lesson, completion time |
 | `post-created` — Post Created | webhook (manual) | `PostCreated` | event id, type and time; the payload (post id, title, summary, type, status, space, creator, permalink) |
-| `network-event` — Network Event | webhook (manual) | any event the webhook sends, optionally narrowed with the `events` param | event id, type and time; the full payload |
+| `post-updated` — Post Updated | webhook (manual) | `PostUpdated` | the post (same fields as Post Created) |
+| `comment-created` — Comment Created | webhook (manual) | `CommentCreated` | the comment (id, text, author, target, space) |
+| `event-created` — Event Created | webhook (manual) | `EventCreated` | the event (title, start/end, location, recurrence, space, creator) |
+| `event-updated` — Event Updated | webhook (manual) | `EventUpdated` | the event |
+| `event-canceled` — Event Canceled | webhook (manual) | `EventCanceled` | the event |
+| `rsvp-created` — RSVP Created | webhook (manual) | `RsvpCreated` | the RSVP (status), the event, the member |
+| `invite-requested` — Invite Requested | webhook (manual) | `InviteRequested` | the request (status, space/plan ids) and the requesting member |
+| `network-event` — Network Event (any event) | webhook (manual) | any event the webhook sends, optionally narrowed with the `events` param | event id, type and time; the full payload |
+| `new-space` — New Space | poll (every hour) | `GET /spaces` (`space-list`, snapshot diff) | the new space |
+| `new-plan` — New Plan | poll (every hour) | `GET /plans` (`plan-list`, snapshot diff) | the new plan |
+| `new-tag` — New Tag | poll (every hour) | `GET /tags` (`tag-list`, snapshot diff) | the new tag |
+| `new-coursework` — New Coursework | poll (every hour) | `GET /spaces/{space_id}/courseworks` (`coursework-list`, snapshot diff; `spaceId` param) | the new lesson, quiz or section |
 
-**Setup (manual).** Mighty Networks has no API to register a webhook. Subscribe the trigger in w6w, copy its callback URL, then in your Network settings add a webhook endpoint with that URL, pick the events (for example `MemberJoined`, `PostCreated`) and set an API key for it. Paste the same key into the trigger's `webhookKey` param. The webhook endpoint must be HTTPS, and Mighty Networks retries any non-2xx answer and pauses delivery to an endpoint that keeps failing, so keep the trigger subscribed.
+The four polls exist because the webhook catalog has no event for a new space, plan, tag or coursework item. Each reads the whole list page by page (100 per page; the Admin API documents no sort order or since filter on these lists), diffs it against the last check and reports additions only; a list that fills 20 pages (2,000 records) or whose response cannot be read is refused with an error rather than cut short.
+
+**Cost.** The Admin API is metered per request (Scale includes 5,000 a month, then $0.002 per extra request; see Plan requirement below), and every check of a poll is at least one request. The four polls therefore run at most once an hour (about 720 requests a month each, more for lists over 100 records); the webhook triggers are inbound and cost no requests. Unsubscribe a poll you do not need.
+
+Not covered as triggers: `space-member-list` and `member-list` (per space join: `member-joined` fires when a member joins a space, not for a network-level sign-up), `post-list`, `comment-list` and `event-list` are unbounded with no sort order or since filter in the Admin API, so their new records arrive through the webhook triggers above (`member-joined`, `post-created`, `comment-created`, `event-created`); `invite-list` has only an email filter and no order (https://api.mn.co/admin/v1/spec/rest.json) and no webhook event announces an invitation sent from the dashboard, so it has no trigger. Events with no named trigger (for example `MemberJoinRequested`, `ReactionCreated`, `ArticleCreated`, the poll events, `MemberPlanChanged`, `MemberBadgeAdded`, `CustomFieldResponseCreated`, `ReportedContentCreated`) are reachable through `network-event` with the `events` filter.
+
+**Setup (manual).** The Admin API this app uses has no endpoint to register a webhook. Subscribe the trigger in w6w, copy its callback URL, then in your Network settings add a webhook endpoint with that URL, pick the events (for example `MemberJoined`, `PostCreated`, or one per named trigger above) and set an API key for it. Paste the same key into the trigger's `webhookKey` param. The webhook endpoint must be HTTPS, and Mighty Networks retries any non-2xx answer and pauses delivery to an endpoint that keeps failing, so keep the trigger subscribed.
 
 **Trust model.** Mighty Networks does not sign the body. Every delivery carries `Authorization: Bearer <the API key configured on the webhook>`; the trigger refuses a delivery whose key is unset, whose bearer token is missing, or that does not match the pasted key (constant-time compare), before it parses the body. The key proves the sender knows it; it does not bind the event data, and a captured delivery could be replayed with another body, so keep both the key and the callback URL private. The vendor's prose example names the event `PostCreatedHook`, its event schemas name it `PostCreated`; both spellings are accepted, and a delivery with no `event_type` is refused by the two specific triggers (the generic one passes it through).
 
-Docs (verified 2026-11-10): https://docs.mightynetworks.com/api/webhooks.md, event schemas https://api.mn.co/webhooks/v1/spec.json?format=json and https://docs.mightynetworks.com/api-reference/webhooks/postcreated.md
+Docs (verified 2026-11-10): https://docs.mightynetworks.com/api/webhooks.md, Admin API https://api.mn.co/admin/v1/spec/rest.json, event schemas https://api.mn.co/webhooks/v1/spec.json?format=json and https://docs.mightynetworks.com/api-reference/webhooks/postcreated.md
 
 ## Links
 

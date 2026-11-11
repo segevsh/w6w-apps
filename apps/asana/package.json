@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/asana",
-  "version": "0.3.0",
-  "description": "Manage Asana projects, tasks, subtasks, comments, tags, and users via the Asana REST API, and start workflows from new or changed tasks.",
+  "version": "0.4.0",
+  "description": "Manage Asana projects, tasks, subtasks, comments, tags, and users via the Asana REST API, and start workflows from task, comment, project or user events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.asana.com/reference/rest-api-reference",
       "https://developers.asana.com"
     ],
-    "longDescription": "Asana gives a workflow full control over projects and tasks — creating, updating, moving and deleting tasks and subtasks, searching across them, and keeping tags, comments and project membership in sync as work moves through a process.\n\nTasks can carry comments and tags that are added or removed independently, and a task can belong to more than one project at once — added to or removed from either without touching the task itself. Subtasks are managed as their own resource (created, listed) rather than as fields on the parent, which matches how Asana actually models a checklist of smaller pieces of work.\n\nProject and user data — creating and updating projects, listing and looking up users — round it out, so a workflow can turn an external event, such as a support ticket or a form submission, into tracked work in Asana, or pull task state back out to drive another step.\n\nTriggers start a workflow from Asana itself: a task added to, or changed in, a project. Each delivery is signed by Asana and verified before it starts a run.",
+    "longDescription": "Asana gives a workflow full control over projects and tasks — creating, updating, moving and deleting tasks and subtasks, searching across them, and keeping tags, comments and project membership in sync as work moves through a process.\n\nTasks can carry comments and tags that are added or removed independently, and a task can belong to more than one project at once — added to or removed from either without touching the task itself. Subtasks are managed as their own resource (created, listed) rather than as fields on the parent, which matches how Asana actually models a checklist of smaller pieces of work.\n\nProject and user data — creating and updating projects, listing and looking up users — round it out, so a workflow can turn an external event, such as a support ticket or a form submission, into tracked work in Asana, or pull task state back out to drive another step.\n\nTriggers start a workflow from Asana itself: a task added, changed or deleted, a comment, a project created, changed or deleted, any other Asana webhook event through Any Event, or a user newly added to a workspace. Each webhook delivery is signed by Asana and verified before it starts a run.",
     "categories": [
       "productivity",
       "project-management"

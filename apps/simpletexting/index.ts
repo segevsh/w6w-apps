@@ -42,7 +42,11 @@
  * in the README.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCampaign from "./triggers/new-campaign.ts";
 import newContact from "./triggers/new-contact.ts";
+import newContactList from "./triggers/new-contact-list.ts";
+import newMessage from "./triggers/new-message.ts";
+import newSegment from "./triggers/new-segment.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 import apiKey from "./auth/api-key.ts";
 
@@ -91,7 +95,14 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
-  triggers: [newContact, newOrUpdatedContact],
+  triggers: [
+    newContact,
+    newOrUpdatedContact,
+    newMessage,
+    newCampaign,
+    newContactList,
+    newSegment,
+  ],
   actions: [
     // Tenant
     tenantInfoGet,

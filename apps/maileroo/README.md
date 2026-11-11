@@ -1,6 +1,6 @@
 # Maileroo
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 4 (poll)
 
 Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions,
 templates and applications, and run OTP verifications with [Maileroo](https://maileroo.com).
@@ -41,7 +41,14 @@ The connect-time `test` probes each key you supplied on its own host and classif
 
 ## Triggers
 
-- **New Domain** (`new-domain`) polls `list-domains` by descending domain id.
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-domain` | poll | `list-domains` (by descending id) | Each newly added sending domain |
+| `new-verification` | poll | `list-verifications` (documented newest first) | Each OTP verification started on the account |
+| `new-email-log` | poll | `search-email-logs` (documented newest first) | Each message newly logged, with its delivery events so far |
+| `new-template` | poll | `list-templates` (unpaginated snapshot, added only) | Each newly created email template |
+
+Not covered: `list-suppressions` (no documented order, no since filter and no timestamp on its rows), `list-scheduled-emails` (no documented order or filter, and the queue is the caller's own sends), `list-applications` (SMTP/API credential sets) and `list-sender-profiles` (OTP configuration). Vendor API documentation: https://maileroo.com/docs/api-reference/otp-verification/verifications/list, https://maileroo.com/docs/api-reference/logs/search, https://maileroo.com/docs/api-reference/templates/list and https://maileroo.com/docs/api-reference/suppressions/list (verified 2026-11-10).
 
 | Group | Actions |
 |---|---|

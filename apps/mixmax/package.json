@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mixmax",
-  "version": "0.2.0",
-  "description": "Send and schedule email, manage sequences and their recipients, read templates, tasks, teams and unsubscribes, and use a poll trigger for new unsubscribes through the Mixmax API.",
+  "version": "0.3.0",
+  "description": "Send and schedule email, manage sequences and recipients, read templates, tasks, teams and unsubscribes, and poll for new messages, sequences, teams and unsubscribes through the Mixmax API.",
   "license": "MIT",
   "author": {
     "name": "w6w"

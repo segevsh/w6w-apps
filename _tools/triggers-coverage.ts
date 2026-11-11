@@ -17,6 +17,8 @@ export interface TriggerSummary {
   webhookApps: number;
   pollApps: number;
   bothApps: number;
+  /** Total triggers (webhook + poll) across the audited apps. */
+  triggers: number;
 }
 
 // deno-lint-ignore no-explicit-any
@@ -37,10 +39,12 @@ export function summarize(map: Record<string, TriggerCounts>): TriggerSummary {
     webhookApps: 0,
     pollApps: 0,
     bothApps: 0,
+    triggers: 0,
   };
   for (const c of Object.values(map)) {
     if (c.webhook + c.poll === 0) continue;
     s.apps++;
+    s.triggers += c.webhook + c.poll;
     if (c.webhook > 0) s.webhookApps++;
     if (c.poll > 0) s.pollApps++;
     if (c.webhook > 0 && c.poll > 0) s.bothApps++;
@@ -49,7 +53,7 @@ export function summarize(map: Record<string, TriggerCounts>): TriggerSummary {
 }
 
 export function formatLine(s: TriggerSummary): string {
-  return `Triggers: ${s.apps} apps (${s.webhookApps} webhook, ${s.pollApps} poll)`;
+  return `Triggers: ${s.apps} apps (${s.webhookApps} webhook, ${s.pollApps} poll), ${s.triggers} triggers`;
 }
 
 // ---------------------------------------------------------------------------
@@ -73,6 +77,14 @@ export interface TriggerRow {
   reason: string;
   verified: false | string;
   source: "survey" | "scan" | "hand";
+  /** list action stem -> trigger key, only where the static scan cannot see the link. */
+  covers?: Record<string, string>;
+  /** list action stem -> short reason it is deliberately not behind a trigger. */
+  skipped?: Record<string, string>;
+  /** vendor event name -> trigger key, or "any" (only via the Any-event trigger). */
+  events?: Record<string, string>;
+  /** n8n event value -> trigger key | "skip: <reason>". */
+  n8n?: Record<string, string>;
 }
 
 const GENERATED_HEADER = [
@@ -90,7 +102,8 @@ const GENERATED_HEADER = [
 
 const cell = (s: string) => s.replaceAll("|", "\\|").replaceAll("\n", " ");
 
-export function renderMarkdown(rows: TriggerRow[]): string {
+export function renderMarkdown(rows: TriggerRow[], scan: DepthScan): string {
+  const triggersOf = (path: string) => scan.apps[path]?.triggers ?? 0;
   const out = [GENERATED_HEADER];
   const by = (m: Mechanism) => rows.filter((r) => r.mechanism === m);
   out.push(
@@ -98,16 +111,19 @@ export function renderMarkdown(rows: TriggerRow[]): string {
       MECHANISMS.map((m) => `${m}: ${by(m).length}`).join(", "),
     "",
   );
+  out.push(...renderDepth(scan));
   for (const m of MECHANISMS) {
     const list = by(m);
     out.push(`## ${m} (${list.length})`, "");
     out.push(
       m === "poll"
-        ? "| app | poll action | candidates | verified | source | reason |"
-        : "| app | candidates | verified | source | reason |",
+        ? "| app | triggers | poll action | candidates | verified | source | reason |"
+        : "| app | triggers | candidates | verified | source | reason |",
     );
     out.push(
-      m === "poll" ? "|---|---|---|---|---|---|" : "|---|---|---|---|---|",
+      m === "poll"
+        ? "|---|---|---|---|---|---|---|"
+        : "|---|---|---|---|---|---|",
     );
     for (const r of list) {
       const common = [
@@ -116,14 +132,223 @@ export function renderMarkdown(rows: TriggerRow[]): string {
         r.source,
         cell(r.reason),
       ];
+      const t = String(triggersOf(r.path));
       const head = m === "poll"
-        ? [r.path, cell(String(r.pollAction))]
-        : [r.path];
+        ? [r.path, t, cell(String(r.pollAction))]
+        : [r.path, t];
       out.push(`| ${[...head, ...common].join(" | ")} |`);
     }
     out.push("");
   }
   return out.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Depth: how many of an app's list/search actions sit behind a trigger.
+// Report-only unless DEPTH_STRICT (see `main`). Static and import-free.
+// ---------------------------------------------------------------------------
+
+/** Env flag / CLI flag that makes unaccounted list actions fail `--check`. */
+export const DEPTH_STRICT_ENV = "TRIGGERS_DEPTH_STRICT";
+
+/**
+ * List/search classifier. An action file is a list action when its text declares
+ * `type: "read"` or `type: "search"` AND, in order, its stem:
+ *  1. does not start with a `create-`/`add-`/`remove-`/`update-`/`delete-` verb
+ *     (a mutation: `create-list`, `add-contact-to-list`) -> not list;
+ *  2. has a `many` or `all` token (n8n `getAll` naming: `contact-get-many`,
+ *     `get-many-users`, `get-all-orders`, `list-all-orders`) -> list; this beats
+ *     the `get-` prefix exclusion below;
+ *  3. ends in `get`/`info`/`details`, or starts with `get-` -> single record,
+ *     not list (`list-get`, `price-list-get`, `search-get`, `get-list`);
+ *  4. starts with `find-`/`query-`, or has a `list`/`search` token -> list.
+ * Pinned by the table in triggers-coverage.test.ts.
+ */
+export function isListAction(stem: string, text: string): boolean {
+  if (!/\btype:\s*["'](?:read|search)["']/.test(text)) return false;
+  if (/^(?:create|add|remove|update|delete)-/.test(stem)) return false;
+  const tokens = stem.split("-");
+  if (tokens.some((t) => t === "many" || t === "all")) return true;
+  if (/^get-/.test(stem)) return false;
+  if (["get", "info", "details"].includes(tokens[tokens.length - 1])) {
+    return false;
+  }
+  if (/^(?:find|query)-/.test(stem)) return true;
+  return tokens.some((t) => t === "list" || t === "search");
+}
+
+/** `--app` paths that name no row of the scan (empty => all known). */
+export function unknownDepthApps(scan: DepthScan, only: string[]): string[] {
+  return only.filter((p) => !(p in scan.apps));
+}
+
+export interface AppDepth {
+  triggers: number;
+  list: string[];
+  backed: string[];
+  skipped: string[];
+  unaccounted: string[];
+  n8nMissing: string[] | null;
+}
+
+export interface DepthScan {
+  apps: Record<string, AppDepth>;
+  /** False when no n8n file was given: parity is "not measured". */
+  n8nMeasured: boolean;
+}
+
+export interface N8nNode {
+  node: string;
+  file?: string;
+  app: string | null;
+  events: string[];
+  polling?: boolean;
+}
+
+function tsFiles(dir: string): string[] {
+  const out: string[] = [];
+  try {
+    for (const e of Deno.readDirSync(dir)) {
+      if (e.isFile && e.name.endsWith(".ts")) out.push(e.name);
+    }
+  } catch { /* dir absent */ }
+  return out.sort();
+}
+
+export function scanDepth(
+  root: string,
+  rows: TriggerRow[],
+  n8n: N8nNode[] | null = null,
+): DepthScan {
+  const byPath = new Map(rows.map((r) => [r.path, r]));
+  const apps: Record<string, AppDepth> = {};
+  for (const path of packPaths(root)) {
+    const row = byPath.get(path);
+    const trig = tsFiles(`${root}/${path}/triggers`);
+    const imported = new Set<string>();
+    for (const sub of ["triggers", "lib"]) {
+      for (const f of tsFiles(`${root}/${path}/${sub}`)) {
+        const text = Deno.readTextFileSync(`${root}/${path}/${sub}/${f}`);
+        for (const m of text.matchAll(/actions\/([\w.-]+?)\.ts/g)) {
+          imported.add(m[1]);
+        }
+      }
+    }
+    const list = tsFiles(`${root}/${path}/actions`)
+      .map((f) => f.slice(0, -3))
+      .filter((stem) =>
+        isListAction(
+          stem,
+          Deno.readTextFileSync(`${root}/${path}/actions/${stem}.ts`),
+        )
+      );
+    const covers = row?.covers ?? {};
+    const skippedKeys = row?.skipped ?? {};
+    const backed = list.filter((s) => imported.has(s) || s in covers);
+    const skipped = list.filter((s) => s in skippedKeys);
+    const unaccounted = list.filter((s) =>
+      !backed.includes(s) && !(s in skippedKeys)
+    );
+    let n8nMissing: string[] | null = null;
+    if (n8n) {
+      const have = new Set(Object.keys(row?.n8n ?? {}));
+      n8nMissing = [
+        ...new Set(
+          n8n.filter((n) => n.app === path).flatMap((n) => n.events),
+        ),
+      ].filter((e) => !have.has(e));
+    }
+    apps[path] = {
+      triggers: trig.length,
+      list,
+      backed,
+      skipped,
+      unaccounted,
+      n8nMissing,
+    };
+  }
+  return { apps, n8nMeasured: n8n !== null };
+}
+
+export function depthSummary(scan: DepthScan): string {
+  const all = Object.values(scan.apps);
+  const T = all.reduce((n, a) => n + a.triggers, 0);
+  const U = all.reduce((n, a) => n + a.unaccounted.length, 0);
+  const K = all.filter((a) => a.unaccounted.length > 0).length;
+  const M = scan.n8nMeasured
+    ? String(all.reduce((n, a) => n + (a.n8nMissing?.length ?? 0), 0))
+    : "n/a";
+  return `depth: ${all.length} apps, ${T} triggers, ${U} unaccounted list actions in ${K} apps, n8n-parity misses ${M} (report-only)`;
+}
+
+export function depthAppLine(path: string, a: AppDepth): string {
+  const n8n = a.n8nMissing === null ? "n/a" : `[${a.n8nMissing.join(", ")}]`;
+  return `${path}: triggers=${a.triggers} list=${a.list.length} backed=${a.backed.length} skipped=${a.skipped.length} unaccounted=[${
+    a.unaccounted.join(", ")
+  }] n8n-missing=${n8n}`;
+}
+
+function renderDepth(scan: DepthScan): string[] {
+  const out = ["## Depth", "", depthSummary(scan), ""];
+  const rows = Object.entries(scan.apps)
+    .filter(([, a]) => a.unaccounted.length > 0 || a.triggers > 0)
+    .sort(([pa, a], [pb, b]) =>
+      b.unaccounted.length - a.unaccounted.length || (pa < pb ? -1 : 1)
+    );
+  out.push(
+    "| app | triggers | list actions | unaccounted |",
+    "|---|---|---|---|",
+  );
+  for (const [p, a] of rows) {
+    out.push(
+      `| ${p} | ${a.triggers} | ${a.list.length} | ${a.unaccounted.length} |`,
+    );
+  }
+  out.push("");
+  return out;
+}
+
+/** Validity errors for the optional depth fields on a row (always on). */
+function checkDepthFields(root: string, r: TriggerRow): string[] {
+  const errors: string[] = [];
+  if (!r.covers && !r.skipped && !r.events && !r.n8n) return errors;
+  const actions = new Set(
+    tsFiles(`${root}/${r.path}/actions`).map((f) => f.slice(0, -3)),
+  );
+  const keys = new Set<string>();
+  for (const f of tsFiles(`${root}/${r.path}/triggers`)) {
+    const text = Deno.readTextFileSync(`${root}/${r.path}/triggers/${f}`);
+    for (const m of text.matchAll(/\bkey:\s*["']([^"']+)["']/g)) keys.add(m[1]);
+  }
+  for (const field of ["covers", "skipped"] as const) {
+    for (const stem of Object.keys(r[field] ?? {})) {
+      if (!actions.has(stem)) {
+        errors.push(`${r.path}: ${field} names missing action "${stem}"`);
+      }
+    }
+  }
+  for (const [stem, key] of Object.entries(r.covers ?? {})) {
+    if (!keys.has(key)) {
+      errors.push(`${r.path}: covers "${stem}" names unknown trigger "${key}"`);
+    }
+    if (r.skipped && stem in r.skipped) {
+      errors.push(`${r.path}: action "${stem}" is both covered and skipped`);
+    }
+  }
+  for (const [stem, why] of Object.entries(r.skipped ?? {})) {
+    if (!String(why ?? "").trim()) {
+      errors.push(`${r.path}: skipped "${stem}" has an empty reason`);
+    }
+  }
+  for (const field of ["events", "n8n"] as const) {
+    for (const [k, v] of Object.entries(r[field] ?? {})) {
+      if (v === "any" || /^skip:/.test(v)) continue;
+      if (!keys.has(v)) {
+        errors.push(`${r.path}: ${field} "${k}" names unknown trigger "${v}"`);
+      }
+    }
+  }
+  return errors;
 }
 
 function declaresTriggers(root: string, path: string): boolean {
@@ -155,6 +380,7 @@ export function checkTriggers(
   root: string,
   rows: TriggerRow[],
   markdown: string | null,
+  opts: { strictDepth?: boolean } = {},
 ): string[] {
   const errors: string[] = [];
   const pack = new Set(packPaths(root));
@@ -176,6 +402,7 @@ export function checkTriggers(
         );
       }
     }
+    errors.push(...checkDepthFields(root, r));
     if (r.mechanism === "none" && !String(r.reason ?? "").trim()) {
       errors.push(`${r.path}: none row has no reason`);
     }
@@ -190,7 +417,15 @@ export function checkTriggers(
     i === 0 || a[i - 1] < p
   );
   if (!sorted) errors.push("TRIGGERS.json: rows are not sorted by path");
-  if (markdown !== renderMarkdown(rows)) {
+  const scan = scanDepth(root, rows);
+  if (opts.strictDepth) {
+    const u = Object.values(scan.apps).reduce(
+      (n, a) => n + a.unaccounted.length,
+      0,
+    );
+    if (u > 0) errors.push(`depth: ${u} unaccounted list actions (strict)`);
+  }
+  if (markdown !== renderMarkdown(rows, scan)) {
     errors.push(
       "TRIGGERS.md: out of date (run `deno task --cwd _tools triggers --write`)",
     );
@@ -204,7 +439,7 @@ async function main(args: string[]) {
   const mdPath = `${root}/TRIGGERS.md`;
   const rows: TriggerRow[] = JSON.parse(Deno.readTextFileSync(jsonPath));
   if (args.includes("--write")) {
-    Deno.writeTextFileSync(mdPath, renderMarkdown(rows));
+    Deno.writeTextFileSync(mdPath, renderMarkdown(rows, scanDepth(root, rows)));
     console.log(`wrote TRIGGERS.md (${rows.length} rows)`);
     return;
   }
@@ -213,10 +448,41 @@ async function main(args: string[]) {
     try {
       md = Deno.readTextFileSync(mdPath);
     } catch { /* missing */ }
-    const errors = checkTriggers(root, rows, md);
+    const strictDepth = args.includes("--strict-depth") ||
+      Deno.env.get(DEPTH_STRICT_ENV) === "1";
+    const errors = checkTriggers(root, rows, md, { strictDepth });
     for (const e of errors) console.error(`triggers-coverage: ${e}`);
     if (errors.length) Deno.exit(1);
     console.log(`triggers-coverage: ok (${rows.length} rows)`);
+    console.log(depthSummary(scanDepth(root, rows)));
+    return;
+  }
+  if (args.includes("--depth")) {
+    const flag = (name: string) =>
+      args.flatMap((a, i) => a === name ? [args[i + 1]] : []);
+    const n8nFile = flag("--n8n")[0];
+    let n8n: N8nNode[] | null = null;
+    if (n8nFile) {
+      try {
+        n8n = JSON.parse(Deno.readTextFileSync(n8nFile));
+      } catch { /* missing: parity not measured */ }
+    }
+    const scan = scanDepth(root, rows, n8n);
+    console.log(depthSummary(scan));
+    const only = flag("--app");
+    const unknown = unknownDepthApps(scan, only);
+    if (unknown.length) {
+      for (const p of unknown) {
+        console.error(`triggers-coverage: no such app: ${p}`);
+      }
+      Deno.exit(1);
+    }
+    if (only.length || args.includes("--verbose")) {
+      for (const [p, a] of Object.entries(scan.apps)) {
+        if (only.length && !only.includes(p)) continue;
+        console.log(depthAppLine(p, a));
+      }
+    }
     return;
   }
   console.log(

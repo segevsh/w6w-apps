@@ -44,6 +44,11 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newLead from "./triggers/new-lead.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newTask from "./triggers/new-task.ts";
+import newCustomerPolicy from "./triggers/new-customer-policy.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newCsr from "./triggers/new-csr.ts";
 import login from "./auth/login.ts";
 
 import pipelineList from "./actions/pipeline-list.ts";
@@ -110,5 +115,5 @@ export default {
   ],
   auth: [login],
   healthChecks: [service, quota],
-  triggers: [newLead],
+  triggers: [newLead, newCustomer, newTask, newCustomerPolicy, newEmployee, newCsr],
 } satisfies AppDefinition;

@@ -5,7 +5,7 @@ Schedule and manage GoTo Webinar webinars, registrants, panelists and attendance
 - **Categories** — video, communication
 - **Auth methods** — oauth2
 - **Actions** — 13
-- **Triggers** — 5 (webhook)
+- **Triggers** — 8 (6 webhook, 2 poll)
 - **Egress allowlist** — `api.getgo.com`
 - **Website** — https://www.goto.com/webinar
 - **API docs** — https://developer.goto.com/GoToWebinarV2/
@@ -19,12 +19,19 @@ Schedule and manage GoTo Webinar webinars, registrants, panelists and attendance
 | `webinar-created` — Webinar Created | webhook (API-registered, signed) | `webinar.created` | webinar key and title, description, schedule, time zone, full event |
 | `webinar-changed` — Webinar Changed | webhook (API-registered, signed) | `webinar.changed` | webinar key and title, status `UPDATED` or `DELETED`, full event |
 | `survey-submitted` — Survey Submitted | webhook (API-registered, signed) | `survey.submitted` | webinar, session and registrant keys, survey name and responses, full event |
+| `any-event` — Any Event | webhook (API-registered, signed) | any of the five events above; the **Events** param (comma-separated, empty = all) picks which, one GoTo webhook is registered per event | the same as the named trigger for that event |
+| `new-session` — New Session | poll (5 min) | `session-list` (`GET /organizers/{organizerKey}/webinars/{webinarKey}/sessions`, past sessions, read in pages of 200) | the completed session |
+| `new-panelist` — New Panelist | poll (5 min) | `panelist-list` (`GET /organizers/{organizerKey}/webinars/{webinarKey}/panelists`, unpaginated array) | the panelist |
+
+`webinar-list` is covered by `webinar-created` (it lists webinars by scheduled time in a required date
+range, so a poll would add nothing), `registrant-list` by `registrant-added`, and `attendee-list` by
+`registrant-joined` (the attendee report is the record of who joined).
 
 **Setup.** GoTo signs deliveries with a webhook secret key that belongs to your developer application, and this app does not create one, because GoTo keeps one key set per application and a new key would change what every other subscription is signed with. Create it once with GoTo's own call, `POST /webhooks/secretkey` on the GoTo Webinar API (host `api.getgo.com`, path prefix `/G2W/rest/v2`, a Bearer token for your application; the answer's `value` is the key) and paste that `value` into each trigger's `signingSecret` param. Subscribing then runs GoTo's documented setup with the app's existing OAuth connection: `POST /webhooks` (the trigger's URL and event name), `PUT /webhooks` (activate it, GoTo creates webhooks inactive) and `POST /userSubscriptions` (subscribe the connected user); unsubscribing deletes the user subscription and the webhook (404 counts as gone). If a step fails, the webhook already created is removed and GoTo's error is shown. GoTo validates the callback URL with a plain GET that must answer 200; the trigger answers it with no events and no run.
 
 **Trust model.** GoTo signs `X-Webhook-Signature-Timestamp`, a colon and the exact event body with HMAC-SHA256 under the secret key and sends the base64 result in `X-Webhook-Signature` (`X-Webhook-Signature-Version` must be `0` when sent). The trigger checks it in constant time before it parses anything, rejects a timestamp more than five minutes from now (the timestamp is part of the signed text), and refuses a delivery whose headers are missing, whose raw body is unavailable, or when no secret key is configured. Large ids (`webinarKey`, `registrantKey`) are returned as exact strings, not rounded numbers. GoTo's guide describes the signed text only as "the event received as string"; if a delivery's signature never matches the body GoTo sent, the trigger refuses it (it fails closed) rather than guessing another form.
 
-Docs (verified 2026-11-10): https://developer.goto.com/guides/GoToWebinar/08_HOW_webhooks/, https://developer.goto.com/guides/GoToWebinar/07_HOW_WebHooksOverview/ and https://developer.goto.com/GoToWebinarV2/
+Docs (verified 2026-11-10): the five events are the full catalog at https://developer.goto.com/guides/GoToWebinar/07_HOW_WebHooksOverview/; sessions are "all past sessions" and `size` is capped at 200 in the OpenAPI at https://developer.goto.com/GoToWebinarV2/; https://developer.goto.com/guides/GoToWebinar/08_HOW_webhooks/, https://developer.goto.com/guides/GoToWebinar/07_HOW_WebHooksOverview/ and https://developer.goto.com/GoToWebinarV2/
 
 ## Verification
 

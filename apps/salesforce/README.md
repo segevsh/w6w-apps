@@ -5,6 +5,7 @@ Create, read, update and query any Salesforce object with SOQL and SOSL.
 - **Categories** — crm
 - **Auth methods** — access-token, oauth2
 - **Actions** — 12
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.salesforce.com`, `*.force.com`
 - **Website** — https://www.salesforce.com
 - **API docs** — https://developer.salesforce.com/docs
@@ -86,13 +87,28 @@ reach a status host.
 | Key | Type | Source action | Ordering |
 |---|---|---|---|
 | `new-record` | poll | `query` | `CreatedDate DESC` |
+| `new-or-updated-record` | poll | `query` | `LastModifiedDate DESC` (an edit is a new event) |
 
 `new-record` uses the existing SOQL query endpoint with `ORDER BY CreatedDate DESC LIMIT 100`.
 Enter object and field API names (not labels); both are restricted to letters, digits, and
 underscores before they are interpolated. Salesforce documents the REST query endpoint and SOQL
 field-list syntax at https://developer.salesforce.com/docs/platform/api-rest/guide/resources-query
 and https://developer.salesforce.com/docs/platform/salesforce-soql-sosl/guide/sforce-api-calls-soql-select-fields.html
-(checked 2026-11-09).
+(checked 2026-11-09). `new-or-updated-record` orders by `LastModifiedDate DESC`
+(https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_orderby.htm,
+verified 2026-11-10) and sends the same fields plus `LastModifiedDate`. Both work for any standard or
+custom object, which covers every record type n8n's Salesforce trigger node lists (account, attachment,
+case, contact, custom object, lead, opportunity, task, user).
+
+**No webhook trigger.** (Salesforce Outbound Messaging sends SOAP/XML from a legacy workflow rule, a different payload family from the REST records this app reads, so nothing is built on it.) Salesforce's event mechanisms for record changes are Change Data Capture and
+platform events, delivered to CometD and Pub/Sub API (gRPC) subscribers over a long-lived streaming
+connection, not to an HTTP callback URL
+(https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm,
+verified 2026-11-10), so a w6w trigger cannot receive them; the polls above are the supported route.
+
+Not covered (no trigger): `query-more` is the paging companion of `query` (covered by `new-record`);
+`search` (SOSL is a user-written `FIND ... RETURNING` statement over a search term; ordering and `LIMIT` exist only inside each per-object `RETURNING` clause, so there is no single newest-first feed, and the same records come from `new-record` and `new-or-updated-record`);
+`sobject-list` (the org's object catalogue, reference data).
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.

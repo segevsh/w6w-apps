@@ -1,14 +1,25 @@
 # Vercel
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 ## Triggers
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-deployment` — New Deployment | Poll | `deployment-list` | Each newly created deployment |
+| `new-alias` — New Alias | Poll | `alias-list` | Each newly created alias (domain pointed at a deployment) |
+| `new-project` — New Project | Poll | `project-list` | Each project that newly appears |
+| `new-or-updated-project` — New or Updated Project | Poll | `project-list` | Each project created or edited (`updatedAt`) |
+| `new-domain` — New Domain | Poll | `domain-list` | Each domain that newly appears |
+| `new-project-domain` — New Project Domain | Poll | `project-domain-list` | Each domain added to one project (`projectId` param) |
+| `new-env-var` — New Environment Variable | Poll | `env-list` | Each variable added to one project (`projectId` param; values stay encrypted) |
+| `new-or-updated-env-var` — New or Updated Environment Variable | Poll | `env-list` | Each variable added or edited (`updatedAt`) |
 
-Polled through `deployment-list` with the documented `since` filter ("Get Deployments created after this JavaScript timestamp") set to the last check minus 2 minutes, paging on with `until`. Vercel documents no sort order, so none is relied on. The first check stores a floor (now) and reads nothing; a window over 5 pages is drained across successive checks. Source: https://vercel.com/docs/rest-api/deployments/list-deployments (verified 2026-11-09).
+`new-deployment` and `new-alias` use the documented `since` filter ("Get Deployments created after this JavaScript timestamp", "Get aliases created after this JavaScript timestamp") set to the last check minus 2 minutes; Vercel documents no sort order, so none is relied on. Their first check stores a floor (now) and reads nothing; `new-deployment` drains a window over 5 pages across successive checks, `new-alias` reads its window in one check through the action's `returnAll` paging. The other triggers read a team's (or one project's) small bounded list through the list action's `returnAll` and diff the ids (plus `updatedAt` for the "or updated" ones). The first check of each stores the current state and emits nothing.
+
+Not covered: `deployment-alias-list` (the aliases of one deployment — `new-alias` delivers every alias), `deployment-event-list` and `runtime-log-list` (build and function log output, not records), `team-list` (account administration: it only finds the `teamId` the other actions take).
+
+Sources: https://vercel.com/docs/rest-api/deployments/list-deployments, https://vercel.com/docs/rest-api/aliases/list-aliases, https://vercel.com/docs/rest-api/projects/retrieve-a-list-of-projects, https://vercel.com/docs/rest-api/domains/list-all-the-domains (verified 2026-11-10).
 
 Ship and inspect Vercel deployments — projects, aliases, env vars, domains and
 logs.

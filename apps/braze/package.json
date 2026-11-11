@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/braze",
-  "version": "0.2.0",
-  "description": "Track user data, manage Braze campaigns, and poll newly created or updated campaigns.",
+  "version": "0.3.0",
+  "description": "Track user data, manage Braze campaigns, and poll new or updated campaigns, Canvases, segments, catalogs and Content Blocks plus new unsubscribes, hard bounces and invalid phone numbers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

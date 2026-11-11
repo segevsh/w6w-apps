@@ -29,3 +29,11 @@ test("commit-list: a blank repository fails before any request", async () => {
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`repo` is required");
   assertEquals(calls.length, 0);
 });
+
+test("commit-list: the since filter reaches the wire, and is absent by default", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: [] }, { status: 200, body: [] }], conn);
+  await action.execute!({ repo: "web", since: "2026-11-10T11:58:00Z" }, ctx);
+  await action.execute!({ repo: "web" }, ctx);
+  assertEquals(new URL(calls[0].url).searchParams.get("since"), "2026-11-10T11:58:00Z");
+  assertEquals(new URL(calls[1].url).searchParams.get("since"), null);
+});

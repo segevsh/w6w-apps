@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClerkClient } from "../lib/client.ts";
-import { LIST_PARAMS, ORGANIZATION_ID_PARAM } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_BY_PARAM, ORGANIZATION_ID_PARAM } from "../lib/params.ts";
 
 const action: ActionDefinition = {
   key: "organization-membership-list",
@@ -8,7 +8,7 @@ const action: ActionDefinition = {
   resource: "organization-membership",
   title: "List organization members",
   description: "List the members of an organization.",
-  params: [ORGANIZATION_ID_PARAM, ...LIST_PARAMS],
+  params: [ORGANIZATION_ID_PARAM, ...LIST_PARAMS, ORDER_BY_PARAM],
   output: [
     { key: "data", type: "array", label: "Memberships" },
     { key: "totalCount", type: "number", label: "Total members" },
@@ -23,6 +23,7 @@ const action: ActionDefinition = {
       `/organizations/${encodeURIComponent(organizationId)}/memberships`,
       {
         query: {
+          order_by: (p.orderBy as string | undefined) || undefined,
           limit: (p.limit as number | undefined) ?? 10,
           offset: (p.offset as number | undefined) ?? 0,
         },

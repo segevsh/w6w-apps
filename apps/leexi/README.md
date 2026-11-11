@@ -1,6 +1,6 @@
 # Leexi
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 Read Leexi calls, transcripts and AI summaries, import recordings, manage meeting events and the
 Leexi meeting assistant, and administer users and teams (plus the reseller endpoints), over the
@@ -25,7 +25,21 @@ live probes of `public-api.leexi.ai` and `status.leexi.ai`.
 
 ## Triggers
 
-- **New Meeting Event** (`new-meeting-event`) polls `meeting-event-list` with `created_at desc`.
+Every trigger polls every five minutes (vendor docs: <https://docs.public-api.leexi.ai/llms.txt>, verified 2026-11-10).
+
+| Key | Wraps | What the run gets |
+| --- | --- | --- |
+| `new-meeting-event` | `meeting-event-list`, `order=created_at desc` | each new meeting event |
+| `new-call` | `call-list`, `order=created_at desc` | each new call or meeting |
+| `new-or-updated-call` | `call-list`, `order=updated_at desc` | each call created or updated |
+| `new-user` | `user-list` (all pages, uuids diffed) | each user added to the workspace |
+| `new-team` | `team-list` (all pages, uuids diffed) | each team created |
+| `new-client-company` | `client-company-list` (reseller keys) | each client company attached |
+| `new-client-team` | `client-team-list` (reseller keys, `company_uuid`) | each team created in the company |
+| `new-client-user` | `client-user-list` (reseller keys, `company_uuid`) | each user added to the company |
+
+Not covered: `call-note-list` (the notes of one call, a parent nobody would pick to watch; new calls arrive through `new-call`).
+Leexi also offers a Call Processed webhook (<https://docs.public-api.leexi.ai/reference/webhooks-call-processed.md>); it is queued for a webhook node.
 
 1. **Errors are mostly empty.** An unauthenticated `GET /v1/users` and one with a bogus Basic pair
    both answer `401` with an **empty `text/html` body**, and an unknown path answers `404` the same

@@ -63,6 +63,12 @@ import creditsBalanceGet from "./actions/credits-balance-get.ts";
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
 import newAddress from "./triggers/new-address.ts";
+import newPostcard from "./triggers/new-postcard.ts";
+import newLetter from "./triggers/new-letter.ts";
+import newSelfMailer from "./triggers/new-self-mailer.ts";
+import newCheck from "./triggers/new-check.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newBankAccount from "./triggers/new-bank-account.ts";
 
 export default {
   actions: [
@@ -116,5 +122,13 @@ export default {
   // API key only. Lob publishes no OAuth surface; the key is the whole authentication story.
   auth: [apiKey],
   healthChecks: [service, rateLimit],
-  triggers: [newAddress],
+  triggers: [
+    newAddress,
+    newPostcard,
+    newLetter,
+    newSelfMailer,
+    newCheck,
+    newTemplate,
+    newBankAccount,
+  ],
 } satisfies AppDefinition;

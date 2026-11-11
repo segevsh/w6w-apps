@@ -49,7 +49,7 @@ export interface FivetranEvent {
   data: Record<string, unknown>;
 }
 
-const GROUP_PARAM: Param = {
+export const GROUP_PARAM: Param = {
   key: "groupId",
   label: "Destination (group) ID",
   type: "string",
@@ -58,7 +58,7 @@ const GROUP_PARAM: Param = {
     "Only fire for connections in this destination (the group id from Get Many Destinations). Leave blank to fire for the whole account.",
 };
 
-const OUTPUT: OutputField[] = [
+export const OUTPUT: OutputField[] = [
   { key: "event", type: "string", label: "Event" },
   { key: "created", type: "string", label: "Created (ISO 8601)" },
   { key: "connectorType", type: "string", label: "Connector Type" },
@@ -75,12 +75,12 @@ function asObject(v: unknown): Record<string, unknown> | null {
     : null;
 }
 
-function str(v: unknown): string | null {
+export function str(v: unknown): string | null {
   return typeof v === "string" && v !== "" ? v : typeof v === "number" ? String(v) : null;
 }
 
 /** True for the "no such webhook" answers `FivetranClient` throws. */
-function isGone(err: unknown): boolean {
+export function isGone(err: unknown): boolean {
   return err instanceof Error && /^Fivetran (404|410)\b/.test(err.message);
 }
 

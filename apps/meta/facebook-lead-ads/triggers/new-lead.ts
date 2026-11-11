@@ -1,3 +1,3 @@
 import { newLeadTrigger } from "../lib/triggers.ts";
 
-export default newLeadTrigger;
+export default { ...newLeadTrigger, key: "new-lead" };

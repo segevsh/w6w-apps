@@ -92,6 +92,13 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import newEvent from "./triggers/new-event.ts";
 import newOrUpdatedEvent from "./triggers/new-or-updated-event.ts";
+import newOrUpdatedSession from "./triggers/new-or-updated-session.ts";
+import newOrUpdatedSessionRegistrant from "./triggers/new-or-updated-session-registrant.ts";
+import newSession from "./triggers/new-session.ts";
+import newSessionQuestion from "./triggers/new-session-question.ts";
+import newSessionRecording from "./triggers/new-session-recording.ts";
+import newSessionRegistrant from "./triggers/new-session-registrant.ts";
+import newUser from "./triggers/new-user.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -148,5 +155,15 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newEvent, newOrUpdatedEvent],
+  triggers: [
+    newEvent,
+    newOrUpdatedEvent,
+    newOrUpdatedSession,
+    newOrUpdatedSessionRegistrant,
+    newSession,
+    newSessionQuestion,
+    newSessionRecording,
+    newSessionRegistrant,
+    newUser,
+  ],
 } satisfies AppDefinition;

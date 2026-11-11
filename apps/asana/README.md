@@ -6,19 +6,27 @@ API.
 - **Categories** — productivity, project-management
 - **Auth methods** — access-token, oauth2
 - **Actions** — 22
-- **Triggers** — 2 (webhook)
+- **Triggers** — 9 (8 webhook, 1 poll)
 - **Egress allowlist** — `app.asana.com`
 - **Website** — https://asana.com
 - **API docs** — https://developers.asana.com
 
 ## Triggers
 
-| Trigger        | Mechanism | Vendor event                                    | What the run gets                                        |
-| -------------- | --------- | ----------------------------------------------- | -------------------------------------------------------- |
-| `new-task`     | webhook   | a task is `added` to the watched project        | task ID, who added it, when, the parent project ID       |
-| `task-updated` | webhook   | a task in the watched project is `changed`      | task ID, the changed field and its new value, who, when  |
+| Trigger           | Mechanism | Vendor event                                                  | What the run gets                                              |
+| ----------------- | --------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
+| `new-task`        | webhook   | a task is `added` to the watched project                      | task ID, who added it, when, the parent project ID             |
+| `task-updated`    | webhook   | a task in the watched project is `changed`                    | task ID, the changed field and its new value, who, when        |
+| `task-deleted`    | webhook   | a task in the watched project is `deleted`                    | task ID, who deleted it, when                                  |
+| `new-comment`     | webhook   | a `story` of subtype `comment_added` is `added` in the project | story ID, the task it belongs to, who, when                   |
+| `new-project`     | webhook   | a `project` is `added` in the watched workspace               | project ID, who created it, when                               |
+| `project-updated` | webhook   | a `project` is `changed` in the watched workspace             | project ID, the changed field, who, when                       |
+| `project-deleted` | webhook   | a `project` is `deleted` in the watched workspace             | project ID, who deleted it, when                               |
+| `any-event`       | webhook   | the `<resource type>.<action>` names you list, or all (project) | resource type and ID, action, parent, changed field, who, when |
+| `new-user`        | poll      | `GET /workspaces/{gid}/users`, compared check to check        | each user newly added to the workspace                         |
 
-**Setup.** Set *Project ID* to the project to watch. The trigger registers the webhook itself
+**Setup.** Set *Project ID* to the project to watch (`new-project`, `project-updated` and
+`project-deleted` take a *Workspace ID* instead; `any-event` takes a *Resource ID* and *Events*). The trigger registers the webhook itself
 (`POST /webhooks` on the project, filtered to `resource_type: task` and one action) and removes it
 when the subscription is deleted. Asana's webhook handshake is handled for you: while the webhook
 is being created Asana POSTs the callback URL with an `X-Hook-Secret` header and the trigger echoes
@@ -37,7 +45,27 @@ and re-add the trigger to register a new one.
 key of the create response. If an account's response omits it, registration fails with an explicit
 error and the webhook is deleted again, rather than accepting unsigned deliveries.
 
-Docs: <https://developers.asana.com/docs/webhooks-guide>, verified 2026-11-09.
+**Any event.** `any-event` registers a webhook on a project, team, portfolio, goal or workspace
+with the `<resource type>.<action>` list you give it (for example `section.added`,
+`story.changed`, `workspace_membership.added`, `team_membership.added`, `goal.added`; actions are
+`added`, `changed`, `deleted`, `removed`, `undeleted`). A blank list registers no filter, which
+Asana allows only on lower-level resources such as a project; a team, portfolio, goal or workspace
+webhook must list its events. Asana events are compact: a `workspace_membership.added` event names
+the membership, not the user.
+
+**New User** is a poll over the workspace's user list: Asana documents it as "sorted
+alphabetically and limited to 2000" and unpaginated, so the whole list is compared on every check.
+Pagination is not enabled by default on this endpoint
+(<https://developers.asana.com/docs/pagination>); if Asana ever answers with a `next_page`, the
+check fails loudly instead of comparing a partial list.
+
+**Not covered.** `list-tasks`, `list-subtasks` and `search-tasks` return tasks and subtasks that
+`new-task` already delivers (a project webhook is notified of its tasks and their subtasks);
+`list-projects` is delivered by `new-project`.
+
+Docs, verified 2026-11-10: <https://developers.asana.com/docs/webhooks-guide> (events, filters,
+signature), <https://developers.asana.com/reference/createwebhook> (filters),
+<https://developers.asana.com/reference/getusersforworkspace> (user list).
 
 ## Health check
 

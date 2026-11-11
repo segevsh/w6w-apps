@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /user_management/organization_memberships` — who belongs to which customer.
@@ -38,6 +38,7 @@ const action: ActionDefinition = {
       ],
       hint: "An unfiltered list counts an unaccepted invitation as access.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -61,6 +62,7 @@ const action: ActionDefinition = {
       {
         query: compact({
           organization_id: organizationId,
+          order: p.order,
           user_id: userId,
           statuses: statuses || undefined,
         }) as Record<string, string>,

@@ -22,6 +22,8 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
+import recordChanges from "./triggers/record-changes.ts";
+import schemaChanges from "./triggers/schema-changes.ts";
 import apiKey from "./auth/api-key.ts";
 
 import workspaceGet from "./actions/workspace-get.ts";
@@ -80,7 +82,7 @@ export default {
     reportGet,
     reportPrint,
   ],
-  triggers: [newOrUpdatedRecord],
+  triggers: [newOrUpdatedRecord, recordChanges, schemaChanges],
   // Workspace API key + workspace id. Ninox publishes no OAuth surface for the public API.
   auth: [apiKey],
   healthChecks: [service, api],

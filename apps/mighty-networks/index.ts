@@ -34,6 +34,24 @@ import courseworkList from "./actions/coursework-list.ts";
 import memberJoined from "./triggers/member-joined.ts";
 import postCreated from "./triggers/post-created.ts";
 import networkEvent from "./triggers/network-event.ts";
+import commentCreated from "./triggers/comment-created.ts";
+import eventCanceled from "./triggers/event-canceled.ts";
+import eventCreated from "./triggers/event-created.ts";
+import eventUpdated from "./triggers/event-updated.ts";
+import inviteRequested from "./triggers/invite-requested.ts";
+import memberLeft from "./triggers/member-left.ts";
+import memberLessonCompleted from "./triggers/member-lesson-completed.ts";
+import memberPurchased from "./triggers/member-purchased.ts";
+import memberSubscriptionCanceled from "./triggers/member-subscription-canceled.ts";
+import memberTagAdded from "./triggers/member-tag-added.ts";
+import memberTagRemoved from "./triggers/member-tag-removed.ts";
+import memberUpdated from "./triggers/member-updated.ts";
+import newCoursework from "./triggers/new-coursework.ts";
+import newPlan from "./triggers/new-plan.ts";
+import newSpace from "./triggers/new-space.ts";
+import newTag from "./triggers/new-tag.ts";
+import postUpdated from "./triggers/post-updated.ts";
+import rsvpCreated from "./triggers/rsvp-created.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -71,7 +89,29 @@ export default {
     planList,
     courseworkList,
   ],
-  triggers: [memberJoined, postCreated, networkEvent],
+  triggers: [
+    memberJoined,
+    postCreated,
+    networkEvent,
+    commentCreated,
+    eventCanceled,
+    eventCreated,
+    eventUpdated,
+    inviteRequested,
+    memberLeft,
+    memberLessonCompleted,
+    memberPurchased,
+    memberSubscriptionCanceled,
+    memberTagAdded,
+    memberTagRemoved,
+    memberUpdated,
+    newCoursework,
+    newPlan,
+    newSpace,
+    newTag,
+    postUpdated,
+    rsvpCreated,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

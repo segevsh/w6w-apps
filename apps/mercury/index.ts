@@ -92,6 +92,14 @@ import userList from "./actions/user-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
+import newTransaction from "./triggers/new-transaction.ts";
+import newAccount from "./triggers/new-account.ts";
+import newCard from "./triggers/new-card.ts";
+import newRecipient from "./triggers/new-recipient.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newUser from "./triggers/new-user.ts";
+import newCategory from "./triggers/new-category.ts";
+import newAccountStatement from "./triggers/new-account-statement.ts";
 
 export default {
   actions: [
@@ -135,7 +143,17 @@ export default {
     organizationGet,
     userList,
   ],
-  triggers: [newCustomer],
+  triggers: [
+    newCustomer,
+    newTransaction,
+    newAccount,
+    newCard,
+    newRecipient,
+    newInvoice,
+    newUser,
+    newCategory,
+    newAccountStatement,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

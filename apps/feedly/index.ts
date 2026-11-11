@@ -49,7 +49,12 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAiFeed from "./triggers/new-ai-feed.ts";
 import newArticle from "./triggers/new-article.ts";
+import newBoard from "./triggers/new-board.ts";
+import newEnterpriseUser from "./triggers/new-enterprise-user.ts";
+import newFolder from "./triggers/new-folder.ts";
+import newSearchArticle from "./triggers/new-search-article.ts";
 
 export default {
   actions: [
@@ -76,5 +81,5 @@ export default {
   // for this API — see the module doc above and README.md.
   auth: [bearerToken],
   healthChecks: [service, quota],
-  triggers: [newArticle],
+  triggers: [newArticle, newSearchArticle, newBoard, newFolder, newAiFeed, newEnterpriseUser],
 } satisfies AppDefinition;

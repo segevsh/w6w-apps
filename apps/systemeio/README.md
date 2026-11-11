@@ -6,7 +6,7 @@ communities and memberships, and outbound webhooks on **systeme.io's Public API*
 - **Categories** — marketing
 - **Auth methods** — api-key (`X-API-Key` header)
 - **Actions** — 41
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 - **Health checks** — 1 (~~`service`~~, declared unavailable) + the derived `auth:api-key`
 - **Egress allowlist** — `api.systeme.io`
 - **Website** — https://systeme.io/
@@ -162,5 +162,17 @@ recorded request.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll (newest first) | `contact-list` | Each newly registered contact |
+| `new-campaign` — New Email Campaign | Poll (newest first) | `campaign-list` | Each newly created automated email campaign |
+| `new-community` — New Community | Poll (newest first) | `community-list` | Each newly created community |
+| `new-course` — New Course | Poll (newest first) | `course-list` | Each newly created course |
+| `new-enrollment` — New Enrollment | Poll (newest first) | `enrollment-list` | Each newly created course enrollment |
+| `new-funnel` — New Funnel | Poll (newest first) | `funnel-list` | Each newly created funnel |
+| `new-membership` — New Community Membership | Poll (newest first) | `membership-list` | Each newly created community membership |
+| `new-newsletter` — New Newsletter | Poll (newest first) | `newsletter-list` | Each newly created one-off newsletter |
+| `new-tag` — New Tag | Poll (newest first) | `tag-list` | Each newly created tag |
 
 Polled through the `contact-list` action with `order=desc`; the first check records what exists without firing. Source: the pagination guide says the cursor is "the ID of the last item you received" and "Specify the order of the data using the `order` parameter, with options for ascending (`asc`) or descending (`desc`) order. The default setting is descending (`desc`)." Contact ids only grow, so descending is newest first ([API reference](https://developer.systeme.io/reference/api), verified 2026-11-09).
+
+The new triggers poll the existing list actions with `limit=100&order=desc` (same client, endpoint and credential); the first check records what exists without firing. Source: the pagination guide says "Specify the order of the data using the `order` parameter, with options for ascending (`asc`) or descending (`desc`) order", and ids only grow, so descending is newest first ([API reference](https://developer.systeme.io/reference/api), verified 2026-11-10). No list documents an updated-since filter, so no `new-or-updated-*` trigger ships.
+
+Not covered: `contact-field-list` (custom field definitions: static configuration), `webhook-list` (the account's own webhook registrations: integration-management configuration).

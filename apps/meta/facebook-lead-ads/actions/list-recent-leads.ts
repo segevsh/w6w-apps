@@ -4,6 +4,7 @@ import { FacebookClient, type FacebookListResponse } from "../lib/client.ts";
 interface Input {
   formId: string;
   since?: number;
+  createdAfter?: number;
   limit?: number;
   cursor?: string;
 }
@@ -51,6 +52,13 @@ const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
       type: "number",
       hint: "Only return leads created strictly after this unix timestamp.",
     },
+    {
+      key: "createdAfter",
+      label: "Created after (unix seconds)",
+      type: "number",
+      hint:
+        "Only return leads whose `time_created` is greater than this unix timestamp (sent as the documented `filtering` argument).",
+    },
     { key: "limit", label: "Limit", type: "number", default: 25 },
     {
       key: "cursor",
@@ -75,6 +83,14 @@ const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
           // `filtering` is Facebook's field-level filter syntax; the API also
           // accepts a `since` unix-seconds shortcut on the leads edge.
           since: input.since,
+          // The documented lead filter (Lead Ads, "Filtering Leads"): `time_created` GREATER_THAN.
+          filtering: input.createdAfter === undefined || input.createdAfter === null
+            ? undefined
+            : JSON.stringify([{
+              field: "time_created",
+              operator: "GREATER_THAN",
+              value: input.createdAfter,
+            }]),
           after: input.cursor,
         },
       },

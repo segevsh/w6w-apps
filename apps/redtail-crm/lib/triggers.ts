@@ -1,5 +1,5 @@
 import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { type IdsState, pollNewItems } from "../../_shared/poll/mod.ts";
+import { type IdsState, pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
@@ -128,6 +128,65 @@ export function sinceTrigger(spec: {
             ? { ...base, cursor, resume: { checkedAt, input: pending } }
             : { ...base, cursor: checkedAt }) as SinceState,
       };
+    },
+  };
+}
+
+/**
+ * A "new <record>" poll over a Redtail list that documents NO sort order and NO created-since
+ * filter. Each check walks `page=1…meta.total_pages` of the SAME list action and diffs the ids
+ * against the previous check (`pollSnapshot`, added only). A list with more than `maxPages` pages
+ * throws an error naming the cap instead of silently missing records. A response without `meta`
+ * (the docs' notes example has none) is one page.
+ */
+export function pagedSnapshotTrigger(spec: {
+  key: string;
+  title: string;
+  description: string;
+  action: ActionDefinition;
+  maxPages: number;
+  params?: Param[];
+  input?(params: Record<string, unknown>): Record<string, unknown>;
+  items(result: unknown): unknown[];
+  output: OutputField[];
+  sample: unknown;
+  minIntervalMs?: number;
+}): TriggerDefinition {
+  if (spec.action.type !== "read" && spec.action.type !== "search") {
+    throw new Error(`pagedSnapshotTrigger(${spec.key}): ${spec.action.key} is not a list action`);
+  }
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: spec.minIntervalMs ?? 300_000,
+    async poll({ params, state }, ctx) {
+      const byId = new Map<string, unknown>();
+      for (let page = 1;; page++) {
+        const result = await spec.action.execute(
+          { ...(spec.input?.(params as Record<string, unknown>) ?? {}), page },
+          ctx,
+        ) as { meta?: { total_pages?: number } };
+        for (const item of spec.items(result) as Array<{ id?: unknown }>) {
+          if (item.id !== undefined && item.id !== null) byId.set(String(item.id), item);
+        }
+        const totalPages = Number(result.meta?.total_pages ?? 1);
+        if (page >= totalPages) break;
+        if (page >= spec.maxPages) {
+          throw new Error(
+            `${spec.key}: the list has ${totalPages} pages; this trigger reads at most ${spec.maxPages}`,
+          );
+        }
+      }
+      const { events, nextState } = await pollSnapshot({
+        state,
+        emit: { added: true, updated: false },
+        rows: [...byId.keys()].map((key) => ({ key, values: { key } })),
+      });
+      return { events: events.map((e) => byId.get(e.key)), nextState };
     },
   };
 }

@@ -1,6 +1,6 @@
 # Recharge
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 12 (poll)
 
 Manage customers, addresses, subscriptions, one-time purchases, charges, orders, discounts and
 webhooks on **Recharge**, the recurring-billing platform for Shopify (and BigCommerce / custom)
@@ -172,9 +172,22 @@ deprecated but "will not be removed from this API version," so it stays in the l
 | --- | --- | --- | --- |
 | `new-order` — New Order | Poll | `order-list` | Each newly created order |
 | `new-or-updated-order` — New or Updated Order | Poll | `order-list` | Each order that is new or was updated (event id = `id:updated_at`) |
+| `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | Poll | `customer-list` | Each customer that is new or was updated (event id = `id:updated_at`) |
+| `new-address` — New Address | Poll | `address-list` | Each newly created address |
+| `new-or-updated-address` — New or Updated Address | Poll | `address-list` | Each address that is new or was updated (event id = `id:updated_at`) |
+| `new-subscription` — New Subscription | Poll | `subscription-list` | Each newly created subscription |
+| `new-or-updated-subscription` — New or Updated Subscription | Poll | `subscription-list` | Each subscription that is new or was updated (event id = `id:updated_at`) |
+| `new-onetime` — New One-Time Purchase | Poll | `onetime-list` | Each newly created one-time purchase |
+| `new-discount` — New Discount | Poll | `discount-list` | Each newly created discount |
+| `new-charge` — New Charge | Poll | `charge-list` | Each newly created charge |
+| `new-or-updated-charge` — New or Updated Charge | Poll | `charge-list` | Each charge that is new or was updated (event id = `id:updated_at`) |
 
 - Recharge's list endpoints take `created_at_min` and `updated_at_min` (docs: "created_at_min string — Show … created after the given date", "updated_at_min string — Returns … updated after the given time"; the exact lines quoted are from the Charges/Addresses lists, and `order-list` carries the same pair as its `createdAtMin`/`updatedAtMin` params). Default order is by ascending id, so the triggers use the since-filter (`last check − 120 s`, `limit=100`, following `next_cursor` up to 5 pages per check, resuming a longer window on the next check) and dedupe by id (`id:updated_at` for the updated trigger); an order stamped before the first check is never emitted.
 
+- The customer, address, subscription, one-time, discount and charge triggers use the same since-filter (`created_at_min` / `updated_at_min`, ascending id, `next_cursor` paging) as the order triggers. `charge-list` gained optional `createdAtMin`/`createdAtMax`/`updatedAtMin`/`updatedAtMax` filters (default-preserving) so the charge triggers can use it.
+- Not covered: `product-list` (the store's product catalogue mirror, no created/updated filter or sort order, only `external_product_ids`), `payment-method-list` (no created/updated filter or sort, unbounded per-customer vault records), `webhook-list` (the merchant's own webhook subscription configuration, not business events).
+
 Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
 
-Sources (verified 2026-11-09): https://developer.rechargepayments.com/2021-11/orders/orders_list.
+Sources (verified 2026-11-10): https://developer.rechargepayments.com/2021-11/orders/orders_list, https://developer.rechargepayments.com/2021-11/customers/customers_list, https://developer.rechargepayments.com/2021-11/subscriptions/subscriptions_list, https://developer.rechargepayments.com/2021-11/charges/charges_list.

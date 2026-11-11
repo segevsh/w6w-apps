@@ -7,7 +7,7 @@ threads and comments, direct messages, events, webhooks, courses/lessons/videos 
 - **Categories** — communication, social-media
 - **Auth methods** — api-key
 - **Actions** — 54
-- **Triggers** — 8 (webhook)
+- **Triggers** — 19 (12 webhook, 7 poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.heartbeat.chat` (the `service` check adds `status.heartbeat.chat` to
   its own hook allowlist, never to the app's)
@@ -35,12 +35,29 @@ threads and comments, direct messages, events, webhooks, courses/lessons/videos 
 | `event-rsvp` — New Event RSVP | webhook (API-registered, unsigned) | `EVENT_RSVP` (optional filters: event, members or guests) | event id, email, user id (null for a guest) |
 | `course-completed` — Course Completed | webhook (API-registered, unsigned) | `COURSE_COMPLETED` (filter: course) | course id and name, user id |
 | `document-created` — New Document | webhook (API-registered, unsigned) | `DOCUMENT_CREATE` | document id |
+| `mention` — Member or Group Mentioned | webhook (API-registered, unsigned) | `MENTION` (required filter: the member or group; optional: channels) | who was mentioned, who mentioned them, thread or comment location |
+| `direct-message` — Admin Received Direct Message | webhook (API-registered, unsigned) | `DIRECT_MESSAGE` (required filter: the admin) | sender, receiver, chat id, message id |
+| `abandoned-invitation` — Invitation Link Abandoned | webhook (API-registered, unsigned) | `ABANDONED_CART` (optional filters: invitation link, groups) | email, invitation link id, group ids |
+| `any-event` — Any Event | webhook (API-registered, unsigned) | any of the ten actions above except `MENTION`, chosen by the `events` param | the action name plus that event's payload |
+| `new-channel` — New Channel | poll (5 min) | wraps `list-channels` | the channel |
+| `new-channel-category` — New Channel Category | poll (5 min) | wraps `list-channel-categories` | the category |
+| `new-group` — New Group | poll (5 min) | wraps `list-groups` | the group |
+| `new-course` — New Course | poll (5 min) | wraps `list-courses` | the course with its cohort/module/lesson tree |
+| `new-invitation` — New Invitation Link | poll (5 min) | wraps `list-invitations` | the invitation link |
+| `new-video` — New Video | poll (5 min) | wraps `list-videos` | the video |
+| `new-direct-message` — New Direct Message in Chat | poll (5 min) | wraps `list-direct-messages` (param: the chat id) | the message |
 
-**Setup.** Nothing to paste beyond the filter ids a trigger asks for. Subscribing registers the trigger's URL with `PUT /webhooks` (`{ "action": { "name", "filter"? }, "url" }`) using the app's existing API key; unsubscribing deletes the webhook (`DELETE /webhooks/{id}`; one Heartbeat no longer has counts as deleted). Each run gets the action name beside the documented payload; the payloads are small (ids), so fetch the record with the matching Get action. The `MENTION`, `DIRECT_MESSAGE` and `ABANDONED_CART` actions are not wired.
+**Setup.** Nothing to paste beyond the filter ids a trigger asks for. Subscribing registers the trigger's URL with `PUT /webhooks` (`{ "action": { "name", "filter"? }, "url" }`) using the app's existing API key; unsubscribing deletes the webhook (`DELETE /webhooks/{id}`; one Heartbeat no longer has counts as deleted). Each run gets the action name beside the documented payload; the payloads are small (ids), so fetch the record with the matching Get action. Heartbeat's delivery body never names its action, so `any-event` (which registers one webhook per chosen action, because Heartbeat has no "all") registers each on the callback URL plus `?hbEvent=<ACTION>` and takes the action from that query; it assumes Heartbeat posts to the registered URL with its query string intact. `any-event` with an empty `events` list registers the six actions that need no filter (`USER_JOIN`, `USER_UPDATE`, `EVENT_CREATE`, `EVENT_RSVP`, `DOCUMENT_CREATE`, `ABANDONED_CART`) plus any filtered action whose id field (channel, group, course, admin) you fill in; `MENTION` needs a user selection and has its own trigger.
 
-**Trust model.** Heartbeat does not sign its webhooks: its Webhooks reference documents no signature, secret or signing header, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
+**Polls.** Heartbeat paginates none of channels, channel categories, groups, courses, invitations or videos: each answers its whole collection in one unordered response, so the `new-*` polls diff the ids against the previous check and emit only additions (an edit is not an event; the kit refuses more than 5000 rows with an error naming the cap). `new-direct-message` reads the chat's 100 most recent messages, sorts them by `createdAt` (Heartbeat documents the count but not the order) and emits the unseen ones oldest-first; more than 100 new messages between two checks lose the oldest.
 
-Docs (verified 2026-11-10): https://heartbeat.readme.io/reference/webhooks and https://heartbeat.readme.io/reference/createwebhook
+**Trust model.** Heartbeat does not sign its webhooks: its Webhooks reference documents no signature, secret or signing header, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged delivery to it, so keep it private. The triggers check that the request is a POST with a JSON object body; `any-event` also refuses an action this subscription did not register.
+
+**Events.** Heartbeat's catalog (https://heartbeat.readme.io/reference/webhooks): `USER_JOIN`, `USER_UPDATE`, `EVENT_CREATE`, `EVENT_RSVP`, `THREAD_CREATE`, `MENTION`, `DIRECT_MESSAGE`, `COURSE_COMPLETED`, `GROUP_JOIN`, `ABANDONED_CART`, `DOCUMENT_CREATE`: each has its own trigger above (and is reachable through `any-event`, `MENTION` excepted).
+
+**Not covered.** Delivered by a webhook trigger instead: `list-users` and `find-user` (new members: `user-joined`), `list-threads` (`thread-created`), `list-events` (`event-created`), `list-documents` (`document-created`). Reference or admin data: `list-roles` (role definitions), `list-webhooks` (this API key's own webhook registrations). No stable id and unbounded: `list-event-instances` (items are `{startTime, endTime}` only and span every past and future occurrence of a recurring event). No documented order or since filter, and cursor-paged without bound: `list-chat-channel-messages` (https://heartbeat.readme.io/reference/getchatchannelmessages).
+
+Docs (verified 2026-11-10): https://heartbeat.readme.io/reference/webhooks, https://heartbeat.readme.io/reference/createwebhook, https://heartbeat.readme.io/reference/getchannels, https://heartbeat.readme.io/reference/getchannelcategories, https://heartbeat.readme.io/reference/getgroups, https://heartbeat.readme.io/reference/getcourses, https://heartbeat.readme.io/reference/getinvitations, https://heartbeat.readme.io/reference/getvideos and https://heartbeat.readme.io/reference/getdirectmessages
 
 ## The three things most likely to cost someone a day
 
@@ -300,6 +317,7 @@ heartbeat/
 ├── index.ts                     # entry: { actions, auth, healthChecks }
 ├── lib/
 │   ├── client.ts                # HeartbeatClient, error formatting, rate-limit header reader
+│   ├── triggers.ts              # webhook / any-event / snapshot-poll trigger builders
 │   └── params.ts                # shared Param fragments (ids, emails, rich-text hint, cursor pair)
 ├── auth/api-key.ts               # bearer key: sign, test
 ├── actions/                     # one file per action (54)

@@ -17,6 +17,9 @@ import orderCreatedTrigger from "./triggers/order-created.ts";
 import orderUpdatedTrigger from "./triggers/order-updated.ts";
 import orderDeletedTrigger from "./triggers/order-deleted.ts";
 import customerCreatedTrigger from "./triggers/customer-created.ts";
+import customerUpdatedTrigger from "./triggers/customer-updated.ts";
+import customerDeletedTrigger from "./triggers/customer-deleted.ts";
+import productDeletedTrigger from "./triggers/product-deleted.ts";
 import productCreatedTrigger from "./triggers/product-created.ts";
 import productUpdatedTrigger from "./triggers/product-updated.ts";
 import eventTrigger from "./triggers/event.ts";
@@ -45,8 +48,11 @@ export default {
     orderUpdatedTrigger,
     orderDeletedTrigger,
     customerCreatedTrigger,
+    customerUpdatedTrigger,
+    customerDeletedTrigger,
     productCreatedTrigger,
     productUpdatedTrigger,
+    productDeletedTrigger,
     eventTrigger,
   ],
   auth: [apiKey],

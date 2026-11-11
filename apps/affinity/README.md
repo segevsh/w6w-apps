@@ -1,16 +1,43 @@
 # Affinity
 
-- **Triggers** — 1 webhook
+- **Triggers** — 24 webhook
 
 ## Triggers
 
 | Key | Title | Mechanism | Vendor event | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-list-entry` | New List Entry | Webhook | `list_entry.created` | The changed record |
+| `list-created` | List Created | Webhook | `list.created` | The changed record |
+| `list-updated` | List Updated | Webhook | `list.updated` | The changed record |
+| `list-deleted` | List Deleted | Webhook | `list.deleted` | The changed record |
+| `list-entry-deleted` | List Entry Deleted | Webhook | `list_entry.deleted` | The changed record |
+| `note-created` | Note Created | Webhook | `note.created` | The changed record |
+| `note-updated` | Note Updated | Webhook | `note.updated` | The changed record |
+| `note-deleted` | Note Deleted | Webhook | `note.deleted` | The changed record |
+| `field-created` | Field Created | Webhook | `field.created` | The changed record |
+| `field-updated` | Field Updated | Webhook | `field.updated` | The changed record |
+| `field-deleted` | Field Deleted | Webhook | `field.deleted` | The changed record |
+| `field-value-created` | Field Value Created | Webhook | `field_value.created` | The changed record |
+| `field-value-updated` | Field Value Updated | Webhook | `field_value.updated` | The changed record |
+| `field-value-deleted` | Field Value Deleted | Webhook | `field_value.deleted` | The changed record |
+| `person-created` | Person Created | Webhook | `person.created` | The changed record |
+| `person-updated` | Person Updated | Webhook | `person.updated` | The changed record |
+| `person-deleted` | Person Deleted | Webhook | `person.deleted` | The changed record |
+| `organization-created` | Organization Created | Webhook | `organization.created` | The changed record |
+| `organization-updated` | Organization Updated | Webhook | `organization.updated` | The changed record |
+| `organization-deleted` | Organization Deleted | Webhook | `organization.deleted` | The changed record |
+| `opportunity-created` | Opportunity Created | Webhook | `opportunity.created` | The changed record |
+| `opportunity-updated` | Opportunity Updated | Webhook | `opportunity.updated` | The changed record |
+| `opportunity-deleted` | Opportunity Deleted | Webhook | `opportunity.deleted` | The changed record |
+| `any-event` | Any Event | Webhook | any (optional `events` filter) | The event type and the changed record |
 
-Affinity V1 provides no cryptographic delivery signature. The callback URL is the shared secret; the trigger deletes stale registrations for that URL before registering its own.
+Affinity V1 provides no cryptographic delivery signature (the reference describes no signature header). The callback URL is the shared secret; each trigger deletes stale registrations for that URL before registering its own, and drops any delivery whose `type` is not the event it was registered for.
 
-Vendor documentation: [Affinity V1 Webhooks](https://api-docs.affinity.co/) (verified 2026-11-09).
+**Subscription limit.** Affinity allows three webhook subscriptions per Affinity instance, and every active trigger above registers one. To react to more than three events, use **Any Event** with the `events` param (comma-separated, e.g. `person.created,note.created,file.created`): one subscription covers the whole list, and leaving it empty subscribes to every event. Events with no named trigger (`organization.merged`, `file.*`, `reminder.*`) are reachable through it.
+
+Not covered as triggers: `fields-list`, `persons-fields-list` and `organizations-fields-list` (field definitions are reference data) and `webhooks-list` (webhook subscription management). The search/list actions for persons, organizations, opportunities, notes, lists, list entries and field values have no documented newest-first order or created-since filter, so the matching `*.created` webhook triggers deliver those records instead.
+
+Vendor documentation: [Affinity V1 Webhooks](https://api-docs.affinity.co/) (verified 2026-11-10).
 
 [Affinity](https://www.affinity.co) is a relationship-intelligence CRM built around three
 top-level objects — **Persons**, **Organizations**, and **Opportunities** — plus the **Lists**

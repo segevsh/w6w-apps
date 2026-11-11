@@ -36,6 +36,15 @@ import querySites from "./actions/query-sites.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newProduct from "./triggers/new-product.ts";
+import newOrUpdatedProduct from "./triggers/new-or-updated-product.ts";
+import newOrder from "./triggers/new-order.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newSite from "./triggers/new-site.ts";
+import newOrUpdatedSite from "./triggers/new-or-updated-site.ts";
+import newDataItem from "./triggers/new-data-item.ts";
+import newOrUpdatedDataItem from "./triggers/new-or-updated-data-item.ts";
+import newCollection from "./triggers/new-collection.ts";
 
 export default {
   actions: [
@@ -70,5 +79,16 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newProduct,
+    newOrUpdatedProduct,
+    newOrder,
+    newOrUpdatedOrder,
+    newSite,
+    newOrUpdatedSite,
+    newDataItem,
+    newOrUpdatedDataItem,
+    newCollection,
+  ],
 } satisfies AppDefinition;

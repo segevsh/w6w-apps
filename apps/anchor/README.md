@@ -15,7 +15,7 @@ webhooks from a workflow, on the **Anchor API** (`https://api.sayanchor.com`).
 - **Icon** — `assets/icon.svg` embeds Anchor's own wordmark SVG
   (`white anchor logo.svg` from sayanchor.com) unmodified, on its brand purple `#643cff`. Anchor
   publishes the mark in white only, so the purple tile is the only addition.
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 Verified 2026-10-06 against the per-operation OpenAPI 3.0.3 documents embedded in each page of
 https://docs.sayanchor.com (index: `/llms.txt`) and live probes of `api.sayanchor.com`. There is no
@@ -84,5 +84,19 @@ only the business id and name.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-invoice` — New Invoice | Poll | `invoice-list` | Each newly created invoice |
+| `new-payout` — New Payout | Poll | `payout-list` | Each newly created payout |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created client contact |
+| `new-proposal` — New Proposal | Poll | `proposal-list` | Each newly sent proposal |
+| `new-proposal-draft` — New Proposal Draft | Poll | `proposal-draft-list` | Each newly created draft |
+| `new-agreement` — New Agreement | Poll | `agreement-list` | Each newly signed agreement |
+| `new-proposal-template` — New Proposal Template | Poll | `proposal-template-list` | Each newly saved proposal template |
+| `new-service-template` — New Service Template | Poll | `service-template-list` | Each newly created service template or bundle |
 
-Polled through `invoice-list` ordered by descending issue date. Source: [Anchor List invoices](https://docs.sayanchor.com/reference/listinvoices-1) (verified 2026-11-09).
+Invoices and payouts are polled newest-first (`sortField`/`sortDirection=desc`). Anchor's other lists have no sort or
+created-since filter, so contacts, proposals, drafts, agreements and templates are read in full on each check
+(100 per page, at most 5000 records; a larger account fails the check with a message naming the limit) and compared
+with the previous check; the first check records what exists and fires nothing. Not covered: legal-terms (a reference
+library of boilerplate documents), the invoices of one settled payout (fixed when the payout is created) and webhook
+subscriptions (integration admin). Sources: [Anchor pagination](https://docs.sayanchor.com/reference/pagination-filtering),
+[List payouts](https://docs.sayanchor.com/reference/listpayouts-1),
+[List invoices](https://docs.sayanchor.com/reference/listinvoices-1) (verified 2026-11-10).

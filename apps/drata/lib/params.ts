@@ -208,3 +208,24 @@ export const eventSources = [
   "DRATA_POLICY",
   "AUDIT_AGENT",
 ];
+
+/**
+ * `sort` / `sortDir` — the list order every v2 list endpoint documents (`createdAt` or `updatedAt`,
+ * `ASC` or `DESC`). Omitted, Drata's own default order applies.
+ */
+export const sortParams: Param[] = [
+  {
+    key: "sort",
+    label: "Sort by",
+    type: "select",
+    options: opts(["createdAt", "updatedAt"]),
+    advanced: true,
+  },
+  {
+    key: "sortDir",
+    label: "Sort direction",
+    type: "select",
+    options: opts(["ASC", "DESC"]),
+    advanced: true,
+  },
+];

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/synthflow",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Place single and batch voice AI calls, read call transcripts, and manage contacts, chats and the agent, phone-number, voice and knowledge-base catalogs on Synthflow AI. Trigger for new calls.",
   "license": "MIT",
   "author": {

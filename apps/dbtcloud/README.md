@@ -7,7 +7,7 @@ behind them.
 - **Categories** — data-warehousing, devops, analytics
 - **Auth methods** — token
 - **Actions** — 23
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 - **Egress allowlist** — `cloud.getdbt.com`, `*.dbt.com` (the `service` health
   check adds `status.getdbt.com`)
 - **Website** — https://www.getdbt.com
@@ -255,5 +255,28 @@ retry-after value and the five-minute cooldown.
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-run` — New Run | poll | `run-list` | Each newly created run |
+| `new-project` — New Project | poll (snapshot) | `project-list` | Each newly created project |
+| `new-or-updated-project` — New or Updated Project | poll (snapshot) | `project-list` | Each project created or edited (`updated_at` changed) |
+| `new-job` — New Job | poll (snapshot) | `job-list` | Each newly created job, optionally within one project (`projectId`) |
+| `new-or-updated-job` — New or Updated Job | poll (snapshot) | `job-list` | Each job created or edited (`updated_at` changed) |
+| `new-environment` — New Environment | poll (snapshot) | `environment-list` | Each newly created environment in the chosen project (`projectId`) |
+| `new-environment-variable` — New Environment Variable | poll (snapshot) | `environment-variable-list` | Each variable name newly defined in the chosen project (`projectId`); names only, never values |
+| `new-connection` — New Connection | poll (snapshot) | `connection-list` | Each newly created warehouse connection |
+| `new-group` — New Group | poll (snapshot) | `group-list` | Each newly created permission group |
+| `new-service-token` — New Service Token | poll (snapshot) | `service-token-list` | Each newly created service token (never its value) |
+| `new-user` — New User | poll (snapshot) | `user-list` | Each user newly added to the account |
 
 The poll requests `run-list` with `orderBy=-id`. Source: https://docs.getdbt.com/docs/dbt-cloud-apis/admin-cloud-api (verified 2026-11-09).
+
+The ten snapshot triggers run their list action with `returnAll` (dbt caps a page at 100 rows; the
+action pages until `total_count`), diff ids with the poll kit and emit the added ones; the two
+`new-or-updated-…` triggers also emit a record whose `updated_at` changed. The first check records
+the ids and emits nothing; a collection of more than 5000 rows fails the check with an error naming
+the cap. The environment-variable list has no ids, so a variable is keyed by its name.
+
+Not covered: `account-list` (the accounts a token can reach, normally exactly one — the connection
+is bound to one account id at connect time), `audit-log-list` (audit log output),
+`run-artifact-list` (the artifact paths of one already-finished run; a new run is `new-run`).
+
+Vendor docs: <https://docs.getdbt.com/docs/dbt-cloud-apis/admin-cloud-api> and the OpenAPI spec
+<https://github.com/dbt-labs/dbt-cloud-openapi-spec> (verified 2026-11-10).

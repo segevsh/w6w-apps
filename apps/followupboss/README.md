@@ -6,7 +6,7 @@ action plans and account metadata, on the **Follow Up Boss API v1**.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 26
-- **Triggers** — 2 (poll)
+- **Triggers** — 10 (poll)
 - **Egress allowlist** — `api.followupboss.com`
 - **Health checks** — `service` (live), `quota` (live)
 
@@ -412,15 +412,25 @@ headers on a 401, the status-page path probes, and the `status.followupboss.com`
 
 ## Triggers
 
-Poll triggers built on the app's existing `search-people` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+Poll triggers built on the app's existing list/search actions (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `new-person` — New Person | poll | `search-people` | Each newly created person (lead) in Follow Up Boss, oldest first. |
 | `new-or-updated-person` — New or Updated Person | poll | `search-people` | Each person that is newly created or edited in Follow Up Boss, once per edit. |
+| `new-deal` — New Deal | poll | `search-deals` | Each newly created deal. |
+| `new-task` — New Task | poll | `search-tasks` | Each newly created task. |
+| `new-lead-event` — New Lead Event | poll | `search-events` | Each new lead event (inquiry, property view, registration, ...). |
+| `new-appointment` — New Appointment | poll | `search-appointments` | Each newly created appointment (only those the connected user created in Follow Up Boss, per the endpoint's own scoping). |
+| `new-user` — New User | poll | `list-users` | Each newly added agent, broker or lender. |
+| `new-pipeline` — New Deal Pipeline | poll (snapshot) | `list-pipelines` | Each newly created deal pipeline. |
+| `new-smart-list` — New Smart List | poll (snapshot) | `list-smart-lists` | Each newly created Smart List (classic and current UI). |
+| `new-action-plan` — New Action Plan | poll (snapshot) | `list-action-plans` | Each newly created Active Action Plan. |
 
-How the feed is read: `GET /people` sorted newest first with `sort=-created` / `sort=-updated` (the `sort` parameter lists `created` and `updated`; a leading `-` is descending).
+How the feeds are read: `GET /people` sorted newest first with `sort=-created` / `sort=-updated` (the `sort` parameter lists `created` and `updated`; a leading `-` is descending). Deals, tasks, events, appointments and users take no newest-first argument, but the API's Pagination page documents that every collection is returned in reverse `id` order by default ("Resources are returned in reverse order by id by default"), so the newest 100 records are read. Pipelines, Smart Lists and Action Plans are small account settings with no sort: every check reads all of them (following the `_metadata.next` keyset cursor, at most 5000 rows) and emits only ids not seen before.
+
+Not covered: `list-stages` and `list-custom-fields` (account configuration lookups: stage names and custom-field definitions, not records).
 
 Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
 
-Vendor docs: <https://docs.followupboss.com/reference/people-get> (verified 2026-11-09).
+Vendor docs: <https://docs.followupboss.com/reference/people-get>, <https://docs.followupboss.com/reference/pagination> (verified 2026-11-10).

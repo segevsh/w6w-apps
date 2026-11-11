@@ -1,16 +1,36 @@
 # Pipedrive
 
-- **Triggers** — 1 webhook
+- **Triggers** — 13 (webhook)
 
 ## Triggers
 
 | Key | Title | Mechanism | Vendor event | What the run gets |
 | --- | --- | --- | --- | --- |
-| `new-deal` | New Deal | Webhook | `create.deal` | The new deal |
+| `new-deal` | New Deal | Webhook (API-registered) | `create.deal` | The new deal |
+| `deal-updated` | Deal Updated | Webhook (API-registered) | `change.deal` | The deal now and the previous values of the changed fields |
+| `deal-deleted` | Deal Deleted | Webhook (API-registered) | `delete.deal` | The deal as it was (in `previous`) |
+| `new-person` | New Person | Webhook (API-registered) | `create.person` | The new person |
+| `person-updated` | Person Updated | Webhook (API-registered) | `change.person` | The person now and the previous values |
+| `person-deleted` | Person Deleted | Webhook (API-registered) | `delete.person` | The person as it was |
+| `new-organization` | New Organization | Webhook (API-registered) | `create.organization` | The new organization |
+| `organization-updated` | Organization Updated | Webhook (API-registered) | `change.organization` | The organization now and the previous values |
+| `organization-deleted` | Organization Deleted | Webhook (API-registered) | `delete.organization` | The organization as it was |
+| `new-activity` | New Activity | Webhook (API-registered) | `create.activity` | The new activity |
+| `new-note` | New Note | Webhook (API-registered) | `create.note` | The new note |
+| `new-lead` | New Lead | Webhook (API-registered) | `create.lead` | The new lead |
+| `any-event` | Any Event | Webhook (API-registered) | the `<action>.<object>` pairs you list in `events`, or every event (`*.*`) when empty | What happened, the object now, the previous values and the merge ids |
 
-Pipedrive does not sign these V1 webhook deliveries; the callback URL is the secret. The trigger removes stale registrations for its callback URL before creating its own registration, and treats a missing registration as already removed during cleanup.
+**Setup.** None by hand. Subscribing calls `POST /v1/webhooks` (webhook version 2.0) with the host's callback URL, one webhook per event; unsubscribing deletes them (`DELETE /v1/webhooks/{id}`; one Pipedrive no longer has counts as deleted). The connected user's permission level limits which objects are delivered, and Pipedrive allows 40 webhooks per user. Created events (`new-*`) deliver the object itself; the other triggers deliver `{ action, entity, entityId, timestamp, eventId, mergedFromId, mergedToId, current, previous }`. In Webhooks v2 a merge arrives as a `change` event carrying `mergedFromId` and a `delete` event carrying `mergedToId`, so `any-event` with `change.person, delete.person` reaches merges. `events` takes Pipedrive's own names (`create`, `change`, `delete` or `*` before the dot; any object type after it, for example `change.deal, delete.lead, create.product`).
 
-Vendor documentation: [Webhooks API](https://developers.pipedrive.com/docs/api/v1/Webhooks) (verified 2026-11-09).
+**Trust model.** Pipedrive does not sign webhook deliveries: neither the v1 nor the v2 webhook guide describes a signature header. What it offers is HTTP Basic auth on the subscription URL, which Pipedrive sends "in the header of every HTTP request". Every trigger except `new-deal` registers a random per-subscription password (`http_auth_user` / `http_auth_password`), keeps it in the subscription state and refuses a delivery whose `Authorization` header does not carry it (constant-time compare; an unset password refuses everything). `new-deal` predates this and relies on the callback URL alone, which is the secret.
+
+**Not covered.** `deal-get-many`, `person-get-many` and `organization-get-many` are served by the `new-deal`, `new-person` and `new-organization` webhook triggers (same records, registered through the API, no dashboard setup). No poll is shipped for them: the actions call `GET /v1/deals`, `/v1/persons` and `/v1/organizations`, and the current Pipedrive reference no longer documents those v1 list endpoints or their `sort` argument (it documents `GET /api/v2/deals` with `sort_by=add_time`), so a newest-first order could not be cited.
+
+Sources (verified 2026-11-10): https://pipedrive.readme.io/docs/guide-for-webhooks-v2 ,
+https://developers.pipedrive.com/docs/api/v1/Webhooks ,
+https://developers.pipedrive.com/docs/api/v1/Deals ,
+https://developers.pipedrive.com/docs/api/v1/Persons ,
+https://developers.pipedrive.com/docs/api/v1/Organizations
 
 Manage Pipedrive deals, persons, organizations, activities, notes and leads through the REST API.
 

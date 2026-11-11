@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/onfleet",
-  "version": "0.2.0",
-  "description": "Dispatch and track last-mile deliveries — manage tasks, workers, teams and hubs. Triggers fire on signed Onfleet webhooks for task created, started, completed, failed, assigned and updated.",
+  "version": "0.3.0",
+  "description": "Dispatch and track last-mile deliveries — manage tasks, workers, teams and hubs. Triggers fire on signed Onfleet webhooks for task, worker, SMS and any other event, plus polls for new teams and hubs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.onfleet.com/reference"
     ],
-    "longDescription": "Onfleet dispatches and tracks last-mile deliveries: create a task with a destination and recipient, assign it to a worker, team or the organization's own unassigned pool, and follow it through unassigned → assigned → active → completed. A task can be force-completed, updated (only notes/metadata once active, only metadata/custom fields once completed — Onfleet locks the rest), or deleted while still unstarted.\n\nWorkers, teams and hubs are the dispatch primitives: a worker carries a vehicle and a duty state, a team groups workers under a hub and managers, and a hub is a home address a team dispatches from. Destinations and recipients can be created standalone and referenced by ID across many tasks — a warehouse that ships all day should create its destination once. Webhooks cover the task lifecycle (created, assigned, started, completed, failed, delayed) plus worker duty changes, so a workflow can react without polling.\n\nLeft out: route optimization, route plans, barcode scanning, custom task templates and administrator management — these are either dashboard-configured features with no stable public shape to automate against, or operator-level account management rather than steps in a delivery workflow.\n\nTriggers fire on Onfleet webhooks for task created, started, completed, failed, assigned and updated, verified with the organization's webhook secret.",
+    "longDescription": "Onfleet dispatches and tracks last-mile deliveries: create a task with a destination and recipient, assign it to a worker, team or the organization's own unassigned pool, and follow it through unassigned → assigned → active → completed. A task can be force-completed, updated (only notes/metadata once active, only metadata/custom fields once completed — Onfleet locks the rest), or deleted while still unstarted.\n\nWorkers, teams and hubs are the dispatch primitives: a worker carries a vehicle and a duty state, a team groups workers under a hub and managers, and a hub is a home address a team dispatches from. Destinations and recipients can be created standalone and referenced by ID across many tasks — a warehouse that ships all day should create its destination once. Webhooks cover the task lifecycle (created, assigned, started, completed, failed, delayed) plus worker duty changes, so a workflow can react without polling.\n\nLeft out: route optimization, route plans, barcode scanning, custom task templates and administrator management — these are either dashboard-configured features with no stable public shape to automate against, or operator-level account management rather than steps in a delivery workflow.\n\nTriggers fire on Onfleet webhooks for tasks (created, started, completed, failed, assigned, updated, deleted, unassigned, cloned, ETA, arrival, delayed), workers (created, updated, deleted, on/off duty) and SMS events, plus an Any Event trigger for the long tail (route plans, jobs), verified with the organization's webhook secret; polls detect new teams and hubs.",
     "categories": [
       "commerce",
       "productivity"

@@ -3,7 +3,7 @@
 Drive the [Cloze](https://www.cloze.com) relationship CRM from a workflow: people, companies and
 projects, timelines, to-dos and notes, account metadata and webhooks.
 
-- **Triggers** — 3 (poll)
+- **Triggers** — 4 (poll)
 - **App id:** `io.w6w.cloze` · **Category:** `crm` · **Host:** `api.cloze.com`
 - **Auth:** `api-key` (a Cloze API key, sent as `Authorization: Bearer <key>`). Create one in Cloze
   under Settings > Integrations > Cloze API. OAuth2 is offered by Cloze but is not part of v1.
@@ -101,6 +101,7 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | `new-or-updated-person` | New or Updated Person | poll (change feed) | `person-feed` | Each person created or changed since the last check |
 | `new-or-updated-company` | New or Updated Company | poll (change feed) | `company-feed` | Each company created or changed since the last check |
 | `new-or-updated-project` | New or Updated Project | poll (change feed) | `project-feed` | Each project created or changed since the last check |
+| `new-team-member` | New Team Member | poll (snapshot) | `team-members-list` | Each member newly added to your Cloze team |
 
 Each poll uses the same `GET /v1/{people,companies,projects}/feed` request as the feed action. The
 first check seeds with `modifiedafter=now` (and `pagesize=100`), stores the returned `cursor` and
@@ -109,3 +110,12 @@ documents the feeds as cursored and returning records "in ascending order of las
 (<https://developer.cloze.com/cloze-openapi.json>, verified 2026-11-09). The cursor is the only state
 kept. Cloze also offers webhook subscriptions (`webhook-subscribe`); a webhook trigger is queued
 separately and no webhook code is included here.
+
+`new-team-member` compares `GET /v1/team/members/list`, which returns the whole team in one response
+(<https://developer.cloze.com/cloze-openapi.json> `teamMembersList`, verified 2026-11-10), and emits
+members whose e-mail was not there at the previous check.
+
+Not covered: `person-get-many`, `company-get-many` and `project-get-many` are the same records the
+change feeds deliver; `custom-fields-list`, `segments-list`, `stages-list`, `steps-list`,
+`tags-list` and `team-roles-list` are reference/configuration lists; `team-nodes-list` is the team
+org structure; `webhook-list` is admin output.

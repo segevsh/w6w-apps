@@ -65,6 +65,13 @@ import subscriptionUpdateRebillingDate from "./actions/subscription-update-rebil
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrder from "./triggers/new-order.ts";
+import newCharge from "./triggers/new-charge.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newFailedCharge from "./triggers/new-failed-charge.ts";
+import newProduct from "./triggers/new-product.ts";
+import newRefund from "./triggers/new-refund.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import subscriptionStatusChanged from "./triggers/subscription-status-changed.ts";
 
 export default {
   actions: [
@@ -109,5 +116,14 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newOrder],
+  triggers: [
+    newOrder,
+    newCharge,
+    newCustomer,
+    newFailedCharge,
+    newProduct,
+    newRefund,
+    newSubscription,
+    subscriptionStatusChanged,
+  ],
 } satisfies AppDefinition;

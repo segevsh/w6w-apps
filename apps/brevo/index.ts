@@ -22,6 +22,17 @@ import sendTemplateEmail from "./actions/send-template-email.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import contactCreated from "./triggers/contact-created.ts";
+import newSender from "./triggers/new-sender.ts";
+import contactUpdated from "./triggers/contact-updated.ts";
+import contactDeleted from "./triggers/contact-deleted.ts";
+import emailDelivered from "./triggers/email-delivered.ts";
+import emailOpened from "./triggers/email-opened.ts";
+import emailClicked from "./triggers/email-clicked.ts";
+import emailBounced from "./triggers/email-bounced.ts";
+import emailUnsubscribed from "./triggers/email-unsubscribed.ts";
+import inboundEmail from "./triggers/inbound-email.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -46,6 +57,19 @@ export default {
     sendTemplateEmail,
   ],
   auth: [apiKey],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    contactCreated,
+    newSender,
+    contactUpdated,
+    contactDeleted,
+    emailDelivered,
+    emailOpened,
+    emailClicked,
+    emailBounced,
+    emailUnsubscribed,
+    inboundEmail,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

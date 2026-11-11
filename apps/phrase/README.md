@@ -8,7 +8,7 @@ translations, file uploads and downloads, and jobs, over the Phrase Strings API 
 - Hosts: `api.phrase.com` (EU) and `api.us.app.phrase.com` (US)
 - Icon: Phrase's own favicon, `https://phrase.com/wp-content/uploads/2023/09/cropped-phrase-favicon-192x192.png`
   (PNG, 192px), embedded verbatim as a base64 data URI in an SVG wrapper.
-- **Triggers** — 2 (poll)
+- **Triggers** — 11 (poll)
 
 ## Verified against
 
@@ -130,7 +130,22 @@ not because they are unavailable.
 | --- | --- | --- | --- |
 | `new-job` — New Job | Poll | `job-list` | Each job created since the previous check, in the chosen project |
 | `new-or-updated-job` — New or Updated Job | Poll | `job-list` | Each job created or edited since the previous check (the id carries `updated_at`) |
+| `new-key` — New Key | Poll, newest-first (`sort=created_at&order=desc`) | `key-list` (also delivers `key-search` records) | Each key created in the chosen project |
+| `new-or-updated-key` — New or Updated Key | Poll, newest-first (`updated_at` desc) | `key-list` | Each key created or edited (the id carries `updated_at`) |
+| `new-translation` — New Translation | Poll, newest-first (`created_at` desc) | `translation-list` | Each translation created in the chosen project |
+| `new-or-updated-translation` — New or Updated Translation | Poll, newest-first (`updated_at` desc) | `translation-list` | Each translation created or edited |
+| `new-project` — New Project | Poll, snapshot | `project-list` | Each project that newly becomes visible |
+| `new-or-updated-project` — New or Updated Project | Poll, newest-first (`sort_by=updated_at_desc`) | `project-list` | Each project created or edited |
+| `new-account` — New Account | Poll, snapshot | `account-list` | Each account (organization) the token newly sees |
+| `new-locale` — New Locale | Poll, snapshot | `locale-list` | Each locale added to the chosen project |
+| `new-tag` — New Tag | Poll, snapshot (keyed by tag name) | `tag-list` | Each tag created in the chosen project |
 
 Pick the **Project ID** in the trigger's settings. Phrase documents `updated_since` on `GET /projects/{project_id}/jobs` but no sort order, so both triggers call the existing `job-list` action with `updated_since` set to the previous check minus a 10-minute overlap and de-duplicate by id; `new-job` also requires `created_at` inside the window, so an edited old job is not reported as new. The first check records the current window without emitting events.
+
+Snapshot triggers read up to 5 pages of 100 and diff the ids; a longer list fails with a clear error. `key-list` and `key-search` return the same key records, so `new-key` covers both.
+
+Not covered: `format-list` (static reference data: the file formats Phrase supports) and `upload-list` (the uploads list documents only `branch`, `page` and `per_page`: no sort and no since filter, and it grows without bound).
+
+Vendor docs for the triggers above (verified 2026-11-10): [keys](https://developers.phrase.com/en/api/strings/keys/list-keys), [translations](https://developers.phrase.com/en/api/strings/translations/list-translations), [projects](https://developers.phrase.com/en/api/strings/projects/list-projects), [accounts](https://developers.phrase.com/en/api/strings/accounts/list-accounts), [locales](https://developers.phrase.com/en/api/strings/locales/list-locales), [tags](https://developers.phrase.com/en/api/strings/tags/list-tags).
 
 Source: [`GET /projects/{project_id}/jobs`](https://developers.phrase.com/en/api/strings/jobs/list-jobs) and the compiled OpenAPI [`doc/compiled.json`](https://github.com/phrase/openapi/blob/master/doc/compiled.json) (parameter `updated_since`; verified 2026-11-10).

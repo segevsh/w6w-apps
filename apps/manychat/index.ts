@@ -37,6 +37,8 @@ import setSubscriberField from "./actions/set-subscriber-field.ts";
 import setSubscriberFields from "./actions/set-subscriber-fields.ts";
 
 import newFlow from "./triggers/new-flow.ts";
+import newGrowthTool from "./triggers/new-growth-tool.ts";
+import newTag from "./triggers/new-tag.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -76,5 +78,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newFlow],
+  triggers: [newFlow, newGrowthTool, newTag],
 } satisfies AppDefinition;

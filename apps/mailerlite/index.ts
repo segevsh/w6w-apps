@@ -25,6 +25,16 @@ import newSubscriber from "./triggers/new-subscriber.ts";
 import subscriberUpdated from "./triggers/subscriber-updated.ts";
 import subscriberUnsubscribed from "./triggers/subscriber-unsubscribed.ts";
 import campaignSent from "./triggers/campaign-sent.ts";
+import anyEvent from "./triggers/any-event.ts";
+import subscriberAddedToGroup from "./triggers/subscriber-added-to-group.ts";
+import subscriberRemovedFromGroup from "./triggers/subscriber-removed-from-group.ts";
+import subscriberBounced from "./triggers/subscriber-bounced.ts";
+import subscriberSpamReported from "./triggers/subscriber-spam-reported.ts";
+import subscriberAutomationTriggered from "./triggers/subscriber-automation-triggered.ts";
+import subscriberAutomationCompleted from "./triggers/subscriber-automation-completed.ts";
+import newGroup from "./triggers/new-group.ts";
+import newSegment from "./triggers/new-segment.ts";
+import newCampaign from "./triggers/new-campaign.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -52,7 +62,22 @@ export default {
     listFields,
     listSegments,
   ],
-  triggers: [newSubscriber, subscriberUpdated, subscriberUnsubscribed, campaignSent],
+  triggers: [
+    newSubscriber,
+    subscriberUpdated,
+    subscriberUnsubscribed,
+    campaignSent,
+    anyEvent,
+    subscriberAddedToGroup,
+    subscriberRemovedFromGroup,
+    subscriberBounced,
+    subscriberSpamReported,
+    subscriberAutomationTriggered,
+    subscriberAutomationCompleted,
+    newGroup,
+    newSegment,
+    newCampaign,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

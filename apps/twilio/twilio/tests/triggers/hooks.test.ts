@@ -51,7 +51,11 @@ function ingest(
 }
 
 test("app: declares both triggers with output and sample; auth token is a secret param", () => {
-  assert.deepEqual(app.triggers.map((t) => t.key), ["incoming-message", "message-status"]);
+  // The message triggers lead; the call and Event Streams triggers are covered in events.test.ts.
+  assert.deepEqual(app.triggers.map((t) => t.key).slice(0, 2), [
+    "incoming-message",
+    "message-status",
+  ]);
   for (const t of app.triggers) {
     assert.ok(t.output.length > 0);
     assert.notEqual(t.sample, undefined);

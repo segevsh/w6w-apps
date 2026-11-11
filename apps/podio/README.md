@@ -3,7 +3,7 @@
 Read and write Podio items, apps, workspaces, tasks, comments and webhooks over the Podio API
 (`api.podio.com`).
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 Podio's object model is four levels deep and the third level is the interesting one:
 
@@ -409,6 +409,23 @@ deno task test
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-task` — New Task | Poll | `task-list` | Each newly created record |
+| `new-task` — New Task | Poll | `task-list` | Each newly created task |
+| `new-item` — New Item | Poll | `item-filter` | Each item created in one app (`sort_by=created_on`, descending) |
+| `new-or-updated-item` — New or Updated Item | Poll | `item-filter` | Each item created or edited in one app (`sort_by=last_edit_on`, descending; one event per edit, stamped by `current_revision.created_on`) |
+| `new-comment` — New Comment | Poll | `comment-list` | Each new comment on one item, task or other object |
+| `new-app` — New App | Poll | `app-list` | Each app newly added to one workspace |
+| `new-space` — New Workspace | Poll | `space-list` | Each workspace newly added to one organization |
+| `new-organization` — New Organization | Poll | `org-list` | Each organization the connected user newly joins (user connection only) |
+| `new-search-hit` — New Search Match | Poll | `search-space` | Each hit that newly appears among the 20 most recently updated matches for a search text in one workspace |
 
-This poll wraps the existing `task-list` action; the first check records the current page without emitting events. Source: [vendor API docs](https://developers.podio.com/doc) (verified 2026-11-09).
+The first check of every trigger records the current state without emitting events. Items are read
+newest first from the filter endpoint (`sort_by` and `sort_desc` in the request body, 100 per page).
+Comments are listed oldest first with offset paging and no sort parameter, so that trigger keeps the
+number of comments it has seen plus the id of the last one; a burst longer than one page continues
+at the saved offset on the next check, and if a comment was deleted (the saved id no longer sits at
+its offset) the trigger re-baselines rather than guess. Apps, workspaces and organizations are small
+bounded lists, read whole each check. Not covered: `app-fields-list` (field definitions), `hook-list`
+(webhook administration), `search-app` (Podio documents no result order for app search, so "newest"
+cannot be known).
+
+Source: [vendor API docs](https://developers.podio.com/doc) — Filter Items, Get Comments on Object, Get Apps by Space, Get Spaces on Org, Search in Space (verified 2026-11-10).

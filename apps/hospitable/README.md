@@ -1,12 +1,24 @@
 # Hospitable
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | `new-reservation` — New Reservation | poll | `reservation-list` | Each newly booked reservation |
+| `new-property` — New Property | Poll | `property-list` | each property newly added to the account (whole list compared, 100 per page) |
+| `new-payout` — New Payout | Poll | `payout-list` | each Airbnb payout that newly appears (whole list compared) |
+| `new-teammate` — New Teammate | Poll | `teammate-list` | each teammate newly added (whole list compared) |
+| `new-property-image` — New Property Image | Poll | `property-images-list` | each image newly added to the chosen property |
+| `new-property-review` — New Property Review | Poll | `property-reviews-list` | each review newly posted for the chosen property |
+| `new-reservation-message` — New Reservation Message | Poll | `reservation-messages-list` | each message newly added to the chosen reservation's conversation |
+| `new-task` — New Task | Poll | `task-list` | each operations task newly created for the chosen properties |
+| `new-or-updated-inquiry` — New or Updated Inquiry | Poll | `inquiry-list` | each pre-booking inquiry that is new or has a new message (`last_message_at` filter, id includes the stamp) |
+
+Not covered: `channel-list` (reference data: the connected booking channels), `property-search` (an availability query that needs stay dates and guest counts, not a record feed), `transaction-list` (every payment line across all reservations: page/per_page only, no sort or date filter, so it exceeds the 5000-row snapshot cap).
+
+Per-parent triggers take the parent id as a required parameter. Every new trigger's first check records what exists without firing. Source: https://developer.hospitable.com/ (Public API v2: properties, payouts, teammates, tasks, inquiries, reviews, messages), verified 2026-11-10.
 
 Hospitable documents reservations at https://developer.hospitable.com/ (verified 2026-11-09).
 

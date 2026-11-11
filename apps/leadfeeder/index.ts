@@ -28,6 +28,12 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 import newVisitorCompany from "./triggers/new-visitor-company.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newCustomFeed from "./triggers/new-custom-feed.ts";
+import newTag from "./triggers/new-tag.ts";
+import newList from "./triggers/new-list.ts";
+import newListItem from "./triggers/new-list-item.ts";
+import newWebVisit from "./triggers/new-web-visit.ts";
 
 /**
  * Leadfeeder (now part of Dealfront) — website-visitor identification, company and contact
@@ -68,7 +74,15 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newVisitorCompany],
+  triggers: [
+    newVisitorCompany,
+    newCampaign,
+    newCustomFeed,
+    newTag,
+    newList,
+    newListItem,
+    newWebVisit,
+  ],
 };
 
 export default app;

@@ -6,7 +6,7 @@ Copper CRM people, companies, opportunities, leads, tasks, activities and accoun
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 24
-- **Triggers** — 7 (webhook)
+- **Triggers** — 19 (webhook + poll)
 - **Egress allowlist** — `api.copper.com`
 - **Website** — https://www.copper.com/
 - **API docs** — https://developer.copper.com/
@@ -407,22 +407,54 @@ checking for a 200.
 
 Webhook triggers on Copper's subscriptions API. Each registers itself with
 `POST /developer_api/v1/webhooks` (entity `type`, `event`, the callback URL and a generated
-`secret` object) and deletes the subscription again on unsubscribe.
+`secret` object) and deletes the subscription again on unsubscribe. Three more triggers poll.
 
-| Trigger | Mechanism | Vendor event | What the run gets |
+| Trigger | Mechanism | Vendor event or list action | What the run gets |
 |---|---|---|---|
 | `new-person` — New Person | webhook (API) | person · `new` | One event per person id |
 | `updated-person` — Person Updated | webhook (API) | person · `update` | …plus `updatedAttributes` (`[old, new]` per field) |
+| `deleted-person` — Person Deleted | webhook (API) | person · `delete` | One event per person id |
 | `new-lead` — New Lead | webhook (API) | lead · `new` | One event per lead id |
+| `updated-lead` — Lead Updated | webhook (API) | lead · `update` | …plus `updatedAttributes` |
+| `deleted-lead` — Lead Deleted | webhook (API) | lead · `delete` | One event per lead id |
 | `new-company` — New Company | webhook (API) | company · `new` | One event per company id |
+| `updated-company` — Company Updated | webhook (API) | company · `update` | …plus `updatedAttributes` |
+| `deleted-company` — Company Deleted | webhook (API) | company · `delete` | One event per company id |
 | `new-opportunity` — New Opportunity | webhook (API) | opportunity · `new` | One event per opportunity id |
 | `updated-opportunity` — Opportunity Updated | webhook (API) | opportunity · `update` | …plus `updatedAttributes` |
+| `deleted-opportunity` — Opportunity Deleted | webhook (API) | opportunity · `delete` | One event per opportunity id |
 | `new-task` — New Task | webhook (API) | task · `new` | One event per task id |
+| `updated-task` — Task Updated | webhook (API) | task · `update` | …plus `updatedAttributes` |
+| `deleted-task` — Task Deleted | webhook (API) | task · `delete` | One event per task id |
+| `any-event` — Any Event | webhook (API) | any `<type>.<event>` you list | One event per id, with `type` and `event` |
+| `new-activity` — New Activity | poll (5 min) | `search-activities` | Each note, call, meeting or system event logged after the trigger is on |
+| `new-user` — New User | poll (15 min) | `list-users` | Each user added to the account |
+| `new-related-item` — New Related Item | poll (5 min) | `list-related-items` | Each record newly related to the one you name (`entity`, `entityId`) |
+
+**Any Event.** The `events` param is a comma-separated list of `<type>.<event>` names, for example
+`person.new, lead.update, task.delete`; types are `lead person company opportunity project task`
+and events are `new update delete`. Empty means all 18 — which registers 18 subscriptions, and Copper
+allows 100 per account, so list only what you need. Project records have no actions in this app and
+are reachable only through this trigger. Copper's overview table also lists an `activity_log`
+entity, but the "Create new subscription" reference accepts only the six types above, so activities
+are delivered by the `new-activity` poll instead.
 
 A Copper notification carries only the record ids (up to 30 per notification) and the event, not the
 record; the run gets one event per id and can fetch the record with the matching action (for example
 `get-person`). Copper fires each notification at most once and never retries, and allows 100
-subscriptions per account.
+subscriptions per account. The record lists `search-people`, `find-person-by-email`,
+`search-companies`, `search-leads`, `search-opportunities` and `search-tasks` are delivered by the
+matching `new-*` webhook triggers rather than polled.
+
+**Polls.** `new-activity` calls `POST /activities/search` with `minimum_activity_date` (Copper
+documents no sort order, so every check re-reads the window from the last check minus 120 seconds
+and dedupes by activity id; the seed records the time and emits nothing, and an activity created
+before it is never emitted). An activity logged with an activity date older than the window is not
+seen. `new-user` and `new-related-item` diff the whole (bounded) list each check; the first check
+only records what exists.
+
+Not covered: reference data (`list-pipelines`, `list-pipeline-stages`, `list-activity-types`,
+`list-custom-field-definitions`) is account configuration, not records.
 
 Trust model: Copper does not sign requests; instead it copies every key of the subscription's
 `secret` object into the top level of each delivery body. The trigger registers a random 256-bit
@@ -433,5 +465,9 @@ secret proves the sender knows it; it does not protect the body from tampering.
 
 Vendor docs: <https://developer.copper.com/webhooks/overview.html>,
 <https://developer.copper.com/webhooks/create-new-subscription.html>,
-<https://developer.copper.com/webhooks/notification-example.html> and
-<https://developer.copper.com/webhooks/delete-subscription-unsubscribe.html>, verified 2026-11-09.
+<https://developer.copper.com/webhooks/notification-example.html>,
+<https://developer.copper.com/webhooks/delete-subscription-unsubscribe.html>,
+<https://developer.copper.com/activities/list-activities-search.html>,
+<https://developer.copper.com/account-and-users/list-users.html> and
+<https://developer.copper.com/related-items/view-all-records-related-to-an-entity.html>, verified
+2026-11-10.

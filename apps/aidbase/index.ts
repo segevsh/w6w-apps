@@ -22,6 +22,17 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newTicket from "./triggers/new-ticket.ts";
+import newChat from "./triggers/new-chat.ts";
+import newEmail from "./triggers/new-email.ts";
+import newChatbot from "./triggers/new-chatbot.ts";
+import newEmailInbox from "./triggers/new-email-inbox.ts";
+import newTicketForm from "./triggers/new-ticket-form.ts";
+import newKnowledgeItem from "./triggers/new-knowledge-item.ts";
+import newChatbotKnowledge from "./triggers/new-chatbot-knowledge.ts";
+import newEmailInboxKnowledge from "./triggers/new-email-inbox-knowledge.ts";
+import newTicketFormKnowledge from "./triggers/new-ticket-form-knowledge.ts";
+import newKnowledgeSubPage from "./triggers/new-knowledge-sub-page.ts";
+import newFaqItem from "./triggers/new-faq-item.ts";
 
 import accountStatus from "./actions/account-status.ts";
 import knowledgeList from "./actions/knowledge-list.ts";
@@ -115,5 +126,18 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newTicket],
+  triggers: [
+    newTicket,
+    newChat,
+    newEmail,
+    newChatbot,
+    newEmailInbox,
+    newTicketForm,
+    newKnowledgeItem,
+    newChatbotKnowledge,
+    newEmailInboxKnowledge,
+    newTicketFormKnowledge,
+    newKnowledgeSubPage,
+    newFaqItem,
+  ],
 } satisfies AppDefinition;

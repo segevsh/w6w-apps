@@ -35,8 +35,6 @@ test("new contact webhook cleanup treats Brevo 404 as already gone", async () =>
   await newContact.onUnsubscribe!({ params: {}, state: { webhookId: "9" } }, ctx);
 });
 
-const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
-
 test("handleIngest yields the delivered body and refuses non-POST", async () => {
   const body = {
     id: 1,

@@ -246,21 +246,36 @@ function liveSecrets(body: unknown): string[] {
 
 /** Build the Brex event webhook trigger. */
 export function webhookTrigger(
-  spec: { key: string; title: string; description: string },
+  spec: {
+    key: string;
+    title: string;
+    description: string;
+    /** A named trigger: register and accept this one Brex event type only (no `eventTypes` param). */
+    fixedEvent?: string;
+  },
 ): TriggerDefinition<TriggerParams, BrexEvent, TriggerState> {
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [EVENT_TYPES_PARAM],
+    params: spec.fixedEvent ? [] : [EVENT_TYPES_PARAM],
     output: OUTPUT,
-    sample: SAMPLE,
+    sample: spec.fixedEvent
+      ? {
+        ...SAMPLE,
+        eventType: spec.fixedEvent,
+        data: { ...SAMPLE.data, event_type: spec.fixedEvent },
+      }
+      : SAMPLE,
 
     async onSubscribe({ params, callbackUrl, subscriptionId }, ctx: HookContext) {
       const client = new BrexClient(ctx);
       const created = await client.json<{ id?: string }>(v1("/webhooks"), {
         method: "POST",
-        body: { url: callbackUrl, event_types: chooseEventTypes(params?.eventTypes) },
+        body: {
+          url: callbackUrl,
+          event_types: chooseEventTypes(spec.fixedEvent ?? params?.eventTypes),
+        },
         idempotencyKey: `w6w-${subscriptionId}`,
       });
       const webhookId = str(created?.id);
@@ -303,7 +318,9 @@ export function webhookTrigger(
       }
       const event = normalizeDelivery(parsed, { id, timestamp });
       // Event types the user did not pick are acknowledged without a run.
-      if (!chooseEventTypes(params?.eventTypes).includes(event.eventType)) return [];
+      if (!chooseEventTypes(spec.fixedEvent ?? params?.eventTypes).includes(event.eventType)) {
+        return [];
+      }
       return [event];
     },
   };

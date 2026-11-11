@@ -29,6 +29,8 @@ export interface TriggerParams {
   repository?: string;
   /** Comma-separated `payload.action` values to keep (`opened,closed`); blank keeps every action. */
   actions?: string;
+  /** Any-event trigger only: comma-separated GitHub event names; blank subscribes to every event. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -37,6 +39,8 @@ export interface TriggerState {
   owner: string;
   repository: string;
   event: string;
+  /** Any-event trigger only: the event names the hook was registered for (`*` = every event). */
+  events?: string[];
   /** The per-subscription signing secret (plaintext jsonb: D5 amended). */
   secret: string;
 }
@@ -76,6 +80,15 @@ const ACTIONS_PARAM: Param = {
     "Comma-separated payload actions to react to, e.g. `opened,closed`. Blank for every action.",
 };
 
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  placeholder: "check_run, deployment, label",
+  hint:
+    "Comma-separated GitHub webhook event names (the X-GitHub-Event value, e.g. `check_run`), or blank for every event. Full list: https://docs.github.com/en/webhooks/webhook-events-and-payloads",
+};
+
 const BASE_OUTPUT: OutputField[] = [
   { key: "event", type: "string", label: "Event" },
   { key: "action", type: "string", label: "Action" },
@@ -93,6 +106,19 @@ function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
     ? v as Record<string, unknown>
     : null;
+}
+
+/** The any-event trigger's `events` param → event names; blank is every event (`*`). */
+export function parseEventNames(raw: unknown): string[] {
+  const names = typeof raw === "string"
+    ? [...new Set(raw.split(",").map((s) => s.trim()).filter((s) => s !== ""))]
+    : [];
+  for (const n of names) {
+    if (n !== "*" && !/^[a-z][a-z_]{0,63}$/.test(n)) {
+      throw new Error(`"${n.slice(0, 40)}" is not a GitHub webhook event name (e.g. check_run).`);
+    }
+  }
+  return names.length === 0 || names.includes("*") ? ["*"] : names;
 }
 
 function required(v: string | undefined, label: string): string {
@@ -176,8 +202,13 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** The GitHub webhook event name (`X-GitHub-Event`) this trigger fires on. */
-  event: string;
+  /**
+   * The GitHub webhook event name (`X-GitHub-Event`) this trigger fires on. Omit it for the
+   * any-event trigger, whose events come from its `events` param (see `sampleEvent`).
+   */
+  event?: string;
+  /** The event name the any-event trigger's sample shows (required when `event` is omitted). */
+  sampleEvent?: string;
   /** Extra `output` fields beyond the shared envelope. */
   output: OutputField[];
   /** Representative `payload` for the sample. */
@@ -190,9 +221,10 @@ export interface WebhookTriggerSpec {
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, GitHubEvent, TriggerState> {
+  const fixed = spec.event;
   const sample: GitHubEvent = {
-    event: spec.event,
-    action: spec.hasActions ? str(spec.samplePayload.action) : null,
+    event: fixed ?? spec.sampleEvent ?? "push",
+    action: spec.hasActions || fixed === undefined ? str(spec.samplePayload.action) : null,
     deliveryId: "72d3162e-cc78-11e3-81ab-4c9367dc0958",
     repository: "octocat/Hello-World",
     sender: "octocat",
@@ -202,7 +234,9 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: spec.hasActions
+    params: fixed === undefined
+      ? [OWNER_PARAM, REPOSITORY_PARAM, EVENTS_PARAM]
+      : spec.hasActions
       ? [OWNER_PARAM, REPOSITORY_PARAM, ACTIONS_PARAM]
       : [OWNER_PARAM, REPOSITORY_PARAM],
     output: [...BASE_OUTPUT, ...spec.output],
@@ -211,6 +245,7 @@ export function webhookTrigger(
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const owner = required(params.owner, "Owner");
       const repository = required(params.repository, "Repository");
+      const events = fixed === undefined ? parseEventNames(params.events) : [fixed];
       const client = new GitHubClient(ctx);
       for (const id of await hooksPointingAt(client, owner, repository, callbackUrl)) {
         await deleteHook(client, owner, repository, id);
@@ -223,14 +258,16 @@ export function webhookTrigger(
           body: {
             name: "web",
             active: true,
-            events: [spec.event],
+            events,
             config: { url: callbackUrl, content_type: "json", secret, insecure_ssl: "0" },
           },
         },
       );
       const hookId = str(created?.id);
       if (!hookId) throw new Error("GitHub created the webhook but returned no id.");
-      return { hookId, owner, repository, event: spec.event, secret };
+      return fixed === undefined
+        ? { hookId, owner, repository, event: events.join(","), events, secret }
+        : { hookId, owner, repository, event: fixed, secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
@@ -247,14 +284,18 @@ export function webhookTrigger(
       }
       const payload = await verifiedPayload(raw, state?.secret);
       const event = header(raw, "x-github-event");
-      if (event === "ping" || event !== spec.event) return [];
+      if (event === undefined || event === "ping") return [];
+      if (fixed === undefined) {
+        const wanted = state?.events ?? [];
+        if (!wanted.includes("*") && !wanted.includes(event)) return [];
+      } else if (event !== fixed) return [];
       const action = str(payload.action);
       if (spec.hasActions) {
         const wanted = (params?.actions ?? "").split(",").map((a) => a.trim()).filter(Boolean);
         if (wanted.length > 0 && (action === null || !wanted.includes(action))) return [];
       }
       return [{
-        event: spec.event,
+        event,
         action,
         deliveryId: header(raw, "x-github-delivery") ?? null,
         repository: str(asObject(payload.repository)?.full_name),

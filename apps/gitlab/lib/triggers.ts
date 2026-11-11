@@ -39,14 +39,18 @@ export interface TriggerParams {
   projectId?: string;
   /** Comma-separated actions to keep (`open,close`); blank keeps every action. */
   actions?: string;
+  /** Any-event trigger only: comma-separated `object_kind` values; blank turns on every one. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
 export interface TriggerState {
   hookId: string;
   projectId: string;
-  /** GitLab `object_kind` this subscription is for. */
+  /** GitLab `object_kind` this subscription is for (`any` for the any-event trigger). */
   kind: string;
+  /** Any-event trigger only: the `object_kind` values the hook was registered for. */
+  kinds?: string[];
   /** `signed` (GitLab 19.0+, the default when absent) or `token` (server reported before 19.0). */
   mode?: "signed" | "token";
   /** Signed mode: the per-subscription signing token, `whsec_<base64>` (plaintext jsonb: D5 amended). */
@@ -64,6 +68,62 @@ export interface GitLabEvent {
   user: string | null;
   /** GitLab's webhook payload, verbatim. */
   payload: Record<string, unknown>;
+}
+
+/**
+ * The project-hook flags (`POST /projects/:id/hooks`) behind each webhook `object_kind` that an API
+ * call can switch on. Kinds with no flag there (vulnerability, work item, Duo flow) and the
+ * group-only kinds (member, project, subgroup) cannot be registered through the project hooks API.
+ * Docs (verified 2026-11-10): https://docs.gitlab.com/api/project_webhooks/ and
+ * https://docs.gitlab.com/user/project/integrations/webhook_events/
+ */
+export const KIND_FLAGS: Readonly<Record<string, readonly string[]>> = {
+  push: ["push_events"],
+  tag_push: ["tag_push_events"],
+  issue: ["issues_events", "confidential_issues_events"],
+  note: ["note_events", "confidential_note_events"],
+  merge_request: ["merge_requests_events"],
+  wiki_page: ["wiki_page_events"],
+  pipeline: ["pipeline_events"],
+  build: ["job_events"],
+  deployment: ["deployment_events"],
+  release: ["releases_events"],
+  milestone: ["milestone_events"],
+  feature_flag: ["feature_flag_events"],
+  // `emoji_events` is named by the project webhooks reference only in the "test a project webhook"
+  // trigger list (https://docs.gitlab.com/api/project_webhooks/, 2026-11-10), not in the add-hook
+  // attribute table, and no live instance was available to confirm the add endpoint takes it. It is
+  // kept so a named `emoji` kind or a blank Any Event asks for it; if an instance ignores the
+  // attribute, emoji events simply do not arrive (the README says so).
+  emoji: ["emoji_events"],
+  access_token: ["resource_access_token_events"],
+  deploy_token: ["resource_deploy_token_events"],
+};
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  placeholder: "push, build, deployment",
+  hint:
+    "Comma-separated GitLab webhook kinds (the payload's object_kind: push, tag_push, issue, note, merge_request, wiki_page, pipeline, build, deployment, release, milestone, feature_flag, emoji, access_token, deploy_token), or blank for all of them.",
+};
+
+/** The any-event trigger's `events` param → object kinds; blank is every kind with a hook flag. */
+export function parseKinds(raw: unknown): string[] {
+  const names = typeof raw === "string"
+    ? [...new Set(raw.split(",").map((s) => s.trim()).filter((s) => s !== ""))]
+    : [];
+  for (const n of names) {
+    if (!Object.hasOwn(KIND_FLAGS, n)) {
+      throw new Error(
+        `"${n.slice(0, 40)}" is not a GitLab webhook kind this trigger can register (${
+          Object.keys(KIND_FLAGS).join(", ")
+        }).`,
+      );
+    }
+  }
+  return names.length === 0 ? Object.keys(KIND_FLAGS) : names;
 }
 
 const PROJECT_PARAM: Param = {
@@ -240,10 +300,12 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** GitLab's `object_kind` for the delivery. */
-  kind: string;
-  /** The project-hook flag that turns this event on (`push_events`, …). */
-  flag: string;
+  /** GitLab's `object_kind` for the delivery; omit it for the any-event trigger (`sampleKind`). */
+  kind?: string;
+  /** The project-hook flag that turns this event on (`push_events`, …); omit with `kind`. */
+  flag?: string;
+  /** The `object_kind` the any-event trigger's sample shows (required when `kind` is omitted). */
+  sampleKind?: string;
   output: OutputField[];
   samplePayload: Record<string, unknown>;
   hasActions: boolean;
@@ -253,9 +315,10 @@ export interface WebhookTriggerSpec {
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, GitLabEvent, TriggerState> {
+  const fixed = spec.kind;
   const sample: GitLabEvent = {
-    kind: spec.kind,
-    action: spec.hasActions ? actionOf(spec.samplePayload) : null,
+    kind: fixed ?? spec.sampleKind ?? "push",
+    action: spec.hasActions || fixed === undefined ? actionOf(spec.samplePayload) : null,
     deliveryId: "3f1b2c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
     project: "gitlab-org/gitlab-test",
     user: "jsmith",
@@ -265,12 +328,21 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: spec.hasActions ? [PROJECT_PARAM, ACTIONS_PARAM] : [PROJECT_PARAM],
+    params: fixed === undefined
+      ? [PROJECT_PARAM, EVENTS_PARAM]
+      : spec.hasActions
+      ? [PROJECT_PARAM, ACTIONS_PARAM]
+      : [PROJECT_PARAM],
     output: [...BASE_OUTPUT, ...spec.output],
     sample,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const projectId = required(params.projectId, "Project");
+      const kinds = fixed === undefined ? parseKinds(params.events) : [fixed];
+      const flags: Record<string, boolean> = { push_events: false };
+      if (fixed === undefined) {
+        for (const k of kinds) for (const f of KIND_FLAGS[k]) flags[f] = true;
+      } else flags[spec.flag as string] = true;
       const client = new GitLabClient(ctx);
       const tokenMode = await isPre19(client);
       for (const id of await hooksPointingAt(client, projectId, callbackUrl)) {
@@ -285,16 +357,18 @@ export function webhookTrigger(
             url: callbackUrl,
             ...(tokenMode ? { token: secret } : { signing_token: secret }),
             enable_ssl_verification: true,
-            push_events: false,
-            [spec.flag]: true,
+            ...flags,
           },
         },
       );
       const hookId = str(created?.id);
       if (!hookId) throw new Error("GitLab created the webhook but returned no id.");
+      const base = fixed === undefined
+        ? { hookId, projectId, kind: "any", kinds }
+        : { hookId, projectId, kind: fixed };
       return tokenMode
-        ? { hookId, projectId, kind: spec.kind, mode: "token", legacyToken: secret }
-        : { hookId, projectId, kind: spec.kind, mode: "signed", signingToken: secret };
+        ? { ...base, mode: "token" as const, legacyToken: secret }
+        : { ...base, mode: "signed" as const, signingToken: secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
@@ -310,14 +384,18 @@ export function webhookTrigger(
       const payload = state?.mode === "token"
         ? tokenPayload(raw, state.legacyToken)
         : await verifiedPayload(raw, state?.signingToken, Date.now());
-      if (str(payload.object_kind) !== spec.kind) return [];
+      const kind = str(payload.object_kind);
+      if (kind === null) return [];
+      if (fixed === undefined) {
+        if (!(state?.kinds ?? []).includes(kind)) return [];
+      } else if (kind !== fixed) return [];
       const action = actionOf(payload);
       if (spec.hasActions) {
         const wanted = (params?.actions ?? "").split(",").map((a) => a.trim()).filter(Boolean);
         if (wanted.length > 0 && (action === null || !wanted.includes(action))) return [];
       }
       return [{
-        kind: spec.kind,
+        kind,
         action,
         deliveryId: header(raw, "webhook-id") ?? null,
         project: str(asObject(payload.project)?.path_with_namespace),

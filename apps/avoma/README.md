@@ -3,7 +3,7 @@
 AI meeting assistant. This app reads Avoma's meetings, recordings, transcripts, AI notes,
 insights, scorecards, users and smart categories, and can submit a call recording for analysis.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 
 - App id: `io.w6w.avoma` · categories: `ai`, `productivity`, `analytics`
 - Host: `api.avoma.com` (the only entry in `network.allow`) · API prefix `/v1`
@@ -15,8 +15,12 @@ insights, scorecards, users and smart categories, and can submit a call recordin
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-meeting` — New Meeting | poll | `meeting-list` with `o=-start_at`, `page_size=100` and a rolling `from_date`/`to_date` window (7 days back to 14 days ahead, computed at each poll) | Each new meeting inside the window |
+| `new-call` — New Call | poll (since-filter) | `call-list` with `from_date` = last check minus 1 hour and `to_date` = now (param: `direction`) | Each call that started after the first check, once Avoma lists it |
+| `new-user` — New User | poll (snapshot) | `user-list` | Each user newly added to the organization |
 
-Vendor reference: https://dev.avoma.com/openapi.yml (verified 2026-11-09). `GET /v1/meetings/` is listed in descending `start_at` order (`o=-start_at` is the default); the trigger sends it explicitly. Residual: a meeting synced later whose start time is older than the window, or that falls below the newest 100, is missed. The `call-list` action is not wrapped (it filters by call start time only).
+Vendor reference: https://dev.avoma.com/openapi.yml (verified 2026-11-10). `GET /v1/meetings/` is listed in descending `start_at` order (`o=-start_at` is the default); the trigger sends it explicitly. Residual: a meeting synced later whose start time is older than the window, or that falls below the newest 100, is missed. `GET /v1/calls/` documents a date window but no sort order, so `new-call` reads the window (3 pages per check, resuming a longer window on the next check) and drops calls that started before the first check. `GET /v1/users/` returns the whole directory as a bare array, so `new-user` compares it with the previous check.
+
+Not covered: `note-list` (the documented note object has only `created`, `modified` and `data` — no id to dedupe on), `transcription-list` and `scorecard-evaluation-list` (filtered by the meeting's start time with no sort order, and a record appears only after the meeting has been processed), `scorecard-list` and `smart-category-list` (organization configuration), `meeting-segment-list` and `meeting-sentiment-list` (per-meeting AI analysis output).
 
 ## Auth
 

@@ -116,6 +116,22 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import spikeRate from "./health/spike-rate.ts";
 import newContact from "./triggers/new-contact.ts";
+import newCampaignSequence from "./triggers/new-campaign-sequence.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newCompany from "./triggers/new-company.ts";
+import newEmail from "./triggers/new-email.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import newOrUpdatedOpportunity from "./triggers/new-or-updated-opportunity.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newOrUpdatedProduct from "./triggers/new-or-updated-product.ts";
+import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
+import newOrUpdatedTag from "./triggers/new-or-updated-tag.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newOrder from "./triggers/new-order.ts";
+import newTag from "./triggers/new-tag.ts";
+import newTaggedContact from "./triggers/new-tagged-contact.ts";
+import newTask from "./triggers/new-task.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -166,7 +182,25 @@ export default {
     appointmentList,
     appointmentCreate,
   ],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newCampaignSequence,
+    newCampaign,
+    newCompany,
+    newEmail,
+    newOpportunity,
+    newOrUpdatedOpportunity,
+    newOrUpdatedOrder,
+    newOrUpdatedProduct,
+    newOrUpdatedSubscription,
+    newOrUpdatedTag,
+    newOrUpdatedTask,
+    newOrder,
+    newTag,
+    newTaggedContact,
+    newTask,
+    newUser,
+  ],
   auth: [oauth2, accessKey],
   healthChecks: [service, quota, spikeRate],
 } satisfies AppDefinition;

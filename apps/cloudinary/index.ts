@@ -110,6 +110,10 @@ import uploadPresetList from "./actions/upload-preset-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newAsset from "./triggers/new-asset.ts";
+import newFolder from "./triggers/new-folder.ts";
+import newTag from "./triggers/new-tag.ts";
+import newTransformation from "./triggers/new-transformation.ts";
+import newUploadPreset from "./triggers/new-upload-preset.ts";
 
 export default {
   actions: [
@@ -143,6 +147,6 @@ export default {
     uploadPresetList,
   ],
   auth: [basic],
-  triggers: [newAsset],
+  triggers: [newAsset, newFolder, newTag, newTransformation, newUploadPreset],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

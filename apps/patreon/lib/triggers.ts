@@ -27,6 +27,7 @@ import { PatreonClient } from "./client.ts";
 
 export interface TriggerParams {
   campaignId: string;
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -259,30 +260,75 @@ const isGone = (err: unknown) =>
   err instanceof Error && (err as { status?: number }).status !== undefined &&
   [404, 410].includes((err as { status?: number }).status as number);
 
+/** Every v2 trigger Patreon's webhook docs list (https://docs.patreon.com/#triggers, read 2026-11-10). */
+export const PATREON_TRIGGERS = [
+  "members:create",
+  "members:update",
+  "members:delete",
+  "members:pledge:create",
+  "members:pledge:update",
+  "members:pledge:delete",
+  "posts:publish",
+  "posts:update",
+  "posts:delete",
+];
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** The Patreon v2 trigger this subscription is registered for. */
-  trigger: "members:pledge:create" | "posts:publish";
+  /** The Patreon v2 trigger this subscription is registered for (one of PATREON_TRIGGERS). */
+  trigger: string;
+  /**
+   * `"param"`: the Any-event trigger. The user's `events` param (comma-separated PATREON_TRIGGERS,
+   * empty = all of them) is the registered trigger list and the delivery filter; `trigger` is ignored.
+   */
+  events?: "param";
   sample: PatreonEvent;
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint: `Comma-separated Patreon triggers: ${
+    PATREON_TRIGGERS.join(", ")
+  }. Leave empty for all of them.`,
+};
+
+/** The triggers a subscription registers and accepts. */
+export function chooseEvents(raw: string | undefined): string[] {
+  const named = [
+    ...new Set((raw ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)),
+  ];
+  if (named.length === 0) return [...PATREON_TRIGGERS];
+  const bad = named.filter((n) => !PATREON_TRIGGERS.includes(n));
+  if (bad.length > 0) {
+    throw new Error(
+      `Unknown Patreon trigger(s): ${bad.join(", ")}. Use ${PATREON_TRIGGERS.join(", ")}.`,
+    );
+  }
+  return named;
 }
 
 /** Build one Patreon campaign webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, PatreonEvent, TriggerState> {
+  const wanted = (p?: TriggerParams) =>
+    spec.events === "param" ? chooseEvents(p?.events) : [spec.trigger];
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [CAMPAIGN_PARAM],
+    params: spec.events === "param" ? [CAMPAIGN_PARAM, EVENTS_PARAM] : [CAMPAIGN_PARAM],
     output: OUTPUT,
     sample: spec.sample,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const campaignId = params.campaignId?.trim();
       if (!campaignId) throw new Error("Choose the Patreon campaign to watch.");
+      const triggers = wanted(params);
       const client = new PatreonClient(ctx);
       const created = await client.request<
         { data?: { id?: string | number; attributes?: { secret?: unknown } } }
@@ -290,7 +336,7 @@ export function webhookTrigger(
         method: "POST",
         body: {
           type: "webhook",
-          attributes: { triggers: [spec.trigger], uri: callbackUrl },
+          attributes: { triggers, uri: callbackUrl },
           relationships: { campaign: { data: { type: "campaign", id: campaignId } } },
         },
       });
@@ -324,7 +370,7 @@ export function webhookTrigger(
     },
 
     // deno-lint-ignore require-await
-    async handleIngest({ raw, state }) {
+    async handleIngest({ raw, params, state }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Patreon delivers webhooks with POST, not ${raw.method}.`);
       }
@@ -337,7 +383,7 @@ export function webhookTrigger(
       }
       const event = normalizeDelivery(parsed, header(raw, "x-patreon-event") ?? spec.trigger);
       // One webhook per subscription carries one trigger; anything else is acknowledged, no run.
-      if (event.trigger !== spec.trigger) return [];
+      if (!wanted(params).includes(event.trigger)) return [];
       if (state?.campaignId && event.campaignId && event.campaignId !== state.campaignId) return [];
       return [event];
     },

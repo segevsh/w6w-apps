@@ -44,6 +44,14 @@ import followUpList from "./actions/follow-up-list.ts";
 import followUpGet from "./actions/follow-up-get.ts";
 import newTask from "./triggers/new-task.ts";
 import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newNote from "./triggers/new-note.ts";
+import newOrUpdatedNote from "./triggers/new-or-updated-note.ts";
+import newCollection from "./triggers/new-collection.ts";
+import newOrUpdatedCollection from "./triggers/new-or-updated-collection.ts";
+import newFollowUp from "./triggers/new-follow-up.ts";
+import newOrUpdatedFollowUp from "./triggers/new-or-updated-follow-up.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
 
 export default {
   actions: [
@@ -75,6 +83,17 @@ export default {
     followUpGet,
   ],
   auth: [apiKey],
-  triggers: [newTask, newOrUpdatedTask],
+  triggers: [
+    newTask,
+    newOrUpdatedTask,
+    newNote,
+    newOrUpdatedNote,
+    newCollection,
+    newOrUpdatedCollection,
+    newFollowUp,
+    newOrUpdatedFollowUp,
+    newProject,
+    newOrUpdatedProject,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

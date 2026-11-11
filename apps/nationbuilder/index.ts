@@ -96,8 +96,15 @@ import customFieldList from "./actions/custom-field-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import nation from "./health/nation.ts";
+import newCustomField from "./triggers/new-custom-field.ts";
+import newDonation from "./triggers/new-donation.ts";
+import newEvent from "./triggers/new-event.ts";
+import newList from "./triggers/new-list.ts";
+import newOrUpdatedDonation from "./triggers/new-or-updated-donation.ts";
 import newOrUpdatedPerson from "./triggers/new-or-updated-person.ts";
+import newPersonOnList from "./triggers/new-person-on-list.ts";
 import newPerson from "./triggers/new-person.ts";
+import newTag from "./triggers/new-tag.ts";
 
 export default {
   actions: [
@@ -133,5 +140,15 @@ export default {
   ],
   auth: [oauth2, apiToken],
   healthChecks: [service, quota, nation],
-  triggers: [newPerson, newOrUpdatedPerson],
+  triggers: [
+    newPerson,
+    newOrUpdatedPerson,
+    newDonation,
+    newOrUpdatedDonation,
+    newEvent,
+    newList,
+    newTag,
+    newCustomField,
+    newPersonOnList,
+  ],
 } satisfies AppDefinition;

@@ -71,6 +71,12 @@ import timezoneList from "./actions/timezone-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newEventTemplate from "./triggers/new-event-template.ts";
+import newEvent from "./triggers/new-event.ts";
+import newCalendar from "./triggers/new-calendar.ts";
+import newCalendarSubscriber from "./triggers/new-calendar-subscriber.ts";
+import newRsvpAttendee from "./triggers/new-rsvp-attendee.ts";
+import newRsvpForm from "./triggers/new-rsvp-form.ts";
+import newCalendarTemplate from "./triggers/new-calendar-template.ts";
 
 export default {
   actions: [
@@ -107,5 +113,13 @@ export default {
   // account settings page is the entire authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newEventTemplate],
+  triggers: [
+    newEventTemplate,
+    newEvent,
+    newCalendar,
+    newCalendarSubscriber,
+    newRsvpAttendee,
+    newRsvpForm,
+    newCalendarTemplate,
+  ],
 } satisfies AppDefinition;

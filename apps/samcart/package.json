@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/samcart",
-  "version": "0.2.0",
-  "description": "Read SamCart orders, charges, customers, products, refunds and subscriptions, refund, cancel or reschedule them, and trigger workflows on new orders.",
+  "version": "0.3.0",
+  "description": "Read SamCart orders, charges, customers, products, refunds and subscriptions, refund, cancel or reschedule them, and trigger workflows on new orders, charges, customers, subscriptions and refunds.",
   "license": "MIT",
   "author": {
     "name": "w6w"

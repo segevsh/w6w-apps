@@ -60,6 +60,18 @@ import eventList from "./actions/event-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newEvent from "./triggers/new-event.ts";
+import newAsset from "./triggers/new-asset.ts";
+import newControl from "./triggers/new-control.ts";
+import newDevice from "./triggers/new-device.ts";
+import newEvidence from "./triggers/new-evidence.ts";
+import newMonitoringTest from "./triggers/new-monitoring-test.ts";
+import newPersonnel from "./triggers/new-personnel.ts";
+import newPolicy from "./triggers/new-policy.ts";
+import newRisk from "./triggers/new-risk.ts";
+import newRiskRegister from "./triggers/new-risk-register.ts";
+import newUser from "./triggers/new-user.ts";
+import newVendor from "./triggers/new-vendor.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
 
 export default {
   actions: [
@@ -99,7 +111,21 @@ export default {
     eventList,
   ],
   // API key only: Drata's one security scheme is `bearer` (bearerFormat API_KEY).
-  triggers: [newEvent],
+  triggers: [
+    newEvent,
+    newAsset,
+    newControl,
+    newDevice,
+    newEvidence,
+    newMonitoringTest,
+    newPersonnel,
+    newPolicy,
+    newRisk,
+    newRiskRegister,
+    newUser,
+    newVendor,
+    newWorkspace,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

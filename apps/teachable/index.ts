@@ -41,6 +41,10 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newTransaction from "./triggers/new-transaction.ts";
+import newCourse from "./triggers/new-course.ts";
+import newPricingPlan from "./triggers/new-pricing-plan.ts";
+import newEnrollment from "./triggers/new-enrollment.ts";
+import newQuiz from "./triggers/new-quiz.ts";
 import apiKey from "./auth/api-key.ts";
 
 import courseList from "./actions/course-list.ts";
@@ -106,5 +110,5 @@ export default {
   // API is out of scope.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newTransaction],
+  triggers: [newTransaction, newCourse, newPricingPlan, newEnrollment, newQuiz],
 } satisfies AppDefinition;

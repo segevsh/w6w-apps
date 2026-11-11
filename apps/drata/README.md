@@ -6,7 +6,7 @@ on the **Drata public API v2**.
 - **Categories** — legal, security
 - **Auth methods** — api-key (bearer)
 - **Actions** — 27 (14 lists, 8 reads, 5 writes)
-- **Triggers** — 1 (poll)
+- **Triggers** — 13 (poll)
 - **Health checks** — `service`, `quota` (declared unavailable, `informational`) + the derived
   `auth:api-key`
 - **Egress allowlist** — `public-api.drata.com`, `public-api.eu.drata.com`,
@@ -109,7 +109,27 @@ error formatting), `lib/params.ts` (shared inputs and enums), `tests/` (mocked `
 | Trigger — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each new audit event |
+| `new-asset` — New Asset | Poll | `asset-list` | Each new asset |
+| `new-control` — New Control | Poll | `control-list` | Each new control in a chosen workspace |
+| `new-device` — New Device | Poll | `device-list` | Each new device |
+| `new-evidence` — New Evidence | Poll | `evidence-list` | Each new evidence item in a chosen workspace |
+| `new-monitoring-test` — New Monitoring Test | Poll | `monitoring-test-list` | Each new monitoring test in a chosen workspace |
+| `new-personnel` — New Personnel | Poll | `personnel-list` | Each new personnel record |
+| `new-policy` — New Policy | Poll | `policy-list` | Each new policy |
+| `new-risk` — New Risk | Poll | `risk-list` | Each new risk in a chosen risk register |
+| `new-risk-register` — New Risk Register | Poll | `risk-register-list` | Each new risk register |
+| `new-user` — New User | Poll | `user-list` | Each new user |
+| `new-vendor` — New Vendor | Poll | `vendor-list` | Each new vendor |
+| `new-workspace` — New Workspace | Poll | `workspace-list` | Each new workspace |
 
 Each check calls `event-list` with `createdAtStartDate` set two minutes before the previous check and de-duplicates by event id; the first check reads nothing and stores the instant it ran; later checks drop any record created before that instant, so existing records are never emitted. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
 
-Source: [Drata API v2](https://developers.drata.com/openapi/reference/v2/overview/) (verified 2026-11-09).
+The twelve record triggers call their list action with `sort=createdAt&sortDir=DESC` (page size 100), so
+each check begins with the newest records; the first check stores what exists and emits nothing. Drata
+documents `sort` (`createdAt` or `updatedAt`) and `sortDir` (`ASC` or `DESC`) on each of these list
+endpoints; the list actions now accept both as optional parameters (omitted, Drata's own order applies).
+
+Not covered: `monitoring-test-failures-list` (the resources currently failing one test, a state report
+whose resource ids recur when a resource fails again, not a feed of new records).
+
+Source: [Drata API v2 reference](https://developers.drata.com/openapi/reference/v2/overview/), tags Assets, Controls, Devices, Evidence, Monitoring Tests, Personnel, Policies, Risk Registers, Risks, Users and Roles, Vendors and Workspaces (verified 2026-11-10).

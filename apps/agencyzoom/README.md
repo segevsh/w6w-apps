@@ -10,7 +10,7 @@ management CRM, over its **API v1**.
 - **Egress allowlist** — `api.agencyzoom.com`
 - **Website** — https://agencyzoom.com/
 - **OpenAPI** — https://app.agencyzoom.com/openapi/agencyzoom.yaml
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 
 > **Everything below was verified against AgencyZoom's own sources on 2026-09-05** — its
 > machine-readable OpenAPI 3.0 document
@@ -176,5 +176,14 @@ are hard to add later; they just aren't here yet:
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-lead` — New Lead | Poll | `lead-list` | Each lead created since the prior check |
+| `new-customer` — New Customer | Poll | `customer-list` | Each new customer (newest id first) |
+| `new-task` — New Task | Poll | `task-list` | Each new task (newest id first) |
+| `new-customer-policy` — New Customer Policy | Poll | `customer-policy-list` | Each new policy written for one customer (param: Customer ID; snapshot diff) |
+| `new-employee` — New Employee | Poll | `employee-list` | Each new employee (snapshot diff) |
+| `new-csr` — New CSR | Poll | `csr-list` | Each new Customer Service Representative (snapshot diff) |
 
-`lead-list` filters on its documented `startDate` lead-creation-date range and fetches all matching pages before id deduplication. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-09).
+`lead-list` filters on its documented `startDate` lead-creation-date range and fetches all matching pages before id deduplication. Source: [AgencyZoom OpenAPI](https://app.agencyzoom.com/openapi/agencyzoom.yaml) (verified 2026-11-10).
+
+`new-customer` and `new-task` send the documented `sort` (`id`) and `order` (`desc`) fields with `page` 0 and `pageSize` 100 (the OpenAPI document says paging starts at 0; the customer and task page-size maxima are 100 and 200) and emit ids not seen on the previous check. The policy, employee and CSR lists are small per-agency (or per-customer) collections returned in one request; each check diffs their ids against the previous one, and the first check only records them.
+
+Not covered: `carrier-list`, `lead-source-list`, `pipeline-list` and `pipeline-stage-list` return the agency's configured reference data (carriers, lead sources, pipelines and their stages) used to look up IDs, not records that workflows react to.

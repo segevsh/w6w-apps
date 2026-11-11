@@ -113,6 +113,19 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newEstimate from "./triggers/new-estimate.ts";
+import newOrUpdatedEstimate from "./triggers/new-or-updated-estimate.ts";
+import newEstimateOptionLineItem from "./triggers/new-estimate-option-line-item.ts";
+import newEvent from "./triggers/new-event.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedEvent from "./triggers/new-or-updated-event.ts";
+import newJobAppointment from "./triggers/new-job-appointment.ts";
+import newJobInvoice from "./triggers/new-job-invoice.ts";
+import newJobLineItem from "./triggers/new-job-line-item.ts";
+import newJob from "./triggers/new-job.ts";
+import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -168,5 +181,20 @@ export default {
   // not. A Connection picks one.
   auth: [apiKey, oauth],
   healthChecks: [service, api, quota],
-  triggers: [newCustomer],
+  triggers: [
+    newCustomer,
+    newEmployee,
+    newEstimate,
+    newOrUpdatedEstimate,
+    newEstimateOptionLineItem,
+    newEvent,
+    newInvoice,
+    newOrUpdatedEvent,
+    newJobAppointment,
+    newJobInvoice,
+    newJobLineItem,
+    newJob,
+    newOrUpdatedJob,
+    newLead,
+  ],
 } satisfies AppDefinition;

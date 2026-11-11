@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/companycam",
-  "version": "0.2.0",
-  "description": "Read and write CompanyCam projects, photos, videos, documents, checklists, tags, users and webhooks over the Core API v2, with a New Checklist trigger (plus New or Updated Checklist).",
+  "version": "0.3.0",
+  "description": "Read and write CompanyCam projects, photos, videos, documents, checklists, tags, users and webhooks over the Core API v2, with 20 poll triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.companycam.com/reference/getting-started"
     ],
-    "longDescription": "CompanyCam is a photo-documentation platform built for contractors, and this app brings a project's whole record into a workflow: photos, videos, documents, comments and checklists, all filed under the project they belong to. List, create and update projects, attach a photo from a hosted URL or a document as a base64 file, add labels and tags, and manage who is assigned to or invited into a project.\n\nBeyond projects, manage the company's users and groups, and read or maintain the webhook subscriptions that notify your systems when something changes. A workflow can search for an existing project before creating a duplicate, and every list of photos or videos supports the cursor pagination CompanyCam's API expects.\n\nCompanyCam's own documentation marks this API surface for depreciation in early 2027 with a successor API in development; this app targets the current, fully live surface. Polling triggers: a New Checklist trigger (plus New or Updated Checklist).",
+    "longDescription": "CompanyCam is a photo-documentation platform built for contractors, and this app brings a project's whole record into a workflow: photos, videos, documents, comments and checklists, all filed under the project they belong to. List, create and update projects, attach a photo from a hosted URL or a document as a base64 file, add labels and tags, and manage who is assigned to or invited into a project.\n\nBeyond projects, manage the company's users and groups, and read or maintain the webhook subscriptions that notify your systems when something changes. A workflow can search for an existing project before creating a duplicate, and every list of photos or videos supports the cursor pagination CompanyCam's API expects.\n\nCompanyCam's own documentation marks this API surface for depreciation in early 2027 with a successor API in development; this app targets the current, fully live surface. Polling triggers: 20, covering new and updated projects, photos, videos, users, tags, groups and checklists plus per-project and per-photo comments, documents, labels, assignees, collaborators and invitations.",
     "categories": [
       "project-management",
       "documents",

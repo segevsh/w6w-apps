@@ -111,6 +111,17 @@ import ticketClassDeleted from "./triggers/ticket-class-deleted.ts";
 import organizerUpdated from "./triggers/organizer-updated.ts";
 import venueUpdated from "./triggers/venue-updated.ts";
 import activity from "./triggers/activity.ts";
+import newOrUpdatedAttendee from "./triggers/new-or-updated-attendee.ts";
+import newTicketGroup from "./triggers/new-ticket-group.ts";
+import newInventoryTier from "./triggers/new-inventory-tier.ts";
+import newSeatMap from "./triggers/new-seat-map.ts";
+import newEventTeam from "./triggers/new-event-team.ts";
+import newDiscount from "./triggers/new-discount.ts";
+import newCustomQuestion from "./triggers/new-custom-question.ts";
+import newDefaultQuestion from "./triggers/new-default-question.ts";
+import newOrganizationMember from "./triggers/new-organization-member.ts";
+import newOrganizer from "./triggers/new-organizer.ts";
+import newVenue from "./triggers/new-venue.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -228,6 +239,17 @@ export default {
     organizerUpdated,
     venueUpdated,
     activity,
+    newOrUpdatedAttendee,
+    newTicketGroup,
+    newInventoryTier,
+    newSeatMap,
+    newEventTeam,
+    newDiscount,
+    newCustomQuestion,
+    newDefaultQuestion,
+    newOrganizationMember,
+    newOrganizer,
+    newVenue,
   ],
   auth: [personalToken, oauth2],
   healthChecks: [service, quota],

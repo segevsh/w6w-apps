@@ -109,6 +109,16 @@ import workflowRunList from "./actions/workflow-run-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newImage from "./triggers/new-image.ts";
+import newAnimation from "./triggers/new-animation.ts";
+import newBatch from "./triggers/new-batch.ts";
+import newWorkflowRun from "./triggers/new-workflow-run.ts";
+import newToolJob from "./triggers/new-tool-job.ts";
+import newImageTemplate from "./triggers/new-image-template.ts";
+import newAnimationTemplate from "./triggers/new-animation-template.ts";
+import newWorkflow from "./triggers/new-workflow.ts";
+import newAsset from "./triggers/new-asset.ts";
+import newInstantUrl from "./triggers/new-instant-url.ts";
+import newPublication from "./triggers/new-publication.ts";
 
 export default {
   actions: [
@@ -190,5 +200,17 @@ export default {
   // API key only. Bannerbear publishes no OAuth surface for third-party apps.
   auth: [bearerToken],
   healthChecks: [service, quota],
-  triggers: [newImage],
+  triggers: [
+    newImage,
+    newAnimation,
+    newBatch,
+    newWorkflowRun,
+    newToolJob,
+    newImageTemplate,
+    newAnimationTemplate,
+    newWorkflow,
+    newAsset,
+    newInstantUrl,
+    newPublication,
+  ],
 } satisfies AppDefinition;

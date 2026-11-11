@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/patreon",
-  "version": "0.2.0",
-  "description": "Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2. Triggers start a workflow on a new pledge or a published post.",
+  "version": "0.3.0",
+  "description": "Manage Patreon campaigns, members, posts, and webhooks via the Patreon API v2. Triggers fire on member, pledge and post events (any event by name) and on new campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/podium",
-  "version": "0.2.0",
-  "description": "Manage Podium contacts and conversations, poll for new conversations, send messages, and read reviews, calls and appointments.",
+  "version": "0.3.0",
+  "description": "Manage Podium contacts and conversations, poll for new conversations, reviews, feedback, calls and appointments, send messages, and read reviews, calls and appointments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

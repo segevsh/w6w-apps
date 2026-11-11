@@ -7,7 +7,7 @@ API v2.
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 22
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Egress allowlist** — `app.pennylane.com`, `status.pennylane.com`
 - **Website** — https://www.pennylane.tech
 - **API docs** — https://pennylane.readme.io
@@ -238,11 +238,16 @@ in mind if a probe starts failing for everyone at once.
 | Key — title | Mechanism | Wraps | The run gets |
 | --- | --- | --- | --- |
 | `new-customer-invoice` — New Customer Invoice | poll | `list-customer-invoices` | each newly created customer invoice (`sort=-id`) |
+| `new-customer` — New Customer | poll | `list-customers` | each newly created customer, company or individual (`sort=-id`) |
+| `new-supplier` — New Supplier | poll | `list-suppliers` | each newly created supplier (`sort=-id`) |
+| `new-supplier-invoice` — New Supplier Invoice | poll | `list-supplier-invoices` | each newly created supplier invoice (`sort=-id`) |
+| `new-product` — New Product | poll | `list-products` | each newly created product (`sort=-id`) |
+| `new-transaction` — New Bank Transaction | poll | `list-transactions` | each newly imported bank transaction (`sort=-id`) |
 
-Each check lists the 100 newest invoices. Pennylane documents `sort` on this endpoint (fields `id` and `date`, `-` prefix for descending, default `-id`).
+Each check lists the 100 newest records. Pennylane documents `sort` on every list endpoint (a `-` prefix sorts descending; every endpoint above accepts `id`, supplier invoices also `date`) and `limit` up to 100 (https://pennylane.readme.io, verified 2026-11-10). Not covered (accounting reference data): `list-categories`, `list-journals`, `list-ledger-accounts`. There is no updated-at sort or filter on these endpoints, so no New or Updated variants.
 
 Trust model: Poll only: nothing is registered with Pennylane. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
 
 Vendor documentation:
 
-- https://pennylane.readme.io/reference/getcustomerinvoices (verified 2026-11-09)
+- https://pennylane.readme.io/reference/getcustomerinvoices (verified 2026-11-10)

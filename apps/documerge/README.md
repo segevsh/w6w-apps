@@ -93,7 +93,13 @@ Every endpoint in the vendor's reference is covered.
 | Trigger — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-document` — New Document | Poll | `document-list` | Each newly created document (merge template) |
+| `new-route` — New Route | Poll | `route-list` | Each newly created route |
+| `new-document-delivery-method` — New Document Delivery Method | Poll | `document-delivery-method-list` (param `documentId`) | Each delivery method newly added to the chosen document |
+| `new-route-delivery-method` — New Route Delivery Method | Poll | `route-delivery-method-list` (param `routeId`) | Each delivery method newly added to the chosen route |
+| `new-route-rule` — New Route Rule | Poll | `route-rule-list` (param `routeId`) | Each rule newly added to the chosen route |
 
 The OpenAPI lists no pagination or filter parameters for `GET /api/documents` (`parameters: []`), so this trigger treats one response as the whole collection (an inference from the spec, not a vendor statement); each check compares it with the previous one and emits added ids. The first check only records.
 
-Source: [DocuMerge OpenAPI](https://app.documerge.ai/api-docs/openapi.yaml) (verified 2026-11-09).
+The route, rule and delivery-method triggers use the same reading (no paging parameters in the OpenAPI, one response is the whole collection) and diff the ids per chosen parent. Not covered by a trigger: `document-field-list` and `route-field-list` (merge-field definitions, schema data).
+
+Source: [DocuMerge OpenAPI](https://app.documerge.ai/api-docs/openapi.yaml) (verified 2026-11-10).

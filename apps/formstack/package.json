@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/formstack",
-  "version": "0.2.0",
-  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions — on the V2025 API. Triggers fire on each new form submission (webhook) or by polling the submission list.",
+  "version": "0.3.0",
+  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions on the V2025 API. Triggers: new submission (webhook or poll), new form, new folder.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://www.formstack.com/api/v2"
     ],
-    "longDescription": "Formstack manages forms, fields, folders and submissions through the Formstack V2025 API, giving a workflow read access to a form's structure and full control over the submissions built against it. Forms and their field definitions are listed and read first, since a submission is keyed by field id — the same ids a workflow needs both to write a new submission and to make sense of one read back.\n\nReading submissions defaults to returning parsed field values rather than just metadata, since the answers are what most workflows actually want and Formstack only includes them when explicitly asked. New submissions are always sent as JSON, because Formstack's default form-encoded format can't carry structured field values like checkboxes and matrix questions intact. Deleting a submission is permanent — Formstack removes it and any attached files with no way to recover it.\n\nBuilding and editing forms themselves — fields, confirmation emails, smart lists — is left to Formstack's own design-time UI rather than this integration, which stays focused on submission data.\n\nTriggers fire on each new form submission (webhook) or by polling the submission list.",
+    "longDescription": "Formstack manages forms, fields, folders and submissions through the Formstack V2025 API, giving a workflow read access to a form's structure and full control over the submissions built against it. Forms and their field definitions are listed and read first, since a submission is keyed by field id — the same ids a workflow needs both to write a new submission and to make sense of one read back.\n\nReading submissions defaults to returning parsed field values rather than just metadata, since the answers are what most workflows actually want and Formstack only includes them when explicitly asked. New submissions are always sent as JSON, because Formstack's default form-encoded format can't carry structured field values like checkboxes and matrix questions intact. Deleting a submission is permanent — Formstack removes it and any attached files with no way to recover it.\n\nBuilding and editing forms themselves — fields, confirmation emails, smart lists — is left to Formstack's own design-time UI rather than this integration, which stays focused on submission data.\n\nTriggers fire on each new form submission (webhook, or by polling the submission list) and on each new form or folder (polls).",
     "categories": [
       "forms",
       "productivity"

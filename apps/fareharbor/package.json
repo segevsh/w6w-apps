@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fareharbor",
-  "version": "0.2.0",
-  "description": "Read FareHarbor companies, items and availability, and validate, create, cancel and check in bookings over the External API, and trigger workflows for newly created bookings.",
+  "version": "0.3.0",
+  "description": "Read FareHarbor companies, items and availability, and validate, create, cancel and check in bookings over the External API, and trigger workflows for new bookings, items, users, agents and companies.",
   "license": "MIT",
   "author": {
     "name": "w6w"

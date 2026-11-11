@@ -40,6 +40,20 @@ import newConnection from "./triggers/new-connection.ts";
 import syncStarted from "./triggers/sync-started.ts";
 import syncEnded from "./triggers/sync-ended.ts";
 import connectionFailure from "./triggers/connection-failure.ts";
+import connectionCreated from "./triggers/connection-created.ts";
+import connectionUpdated from "./triggers/connection-updated.ts";
+import connectionDeleted from "./triggers/connection-deleted.ts";
+import connectionPaused from "./triggers/connection-paused.ts";
+import connectionResumed from "./triggers/connection-resumed.ts";
+import connectionSuccessful from "./triggers/connection-successful.ts";
+import transformationStarted from "./triggers/transformation-started.ts";
+import transformationSucceeded from "./triggers/transformation-succeeded.ts";
+import transformationFailed from "./triggers/transformation-failed.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newDestination from "./triggers/new-destination.ts";
+import newTransformation from "./triggers/new-transformation.ts";
+import newTransformationProject from "./triggers/new-transformation-project.ts";
+import newUser from "./triggers/new-user.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -66,7 +80,26 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, connectionsHealth, quota],
-  triggers: [newConnection, syncStarted, syncEnded, connectionFailure],
+  triggers: [
+    newConnection,
+    syncStarted,
+    syncEnded,
+    connectionFailure,
+    connectionCreated,
+    connectionUpdated,
+    connectionDeleted,
+    connectionPaused,
+    connectionResumed,
+    connectionSuccessful,
+    transformationStarted,
+    transformationSucceeded,
+    transformationFailed,
+    anyEvent,
+    newDestination,
+    newTransformation,
+    newTransformationProject,
+    newUser,
+  ],
 };
 
 export default app;

@@ -52,6 +52,15 @@ import issueEvent from "./triggers/issue.ts";
 import issueCommentEvent from "./triggers/issue-comment.ts";
 import releaseEvent from "./triggers/release.ts";
 import workflowRun from "./triggers/workflow-run.ts";
+import pullRequestReviewEvent from "./triggers/pull-request-review.ts";
+import pullRequestReviewCommentEvent from "./triggers/pull-request-review-comment.ts";
+import refCreated from "./triggers/ref-created.ts";
+import refDeleted from "./triggers/ref-deleted.ts";
+import repositoryEvent from "./triggers/repository-event.ts";
+import workflowJob from "./triggers/workflow-job.ts";
+import starEvent from "./triggers/star.ts";
+import forkEvent from "./triggers/fork.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -92,7 +101,23 @@ export default {
     userGetRepositories,
     organizationGetRepositories,
   ],
-  triggers: [push, pullRequestEvent, issueEvent, issueCommentEvent, releaseEvent, workflowRun],
+  triggers: [
+    push,
+    pullRequestEvent,
+    issueEvent,
+    issueCommentEvent,
+    releaseEvent,
+    workflowRun,
+    pullRequestReviewEvent,
+    pullRequestReviewCommentEvent,
+    refCreated,
+    refDeleted,
+    repositoryEvent,
+    workflowJob,
+    starEvent,
+    forkEvent,
+    anyEvent,
+  ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
   interfaces: [{

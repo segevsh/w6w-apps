@@ -89,6 +89,22 @@ const UPDATE_TYPES = [
   "my_chat_member",
   "chat_member",
   "chat_join_request",
+  // Added to the Update object since (https://core.telegram.org/bots/api#update, verified 2026-11-10).
+  "business_connection",
+  "business_message",
+  "edited_business_message",
+  "deleted_business_messages",
+  "guest_message",
+  "message_reaction",
+  "message_reaction_count",
+  "widget_query",
+  "shared_widget_query",
+  "purchased_paid_media",
+  "chat_boost",
+  "removed_chat_boost",
+  "managed_bot",
+  "subscription",
+  "stopped_message_generation",
 ];
 
 function asObject(v: unknown): Record<string, unknown> | null {
@@ -146,6 +162,8 @@ export interface TelegramTriggerSpec {
   description: string;
   /** Update types Telegram is asked to deliver; omitted for the trigger whose types are a param. */
   allowedUpdates?: string[];
+  /** A representative event for the sample; defaults to a message. */
+  sample?: TelegramEvent;
 }
 
 export function telegramTrigger(
@@ -158,7 +176,7 @@ export function telegramTrigger(
     type: "string",
     advanced: true,
     hint:
-      "Comma-separated Telegram update types, e.g. message,callback_query. Leave empty for Telegram's default set.",
+      "Comma-separated Telegram update types, e.g. message,callback_query. Leave empty for Telegram's default set (every type except chat_member, message_reaction and message_reaction_count, which must be listed).",
   }];
 
   return {
@@ -167,7 +185,7 @@ export function telegramTrigger(
     description: spec.description,
     params,
     output: EVENT_OUTPUT,
-    sample: fixed ? MESSAGE_SAMPLE : {
+    sample: fixed ? spec.sample ?? MESSAGE_SAMPLE : {
       ...MESSAGE_SAMPLE,
       updateType: "callback_query",
       text: "button-1",

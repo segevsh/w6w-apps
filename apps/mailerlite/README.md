@@ -5,7 +5,7 @@ Manage MailerLite subscribers, groups, fields, segments, and email campaigns.
 - **Categories** — marketing, email
 - **Auth methods** — api-key (Bearer token)
 - **Actions** — 16
-- **Triggers** — 4 (webhook)
+- **Triggers** — 14 (11 webhook, 3 poll)
 - **Egress allowlist** — `connect.mailerlite.com`
 
 ## Which MailerLite API this targets
@@ -142,6 +142,16 @@ metadata to label a connection with, and inventing one would mean guessing.
 | `subscriber-updated` — Subscriber Updated | webhook (API-registered) | `subscriber.updated` | The subscriber after a field change or a subscription confirmation |
 | `subscriber-unsubscribed` — Subscriber Unsubscribed | webhook (API-registered) | `subscriber.unsubscribed` | The subscriber with its new status |
 | `campaign-sent` — Campaign Sent | webhook (API-registered) | `campaign.sent` | The campaign (name, recipient count, preview link) |
+| `subscriber-added-to-group` — Subscriber Added to Group | webhook (API-registered) | `subscriber.added_to_group` | The subscriber and the group (optional `groupId` filter) |
+| `subscriber-removed-from-group` — Subscriber Removed from Group | webhook (API-registered) | `subscriber.removed_from_group` | The subscriber and the group (optional `groupId` filter) |
+| `subscriber-bounced` — Subscriber Bounced | webhook (API-registered) | `subscriber.bounced` | The subscriber |
+| `subscriber-spam-reported` — Subscriber Spam Reported | webhook (API-registered) | `subscriber.spam_reported` | The subscriber |
+| `subscriber-automation-triggered` — Subscriber Automation Triggered | webhook (API-registered) | `subscriber.automation_triggered` | The subscriber and the automation |
+| `subscriber-automation-completed` — Subscriber Automation Completed | webhook (API-registered) | `subscriber.automation_completed` | The subscriber and the automation |
+| `any-event` — Any Event | webhook (API-registered) | the `events` you choose out of all fourteen MailerLite publishes (all when empty) | The event name and the subscriber or campaign |
+| `new-group` — New Group | poll (5 min) | `list-groups` with `sort=-created_at` (newest first) | Each newly created group |
+| `new-segment` — New Segment | poll (5 min) | `list-segments` (at most 250 segments, so the whole set is diffed) | Each newly created segment |
+| `new-campaign` — New Campaign | poll (5 min) | `list-campaigns` for the chosen `status` (draft by default; the whole set is diffed) | Each campaign newly in that status |
 
 **Setup.** None by hand. Subscribing calls `POST /api/webhooks` (`name`, `events`, `url`,
 `enabled`) on `connect.mailerlite.com`; MailerLite generates the signing secret and returns it
@@ -159,11 +169,29 @@ captured delivery stays verifiable indefinitely (there is no replay protection);
 body that was not delivered raw refuses the delivery; the host stores one failed row and starts
 no run. The secret is kept in the subscription state, which the host stores unsealed.
 
-Only the four events with a flat payload are offered. The group, automation, bounce and
-`batchable` events (`campaign.open`, `campaign.click`, `subscriber.deleted`) arrive in other
-shapes and are not covered.
+**Events.** MailerLite publishes fourteen: `subscriber.created`, `subscriber.updated`,
+`subscriber.unsubscribed`, `subscriber.added_to_group`, `subscriber.removed_from_group`,
+`subscriber.bounced`, `subscriber.automation_triggered`, `subscriber.automation_completed`,
+`subscriber.spam_reported`, `subscriber.deleted`, `subscriber.active`, `campaign.sent`,
+`campaign.click` and `campaign.open`. The named triggers above cover the ones with their own record
+meaning; **Any Event** reaches all fourteen through its `events` param (it registers exactly that
+list). `campaign.open`, `campaign.click` and `subscriber.deleted` need a `batchable` webhook, so
+choosing one of them registers the webhook with `batchable: true`; its deliveries arrive as
+`{ "events": [...], "total": n }` and Any Event emits one event per item (the whole body is
+signed once and verified once).
 
-Sources (verified 2026-11-09): https://developers.mailerlite.com/docs/webhooks.html
+**Polls.** `new-group` reads `GET /api/groups?sort=-created_at` (newest first, documented `sort`
+values). Segments (at most 250) and campaigns (no sort and no since filter) are read whole through
+their list actions and diffed by id; the first check only records what exists.
+
+**Not covered by a trigger.** `list-subscribers` and `list-group-subscribers` are delivered by
+`new-subscriber` and `subscriber-added-to-group` (the list has no usable created-since filter: only
+a day-granular `filter[subscribed_from]`). `list-fields` is skipped: custom-field definitions are
+reference data.
+
+Sources (verified 2026-11-10): https://developers.mailerlite.com/docs/webhooks.html,
+https://developers.mailerlite.com/docs/groups.html, https://developers.mailerlite.com/docs/segments.html,
+https://developers.mailerlite.com/docs/campaigns.html
 
 ## Health check
 

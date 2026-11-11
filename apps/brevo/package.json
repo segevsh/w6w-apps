@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/brevo",
-  "version": "0.3.0",
-  "description": "Manage Brevo contacts and trigger when a contact is added to a list.",
+  "version": "0.4.0",
+  "description": "Manage Brevo contacts and trigger on contact, email and inbound events (webhooks) and new contacts and senders (polls).",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.brevo.com"
     ],
-    "longDescription": "Brevo (formerly Sendinblue) manages contacts and sends email directly from a workflow — creating, updating, upserting and deleting contacts, and sending both one-off transactional emails and template-based ones without opening Brevo's dashboard.\n\nContact attributes — the custom fields a Brevo account defines for segmentation — are managed as their own resource: created, listed and deleted, so a workflow can keep an account's schema in sync as new fields are needed rather than assuming they already exist. Senders can be created and listed too, covering the identities transactional email is sent from. The New Contact trigger registers a marketing webhook for list additions.\n\nA natural fit for turning an external event into an email send — welcoming a new signup, sending a receipt, or upserting a contact's attributes as their status changes elsewhere in a workflow — while keeping the underlying marketing list Brevo's own source of truth.",
+    "longDescription": "Brevo (formerly Sendinblue) manages contacts and sends email directly from a workflow — creating, updating, upserting and deleting contacts, and sending both one-off transactional emails and template-based ones without opening Brevo's dashboard.\n\nContact attributes — the custom fields a Brevo account defines for segmentation — are managed as their own resource: created, listed and deleted, so a workflow can keep an account's schema in sync as new fields are needed rather than assuming they already exist. Senders can be created and listed too, covering the identities transactional email is sent from. Triggers cover contact list additions, updates and deletions, transactional email events (delivered, opened, clicked, bounced, unsubscribed), inbound email, and any other Brevo webhook event by name, secured with a bearer token Brevo sends back; polls watch for new contacts and senders.\n\nA natural fit for turning an external event into an email send — welcoming a new signup, sending a receipt, or upserting a contact's attributes as their status changes elsewhere in a workflow — while keeping the underlying marketing list Brevo's own source of truth.",
     "categories": [
       "marketing",
       "email"
@@ -33,7 +33,8 @@
         "api.brevo.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

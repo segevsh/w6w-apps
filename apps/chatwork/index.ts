@@ -78,6 +78,13 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 import newMessage from "./triggers/new-message.ts";
+import newRoom from "./triggers/new-room.ts";
+import newContact from "./triggers/new-contact.ts";
+import newContactRequest from "./triggers/new-contact-request.ts";
+import newRoomMember from "./triggers/new-room-member.ts";
+import newRoomTask from "./triggers/new-room-task.ts";
+import newMyTask from "./triggers/new-my-task.ts";
+import newRoomFile from "./triggers/new-room-file.ts";
 export default {
   actions: [
     // Profile
@@ -125,5 +132,14 @@ export default {
   // Personal API token only — see auth/api-token.ts for why OAuth2 is not implemented.
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newMessage],
+  triggers: [
+    newMessage,
+    newRoom,
+    newContact,
+    newContactRequest,
+    newRoomMember,
+    newRoomTask,
+    newMyTask,
+    newRoomFile,
+  ],
 } satisfies AppDefinition;

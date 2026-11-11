@@ -5,7 +5,7 @@ workflow: send one message or a batch, assemble large batches as groups and sche
 them, and read delivery status, balance, sender numbers, statistics, stored files and the Kakao
 channels and templates linked to the account.
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 7 (poll)
 - **Base URL** `https://api.solapi.com` (the only host in `network.allow`). SOLAPI also serves
   the same API from `api-static.solapi.com` on two fixed IPs for firewalled environments; this
   app does not use it.
@@ -103,12 +103,24 @@ size to reach further channels, and confirm paging on an account with many.
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `list-messages` | Each message created after the trigger was set up |
 | `new-or-updated-message` — New or Updated Message | Poll | `list-messages` | Each message created or whose status changed (`dateUpdated`) |
+| `new-group` — New Message Group | Poll | `list-groups` | Each message group created (every send creates one) |
+| `new-or-updated-group` — New or Updated Message Group | Poll | `list-groups` | Each group created or whose status or counts changed (`dateUpdated`) |
+| `new-sender-number` — New Sender Number | Poll (snapshot) | `list-sender-numbers` | Each sender number newly registered to the account |
+| `new-kakao-channel` — New Kakao Channel | Poll (snapshot) | `list-kakao-channels` | Each Kakao channel newly linked to the account |
+| `new-kakao-template` — New Kakao Template | Poll (snapshot) | `list-kakao-templates` | Each AlimTalk template newly registered |
 
-`list-messages` documents no sort order, so these triggers use its `startDate` / `endDate` window with
+`list-messages` and `list-groups` document no sort order, so the message and group triggers use its `startDate` / `endDate` window with
 `dateType` `CREATED` / `UPDATED`, paged by the `startKey` / `nextKey` cursor (100 per page, one page per
 check). The first check stores the start time and reads nothing; later checks read the window from two
 minutes before the previous check (never before the start), resume a multi-page window from the saved
 cursor on the next check, and drop ids already emitted. Source:
 [SOLAPI list messages reference](https://developers.solapi.com/references/messages/list-messages)
-(verified 2026-11-09; the page is a client-rendered app, so the parameters were checked against this
+(verified 2026-11-10; the page is a client-rendered app, so the parameters were checked against this
 app's own `list-messages` action, which cites the same reference).
+
+The three snapshot triggers read the account's whole list (sender numbers in one response, Kakao channels and
+templates by `limit` / `startKey` / `nextKey`, up to 10 pages of 100; a larger list is refused with an error,
+not truncated) and emit only added rows. Not triggers: `list-group-messages` returns messages, which
+`new-message` already delivers (they are the same records, listed per group); `list-active-sender-numbers` is the
+ACTIVE subset of the sender numbers `new-sender-number` watches; `list-files` is an unfiltered, unsorted
+storage listing that grows without a bound, so it cannot be watched without a cap.

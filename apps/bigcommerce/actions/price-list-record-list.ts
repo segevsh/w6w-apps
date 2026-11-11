@@ -20,6 +20,7 @@ interface Input {
   productIds?: string;
   skus?: string;
   currency?: string;
+  modifiedFrom?: string;
   limit?: number;
   page?: number;
 }
@@ -59,6 +60,13 @@ const priceListRecordList: ActionDefinition<Input, BigCommercePage<unknown>> = {
       hint: "ISO 4217. Records are keyed by variant AND currency, so without this you will see " +
         "one row per currency.",
     },
+    {
+      key: "modifiedFrom",
+      label: "Modified since",
+      type: "string",
+      placeholder: "2026-11-10T00:00:00Z",
+      hint: "Only records modified on or after this date. Sent as `date_modified:min`.",
+    },
     ...paginationParams(),
   ],
   output: [
@@ -75,6 +83,7 @@ const priceListRecordList: ActionDefinition<Input, BigCommercePage<unknown>> = {
           "product_id:in": toList(input.productIds),
           "sku:in": toList(input.skus),
           currency: input.currency,
+          "date_modified:min": input.modifiedFrom,
           limit: input.limit,
           page: input.page,
         },

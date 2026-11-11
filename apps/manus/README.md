@@ -9,7 +9,7 @@ credit/usage accounting, and the websites a task can build and publish. Built on
 - **Categories** — ai, productivity
 - **Auth methods** — api-key (`x-manus-api-key` header)
 - **Actions** — 32
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.manus.ai` (the `service` check adds `status.manus.im` to its own hook
   allowlist, never to the app's)
@@ -150,7 +150,17 @@ a raster source.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-task` — New Task | Poll | `task-list` | Each newly created task |
+| `new-task-event` — New Task Event | Poll | `task-list-messages` | Each new event on one task (Task ID param) |
+| `new-agent` — New Agent | Poll | `agent-list` | Each newly created custom agent |
+| `new-project` — New Project | Poll | `project-list` | Each newly created project |
+| `new-connector` — New Connector | Poll | `connector-list` | Each newly installed connector |
+| `new-skill` — New Skill | Poll | `skill-list` | Each newly available skill (optional Project ID) |
+| `new-website-checkpoint` — New Website Checkpoint | Poll | `website-list-checkpoints` | Each new checkpoint of one website (Website ID param) |
 
 Calls `task-list` with `order=desc` ("Sort direction by creation time … newest first"), `limit=100`, first page. The first check records what exists without firing; later checks emit only unseen items.
 
-Source: [vendor docs: task.list](https://open.manus.ai/docs/v2/task.list) (verified 2026-11-10).
+`new-task-event` calls `task-list-messages` with `order=desc` (documented "newest first"), `limit=100`; `new-website-checkpoint` reads `website.listCheckpoints`, documented "all of its checkpoints, newest first". `agent.list`, `project.list`, `connector.list` and `skill.list` are returned whole, with no cursor or sort, so those triggers diff the list by id (added rows only; more than 5000 rows throws).
+
+Not covered: `browser-online-list` (a presence snapshot of which browser clients are online right now, not records), `usage-list` (a credit ledger whose rows carry no id of their own: task id, credits, time and type only) and `webhook-list` (the account's own webhook subscriptions: integration setup).
+
+Source: [vendor docs: task.list](https://open.manus.ai/docs/v2/task.list) (verified 2026-11-10); also [task.listMessages](https://open.manus.ai/docs/v2/task.listMessages), [website.listCheckpoints](https://open.manus.ai/docs/v2/website.listCheckpoints) (verified 2026-11-10).

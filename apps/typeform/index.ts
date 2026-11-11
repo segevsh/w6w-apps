@@ -27,6 +27,13 @@ import imageGetMany from "./actions/image-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newResponse from "./triggers/new-response.ts";
+import newPartialResponse from "./triggers/new-partial-response.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newForm from "./triggers/new-form.ts";
+import newOrUpdatedForm from "./triggers/new-or-updated-form.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
+import newTheme from "./triggers/new-theme.ts";
+import newImage from "./triggers/new-image.ts";
 
 export default {
   actions: [
@@ -45,6 +52,15 @@ export default {
     imageGetMany,
   ],
   auth: [personalAccessToken, oauth2],
-  triggers: [newResponse],
+  triggers: [
+    newResponse,
+    newPartialResponse,
+    anyEvent,
+    newForm,
+    newOrUpdatedForm,
+    newWorkspace,
+    newTheme,
+    newImage,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

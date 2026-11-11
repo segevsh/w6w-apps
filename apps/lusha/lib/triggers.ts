@@ -200,13 +200,27 @@ export function ackResponse(webhookId: string | null, now: Date = new Date()) {
   };
 }
 
+/**
+ * A named trigger is scoped to one entity type and a fixed list of signal types: it registers
+ * exactly those with Lusha and drops any other signal type after verifying it (still
+ * acknowledging it, as Lusha requires).
+ */
+export interface FixedScope {
+  entityType: "contact" | "company";
+  signalTypes: string[];
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
+  /** Set for a named trigger; unset for the Any-signal trigger (`signal-received`). */
+  fixed?: FixedScope;
+  /** The sample `trigger.event`; defaults to a contact promotion. */
+  sample?: LushaSignal;
 }
 
-/** Build the Lusha signal webhook trigger. */
+/** Build a Lusha signal webhook trigger: the Any-signal one, or a named one with `fixed`. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, LushaSignal, TriggerState> {
@@ -214,18 +228,21 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [ENTITY_TYPE_PARAM, ENTITY_IDS_PARAM, SIGNAL_TYPES_PARAM, SIGNING_SECRET_PARAM],
+    params: spec.fixed
+      ? [ENTITY_IDS_PARAM, SIGNING_SECRET_PARAM]
+      : [ENTITY_TYPE_PARAM, ENTITY_IDS_PARAM, SIGNAL_TYPES_PARAM, SIGNING_SECRET_PARAM],
     output: OUTPUT,
-    sample: SAMPLE,
+    sample: spec.sample ?? SAMPLE,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
-      const entityType = params.entityType === "company" ? "company" : "contact";
+      const entityType = spec.fixed?.entityType ??
+        (params.entityType === "company" ? "company" : "contact");
       const ids = strList(params.entityIds) ?? [];
       if (ids.length === 0) throw new Error("Give at least one Lusha contact or company id.");
       if (ids.length > MAX_ENTITIES) {
         throw new Error(`Lusha accepts up to ${MAX_ENTITIES} ids per trigger; got ${ids.length}.`);
       }
-      const signalTypes = strList(params.signalTypes);
+      const signalTypes = spec.fixed?.signalTypes ?? strList(params.signalTypes);
       const res = await new LushaClient(ctx).request<{ results?: unknown }>(
         "POST",
         "/api/subscriptions",
@@ -289,7 +306,12 @@ export function webhookTrigger(
       }
       const parsed = await verifyDelivery(raw, params?.signingSecret);
       const signal = normalizeDelivery(parsed);
-      return { events: [signal], response: ackResponse(signal.id) };
+      const response = ackResponse(signal.id);
+      // A named trigger acknowledges (Lusha requires it) but does not run for another signal type.
+      if (spec.fixed && !spec.fixed.signalTypes.includes(signal.type ?? "")) {
+        return { events: [], response };
+      }
+      return { events: [signal], response };
     },
   };
 }

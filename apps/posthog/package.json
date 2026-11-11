@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/posthog",
-  "version": "0.3.0",
-  "description": "Capture analytics events and query persons, cohorts, feature flags, insights and annotations via PostHog, plus a webhook trigger for forwarded events.",
+  "version": "0.4.0",
+  "description": "Capture analytics events and query persons, cohorts, feature flags, insights and annotations via PostHog, plus webhook triggers for forwarded events and polls for new cohorts, flags and insights.",
   "license": "MIT",
   "author": {
     "name": "w6w"

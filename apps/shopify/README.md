@@ -5,7 +5,7 @@ Manage Shopify products, orders, customers and inventory through the Admin REST 
 - **Categories** — commerce
 - **Auth methods** — access-token
 - **Actions** — 18
-- **Triggers** — 10 (webhook)
+- **Triggers** — 18 (webhook)
 - **Egress allowlist** — `*.myshopify.com`
 - **Website** — https://www.shopify.com
 - **API docs** — https://shopify.dev
@@ -34,7 +34,19 @@ app > API credentials > API secret key). Subscribing without it is refused.
 | `product-created` | webhook | `products/create` | the product |
 | `product-updated` | webhook | `products/update` | the product |
 | `refund-created` | webhook | `refunds/create` | the refund |
+| `customer-updated` | webhook | `customers/update` | the customer as it is now |
+| `customer-deleted` | webhook | `customers/delete` | the id of the deleted customer |
+| `order-deleted` | webhook | `orders/delete` | the id of the deleted order |
+| `product-deleted` | webhook | `products/delete` | the id of the deleted product |
+| `inventory-level-updated` | webhook | `inventory_levels/update` | the inventory item, location and available quantity |
+| `location-created` | webhook | `locations/create` | the location |
+| `location-updated` | webhook | `locations/update` | the location as it is now |
+| `location-deleted` | webhook | `locations/delete` | the id of the deleted location |
 | `event` | webhook | any topics you list | the topic and the resource |
+
+`event` is the Any-event trigger: list the topics you want (comma-separated) and it registers exactly those subscriptions; Shopify has no "all topics" wildcard. Every other Shopify topic (collections, fulfillments, draft orders, checkouts, carts, disputes, themes and the rest of https://shopify.dev/docs/api/admin-rest/latest/resources/webhook#event-topics) is reachable through it.
+
+Not covered, by list action: the four list and search actions return records these triggers already deliver, so none has a trigger of its own. `customer-search` (a search over customers by a query the user writes) is covered by `customer-created`, `order-get-many` by `order-created`, `product-get-many` by `product-created`, and `location-get-many` by `location-created`. The webhooks are registered through the Admin API, so there is nothing to set up in Shopify.
 
 Every event has `topic`, `shopDomain`, `webhookId` (`X-Shopify-Webhook-Id`, unique per delivery:
 use it to skip a duplicate), `eventId`, `triggeredAt`, `apiVersion` and `resource` (the JSON
@@ -48,10 +60,9 @@ body that is not an object, another store's, or a subscription with no secret co
 and no run starts; no unsigned path exists. Shopify defines no signed timestamp, so there is no
 replay window to enforce.
 
-Sources, verified 2026-11-09:
-[verify deliveries](https://shopify.dev/docs/apps/build/webhooks/verify-deliveries),
-[delivery structure](https://shopify.dev/docs/apps/build/webhooks/delivery-structure),
-[Admin REST webhook resource](https://shopify.dev/docs/api/admin-rest/2024-07/resources/webhook).
+Sources, verified 2026-11-10:
+[HTTPS delivery and HMAC verification](https://shopify.dev/docs/apps/build/webhooks/subscribe/https),
+[Admin REST webhook resource](https://shopify.dev/docs/api/admin-rest/latest/resources/webhook) (topic list).
 
 ## Health check
 

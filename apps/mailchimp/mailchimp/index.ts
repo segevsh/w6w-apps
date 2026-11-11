@@ -21,6 +21,15 @@ import replicateCampaign from "./actions/replicate-campaign.ts";
 import resendCampaign from "./actions/resend-campaign.ts";
 import ping from "./actions/ping.ts";
 import newMember from "./triggers/new-member.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newGroupInterest from "./triggers/new-group-interest.ts";
+import memberSubscribed from "./triggers/member-subscribed.ts";
+import memberUnsubscribed from "./triggers/member-unsubscribed.ts";
+import memberUpdated from "./triggers/member-updated.ts";
+import memberCleaned from "./triggers/member-cleaned.ts";
+import emailChanged from "./triggers/email-changed.ts";
+import campaignStatus from "./triggers/campaign-status.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -43,6 +52,17 @@ export default {
     ping,
   ],
   auth: [apiKey, oauth2],
-  triggers: [newMember],
+  triggers: [
+    newMember,
+    newCampaign,
+    newGroupInterest,
+    memberSubscribed,
+    memberUnsubscribed,
+    memberUpdated,
+    memberCleaned,
+    emailChanged,
+    campaignStatus,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

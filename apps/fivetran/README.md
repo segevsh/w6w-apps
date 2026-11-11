@@ -7,7 +7,7 @@ models, and read the destinations behind it all.
 - **Categories** — data-warehousing, devops, analytics
 - **Auth methods** — api-key
 - **Actions** — 20
-- **Triggers** — 4 (1 poll, 3 webhook)
+- **Triggers** — 18 (5 poll, 13 webhook)
 - **Egress allowlist** — `api.fivetran.com` (the `service` health check adds
   `status.fivetran.com`)
 - **Website** — https://www.fivetran.com
@@ -241,22 +241,47 @@ kinds of key, since they reach different things.
 | trigger — title | mechanism | vendor event or wrapped action | what the run gets |
 |---|---|---|---|
 | `new-connection` — New Connection | poll | `connection-list` | each connection newly created in the account |
+| `new-destination` — New Destination | poll | `destination-list` | each destination (warehouse) newly added |
+| `new-transformation` — New Transformation | poll | `transformation-list` | each transformation newly added |
+| `new-transformation-project` — New Transformation Project | poll | `transformation-project-list` | each dbt project newly added |
+| `new-user` — New User | poll | `user-list` | each person newly added to the account |
 | `sync-started` — Sync Started | webhook (API-registered) | `sync_start` | the connection, its type and destination, the sync id and the event time |
 | `sync-ended` — Sync Ended | webhook (API-registered) | `sync_end` | the same, with the outcome in `data.status` |
 | `connection-failure` — Connection Failure | webhook (API-registered) | `connection_failure` | the same, with the vendor's details in `data` |
+| `connection-successful` — Connection Successful | webhook (API-registered) | `connection_successful` | the same |
+| `connection-created` — Connection Created | webhook (API-registered) | `create_connector` | the connection, its type and destination |
+| `connection-updated` — Connection Updated | webhook (API-registered) | `edit_connector` | the same |
+| `connection-deleted` — Connection Deleted | webhook (API-registered) | `delete_connector` | the same |
+| `connection-paused` — Connection Paused | webhook (API-registered) | `pause_connector` | the same |
+| `connection-resumed` — Connection Resumed | webhook (API-registered) | `resume_connector` | the same |
+| `transformation-started` — Transformation Started | webhook (API-registered) | `transformation_start` | the event, its time and the vendor's details in `data` |
+| `transformation-succeeded` — Transformation Succeeded | webhook (API-registered) | `transformation_succeeded` | the same |
+| `transformation-failed` — Transformation Failed | webhook (API-registered) | `transformation_failed` | the same |
+| `any-event` — Any Event | webhook (API-registered) | all 15 documented events, or the ones named in `events` | the event name and whatever Fivetran sends for it |
 
-### New Connection (poll)
+### Polls (New Connection, New Destination, New Transformation, New Transformation Project, New User)
 
-Connections are an account-inventory collection (hundreds at most). Each check lists them through
-`connection-list` (cursor-paginated at `limit` 1000, up to six pages; an account beyond 5000
-connections fails the check with an error naming the cap), diffs them against the previous check and
-emits only additions. The first check only records what exists.
+These are account-inventory collections (hundreds of rows at most). Each check lists the collection
+through its own action (`connection-list`, `destination-list`, `transformation-list`,
+`transformation-project-list`, `user-list`: cursor-paginated at `limit` 1000, up to six pages; an
+account beyond 5000 rows fails the check with an error naming the cap), diffs it against the previous
+check and emits only additions. The first check only records what exists. A Fivetran group IS a
+destination (same object, same id), so `New Destination` also delivers what `group-list` returns.
 
 ### Webhook triggers
 
+**Any Event.** Fivetran's webhook API requires an explicit `events` list (there is no "all" token), so
+`any-event` registers all 15 documented events (`sync_start`, `sync_end`, `transformation_start`,
+`transformation_succeeded`, `transformation_failed`, `connection_successful`, `connection_failure`,
+`create_connector`, `pause_connector`, `resume_connector`, `edit_connector`, `delete_connector`,
+`force_update_connector`, `resync_connector`, `resync_table`) or only the comma-separated names in its
+`events` param; a misspelt name is refused when you subscribe. The deprecated `status` event is accepted
+only when you name it. Fivetran documents the payload fields only for `sync_end`; for the other events the
+named fields are filled when Fivetran sends them and everything else is in `data`.
+
 **Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks/account` (or
 `POST /v1/webhooks/group/{groupId}` when the optional `Destination (group) ID` parameter is set)
-with the one event, the host's callback URL and a random per-subscription `secret` that is kept in
+with the trigger's event(s), the host's callback URL and a random per-subscription `secret` that is kept in
 the subscription's state; unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone
 counts as deleted). The API key must be allowed to manage webhooks. Fivetran sends one test `POST`
 to the URL when a webhook is created and only creates it if the URL answers with a success status. That test
@@ -270,7 +295,13 @@ case-insensitively as Fivetran's own examples do). A missing or wrong signature,
 or an unset secret refuses the delivery (one failed row, no run). Fivetran's scheme carries no
 timestamp, so there is no replay window; retries (up to five over 24 hours) repeat the same payload.
 
-Docs (verified 2026-11-10): https://fivetran.com/docs/developer-resources/webhooks ,
+**Not covered.** `group-list` (same objects as `destination-list`), `group-connection-list`
+(connections are `new-connection`) are covered by the triggers above; skipped: `connector-type-list`
+(the catalogue of sources Fivetran supports: reference metadata, the same for everyone).
+
+Docs (verified 2026-11-10): https://fivetran.com/docs/rest-api/webhooks (event list, signing) ,
+https://fivetran.com/assets-docs/openapi/file_v1.yaml (`WebhookRequest`; list endpoints take `cursor` and `limit`) ,
+https://fivetran.com/docs/developer-resources/webhooks ,
 https://fivetran.com/docs/developer-resources/rest-api/api-reference/webhooks/create-account-webhook ,
 https://fivetran.com/docs/developer-resources/rest-api/api-reference/connections/list-connections ,
 https://github.com/fivetran/fivetran-webhook-example-express-js

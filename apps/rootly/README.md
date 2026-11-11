@@ -4,7 +4,7 @@ Incident management from a workflow: declare, update, mitigate and resolve incid
 timelines and action items, raise and resolve alerts, browse and edit the service and team catalog,
 and ask who is on call. Vendor docs: <https://docs.rootly.com/api-reference>.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 13 (poll)
 
 ## Connecting
 
@@ -90,6 +90,22 @@ The icon in `assets/icon.svg` is Rootly's favicon (`docs.rootly.com/favicon.svg`
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
 | `new-incident` — New Incident | poll (every 5 minutes at most) | `incident-list`, ordered `created_at` descending | each newly declared incident |
+| `new-alert` | poll (every 5 minutes at most) | `alert-list` (`created_at` since-filter) | Each newly created alert |
+| `new-or-updated-alert` | poll (every 5 minutes at most) | `alert-list` (`updated_at` since-filter) | Each alert when it is created or changed |
+| `new-service` | poll (every 5 minutes at most) | `service-list`, `sort=-created_at` | Each newly created service |
+| `new-team` | poll (every 5 minutes at most) | `team-list`, `sort=-created_at` | Each newly created team |
+| `new-user` | poll (every 5 minutes at most) | `user-list`, `sort=-created_at` | Each newly added user |
+| `new-or-updated-user` | poll (every 5 minutes at most) | `user-list`, `sort=-updated_at` | Each user when it is added or changed |
+| `new-functionality` | poll (every 5 minutes at most) | `functionality-list`, `sort=-created_at` | Each newly created functionality |
+| `new-environment` | poll (every 5 minutes at most) | `environment-list`, `sort=-created_at` | Each newly created environment |
+| `new-severity` | poll (every 5 minutes at most) | `severity-list`, `sort=-created_at` | Each newly created severity |
+| `new-schedule` | poll (every 5 minutes at most) | `schedule-list` (id diff) | Each newly created on-call schedule |
+| `new-incident-event` | poll (every 5 minutes at most) | `incident-event-list` (id diff, incident you pick) | Each new timeline event on one incident |
+| `new-incident-action-item` | poll (every 5 minutes at most) | `incident-action-item-list` (id diff, incident you pick) | Each new action item on one incident |
+
+`new-alert` and `new-or-updated-alert` ask `alert-list` for a short window (`created_at` or `updated_at` at or after the last check minus two minutes, 100 per page, up to three pages per check; a window with more pages is continued on the next check) and fire each id once; the first check stores a floor and fires nothing, and records older than the floor are never fired. The `sort=-created_at` triggers behave like `new-incident`. `new-schedule`, `new-incident-event` and `new-incident-action-item` read the whole list (100 per page, up to 50 pages) and fire ids not seen at the previous check; the last two ask for the incident you name.
+
+Not covered: `oncall-list` (a point-in-time view of who is on call now, not records), `shift-list` (its `from`/`to` bound the shift's time range, not its creation).
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `incident-list` through the connection's own
@@ -99,4 +115,4 @@ No webhook is registered and nothing is delivered to a callback URL, so there is
 verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
 the connection.
 
-Vendor docs: <https://docs.rootly.com/api-reference> (verified 2026-11-09).
+Vendor docs: <https://docs.rootly.com/api-reference> (verified 2026-11-10).

@@ -6,7 +6,7 @@ intent, generate speech, and watch the spend and request history behind it.
 - **Categories** — ai, video, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 19
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Egress allowlist** — `api.deepgram.com` (the `service` health check adds
   `status.deepgram.com`)
 - **Website** — https://deepgram.com
@@ -222,6 +222,21 @@ where it can be acted on: on the `429` itself.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-request` — New Request | Poll | `request-list` | Each newly recorded API request |
+| `new-project` — New Project | Poll (snapshot) | `project-list` | Each project the key newly reaches |
+| `new-api-key` — New API Key | Poll (snapshot) | `key-list` | Each API key newly created on the project (never its value) |
+| `new-member` — New Member | Poll (snapshot) | `member-list` | Each person newly added to the project |
+| `new-invite` — New Invitation | Poll (snapshot) | `invite-list` | Each invitation newly sent |
+| `new-member-scope` — New Member Scope | Poll (snapshot) | `member-scope-list` (one member) | Each scope newly granted to the chosen member |
+
+The project-management lists answer the whole collection in one unpaginated response, so each check runs
+the same action and diffs the ids (invitations by the invitee's email, scopes by the scope string). The first
+check only records; later checks emit what is new.
+
+Not covered: `balance-list` (billing balance — a metric, not a record feed), `model-list` (reference data: the
+model catalogue), `usage-fields-list` (usage analytics dimensions).
+
+Vendor reference (verified 2026-11-10): <https://developers.deepgram.com/openapi.json> — the Projects, Keys,
+Members, Scopes and Invites management endpoints.
 
 Deepgram filters the request log by date, not time (`request-list` truncates `start`/`end` to
 `YYYY-MM-DD`), and the OpenAPI documents no result order. So each check reads every request of the

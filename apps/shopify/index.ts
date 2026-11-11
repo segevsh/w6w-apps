@@ -54,6 +54,14 @@ import customerCreatedTrigger from "./triggers/customer-created.ts";
 import productCreatedTrigger from "./triggers/product-created.ts";
 import productUpdatedTrigger from "./triggers/product-updated.ts";
 import refundCreatedTrigger from "./triggers/refund-created.ts";
+import customerUpdatedTrigger from "./triggers/customer-updated.ts";
+import customerDeletedTrigger from "./triggers/customer-deleted.ts";
+import orderDeletedTrigger from "./triggers/order-deleted.ts";
+import productDeletedTrigger from "./triggers/product-deleted.ts";
+import inventoryLevelUpdatedTrigger from "./triggers/inventory-level-updated.ts";
+import locationCreatedTrigger from "./triggers/location-created.ts";
+import locationUpdatedTrigger from "./triggers/location-updated.ts";
+import locationDeletedTrigger from "./triggers/location-deleted.ts";
 import eventTrigger from "./triggers/event.ts";
 
 import service from "./health/service.ts";
@@ -95,6 +103,14 @@ export default {
     productCreatedTrigger,
     productUpdatedTrigger,
     refundCreatedTrigger,
+    customerUpdatedTrigger,
+    customerDeletedTrigger,
+    orderDeletedTrigger,
+    productDeletedTrigger,
+    inventoryLevelUpdatedTrigger,
+    locationCreatedTrigger,
+    locationUpdatedTrigger,
+    locationDeletedTrigger,
     eventTrigger,
   ],
   auth: [accessToken],

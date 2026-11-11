@@ -1,12 +1,14 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClioClient } from "../lib/client.ts";
 import {
+  createdSinceParam,
   fieldsParam,
   matterIdFilterParam,
   noteTypeOptions,
   paginationParams,
   queryParam,
   refParam,
+  updatedSinceParam,
 } from "../lib/params.ts";
 
 /** `GET /notes.json` */
@@ -15,6 +17,8 @@ interface Input {
   contactId?: number;
   type?: string;
   query?: string;
+  createdSince?: string;
+  updatedSince?: string;
   fields?: string;
   limit?: number;
   pageToken?: string;
@@ -31,6 +35,8 @@ const noteList: ActionDefinition<Input> = {
     refParam("contactId", "Contact ID"),
     { key: "type", label: "Type", type: "select", options: noteTypeOptions },
     { ...queryParam, hint: "Wildcard search across subject and detail." },
+    createdSinceParam,
+    updatedSinceParam,
     fieldsParam("id,etag,subject,date,detail,type,matter{id,display_number},contact{id,name}"),
     ...paginationParams(),
   ],
@@ -46,6 +52,8 @@ const noteList: ActionDefinition<Input> = {
         contact_id: input.contactId,
         type: input.type,
         query: input.query,
+        created_since: input.createdSince,
+        updated_since: input.updatedSince,
         fields: input.fields,
         limit: input.limit,
         order: "id(asc)",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/clio",
-  "version": "0.2.0",
-  "description": "Manage matters, contacts, tasks, calendar entries, time/expense entries and documents in Clio Manage, the legal practice management platform. Triggers: new and updated records.",
+  "version": "0.3.0",
+  "description": "Manage matters, contacts, tasks, calendar entries, time/expense entries and documents in Clio Manage. Triggers: new and updated contacts, matters, tasks, notes, documents, activities, calendar events.",
   "license": "MIT",
   "author": {
     "name": "w6w"

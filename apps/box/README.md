@@ -5,7 +5,7 @@ Upload, download, and manage files and folders in Box.
 - **Categories** — storage
 - **Auth methods** — oauth2
 - **Actions** — 10
-- **Triggers** — 2 (webhook)
+- **Triggers** — 20 (18 webhook, 2 poll)
 - **Egress allowlist** — `api.box.com`, `upload.box.com`
 - **Website** — https://www.box.com
 - **API docs** — https://developer.box.com
@@ -15,13 +15,39 @@ Upload, download, and manage files and folders in Box.
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `file-uploaded` — File Uploaded | webhook (API-registered) | `FILE.UPLOADED` in a folder | file id, name, uploader, time |
-| `activity` — Item Activity | webhook (API-registered) | any Box webhook triggers you list, on one file or folder | trigger name, item id/type/name, actor |
+| `activity` — Item Activity | webhook (API-registered) | **Any event** — Box webhook triggers you list (the `triggers` param is the registered subscription), on one file or folder | trigger name, item id/type/name, actor |
+| `file-trashed` — File Trashed | webhook (API-registered) | `FILE.TRASHED` in a folder | file id, name, actor, time |
+| `file-deleted` — File Deleted | webhook (API-registered) | `FILE.DELETED` in a folder | file id, name, actor, time |
+| `file-restored` — File Restored | webhook (API-registered) | `FILE.RESTORED` in a folder | file id, name, actor, time |
+| `file-moved` — File Moved | webhook (API-registered) | `FILE.MOVED` in a folder | file id, name, actor, time |
+| `file-copied` — File Copied | webhook (API-registered) | `FILE.COPIED` in a folder | file id, name, actor, time |
+| `file-renamed` — File Renamed | webhook (API-registered) | `FILE.RENAMED` in a folder | file id, name, actor, time |
+| `folder-created` — Folder Created | webhook (API-registered) | `FOLDER.CREATED` in a folder | folder id, name, actor, time |
+| `folder-renamed` — Folder Renamed | webhook (API-registered) | `FOLDER.RENAMED` in a folder | folder id, name, actor, time |
+| `folder-moved` — Folder Moved | webhook (API-registered) | `FOLDER.MOVED` in a folder | folder id, name, actor, time |
+| `folder-copied` — Folder Copied | webhook (API-registered) | `FOLDER.COPIED` in a folder | folder id, name, actor, time |
+| `folder-trashed` — Folder Trashed | webhook (API-registered) | `FOLDER.TRASHED` in a folder | folder id, name, actor, time |
+| `folder-deleted` — Folder Deleted | webhook (API-registered) | `FOLDER.DELETED` in a folder | folder id, name, actor, time |
+| `folder-restored` — Folder Restored | webhook (API-registered) | `FOLDER.RESTORED` in a folder | folder id, name, actor, time |
+| `shared-link-created` — Shared Link Created | webhook (API-registered) | `SHARED_LINK.CREATED` in a folder | item id, name, actor, time |
+| `shared-link-updated` — Shared Link Updated | webhook (API-registered) | `SHARED_LINK.UPDATED` in a folder | item id, name, actor, time |
+| `shared-link-deleted` — Shared Link Deleted | webhook (API-registered) | `SHARED_LINK.DELETED` in a folder | item id, name, actor, time |
+| `new-folder-item` — New File or Folder in a Folder | poll (`list-folder-items`) | whole folder compared with the last check (up to 5000 items) | the new file, folder or web link |
+| `new-or-updated-search-result` — New or Updated Search Result | poll (`search`, sorted `modified_at` descending) | a Box search you name | the new or modified match |
 
 **Setup.** Subscribing creates a Box webhook (`POST /2.0/webhooks`) on the item you name, pointed at the trigger's callback URL, after removing any leftover webhook already pointed at that URL; unsubscribing deletes it. The Box app needs the **Manage webhooks** application scope, and the connected user needs access to the item. Then copy the app's **Primary Key** (and optionally **Secondary Key**) from Developer Console, your app, Configuration, Webhooks, into the trigger's `primaryKey` / `secondaryKey` params; Box signs every delivery with them and they cannot be read through the API.
 
 **Trust model.** `BOX-SIGNATURE-PRIMARY` / `BOX-SIGNATURE-SECONDARY` must equal the base64 HMAC-SHA256 of the raw body followed by the `BOX-DELIVERY-TIMESTAMP` value under the matching key; either configured key is enough (so a key can be rotated), and the timestamp must be within ten minutes. A missing or empty primary key, a missing signature, a stale timestamp or a mismatch refuses the delivery.
 
-Sources (verified 2026-11-09): https://developer.box.com/guides/webhooks/v2/signatures-v2 , https://developer.box.com/reference/post-webhooks/
+Every named webhook trigger watches one **folder** and registers exactly one Box trigger; use `activity` for a file target or for several triggers at once, and for the Box triggers with no named key here (`FILE.DOWNLOADED`, `FILE.PREVIEWED`, `FILE.LOCKED`, `FILE.UNLOCKED`, `FOLDER.DOWNLOADED`, `COMMENT.*`, `COLLABORATION.*`, `METADATA_INSTANCE.*`, `TASK_ASSIGNMENT.*`, `SIGN_REQUEST.*`, `DOCGEN_*`, `WEBHOOK.DELETED`). `activity` also accepts the three dot-less Doc Gen names (`DOCGEN_DOCUMENT_GENERATION_STARTED`, `_SUCCEEDED`, `_FAILED`); Box's `POST /webhooks` reference does not list them in its `triggers` enum (only its webhook guide does), so they are unverified against live Box and Box may refuse the subscription.
+
+**Limits.** Box allows one webhook per item, application and user: a second trigger on the same folder (for instance File Trashed and File Deleted) is refused with a 409 "webhook already exists". Put several triggers on one item in a single `activity` subscription instead. Box also does not allow webhooks on the root folder (id `0`); name a folder inside it. The `new-folder-item` poll is not affected and can read the root.
+
+**Polls.** `new-folder-item` reads one folder with `GET /folders/{id}/items` (Box sorts folder items by type first, so there is no newest-first order to page by) and compares it with the last check; a folder over 5000 items fails the check with a clear error. `new-or-updated-search-result` runs `GET /search` sorted by `modified_at` descending; Box indexes new content with a delay.
+
+Not covered: none of the list actions is skipped; `list-folder-items` backs `new-folder-item` and `search` backs `new-or-updated-search-result`.
+
+Sources (verified 2026-11-10): https://developer.box.com/guides/webhooks/triggers/ , https://developer.box.com/guides/webhooks/v2/signatures-v2 , https://developer.box.com/reference/post-webhooks/ , https://developer.box.com/reference/get-folders-id-items/ , https://developer.box.com/reference/get-search/
 
 ## A note on the download redirect
 

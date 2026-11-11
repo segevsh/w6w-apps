@@ -6,6 +6,7 @@ jobs, visits and invoices — on the **Jobber GraphQL API**.
 - **Categories** — calendar, crm, finance
 - **Auth methods** — oauth2 (the only one Jobber offers)
 - **Actions** — 28
+- **Triggers** — 10 (poll)
 - **Egress allowlist** — `api.getjobber.com` (the `service` health hook additionally reaches
   `www.jobberstatus.net`)
 - **API version** — `X-JOBBER-GRAPHQL-VERSION: 2025-04-16`, pinned
@@ -603,6 +604,22 @@ checking for a 200.
 |---|---|---|---|
 | New Invoice (`new-invoice`) | poll | `invoice-list` — by `CREATED_AT` descending | each newly created invoice |
 | New or Updated Invoice (`new-or-updated-invoice`) | poll | `invoice-list` — by `UPDATED_AT` descending | each invoice that is new or edited (one event per edit) |
+| New or Updated Client (`new-or-updated-client`) | poll | `client-list` — by `UPDATED_AT` descending | each client that is new or edited (one event per edit) |
+| New or Updated Job (`new-or-updated-job`) | poll | `job-list` — by `UPDATED_AT` descending | each job that is new or edited (one event per edit) |
+| New Quote (`new-quote`) | poll | `quote-list` — by `CREATED_AT` descending | each newly created quote |
+| New Request (`new-request`) | poll | `request-list` — by `REQUESTED_AT` descending | each newly submitted client request |
+| New Visit (`new-visit`) | poll | `visit-list` — by `CREATED_AT` descending | each newly created visit |
+| New Product or Service (`new-product`) | poll (snapshot) | `product-list` | each product or service newly added to the catalogue |
+| New Property (`new-property`) | poll (snapshot) | `property-list` | each property newly added (optionally for one client) |
+| New User (`new-user`) | poll (snapshot) | `user-list` (`ACTIVATED`) | each team member newly activated |
+
+Clients and jobs only offer an `UPDATED_AT` sort (no `CREATED_AT`), so their trigger is the new-or-updated shape;
+a new record is the first event for its id. Quotes, requests and visits read one page of 100 sorted newest first.
+Products, properties and users have no sort argument: each check walks the connection (100 per page, following
+`pageInfo.endCursor`) and diffs the ids; past 5000 records the check fails loudly.
+
+Vendor documentation (verified 2026-11-10): https://developer.getjobber.com/docs/ — the sort keys are the
+`*SortKey` values the existing list actions already send.
 
 Both triggers poll every 5 minutes, read one page of 100 from the app's existing `invoice-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
 

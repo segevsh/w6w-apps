@@ -10,6 +10,10 @@ import { spec as transferStateSpec } from "../../triggers/transfer-state-changed
 import { spec as transferPayoutSpec } from "../../triggers/transfer-payout-failed.ts";
 import { spec as balanceSpec } from "../../triggers/balance-updated.ts";
 import { spec as profileSpec } from "../../triggers/profile-state-changed.ts";
+import { spec as activeCasesSpec } from "../../triggers/transfer-active-cases.ts";
+import { spec as refundSpec } from "../../triggers/transfer-refunded.ts";
+import { spec as creditedSpec } from "../../triggers/balance-credited.ts";
+import { spec as recipientSpec } from "../../triggers/recipient-changed.ts";
 import {
   type PublicKeys,
   verifyRsaSha256,
@@ -25,6 +29,9 @@ const HOST = "https://api.example.test";
 const PROFILE = "222";
 const WISE_PROFILE = "16055450";
 const SUB = "01234567-89ab-cdef-0123-456789abcdef";
+
+/** The signed webhook triggers (the app also ships poll triggers, covered in their own files). */
+const webhookTriggers = () => (app.triggers ?? []).filter((t) => typeof t.poll !== "function");
 
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
@@ -312,9 +319,9 @@ test("handleIngest: a validly signed body that is not an event throws", async ()
 
 // ---- Declarations and the manual-webhook lifecycle ----------------------------------------------
 
-test("the app declares four webhook triggers, each with output and a sample", () => {
-  const triggers = app.triggers ?? [];
-  assertEquals(triggers.length, 4);
+test("the app declares nine webhook triggers, each with output and a sample", () => {
+  const triggers = webhookTriggers();
+  assertEquals(triggers.length, 9);
   for (const t of triggers) {
     assertEquals(typeof t.handleIngest, "function", t.key);
     assertEquals(typeof t.onSubscribe, "function", t.key);
@@ -437,10 +444,98 @@ const SHIPPED: Shipped[] = [
       requested_by_customer: false,
     },
   },
+  {
+    name: "transfer-active-cases",
+    trigger: webhookTrigger(activeCasesSpec, KEYS),
+    eventType: "transfers#active-cases",
+    body: (p) =>
+      SIGNED_ENVELOPE(
+        "transfers#active-cases",
+        `{ "resource": { "type": "transfer", "id": 111, ${
+          p === null ? "" : `"profile_id": ${p}, `
+        }"account_id": 333 }, "active_cases": [ "deposit_amount_less_invoice" ] }`,
+        "4.0.0",
+      ),
+    data: {
+      resource: { type: "transfer", id: 111, profile_id: 222, account_id: 333 },
+      active_cases: ["deposit_amount_less_invoice"],
+    },
+  },
+  {
+    name: "transfer-refunded",
+    trigger: webhookTrigger(refundSpec, KEYS),
+    eventType: "transfers#refund",
+    body: (p) =>
+      SIGNED_ENVELOPE(
+        "transfers#refund",
+        `{ "resource": { "type": "transfer", "id": 111, ${
+          p === null ? "" : `"profile_id": ${p}, `
+        }"account_id": 333, "refund_amount": 5000, "refund_currency": "EUR" }, "occurred_at": "2026-11-09T10:12:50Z" }`,
+        "4.0.0",
+      ),
+    data: {
+      resource: {
+        type: "transfer",
+        id: 111,
+        profile_id: 222,
+        account_id: 333,
+        refund_amount: 5000,
+        refund_currency: "EUR",
+      },
+      occurred_at: "2026-11-09T10:12:50Z",
+    },
+  },
+  {
+    name: "balance-credited",
+    trigger: webhookTrigger(creditedSpec, KEYS),
+    eventType: "balances#update",
+    body: (p) =>
+      SIGNED_ENVELOPE(
+        "balances#update",
+        `{ "resource": { "type": "balance-account", "id": 2${
+          p === null ? "" : `, "profile_id": ${p}`
+        } }, "amount": 70, "currency": "GBP", "transaction_type": "credit" }`,
+        "4.0.0",
+      ),
+    data: {
+      resource: { type: "balance-account", id: 2, profile_id: 222 },
+      amount: 70,
+      currency: "GBP",
+      transaction_type: "credit",
+    },
+  },
+  {
+    name: "recipient-changed",
+    trigger: webhookTrigger(recipientSpec, KEYS),
+    eventType: "recipients#state-change",
+    body: (p) =>
+      SIGNED_ENVELOPE(
+        "recipients#state-change",
+        `{ "resource": { "id": "700525176", "occurred_at": "2026-11-10T10:12:50Z",
+          "data": { "recipientId": 700525176${
+          p === null ? "" : `, "profileId": ${p}`
+        }, "currency": "EUR", "state": "CREATE", "clientId": "sample-client" } } }`,
+        "4.0.0",
+      ),
+    data: {
+      resource: {
+        id: "700525176",
+        occurred_at: "2026-11-10T10:12:50Z",
+        data: {
+          recipientId: 700525176,
+          profileId: 222,
+          currency: "EUR",
+          state: "CREATE",
+          clientId: "sample-client",
+        },
+      },
+    },
+  },
 ];
 
 test("every shipped trigger is covered here, and is what the spec builds", () => {
-  const shipped = app.triggers ?? [];
+  // the Any Event trigger has its own file (event-hooks.test.ts)
+  const shipped = webhookTriggers().filter((t) => t.key !== "any-event");
   assertEquals(shipped.map((t) => t.key).sort(), SHIPPED.map((s) => s.name).sort());
   for (const s of SHIPPED) {
     const real = shipped.find((t) => t.key === s.name)!;
@@ -683,8 +778,8 @@ test("handleIngest: a signed delivery of ANOTHER event type is acknowledged with
 });
 
 test("no Wise trigger declares a subscriptionId param; every one declares a required string profileId", () => {
-  assertEquals((app.triggers ?? []).length, 4);
-  for (const t of app.triggers ?? []) {
+  assertEquals(webhookTriggers().length, 9);
+  for (const t of webhookTriggers()) {
     assertEquals((t.params ?? []).some((x) => x.key === "subscriptionId"), false, t.key);
     const p = (t.params ?? []).find((x) => x.key === "profileId");
     assertEquals(p?.type, "string", t.key);

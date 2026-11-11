@@ -8,7 +8,7 @@ pipelines).
 - **Categories** — crm, communication
 - **Auth methods** — api-key
 - **Actions** — 32
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.lofty.com` (the `service` health check adds `status.lofty.com` to
   its own hook allowlist, never to the app's — no action ever reaches it)
@@ -136,7 +136,15 @@ Unit tests mock `HookContext` (`ctx.fetch`, no-op `ctx.log`) via
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-lead` — New Lead | Poll | `lead-list` | Each newly created lead |
+| `new-task` — New Task | Poll | `task-list` | Each new task on one lead (Lead ID param) |
+| `new-appointment` — New Appointment | Poll | `appointment-list` | Each new appointment on one lead (Lead ID param) |
+| `new-note` — New Note | Poll | `note-list` | Each new note on one lead (Lead ID param) |
+| `new-team-member` — New Team Member | Poll | `member-list` | Each newly added team member |
 
 Calls `lead-list` with `sort=CreateTime&desc=true&limit=100` (first page), id from `leadId`. The vendor reference is a client-rendered page that curl cannot read, so the `CreateTime` sort value rests on the action's own documented sort list. `lead-activity-list` is not used: its rows carry no stable activity id. The first check records what exists without firing; later checks emit only unseen items.
+
+`GET /tasks`, `/appts`, `/notes` (all `?leadId=`) and `/members` have no sort or since filter in the vendor's OpenAPI (embedded in the docs bundle at https://api.lofty.com/docs/, read 2026-11-10), so those triggers read the whole list and report ids not seen at the last check (added rows only). Members are walked with `limit=100&offset=N` until an empty page (more than 5000 rows throws). Ids: tasks and appointments `id`, notes `noteId` (not the timeline `id`).
+
+Not covered: `lead-activity-list` (site-tracking events with no id of their own), `pipeline-list`, `tag-list` and `custom-field-list` (reference data: stage, tag and field definitions), and `webhook-list` (the account's own webhook subscriptions: integration setup).
 
 Source: [vendor API reference](https://api.lofty.com/docs/reference) (verified 2026-11-10).

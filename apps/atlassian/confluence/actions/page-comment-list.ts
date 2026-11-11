@@ -33,6 +33,18 @@ const action: ActionDefinition = {
         { value: "view", label: "View (rendered HTML)" },
       ],
     },
+    {
+      key: "sort",
+      label: "Sort By",
+      type: "select",
+      default: "",
+      options: [
+        { value: "created-date", label: "Created" },
+        { value: "-created-date", label: "Created (newest first)" },
+        { value: "modified-date", label: "Modified" },
+        { value: "-modified-date", label: "Modified (newest first)" },
+      ],
+    },
   ],
 
   async execute(input, ctx) {
@@ -48,7 +60,12 @@ const action: ActionDefinition = {
 
     return await client.requestAll(
       `/pages/${encodeURIComponent(pageId)}/footer-comments`,
-      { query: { "body-format": (p.bodyFormat as string) || undefined } },
+      {
+        query: {
+          "body-format": (p.bodyFormat as string) || undefined,
+          sort: (p.sort as string) || undefined,
+        },
+      },
       returnAll ? Infinity : limit,
     );
   },

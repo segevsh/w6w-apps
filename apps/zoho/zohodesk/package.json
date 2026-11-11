@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zohodesk",
-  "version": "0.2.0",
-  "description": "Create, read, update and comment on tickets, contacts and accounts in Zoho Desk, and trigger workflows on new contacts.",
+  "version": "0.3.0",
+  "description": "Create, read, update and comment on tickets, contacts and accounts in Zoho Desk, and trigger workflows on new tickets, contacts, accounts, agents and departments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

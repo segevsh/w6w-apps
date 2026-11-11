@@ -41,7 +41,7 @@ test("fixture body has non-canonical whitespace", () => {
 });
 
 test("app declares the webhook trigger with output and sample", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["new-response"]);
+  assertEquals(app.triggers[0].key, "new-response");
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(typeof trigger.onSubscribe, "function");

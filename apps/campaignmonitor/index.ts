@@ -153,6 +153,8 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 
 import newSubscriber from "./triggers/new-subscriber.ts";
+import newClient from "./triggers/new-client.ts";
+import newSmartEmail from "./triggers/new-smart-email.ts";
 export default {
   actions: [
     // Account-level — no id in the path
@@ -210,5 +212,5 @@ export default {
   // key needs no app registration. A Connection picks one.
   auth: [apiKey, oauth2],
   healthChecks: [api, service, quota],
-  triggers: [newSubscriber],
+  triggers: [newSubscriber, newClient, newSmartEmail],
 } satisfies AppDefinition;

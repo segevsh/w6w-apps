@@ -71,6 +71,16 @@ import allocationUpdate from "./actions/allocation-update.ts";
 import allocationDelete from "./actions/allocation-delete.ts";
 import newAllocation from "./triggers/new-allocation.ts";
 import newOrUpdatedAllocation from "./triggers/new-or-updated-allocation.ts";
+import newPerson from "./triggers/new-person.ts";
+import newOrUpdatedPerson from "./triggers/new-or-updated-person.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newLoggedTime from "./triggers/new-logged-time.ts";
+import newOrUpdatedLoggedTime from "./triggers/new-or-updated-logged-time.ts";
+import newTimeoff from "./triggers/new-timeoff.ts";
+import newOrUpdatedTimeoff from "./triggers/new-or-updated-timeoff.ts";
+import newClient from "./triggers/new-client.ts";
+import newMilestone from "./triggers/new-milestone.ts";
 
 import statusList from "./actions/status-list.ts";
 import statusGet from "./actions/status-get.ts";
@@ -138,7 +148,20 @@ export default {
     loggedTimeUpdate,
     loggedTimeDelete,
   ],
-  triggers: [newAllocation, newOrUpdatedAllocation],
+  triggers: [
+    newAllocation,
+    newOrUpdatedAllocation,
+    newPerson,
+    newOrUpdatedPerson,
+    newProject,
+    newOrUpdatedProject,
+    newLoggedTime,
+    newOrUpdatedLoggedTime,
+    newTimeoff,
+    newOrUpdatedTimeoff,
+    newClient,
+    newMilestone,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

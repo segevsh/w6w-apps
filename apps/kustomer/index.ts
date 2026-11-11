@@ -60,6 +60,12 @@ import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newKobject from "./triggers/new-kobject.ts";
+import newMessage from "./triggers/new-message.ts";
+import newNote from "./triggers/new-note.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -95,6 +101,15 @@ export default {
     satisfactionResponseGet,
   ],
   auth: [apiKey],
-  triggers: [newCustomer, newOrUpdatedCustomer],
+  triggers: [
+    newCustomer,
+    newOrUpdatedCustomer,
+    newConversation,
+    newKobject,
+    newMessage,
+    newNote,
+    newTeam,
+    newUser,
+  ],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

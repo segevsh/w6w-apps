@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/sender",
-  "version": "0.2.0",
-  "description": "Send campaigns, manage subscribers, groups, segments and custom events on Sender (sender.net), and trigger workflows on new or updated subscribers.",
+  "version": "0.3.0",
+  "description": "Send campaigns, manage subscribers, groups, segments and custom events on Sender (sender.net), and trigger workflows on new or updated subscribers, campaigns, groups and segments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

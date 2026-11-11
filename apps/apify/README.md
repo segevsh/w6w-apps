@@ -6,7 +6,7 @@ stores those runs produce, on the **Apify API v2**.
 - **Categories** — developer-tools, storage, ai
 - **Auth methods** — api-token
 - **Actions** — 31
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.apify.com` (the `service` check adds `status.apify.com` to its own
   hook allowlist, never to the app's)
@@ -408,8 +408,24 @@ apify/
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-actor` — New Actor | Poll | `actor-list` | Each newly created Actor |
+| `new-run` — New Actor Run | Poll | `run-list` | Each Actor run newly started on the account |
+| `new-task` — New Task | Poll | `task-list` | Each Actor task newly created |
+| `new-webhook` — New Webhook | Poll | `webhook-list` | Each webhook newly created (its header template, which may hold secrets, is dropped) |
+| `new-dataset` — New Dataset | Poll | `dataset-list` | Each dataset newly created (named ones; "Include unnamed" adds the ones every run makes) |
+| `new-key-value-store` — New Key-Value Store | Poll | `key-value-store-list` | Each key-value store newly created (same unnamed switch) |
+| `new-store-key` — New Key-Value Store Record | Poll | `key-value-store-keys-list` | Each record key newly added to the store you pick (`storeId`, optional `prefix`) |
+| `new-store-actor` — New Actor in Apify Store | Poll | `store-search` | Each Actor newly published in the public Store (optional `search`, `category`) |
 
-Source: [Apify API](https://docs.apify.com/api/v2) (verified 2026-11-09).
+The list triggers send `desc=1&limit=100&offset=0` (Apify: with `desc` "the objects are sorted by the
+`createdAt` field in descending order", by `startedAt` for runs; ascending otherwise) and the Store one
+sends `sortBy=newest&limit=20`. `new-store-key` is different: the keys endpoint pages by key in UTF-8
+binary order, not by time, so it reads up to 5 pages of 1000 keys and fires on keys not seen before (a
+store with more than 5000 keys fails the check with an error naming the cap). The first check only
+records what exists.
+
+Sources (verified 2026-11-10): the [Apify OpenAPI document](https://docs.apify.com/api/openapi.json)
+(`/v2/actor-runs`, `/v2/actor-tasks`, `/v2/webhooks`, `/v2/datasets`, `/v2/key-value-stores`,
+`/v2/key-value-stores/{storeId}/keys`, `/v2/store`) and the [Apify API](https://docs.apify.com/api/v2).
 
 ## Development
 

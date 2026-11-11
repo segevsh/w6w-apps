@@ -1,6 +1,6 @@
 # SendPulse
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 11 (poll)
 
 ## Triggers
 
@@ -8,10 +8,24 @@
 | --- | --- | --- | --- |
 | `new-pipeline` — New Pipeline | poll (snapshot) | `pipelines-list` | Each CRM pipeline newly created in the account. |
 | `new-mailing-list` — New Mailing List | poll (snapshot) | `mailing-lists-list` | Each mailing list newly created in the account. |
+| `new-deal` — New Deal | poll (newest-first) | `deals-list` | Each deal newly created in the selected pipeline (`pipelineId` param). |
+| `new-or-updated-deal` — New or Updated Deal | poll (newest-first, by update time) | `deals-list` | Each deal in the selected pipeline that is created or edited. |
+| `new-contact` — New Contact | poll (since-filter) | `contacts-list` | Each CRM contact newly created. |
+| `new-or-updated-contact` — New or Updated Contact | poll (since-filter) | `contacts-list` | Each CRM contact that is created or edited. |
+| `new-campaign` — New Campaign | poll (newest-first) | `campaigns-list` | Each email campaign newly created. |
+| `new-contact-tag` — New Contact Tag | poll (snapshot) | `contact-tags-list` | Each contact tag newly created. |
+| `new-sender` — New Sender | poll (snapshot) | `senders-list` | Each authorized sender (From address) newly added. |
+| `new-team-member` — New Team Member | poll (snapshot) | `users-list` | Each confirmed team member who newly joins the account. |
+| `new-pipeline-step` — New Pipeline Step | poll (snapshot) | `pipeline-steps-list` | Each step newly added to the selected pipeline (`pipelineId` param). |
 
-Both are small bounded collections, watched as a snapshot (added rows only; a renamed or edited row is not an event). `GET /crm/v1/pipelines` is unpaged and the number of pipelines is limited by the tariff plan ([CRM OpenAPI](https://api.sendpulse.com/.well-known/openapi/crm.yaml), `createPipeline`). `GET /addressbooks` has no documented sort order, so it is read in up to 10 pages of 100 through the action's own `limit`/`offset`; an account with more than 1000 lists is refused with an error rather than truncated ([Bulk Email OpenAPI](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml), `getMailingLists`). Verified 2026-11-09.
+How each reads the vendor ([CRM OpenAPI](https://api.sendpulse.com/.well-known/openapi/crm.yaml), [Bulk Email OpenAPI](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml), verified 2026-11-10):
 
-Not triggers: `deals-list` is offset-paginated with no documented creation/update ordering or since filter, and the deal history is unbounded, so it fits neither a newest-first nor a snapshot trigger ([CRM OpenAPI](https://api.sendpulse.com/.well-known/openapi/crm.yaml)). `campaigns-list` documents only an `order` of `asc`/`desc` with no named sort field, the action does not pass it, and the campaign history is unbounded ([Bulk Email OpenAPI](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml), `GET /campaigns`).
+- Deals: `POST /crm/v1/deals/get-list` takes `sortBy: {fieldName, direction}` with `createdAt` / `updatedAt` (default `createdAt` ascending), so the triggers ask for `desc`. The endpoint requires `pipelineIds`, so the pipeline is a required param. The update trigger keys each event on `id:updatedAt`, so an edit to an old deal fires.
+- Contacts: `POST /crm/v1/contacts/get-list` has no sort but documents `from` (created on or after) and `updateFrom` (updated on or after) as dates. The window is requested by day and narrowed to the exact instant; a window longer than 5 pages is resumed from its offset on the next check, and the first check records a floor so contacts that existed before the trigger was set up never fire.
+- Campaigns: `GET /campaigns` takes `order=asc|desc`; the vendor's operation text says to sort by date descending to see recent activity, so page 1 with `order=desc` is read as the latest campaigns.
+- Snapshots: `GET /crm/v1/pipelines`, `/contact-tags`, `/users`, `/pipelines/{id}/steps` and `GET /senders` are unpaged and return the whole collection in one request. `GET /addressbooks` has no documented sort order, so it is read in up to 10 pages of 100 through the action's own `limit`/`offset`; an account with more than 1000 lists is refused with an error rather than truncated. A renamed or edited row is not an event.
+
+Not triggers: none of the account's list actions is left out.
 
 Manage SendPulse **CRM** deals and contacts, and send **Bulk Email** campaigns, against
 SendPulse's own published OpenAPI 3 documents.

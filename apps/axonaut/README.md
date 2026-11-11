@@ -1,6 +1,6 @@
 # Axonaut
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 
 ## Triggers
 
@@ -8,13 +8,30 @@
 | --- | --- | --- | --- |
 | `new-invoice` — New Invoice | poll | `invoice-list` filtered by `creation_date_after` | Each newly created invoice |
 | `new-or-updated-invoice` — New or Updated Invoice | poll | `invoice-list` filtered by `updated_after` | Each newly created or updated invoice |
+| `new-company` — New Company | poll | `company-list` | Each company (customer, prospect, supplier) newly created |
+| `new-employee` — New Contact Person | poll | `employee-list` | Each employee (company contact person) newly created |
+| `new-product` — New Product | poll | `product-list` | Each product newly added to the catalogue |
+| `new-opportunity` — New Opportunity | poll | `opportunity-list` | Each sales opportunity newly created |
+| `new-project` — New Project | poll | `project-list` | Each project newly created |
+| `new-task` — New Task | poll | `task-list` | Each task newly created |
+| `new-quotation` — New Quotation | poll | `quotation-list` filtered by `date_after` | Each quotation dated in the last 31 days that newly appears |
 
-Vendor reference: https://axonaut.com/api/v2/doc (verified 2026-11-09). The spec documents `GET /invoices`
+Vendor reference: https://axonaut.com/api/v2/doc (verified 2026-11-10). The spec documents `GET /invoices`
 filters `creation_date_after` and `updated_after` in `DD/MM/YYYY` (date-only), with no sort argument.
 The triggers therefore filter, not sort: each check sends the cursor minus one day (UTC) as
 `DD/MM/YYYY`, reads up to 5 pages, and dedupes by id (up to 1000 remembered). The first check records
 the current window and the cursor "now" and emits nothing. Live filter semantics (inclusive or strict
 `after`) are unverified; the one-day overlap plus id dedupe makes either safe.
+
+The seven record triggers (company, employee, product, opportunity, project, task, quotation) cover lists the spec
+serves with no usable order: `sort` on companies and quotations has no direction, and the other lists have no sort or
+date filter at all. Each check therefore reads every page (the `page` header, until the first empty page) and diffs
+the ids against the previous check, added records only; the first check records what is there and emits nothing. A
+list longer than 5000 records, or 200 pages, fails the check loudly rather than reading on. `new-quotation` reads only
+quotations dated in the last 31 days (`date_after`, YYYY-MM-DD), so its check stays small; a quotation backdated
+beyond that is not seen. Checks of these seven run every 15 minutes.
+
+Not covered: `company-invoice-list` (one company's invoices: `new-invoice` already delivers every invoice).
 
 French all-in-one CRM and invoicing for small businesses, driven through the Axonaut REST API v2
 (`https://axonaut.com/api/v2`). Docs are mostly French; this app is in English.

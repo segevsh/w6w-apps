@@ -14,7 +14,7 @@ and manage subscriptions, affiliates, Learn students and webhook subscriptions, 
 - **API reference (Postman)** — https://apidocs.thrivecart.com/
 - **PHP SDK (source of truth for base URL/headers)** — https://github.com/thrivecart/php-api
 - **Status page** — none published
-- **Triggers** — 4 (webhook)
+- **Triggers** — 20 (16 webhook, 4 poll)
 
 > **Everything below was verified on 2026-08-15** against ThriveCart's own published Postman
 > collection (`https://apidocs.thrivecart.com/api/collections/13408532/TVejhANr`, 93,209 bytes, 33
@@ -238,9 +238,30 @@ deno task test
 | `subscription-payment` — Subscription Payment | webhook (API-registered, unsigned) | `order_rebill` (successful recurring payment) | the same |
 | `subscription-cancelled` — Subscription Cancelled | webhook (API-registered, unsigned) | `order_rebill_cancelled` | the same |
 | `thrivecart-event` — ThriveCart Event | webhook (API-registered, unsigned) | the one event named in its `event` param, or `*` for all (`order_created`, `order_payment_bump`, `order_payment_upsell`, `order_payment_downsell`, `order_rebill_failed`, `order_rebill_completed`, `order_refund_product` / `_bump` / `_upsell` / `_downsell`, `subscription_paused`, `subscription_resumed`, `cart_abandoned`, `affiliate_approved`, `affiliate_rejected`, `affiliate_commission_earned` / `_payout` / `_refund`) | the same |
+| `new-bump-purchase` — New Bump Purchase | webhook (API-registered, unsigned) | `order_payment_bump` | the same |
+| `new-upsell-purchase` — New Upsell Purchase | webhook (API-registered, unsigned) | `order_payment_upsell` | the same |
+| `new-downsell-purchase` — New Downsell Purchase | webhook (API-registered, unsigned) | `order_payment_downsell` | the same |
+| `payment-declined` — Payment Declined | webhook (API-registered, unsigned) | `order_payment_declined_product` | the same |
+| `order-refunded` — Order Refunded | webhook (API-registered, unsigned) | `order_refund` | the same |
+| `subscription-payment-failed` — Subscription Payment Failed | webhook (API-registered, unsigned) | `order_rebill_failed` | the same |
+| `cart-abandoned` — Cart Abandoned | webhook (API-registered, unsigned) | `cart_abandoned` | the same |
+| `subscription-paused` — Subscription Paused | webhook (API-registered, unsigned) | `subscription_paused` | the same |
+| `subscription-resumed` — Subscription Resumed | webhook (API-registered, unsigned) | `subscription_resumed` | the same |
+| `affiliate-created` — Affiliate Created | webhook (API-registered, unsigned) | `affiliate_created` | the same |
+| `affiliate-approved` — Affiliate Approved | webhook (API-registered, unsigned) | `affiliate_approved` | the same |
+| `commission-earned` — Affiliate Commission Earned | webhook (API-registered, unsigned) | `affiliate_commission_earned` | the same |
+| `new-product` — New Product | poll (5 min) | `product-list` (`GET /products`, unpaginated) | the new product |
+| `new-bump` — New Bump Offer | poll (5 min) | `bump-list` (`GET /bumps`, unpaginated) | the new bump offer |
+| `new-upsell` — New Upsell | poll (5 min) | `upsell-list` (`GET /upsells`, unpaginated) | the new upsell |
+| `new-downsell` — New Downsell | poll (5 min) | `downsell-list` (`GET /downsells`, unpaginated) | the new downsell |
+
+`thrivecart-event` is the Any-event trigger (its **Event** param, `*` for every event). It also covers
+`transaction-search` (every charge, rebill, refund and cancellation arrives as one of the purchase,
+rebill and refund events) and `affiliate-search` is covered by `affiliate-created`. The transaction
+search documents no sort order or since filter, so there is no poll for it.
 
 **Setup.** Nothing to paste. Subscribing registers the trigger's own callback URL for its event with `POST /api/external/subscribe` (`{ "event", "target_url", "trigger_fields" }`) and keeps the URL; unsubscribing calls `POST /api/external/unsubscribe` with that URL (ThriveCart removes subscriptions by URL, which is why every subscription has its own; a subscription ThriveCart no longer has counts as removed). The optional `triggerFields` param is ThriveCart's own filter object, for example `{"mode_int": 2}` for live-mode orders only or `{"base_product": [5, 19]}` for chosen products; each event's page in the developer portal lists the fields it accepts. ThriveCart only accepts a `target_url` that begins with a URL registered in the app's settings when the connection is an OAuth app; an account-wide API key is exempt. ThriveCart documents the delivery's `webhook_id` (one per delivery, the same on a retry, so use it as an idempotency key) and `event_id` (may be absent) but not the rest of the payload, so the run gets the delivery exactly as ThriveCart sent it in `data`.
 
 **Trust model.** ThriveCart does not sign event-subscription deliveries: its Event Subscription documentation describes no signature, secret or signing header, so there is nothing to verify and none is invented. **The callback URL is the secret.** The host issues it per subscription as a long unguessable id; anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
 
-Docs (verified 2026-11-10): https://developers.thrivecart.com/documentation/event_subscription/intro/ and https://apidocs.thrivecart.com/ (Create event subscription, Unsubscribe from an event)
+Docs (verified 2026-11-10): https://developers.thrivecart.com/documentation/event_subscription/intro/ and https://apidocs.thrivecart.com/ (Create event subscription lists the event values; Unsubscribe from an event; List products, bump offers, upsells and downsells return unpaginated arrays)

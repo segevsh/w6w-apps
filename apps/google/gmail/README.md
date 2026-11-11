@@ -5,21 +5,31 @@ Send, read, and manage Gmail messages, drafts, labels, and threads.
 - **Categories** — communication, email
 - **Auth methods** — oauth2, service-account
 - **Actions** — 25
-- **Triggers** — 1 (poll)
+- **Triggers** — 4 (poll)
 - **Egress allowlist** — `gmail.googleapis.com`, `www.googleapis.com`
 - **Website** — https://mail.google.com
 - **API docs** — https://developers.google.com/workspace/gmail
 
 ## Triggers
 
-One poll trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)), built on the
-`get-many-messages` and `get-message` requests (same client, endpoint and auth):
+Four poll triggers ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)), each built on
+the app's own list requests (same client, endpoint and auth):
 
 | Trigger | Mechanism | Wrapped actions | The run gets |
 |---|---|---|---|
 | `new-email` — New Email | poll, at most once a minute | `get-many-messages`, `get-message` | `id`, `threadId`, `from`, `to`, `cc`, `subject`, `snippet`, `date`, `labelIds` (+ `body` with **Include body**) |
+| `new-or-updated-thread` — New or Updated Thread | poll, at most once a minute | `get-many-threads` | `id`, `snippet`, `historyId` |
+| `new-label` — New Label | poll, at most once every 5 minutes | `get-many-labels` | `id`, `name`, `type`, `messageListVisibility`, `labelListVisibility` |
+| `new-draft` — New Draft | poll, at most once every 5 minutes | `get-many-drafts` | `id`, `message.id`, `message.threadId` |
 
-Each check fetches at most 500 new messages; if more arrive within one check window (the interval plus 120 s), the oldest beyond 500 are not emitted.
+**Why polls and not webhooks.** Gmail's only event mechanism is `users.watch`, which publishes to a Google
+Cloud Pub/Sub topic that you create and grant publish rights on, carries only the mailbox `historyId`
+(no message), and stops after 7 days unless `watch` is called again — "You must call the watch method at least
+once every 7 days or you'll stop receiving updates" (<https://developers.google.com/workspace/gmail/api/guides/push>,
+verified 2026-11-10). w6w triggers have no renewal step and no Pub/Sub receiver, so a webhook trigger would stop
+working silently after a week; the polls below need no Google Cloud setup.
+
+**New Email.** Each check fetches at most 500 new messages; if more arrive within one check window (the interval plus 120 s), the oldest beyond 500 are not emitted.
 
 Each check lists `users/me/messages` with `q = "<your query> after:<last check epoch seconds − 120>"`
 (just `after:…` when no query is given) and your `labelIds`, then fetches every message it has not
@@ -28,6 +38,24 @@ the poll interval; the 120 s overlap catches mail that lands late, and message i
 state stop the overlap from emitting twice. **The first check emits nothing**: it seeds the cursor and
 the seen ids, so only mail arriving afterwards starts runs. A failed check changes no state and is
 retried whole. Verified against <https://developers.google.com/gmail/api/reference/rest/v1/users.messages/list> 2026-11-09 (not yet run against a live mailbox).
+
+**New or Updated Thread.** Lists `users/me/threads` with `q = "<your query> after:<epoch seconds>"`
+(<https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list>, verified 2026-11-10: `q`
+takes the Gmail search syntax, `maxResults` up to 500, `labelIds` must all match). Gmail documents no order for
+this list, so the window is a time filter, not a "newest first" read. A thread is emitted as `id:historyId`, so it
+fires again when it changes (a reply, a label change) while it is still inside the window. **The first check reads
+nothing and emits nothing**: it records the moment it ran, and no later check asks for mail dated before that
+moment. A window with more than 3 pages of 100 threads is read over successive checks and the cursor only moves
+once it is drained.
+
+**New Label** and **New Draft** compare the whole collection with the last check
+(<https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/list>,
+<https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list>, verified 2026-11-10).
+Labels come back in one unpaginated response; drafts are read 500 at a time up to 5,000 (more fails the check with a
+clear error). Only a label or draft that was added is emitted; renaming a label or saving a new version of a draft
+is not an event. The first check emits nothing.
+
+Not covered: none — every list action in the app is behind one of the triggers above.
 
 ## Health check
 

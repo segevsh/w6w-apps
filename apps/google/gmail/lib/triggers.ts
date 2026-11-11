@@ -1,6 +1,9 @@
 import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
+import getManyDrafts from "../actions/get-many-drafts.ts";
+import getManyLabels from "../actions/get-many-labels.ts";
 import getManyMessages from "../actions/get-many-messages.ts";
+import getManyThreads from "../actions/get-many-threads.ts";
 import getMessage from "../actions/get-message.ts";
 
 /** Seconds of look-back before the previous check, so a message that lands late is still seen. */
@@ -209,3 +212,233 @@ export const newEmailTrigger: TriggerDefinition<NewEmailParams> = {
     return checkNewEmail(params, state, ctx);
   },
 };
+
+// ---------------------------------------------------------------------------------------------
+// New Label / New Draft: bounded snapshots (the whole collection fits in one run of requests).
+// ---------------------------------------------------------------------------------------------
+
+/** Gmail's `drafts.list` takes `maxResults` up to 500. */
+export const DRAFT_PAGE_SIZE = 500;
+/** 10 pages of 500 = the snapshot kit's 5000-row cap. A mailbox with more drafts fails loudly. */
+export const DRAFT_MAX_PAGES = 10;
+
+export interface GmailLabel {
+  id: string;
+  name?: string;
+  type?: string;
+  messageListVisibility?: string;
+  labelListVisibility?: string;
+}
+
+export interface GmailDraft {
+  id: string;
+  message?: { id: string; threadId: string };
+}
+
+export const NEW_LABEL_OUTPUT: OutputField[] = [
+  { key: "id", type: "string", label: "Label ID" },
+  { key: "name", type: "string", label: "Name" },
+  { key: "type", type: "string", label: "Type (system or user)" },
+  { key: "messageListVisibility", type: "string", label: "Message list visibility" },
+  { key: "labelListVisibility", type: "string", label: "Label list visibility" },
+];
+
+export const NEW_LABEL_SAMPLE: GmailLabel = {
+  id: "Label_1234567890",
+  name: "Invoices",
+  type: "user",
+  messageListVisibility: "show",
+  labelListVisibility: "labelShow",
+};
+
+export const NEW_DRAFT_OUTPUT: OutputField[] = [
+  { key: "id", type: "string", label: "Draft ID" },
+  { key: "message.id", type: "string", label: "Draft message ID" },
+  { key: "message.threadId", type: "string", label: "Thread ID" },
+];
+
+export const NEW_DRAFT_SAMPLE: GmailDraft = {
+  id: "r-1234567890123456789",
+  message: { id: "18c2f4a1b2d3e4f5", threadId: "18c2f4a1b2d3e4f5" },
+};
+
+/** Labels the account has now vs. the last check; only labels that were added are emitted. */
+export async function checkNewLabels(
+  state: unknown,
+  ctx: HookContext,
+): Promise<{ events: GmailLabel[]; nextState: unknown }> {
+  const res = await getManyLabels.execute({}, ctx) as { labels?: GmailLabel[] };
+  const labels = res.labels ?? [];
+  const { events, nextState } = await pollSnapshot({
+    state,
+    rows: labels.map((l) => ({ key: l.id, values: l })),
+    emit: { added: true, updated: false },
+  });
+  return { events: events.map((e) => e.values as GmailLabel), nextState };
+}
+
+/** Drafts the account has now vs. the last check; only drafts that were added are emitted. */
+export async function checkNewDrafts(
+  state: unknown,
+  ctx: HookContext,
+): Promise<{ events: GmailDraft[]; nextState: unknown }> {
+  const drafts: GmailDraft[] = [];
+  let pageToken: string | undefined;
+  for (let page = 0; page < DRAFT_MAX_PAGES; page++) {
+    const res = await getManyDrafts.execute(
+      { maxResults: DRAFT_PAGE_SIZE, pageToken },
+      ctx,
+    ) as { drafts?: GmailDraft[]; nextPageToken?: string };
+    drafts.push(...(res.drafts ?? []));
+    pageToken = res.nextPageToken;
+    if (!pageToken) break;
+  }
+  if (pageToken) {
+    throw new Error(
+      `Gmail has more than ${
+        DRAFT_MAX_PAGES * DRAFT_PAGE_SIZE
+      } drafts; New Draft cannot snapshot a mailbox that large`,
+    );
+  }
+  const { events, nextState } = await pollSnapshot({
+    state,
+    rows: drafts.map((d) => ({ key: d.id, values: d })),
+    emit: { added: true, updated: false },
+  });
+  return { events: events.map((e) => e.values as GmailDraft), nextState };
+}
+
+// ---------------------------------------------------------------------------------------------
+// New or Updated Thread: a since-filter poll (Gmail threads.list has no documented order).
+// ---------------------------------------------------------------------------------------------
+
+/** Thread pages per check; the window resumes on the next check when it holds more. */
+export const THREAD_MAX_PAGES = 3;
+export const THREAD_SEEN_WINDOW = 600;
+
+export interface ThreadParams {
+  q?: string;
+  labelIds?: string[];
+}
+
+export interface GmailThread {
+  id: string;
+  snippet?: string;
+  historyId?: string;
+}
+
+/**
+ * The kit's ids envelope plus the window bookkeeping:
+ * - `cursor`: epoch second the last fully drained window started at,
+ * - `floor`: epoch second of the seed; nothing dated before it is ever asked for (§9.9),
+ * - `resume`: set while a window is only partly read — the page token to continue from.
+ */
+export interface ThreadState {
+  v: 1;
+  kind: "ids";
+  seeded: true;
+  ids: string[];
+  cursor: number;
+  floor: number;
+  resume?: { after: number; until: number; pageToken: string };
+}
+
+export const NEW_OR_UPDATED_THREAD_PARAMS: Param[] = [
+  {
+    key: "q",
+    label: "Search query",
+    type: "string",
+    hint: "Optional Gmail search, e.g. `from:boss`. A time window is added for you.",
+  },
+  {
+    key: "labelIds",
+    label: "Label IDs",
+    type: "string",
+    repeat: true,
+    hint: "Only threads carrying these labels, e.g. INBOX.",
+  },
+];
+
+export const NEW_OR_UPDATED_THREAD_OUTPUT: OutputField[] = [
+  { key: "id", type: "string", label: "Thread ID" },
+  { key: "snippet", type: "string", label: "Snippet" },
+  { key: "historyId", type: "string", label: "History ID" },
+];
+
+export const NEW_OR_UPDATED_THREAD_SAMPLE: GmailThread = {
+  id: "18c2f4a1b2d3e4f5",
+  snippet: "Can you send the numbers before noon?",
+  historyId: "4711042",
+};
+
+function readThreadState(state: unknown): ThreadState | null {
+  const s = state as Partial<ThreadState> | null;
+  if (
+    !s || s.v !== 1 || s.kind !== "ids" || s.seeded !== true || !Array.isArray(s.ids) ||
+    typeof s.cursor !== "number" || typeof s.floor !== "number"
+  ) return null;
+  return s as ThreadState;
+}
+
+/** A thread is "new or updated" as `id:historyId`: Gmail bumps `historyId` on every change to it. */
+export const threadEventId = (t: GmailThread): string => `${t.id}:${t.historyId ?? ""}`;
+
+/**
+ * One check. Seed: remember `floor = now`, read nothing. Later checks ask `threads.list` for
+ * `after:max(cursor - overlap, floor)` so a thread whose mail predates the seed is never asked
+ * for; a window with more than THREAD_MAX_PAGES pages is read across checks (`resume`) and the
+ * cursor only moves once it is drained.
+ */
+export async function checkThreads(
+  params: ThreadParams,
+  state: unknown,
+  ctx: HookContext,
+): Promise<{ events: GmailThread[]; nextState: ThreadState }> {
+  const now = Math.floor(clock.now() / 1000);
+  const prior = readThreadState(state);
+  if (!prior) {
+    return {
+      events: [],
+      nextState: { v: 1, kind: "ids", seeded: true, ids: [], cursor: now, floor: now },
+    };
+  }
+  const window = prior.resume ?? {
+    after: Math.max(prior.cursor - OVERLAP_SECONDS, prior.floor),
+    until: now,
+    pageToken: undefined,
+  };
+  const q = params.q?.trim();
+  const query = q ? `${q} after:${window.after}` : `after:${window.after}`;
+
+  const seen = new Set(prior.ids);
+  const queued = new Set<string>();
+  const unseenNewestFirst: GmailThread[] = [];
+  let token: string | undefined = window.pageToken;
+  for (let page = 0; page < THREAD_MAX_PAGES; page++) {
+    const res = await getManyThreads.execute({
+      q: query,
+      labelIds: params.labelIds,
+      maxResults: PAGE_SIZE,
+      pageToken: token,
+    }, ctx) as { threads?: GmailThread[]; nextPageToken?: string };
+    for (const t of res.threads ?? []) {
+      const id = threadEventId(t);
+      if (seen.has(id) || queued.has(id)) continue;
+      queued.add(id);
+      unseenNewestFirst.push(t);
+    }
+    token = res.nextPageToken;
+    if (!token) break;
+  }
+
+  const events = unseenNewestFirst.reverse();
+  const ids = [...prior.ids, ...events.map(threadEventId)].slice(-THREAD_SEEN_WINDOW);
+  const nextState: ThreadState = token
+    ? {
+      ...prior,
+      ids,
+      resume: { after: window.after, until: window.until, pageToken: token },
+    }
+    : { v: 1, kind: "ids", seeded: true, ids, cursor: window.until, floor: prior.floor };
+  return { events, nextState };
+}

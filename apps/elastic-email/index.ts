@@ -37,6 +37,9 @@ import emailClicked from "./triggers/email-clicked.ts";
 import emailUnsubscribed from "./triggers/email-unsubscribed.ts";
 import emailError from "./triggers/email-error.ts";
 import abuseReport from "./triggers/abuse-report.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newContactInList from "./triggers/new-contact-in-list.ts";
 
 export default {
   actions: [
@@ -71,5 +74,8 @@ export default {
     emailUnsubscribed,
     emailError,
     abuseReport,
+    anyEvent,
+    newTemplate,
+    newContactInList,
   ],
 } satisfies AppDefinition;

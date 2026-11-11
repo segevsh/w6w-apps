@@ -90,9 +90,18 @@ test("shared-key: the content length is measured in bytes, not characters", asyn
       body,
     });
 
-  const fourBytes = await put("aaaa");
-  const threeCharsFourBytes = await put("aaé");
-  const threeBytes = await put("aaa");
+  // The signature covers x-ms-date (whole seconds): pin the clock so the three
+  // requests cannot straddle a second boundary on a slow runner.
+  const realNow = Date.now;
+  Date.now = () => Date.UTC(2026, 10, 11, 0, 0, 0);
+  let fourBytes, threeCharsFourBytes, threeBytes;
+  try {
+    fourBytes = await put("aaaa");
+    threeCharsFourBytes = await put("aaé");
+    threeBytes = await put("aaa");
+  } finally {
+    Date.now = realNow;
+  }
 
   assertEquals(
     threeCharsFourBytes.headers["authorization"],

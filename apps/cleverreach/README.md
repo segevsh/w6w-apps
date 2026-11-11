@@ -52,7 +52,7 @@ for the API, `{"error":"invalid_client",…}` for the token endpoint), and the s
 Things worth knowing:
 
 - **The response schemas are not documented.** The Swagger document types almost every 200 as a
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
   bare `string` or `array<string>`, so actions return what the vendor sent, parsed. Lists come back
   as `{items, count}` (a non-array body is kept under `raw`); single records as `{item}`;
   mutations as `{result}`.
@@ -74,12 +74,17 @@ Things worth knowing:
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-group` — New Group | Poll | `group-list` | Each newly created group (receiver list) |
+| `new-receiver` — New Receiver | Poll | `receiver-list` | Each receiver newly registered in the chosen group |
+
+Receivers are read newest-registered first (`order_by=registered desc`); receivers imported with an old registration stamp are not seen. Source: [CleverReach REST API v3](https://rest.cleverreach.com/explorer/v3/) (verified 2026-11-10).
+
+Not covered: `attribute-list` (field definitions), `report-list` (reports), `blacklist-list` (no order or time filter, only `page`/`pagesize`/`search`), `mailing-list` (untyped response; the `start`/`end` window means finished, creation or send time depending on `state`), `tag-list` (no created order, paging undocumented).
 
 Polled newest-first through `group-list` with `order=created DESC`, one of the action's documented sort statements (created/changed, ASC/DESC). Groups are a small collection; the response is not paged. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://rest.cleverreach.com/explorer/v3/) (verified 2026-11-09).
+Source: [vendor docs](https://rest.cleverreach.com/explorer/v3/) (verified 2026-11-10).
 
 ## Health checks
 

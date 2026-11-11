@@ -7,6 +7,7 @@ import {
   monitorTypes,
   opts,
   pageParams,
+  sortParams,
   testSources,
 } from "../lib/params.ts";
 
@@ -24,6 +25,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -53,6 +56,7 @@ const action: ActionDefinition<Input> = {
     { key: "testSource", label: "Test source", type: "select", options: opts(testSources) },
     expandParam(["controls", "monitorInstances", "disablingUser"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Monitoring tests" },
@@ -77,6 +81,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

@@ -26,6 +26,13 @@ const action: ActionDefinition = {
       default: "",
       hint: "Narrow to one check. Blank returns the account's alerts.",
     },
+    {
+      key: "from",
+      label: "From",
+      type: "string",
+      default: "",
+      hint: "Unix timestamp (seconds). Checkly returns a 6-hour window starting here; blank = the last 6 hours.",
+    },
     ...LIST_PARAMS,
   ],
 
@@ -38,7 +45,13 @@ const action: ActionDefinition = {
 
     ctx.log("info", "listing Checkly alerts", { scoped: Boolean(checkId), returnAll, limit });
 
-    return await new ChecklyClient(ctx).requestAll(path, {}, returnAll ? Infinity : limit);
+    const from = String(p.from ?? "").trim();
+
+    return await new ChecklyClient(ctx).requestAll(
+      path,
+      { query: { from: from || undefined } },
+      returnAll ? Infinity : limit,
+    );
   },
 };
 

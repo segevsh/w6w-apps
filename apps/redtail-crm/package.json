@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/redtail-crm",
-  "version": "0.2.0",
-  "description": "Manage Redtail CRM contacts, addresses, notes, activities and opportunities via the Redtail REST API, with polling triggers for new or updated contacts.",
+  "version": "0.3.0",
+  "description": "Manage Redtail CRM contacts, addresses, notes, activities and opportunities via the Redtail REST API, with polling triggers for new or updated contacts and new opportunities, notes and addresses.",
   "license": "MIT",
   "author": {
     "name": "w6w"

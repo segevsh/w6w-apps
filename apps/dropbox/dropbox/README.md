@@ -4,10 +4,37 @@ Upload, download, and manage files and folders in Dropbox.
 - **Categories** — storage
 - **Auth methods** — access-token, oauth2
 - **Actions** — 12
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (1 poll, 1 webhook)
 - **Egress allowlist** — `api.dropboxapi.com`, `content.dropboxapi.com`
 - **Website** — https://www.dropbox.com
 - **API docs** — https://www.dropbox.com/developers
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event or wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-file` — New File or Folder | poll | `list-folder` on one folder (not recursive, up to 600 entries) | The file or folder newly added |
+| `files-changed` — Files Changed (Webhook) | manual webhook, signed | Dropbox's one notification, `list_folder` (accounts with new changes) | The account id; read the changes with `list-folder` |
+
+**Webhook setup.** Dropbox has no API to register a webhook: open your app in the App Console,
+Webhooks, add the trigger's callback URL as a webhook URI (Dropbox immediately sends a `GET` with a
+`challenge` that the trigger echoes back), and paste the app's **App secret** (Settings) into the
+trigger's `appSecret` param. A notification carries only the ids of the accounts that changed, not
+the changes; follow it with `list-folder`. The catalog is that single notification (its legacy
+`delta.users` list names the same users by number), so this one trigger is also the "any event"
+trigger and has no event filter.
+
+**Trust model.** `X-Dropbox-Signature` must equal the hex HMAC-SHA256 of the raw request body under
+the app secret. A missing app secret, a missing or wrong signature, or a body that is not a
+notification refuses the delivery; the verification `GET` is answered only once an app secret is set.
+
+Not covered: `search` is not turned into a trigger. `files/search_v2` ranks by relevance by default;
+its `order_by` offers `last_modified_time` but the spec states no sort direction and there is no
+since-filter, and a free-text query has no stable feed of "new" matches. `new-file` and
+`files-changed` already deliver the file and folder records.
+
+Verified 2026-11-10: https://www.dropbox.com/developers/reference/webhooks ,
+https://github.com/dropbox/dropbox-api-spec/blob/main/files.stone (`SearchOptions.order_by`).
 
 ## Health check
 

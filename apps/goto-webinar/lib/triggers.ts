@@ -294,3 +294,141 @@ export function webhookTrigger(
     },
   };
 }
+
+/** The five events GoTo documents for webhooks (https://developer.goto.com/guides/GoToWebinar/07_HOW_WebHooksOverview/). */
+export const EVENT_NAMES = [
+  "registrant.added",
+  "registrant.joined",
+  "webinar.created",
+  "webinar.changed",
+  "survey.submitted",
+];
+
+export interface AnyEventParams {
+  signingSecret?: string;
+  events?: string;
+}
+
+/** What the Any-event `onSubscribe` returns: one webhook + user subscription per event. */
+export interface AnyEventState {
+  webhookKeys: string[];
+  userSubscriptionKeys: string[];
+}
+
+/** `events` (comma-separated, empty = all five) → validated GoTo event names. */
+export function chooseEvents(raw: unknown): string[] {
+  const wanted = String(raw ?? "").split(",").map((e) => e.trim()).filter(Boolean);
+  if (wanted.length === 0) return [...EVENT_NAMES];
+  const bad = wanted.filter((e) => !EVENT_NAMES.includes(e));
+  if (bad.length > 0) {
+    throw new Error(
+      `Unknown GoTo Webinar event(s): ${bad.join(", ")}. Use ${EVENT_NAMES.join(", ")}.`,
+    );
+  }
+  return [...new Set(wanted)];
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint: `Comma-separated GoTo events to react to: ${
+    EVENT_NAMES.join(", ")
+  }. Leave empty for all of them.`,
+};
+
+/** The Any-event trigger: one GoTo webhook per chosen event, all delivering to this callback URL. */
+export function anyEventTrigger(
+  spec: { key: string; title: string; description: string; sample: GotoEvent },
+): TriggerDefinition<AnyEventParams, GotoEvent, AnyEventState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [SIGNING_SECRET_PARAM, EVENTS_PARAM],
+    output: OUTPUT,
+    sample: spec.sample,
+
+    async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
+      const events = chooseEvents(params?.events);
+      const client = new GotoWebinarClient(ctx);
+      const made = await client.request<Embedded>("/webhooks", {
+        method: "POST",
+        body: events.map((eventName) => ({
+          callbackUrl,
+          eventName,
+          eventVersion: "1.0.0",
+          product: "g2w",
+        })),
+      });
+      const webhookKeys = (made?._embedded?.webhooks ?? []).map((w) => str(w?.webhookKey))
+        .filter((k): k is string => k !== null);
+      if (webhookKeys.length !== events.length) {
+        // Remove whatever was created: a webhook we hold no key for could never be removed later.
+        if (webhookKeys.length > 0) {
+          try {
+            await client.request("/webhooks", { method: "DELETE", body: webhookKeys });
+          } catch { /* best-effort rollback */ }
+        }
+        throw new Error(
+          "GoTo Webinar did not return a webhook key for every event, so the webhooks cannot be removed later.",
+        );
+      }
+      try {
+        await client.request("/webhooks", {
+          method: "PUT",
+          body: webhookKeys.map((webhookKey) => ({ webhookKey, state: "ACTIVE" })),
+        });
+        const sub = await client.request<Embedded>("/userSubscriptions", {
+          method: "POST",
+          body: webhookKeys.map((webhookKey) => ({ webhookKey, userSubscriptionState: "ACTIVE" })),
+        });
+        const userSubscriptionKeys = (sub?._embedded?.userSubscriptions ?? [])
+          .map((u) => str(u?.userSubscriptionKey)).filter((k): k is string => k !== null);
+        if (userSubscriptionKeys.length !== webhookKeys.length) {
+          throw new Error("GoTo Webinar did not return a user subscription key for every event.");
+        }
+        return { webhookKeys, userSubscriptionKeys };
+      } catch (err) {
+        try {
+          await client.request("/webhooks", { method: "DELETE", body: webhookKeys });
+        } catch { /* best-effort rollback */ }
+        throw err;
+      }
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      const s = state as Partial<AnyEventState> | undefined;
+      const client = new GotoWebinarClient(ctx);
+      if (s?.userSubscriptionKeys?.length) {
+        try {
+          await client.request("/userSubscriptions", {
+            method: "DELETE",
+            body: s.userSubscriptionKeys,
+          });
+        } catch (err) {
+          if (!isGone(err)) throw err;
+        }
+      }
+      if (s?.webhookKeys?.length) {
+        try {
+          await client.request("/webhooks", { method: "DELETE", body: s.webhookKeys });
+        } catch (err) {
+          if (!isGone(err)) throw err;
+        }
+      }
+    },
+
+    async handleIngest({ raw, params }) {
+      const method = raw.method.toUpperCase();
+      if (method === "GET" || method === "HEAD") return [];
+      if (method !== "POST") {
+        throw new Error(`GoTo Webinar delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const body = await verifyDelivery(raw, params?.signingSecret);
+      const event = normalizeDelivery(body);
+      const wanted = chooseEvents(params?.events);
+      return wanted.includes(event.eventName) ? [event] : [];
+    },
+  };
+}

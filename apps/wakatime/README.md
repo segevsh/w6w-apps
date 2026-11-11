@@ -7,7 +7,7 @@ private leaderboards from **WakaTime**, and send heartbeats and external duratio
 - **Categories** — developer-tools, analytics
 - **Auth methods** — api-key (the account's secret API key, HTTP Basic)
 - **Actions** — 25
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /users/current`, a schema-correct 401 `errors` envelope passes), `quota` (declared
   unavailable, informational) + the derived `auth:api-key`
@@ -22,13 +22,25 @@ private leaderboards from **WakaTime**, and send heartbeats and external duratio
 | Key | Mechanism | Wrapped list action | The run gets |
 |---|---|---|---|
 | `new-project` | poll (5 min) | `project-list` | each project newly visible to the WakaTime user |
+| `new-goal` | poll (5 min) | `goal-list` | each goal newly created |
+| `new-or-updated-goal` | poll (5 min) | `goal-list` | each goal created or modified (`modified_at`) |
+| `new-leaderboard` | poll (5 min) | `leaderboard-list` | each private leaderboard the user newly belongs to |
+| `new-organization` | poll (5 min) | `org-list` | each organization the user newly belongs to |
+| `new-dashboard` | poll (5 min) | `dashboard-list` | each dashboard newly created in one organization (`orgId` param) |
+| `new-data-dump` | poll (5 min) | `data-dump-list` | each data export newly requested |
 
-`GET /users/current/projects` lists the user's projects with no paging or sort documented, so the
-trigger snapshot-diffs the collection (additions only; more than 5000 projects throws). The first
-check only records the projects. Commits and data dumps are not triggers: the commit feed is per
-project with no documented order. WakaTime documents no webhooks.
+These lists are small, so each trigger snapshot-diffs the collection through the list action (additions
+only, plus the `modified_at` stamp for the "or updated" goal trigger). The list actions read page 1
+(WakaTime pages these lists, `total_pages`, but an account holds a handful of each). The first check
+only records what is there; more than 5000 rows throws.
 
-Source: https://wakatime.com/developers (Projects; verified 2026-11-09).
+Not covered: `commit-list` (the commit feed is per project and WakaTime documents no order, no since
+filter and an unbounded history), `durations-list`, `external-durations-list` and `heartbeats-list`
+(per-day activity data that needs a date: analytics output, not records with a feed),
+`all-time-get` (a running total: metrics). WakaTime documents no webhooks.
+
+Sources: https://wakatime.com/developers (Projects, Goals, Leaderboards, Orgs, Dashboards, Data Dumps,
+Commits; verified 2026-11-10).
 
 ## Connecting
 

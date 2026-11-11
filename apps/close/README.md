@@ -6,7 +6,7 @@ v1**.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 21
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Egress allowlist** — `api.close.com`
 - **Website** — https://close.com
 - **API docs** — https://developer.close.com/api
@@ -330,16 +330,24 @@ what that URL serves; `deno task fmt` is scoped to source directories and does n
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-opportunity` — New Opportunity | poll | `list-opportunities`, newest-first by `-date_created` | Each newly observed Close opportunity |
+| `new-lead` — New Lead | poll | `search` (Advanced Filtering), sorted by `date_created` desc | Each newly created lead |
+| `new-or-updated-lead` — New or Updated Lead | poll | `list-leads` (documented "most recently updated first") | Each lead created or edited |
+| `new-contact` — New Contact | poll | `list-contacts` (documented "newest first") | Each newly created contact |
+| `new-task` — New Task | poll | `list-tasks`, `_order_by=-date_created` | Each newly created task |
+| `new-activity` — New Activity | poll | `list-activities`, `_order_by=-date_created` | Each new activity (call, email, note, meeting, …) |
+| `new-user` — New User | poll | `list-users` | Each user added to the organization (the team is read whole and diffed) |
 
-Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
-it accepts no inbound webhook delivery.
+Trust model: these poll triggers make authenticated outbound API requests with the app connection;
+they accept no inbound webhook delivery. The first check of each records what exists without firing.
 
-Vendor reference: <https://developer.close.com/api/resources/opportunities/list> (verified 2026-11-09).
+Not covered: `list-statuses` and `list-custom-fields` (status and field definitions are reference data, not records).
+
+Vendor reference: [opportunities](https://developer.close.com/api/resources/opportunities/list), [leads](https://developer.close.com/api/resources/leads/list), [contacts](https://developer.close.com/api/resources/contacts/list), [tasks](https://developer.close.com/api/resources/tasks/list), [activities](https://developer.close.com/api/resources/activities/list), [Advanced Filtering search](https://developer.close.com/api/resources/advanced-filtering/search) (verified 2026-11-10).
 
 ## Development
 
 ```sh
-deno task test    # 147 unit tests
+deno task test    # 155 unit tests
 deno task check
 deno task lint
 deno task fmt

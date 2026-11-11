@@ -7,7 +7,7 @@ for small and mid-size nonprofits — over LGL's own **REST API v1**.
 - **Categories** — crm, finance
 - **Auth methods** — bearer-token
 - **Actions** — 12 (2 `search`, 7 `read`, 3 `perform`)
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 (`service`, `quota`, both declared `unavailable`, `informational`) + the
   derived `auth:bearer-token`
 - **Egress allowlist** — `api.littlegreenlight.com`
@@ -186,7 +186,16 @@ deno task validate       # @w6w/validator conformance audit
 | --- | --- | --- | --- |
 | `new-constituent` — New Constituent | Poll | `constituent-search` | Each newly created constituent |
 | `new-or-updated-constituent` — New or Updated Constituent | Poll | `constituent-search` | Each constituent that is new or was edited since the last check |
+| `new-gift` — New Gift | Poll | `gift-search` | Each newly recorded gift, across every constituent (`sort=date_created!`, filter `updated_from=2000-01-01` because LGL requires one `q[]` clause) |
+| `new-or-updated-gift` — New or Updated Gift | Poll | `gift-search` | Each gift that is new or was edited (`sort=date_updated!`, deduped on `id:updated_at`) |
+| `new-appeal` — New Appeal | Poll | `appeal-list` | Each newly created appeal (snapshot diff of the whole list) |
+| `new-campaign` — New Campaign | Poll | `campaign-list` | Each newly created campaign (snapshot diff) |
+| `new-fund` — New Fund | Poll | `fund-list` | Each newly created fund (snapshot diff) |
+| `new-group` — New Group | Poll | `group-list` | Each newly created constituent group (snapshot diff) |
+| `new-constituent-note` — New Constituent Note | Poll | `note-list` | Each note newly recorded against the chosen constituent (`constituent_id`, required; snapshot diff) |
 
-Both triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:updated_at` (the vendor response carries `created_at`/`updated_at`; `date_updated` is only the sort key), so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
+The two constituent triggers call `constituent-search` with `sort=date_created!` / `sort=date_updated!` (a trailing `!` reverses the order, per the vendor's `sort` parameter), `limit=100`, first page only, and take the id from `id`. The edited-record trigger dedupes on `id:updated_at` (the vendor response carries `created_at`/`updated_at`; `date_updated` is only the sort key), so an edit to a constituent is a new event. The first check records what exists without firing; later checks emit only unseen items.
 
-Source: [vendor constituents API](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/constituents.json) (verified 2026-11-10).
+The gift triggers call `gift-search` the same way; appeals, campaigns, funds and groups have no sort or date filter, so each check reads the whole list (`limit=100` pages, up to the kit's 5,000-row cap) and a new id is a new record. `gift-list` (one constituent's gifts) is covered by `new-gift`.
+
+Source: vendor docs [constituents](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/constituents.json), [gifts](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/gifts.json), [appeals](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/appeals.json), [campaigns](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/campaigns.json), [funds](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/funds.json), [groups](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/groups.json), [notes](https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/notes.json) (verified 2026-11-10).

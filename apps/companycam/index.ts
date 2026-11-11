@@ -125,7 +125,25 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newChecklist from "./triggers/new-checklist.ts";
+import newGroup from "./triggers/new-group.ts";
 import newOrUpdatedChecklist from "./triggers/new-or-updated-checklist.ts";
+import newOrUpdatedGroup from "./triggers/new-or-updated-group.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newOrUpdatedTag from "./triggers/new-or-updated-tag.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
+import newPhoto from "./triggers/new-photo.ts";
+import newPhotoComment from "./triggers/new-photo-comment.ts";
+import newPhotoTag from "./triggers/new-photo-tag.ts";
+import newProject from "./triggers/new-project.ts";
+import newProjectAssignedUser from "./triggers/new-project-assigned-user.ts";
+import newProjectCollaborator from "./triggers/new-project-collaborator.ts";
+import newProjectComment from "./triggers/new-project-comment.ts";
+import newProjectDocument from "./triggers/new-project-document.ts";
+import newProjectInvitation from "./triggers/new-project-invitation.ts";
+import newProjectLabel from "./triggers/new-project-label.ts";
+import newTag from "./triggers/new-tag.ts";
+import newUser from "./triggers/new-user.ts";
+import newVideo from "./triggers/new-video.ts";
 
 export default {
   actions: [
@@ -209,5 +227,26 @@ export default {
   // in two hours and carry the read/write/destroy scopes.
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
-  triggers: [newChecklist, newOrUpdatedChecklist],
+  triggers: [
+    newChecklist,
+    newGroup,
+    newOrUpdatedChecklist,
+    newOrUpdatedGroup,
+    newOrUpdatedProject,
+    newOrUpdatedTag,
+    newOrUpdatedUser,
+    newPhoto,
+    newPhotoComment,
+    newPhotoTag,
+    newProject,
+    newProjectAssignedUser,
+    newProjectCollaborator,
+    newProjectComment,
+    newProjectDocument,
+    newProjectInvitation,
+    newProjectLabel,
+    newTag,
+    newUser,
+    newVideo,
+  ],
 } satisfies AppDefinition;

@@ -55,6 +55,8 @@ export interface WalkSpec<P> {
     result: unknown,
     got: unknown[],
   ): Record<string, unknown> | undefined;
+  /** Optional first-check read: the vendor position to store as `mark` so existing rows never emit. */
+  seed?(o: { params: P }, ctx: HookContext): Promise<unknown>;
   items(result: unknown): unknown[];
   idOf(item: unknown): string;
   /** Creation epoch ms of an item; undefined (unparseable / absent) keeps the item. */
@@ -75,7 +77,7 @@ function valid(s: unknown): s is WalkState {
 
 /**
  * Shape (b): the wrapped list action filters by a since stamp / position but has no newest-first
- * order. The first check stores `floor = now` and reads nothing. Later checks re-ask from
+ * order. The first check stores `floor = now` and, unless `seed` supplies a vendor position, reads nothing. Later checks re-ask from
  * `cursor - OVERLAP_MS`, drop records created before `floor`, dedupe by id, and when the window
  * holds more than MAX_PAGES pages store the next request in `resume` and hold the cursor until the
  * window is drained, then set it to the tick that began the drain (`windowStart`), so a record
@@ -107,6 +109,8 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
           cursor: now,
           floor: now,
         };
+        const mark = spec.seed ? await spec.seed({ params: params as P }, ctx) : undefined;
+        if (mark !== undefined) seed.mark = mark;
         return { events: [], nextState: seed };
       }
       // A drain that spans checks began at `windowStart`; records created after that moment may

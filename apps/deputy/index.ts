@@ -101,8 +101,14 @@ import locationGet from "./actions/location-get.ts";
 
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
+import newArea from "./triggers/new-area.ts";
 import newEmployee from "./triggers/new-employee.ts";
+import newLeaveRequest from "./triggers/new-leave-request.ts";
+import newLocation from "./triggers/new-location.ts";
 import newOrUpdatedEmployee from "./triggers/new-or-updated-employee.ts";
+import newOrUpdatedLeaveRequest from "./triggers/new-or-updated-leave-request.ts";
+import newOrUpdatedTimesheet from "./triggers/new-or-updated-timesheet.ts";
+import newTimesheet from "./triggers/new-timesheet.ts";
 
 export default {
   actions: [
@@ -133,5 +139,14 @@ export default {
   ],
   auth: [permanentToken],
   healthChecks: [instance, service],
-  triggers: [newEmployee, newOrUpdatedEmployee],
+  triggers: [
+    newEmployee,
+    newOrUpdatedEmployee,
+    newTimesheet,
+    newOrUpdatedTimesheet,
+    newLeaveRequest,
+    newOrUpdatedLeaveRequest,
+    newLocation,
+    newArea,
+  ],
 } satisfies AppDefinition;

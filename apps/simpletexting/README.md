@@ -4,7 +4,7 @@ Send SMS/MMS, manage contacts, lists, segments and custom fields, send campaigns
 webhooks to messaging events, on **SimpleTexting's API v2**.
 
 - **Categories** — communication, marketing
-- **Triggers** — 2 (poll)
+- **Triggers** — 6 (poll)
 - **Auth methods** — api-key
 - **Actions** — 27
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
@@ -148,6 +148,10 @@ deno task test        # unit tests, every action + auth + both health checks
 |---|---|---|---|
 | `new-contact` — New Contact | poll | `contact-list` | Each contact newly added to the account. |
 | `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each contact that is added or updated (an update is a new event). |
+| `new-message` — New Message | poll | `message-list` | Each message sent or received on an account phone number (`since`, optional account/contact phone). |
+| `new-campaign` — New Campaign Started | poll | `campaign-list` | Each campaign when it starts sending (`type=ALL`, `startDateFrom`). |
+| `new-contact-list` — New Contact List | poll | `contact-list-list` | Each contact list newly created in the account (id snapshot). |
+| `new-segment` — New Segment | poll | `segment-list` | Each segment newly created in the account (id snapshot). |
 
 SimpleTexting's Get all Contacts documents `direction` ("By default, results are sorted by the
 'updated' field") and `since` ("List contacts updated since a specified date"); it offers no
@@ -159,4 +163,8 @@ only once the window is drained). `new-contact` keeps rows whose `created` falls
 `new-or-updated-contact` keys each event on `contactId:updated`. The first check reads nothing: it records the
 cursor and a floor (the time it ran), and a contact stamped before the floor is never emitted.
 
-Vendor documentation: https://api-doc.simpletexting.com/ (verified 2026-11-09).
+`new-message` and `new-campaign` are since-filter polls too (same window, page resume and seed floor): messages use `since` ("First sent/received timestamp") and are stamped by their `timestamp`; campaigns are selected by `startDateFrom` (the endpoint has no created filter or sort) with `type=ALL`, so a campaign fires when it starts sending. `new-contact-list` and `new-segment` read the whole list (pages of 500, no sort or date filter exists) and emit ids not seen before; the first check fires nothing.
+
+Not covered: `custom-field-list` (field definitions), `phone-list` (the account's sender numbers, reference data for `accountPhone`) and `webhook-list` (webhook configuration).
+
+Vendor documentation: https://api-doc.simpletexting.com/ (verified 2026-11-10).

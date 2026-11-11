@@ -4,7 +4,7 @@ W6W app for [Zoho Cliq](https://www.zoho.com/cliq/): post messages and files to 
 users and bots, manage channels and their members, read users, teams and chats, and manage
 reminders. 32 actions, OAuth2 only, covering all nine Zoho data centres.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 
 API reference: <https://www.zoho.com/cliq/help/restapi/v2/>. Every endpoint here is taken from that
 reference and the paths were probed unauthenticated on every data centre (all answered `401`).
@@ -95,13 +95,26 @@ Illustrator export, viewBox `0 0 672 296`, a wide logo).
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-chat` | poll | `chat-list` | a direct, group or bot chat the first time it is listed after the trigger was enabled |
+| `new-message` | poll | `message-list` | each message posted in the chat or channel you pick (`chatId`) after the trigger was enabled |
+| `new-channel` | poll | `channel-list` | each channel that appears in the organization |
+| `new-channel-member` | poll | `channel-member-list` | each user who joins the channel you pick (`channelId`) |
+| `new-chat-member` | poll | `chat-member-list` | each user who joins the chat you pick (`chatId`) |
+| `new-user` | poll | `user-list` | each user who joins the organization |
+| `new-team` | poll | `team-list` | each team created in the organization |
+| `new-user-team` | poll | `user-team-list` | each team the user you pick (`userId`) joins |
+| `new-reminder` | poll | `reminder-list` | each reminder that appears in the category you pick (default `mine`) |
 
 There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
 
 The list has no created-time filter, so this is a since-filter poll on the last-message time: each check asks for `modified_after = cursor − 2 minutes`, reads up to 3 pages of 100 (paging back with `modified_before`) and fires only chats whose `creation_time` is later than the moment the trigger was enabled. A window longer than 3 pages is drained over the next checks and the cursor only moves on once it is empty. A chat is first seen when it has a message, so a brand-new chat with no message yet fires on its first one.
 
+`new-message` is a since-filter poll too: `fromtime = cursor − 2 minutes`, `totime = now`, up to 3 calls of 100 messages per check (the vendor's maximum); a full page is continued from the end it was cut at, a window longer than 3 calls is drained over the next checks, and a message stamped before the trigger was enabled never fires. The other triggers have no usable order or since filter, so each reads the whole collection (following `next_token` / `next_set_token` for channels, users and reminders, at most 50 pages, otherwise the check fails with an error naming the cap) and fires on ids not seen before; the first check only records what exists.
+
+Not covered: none of the listed actions is skipped.
+
 **Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
 
-**Vendor docs (verified 2026-11-09).**
+**Vendor docs (verified 2026-11-10).**
 
 - Retrieve all direct chats — `modified_after`: "Gets the list of chats where the last message is sent after the mentioned time", `modified_before` likewise, `limit` max 100: https://www.zoho.com/cliq/help/restapi/v2/
+- Get messages — `fromtime`/`totime` in milliseconds, "maximum of 100 messages", 15 requests per minute; Retrieve all users — "Maximum limit will be 100", `next_token`; channels — `limit` max 100, `next_token`; reminders — `limit`, `next_set_token`; teams, members: https://www.zoho.com/cliq/help/restapi/v2/

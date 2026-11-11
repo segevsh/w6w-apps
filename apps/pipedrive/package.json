@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/pipedrive",
-  "version": "0.2.0",
-  "description": "Manage Pipedrive deals, persons, organizations, activities, notes and leads, and trigger on new deals.",
+  "version": "0.3.0",
+  "description": "Manage Pipedrive deals, persons, organizations, activities, notes and leads, and start workflows on deal, person, organization, activity, note and lead events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,12 +12,17 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    },
     "id": "io.w6w.pipedrive",
     "displayName": "Pipedrive",
     "apiDocs": [
       "https://developers.pipedrive.com/docs/api/v1"
     ],
-    "longDescription": "Pipedrive brings core CRM data into a workflow — deals, people, organizations, activities, notes and leads — across the six resources a sales process touches most. Deal actions create, read, update and delete deals, with a dedicated bulk-read action for pulling many at once, while person and organization actions manage the contacts and companies behind those deals.\n\nActivity and note actions let a workflow log a scheduled task or a piece of context against a deal or contact, and a lead action creates a new lead before it has been qualified into a full deal. The New Deal trigger registers Pipedrive's webhook API to start a workflow when a deal is created.\n\nThis is a focused CRUD surface on Pipedrive's most-used resources — search endpoints and file attachments are deliberately left out, keeping the action set to the operations a sales workflow reaches for most often.",
+    "longDescription": "Pipedrive brings core CRM data into a workflow — deals, people, organizations, activities, notes and leads — across the six resources a sales process touches most. Deal actions create, read, update and delete deals, with a dedicated bulk-read action for pulling many at once, while person and organization actions manage the contacts and companies behind those deals.\n\nActivity and note actions let a workflow log a scheduled task or a piece of context against a deal or contact, and a lead action creates a new lead before it has been qualified into a full deal. Triggers register Pipedrive's webhook API for you to start a workflow when a deal, person, organization, activity, note or lead is created, when a deal, person or organization changes or is deleted, or on any other Pipedrive event you name.\n\nThis is a focused CRUD surface on Pipedrive's most-used resources — search endpoints and file attachments are deliberately left out, keeping the action set to the operations a sales workflow reaches for most often.",
     "categories": [
       "crm"
     ],

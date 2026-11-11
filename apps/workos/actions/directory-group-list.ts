@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /directory_groups` — the groups the customer pushes over SCIM.
@@ -31,6 +31,7 @@ const action: ActionDefinition = {
       default: "",
       hint: "Only the groups one person belongs to.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -53,6 +54,7 @@ const action: ActionDefinition = {
       query: compact({
         directory: directoryId,
         organization_id: organizationId,
+        order: p.order,
         user: userId,
       }) as Record<string, string>,
     }, want);

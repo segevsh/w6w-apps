@@ -66,6 +66,28 @@ import submitForm from "./actions/submit-form.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import anyEventTrigger from "./triggers/any-event.ts";
+import contactCreatedTrigger from "./triggers/contact-created.ts";
+import contactUpdatedTrigger from "./triggers/contact-updated.ts";
+import contactDeletedTrigger from "./triggers/contact-deleted.ts";
+import companyCreatedTrigger from "./triggers/company-created.ts";
+import companyUpdatedTrigger from "./triggers/company-updated.ts";
+import companyDeletedTrigger from "./triggers/company-deleted.ts";
+import dealCreatedTrigger from "./triggers/deal-created.ts";
+import dealUpdatedTrigger from "./triggers/deal-updated.ts";
+import dealDeletedTrigger from "./triggers/deal-deleted.ts";
+import ticketCreatedTrigger from "./triggers/ticket-created.ts";
+import ticketUpdatedTrigger from "./triggers/ticket-updated.ts";
+import ticketDeletedTrigger from "./triggers/ticket-deleted.ts";
+import newOrUpdatedContactTrigger from "./triggers/new-or-updated-contact.ts";
+import newCompanyTrigger from "./triggers/new-company.ts";
+import newDealTrigger from "./triggers/new-deal.ts";
+import newTicketTrigger from "./triggers/new-ticket.ts";
+import newOrUpdatedCompanyTrigger from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedDealTrigger from "./triggers/new-or-updated-deal.ts";
+import newOrUpdatedTicketTrigger from "./triggers/new-or-updated-ticket.ts";
+import newFormTrigger from "./triggers/new-form.ts";
+import newOwnerTrigger from "./triggers/new-owner.ts";
 
 export default {
   auth: [privateAppToken, oauth2, apiKey],
@@ -122,6 +144,30 @@ export default {
     listForms,
     submitForm,
   ],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    anyEventTrigger,
+    contactCreatedTrigger,
+    contactUpdatedTrigger,
+    contactDeletedTrigger,
+    companyCreatedTrigger,
+    companyUpdatedTrigger,
+    companyDeletedTrigger,
+    dealCreatedTrigger,
+    dealUpdatedTrigger,
+    dealDeletedTrigger,
+    ticketCreatedTrigger,
+    ticketUpdatedTrigger,
+    ticketDeletedTrigger,
+    newOrUpdatedContactTrigger,
+    newCompanyTrigger,
+    newDealTrigger,
+    newTicketTrigger,
+    newOrUpdatedCompanyTrigger,
+    newOrUpdatedDealTrigger,
+    newOrUpdatedTicketTrigger,
+    newFormTrigger,
+    newOwnerTrigger,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

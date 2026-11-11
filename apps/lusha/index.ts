@@ -28,6 +28,12 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 import signalReceived from "./triggers/signal-received.ts";
+import contactPromotion from "./triggers/contact-promotion.ts";
+import contactCompanyChange from "./triggers/contact-company-change.ts";
+import companyHiringSurge from "./triggers/company-hiring-surge.ts";
+import companyHeadcountChange from "./triggers/company-headcount-change.ts";
+import companyNews from "./triggers/company-news.ts";
+import newSubscription from "./triggers/new-subscription.ts";
 
 export default {
   actions: [
@@ -56,7 +62,15 @@ export default {
     subscriptionGet,
     subscriptionList,
   ],
-  triggers: [signalReceived],
+  triggers: [
+    signalReceived,
+    contactPromotion,
+    contactCompanyChange,
+    companyHiringSurge,
+    companyHeadcountChange,
+    companyNews,
+    newSubscription,
+  ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

@@ -6,24 +6,41 @@ Mandrill (Mailchimp Transactional).
 - **Categories** — email, marketing
 - **Auth methods** — api-key
 - **Actions** — 17
-- **Triggers** — 1 (webhook)
+- **Triggers** — 13 (12 webhook, 1 poll)
 - **Egress allowlist** — `mandrillapp.com`
 - **Website** — https://mailchimp.com/features/transactional-email-infrastructure/
 - **API docs** — https://mailchimp.com/developer/transactional/api/
 
 ## Triggers
 
-1 webhook trigger (API-registered, HMAC-signed).
+12 webhook triggers (API-registered, HMAC-signed) and 1 poll.
 
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `email-event` — Email Event | webhook (API-registered, signed) | `send`, `deferral`, `delivered`, `hard_bounce`, `soft_bounce`, `open`, `click`, `spam`, `unsub`, `reject` (default: send, hard_bounce, soft_bounce, open, click, reject) | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, bounce reason, metadata, full event data |
+| `email-sent` — Email Sent | webhook (API-registered, signed) | `send` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-delivered` — Email Delivered | webhook (API-registered, signed) | `delivered` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-deferred` — Email Deferred | webhook (API-registered, signed) | `deferral` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-bounced` — Email Bounced | webhook (API-registered, signed) | `hard_bounce`, `soft_bounce` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-opened` — Email Opened | webhook (API-registered, signed) | `open` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-link-clicked` — Email Link Clicked | webhook (API-registered, signed) | `click` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-marked-spam` — Email Marked as Spam | webhook (API-registered, signed) | `spam` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-unsubscribed` — Email Unsubscribed | webhook (API-registered, signed) | `unsub` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `email-rejected` — Email Rejected | webhook (API-registered, signed) | `reject` | event, event time, message id, recipient, subject, sender, state, tags, clicked URL, reason, metadata, full event data |
+| `reject-denylist-changed` — Reject Denylist Changed | webhook (API-registered, signed) | sync event `blacklist` (add, change, remove) | list, action, email, reason, full sync event |
+| `reject-allowlist-changed` — Reject Allowlist Changed | webhook (API-registered, signed) | sync event `whitelist` (add, remove) | list, action, email, reason, full sync event |
+| `new-template` — New Template | poll (5 min) | `list-templates` (`POST /templates/list.json`, whole list, no paging parameters) | the new template |
 
-**Setup.** Optionally pick the `events` to fire on. Subscribing registers the callback URL with `POST webhooks/add` and keeps the webhook's id, its signing key (`auth_key`) and the URL with the subscription; unsubscribing removes it with `POST webhooks/delete` (a webhook Mandrill no longer has counts as deleted). No key has to be pasted. Mandrill batches events and posts about once a minute, up to 1,000 per request; the trigger emits one run per message event in the batch. Sync (allowlist/denylist) and inbound-mail items are not message events and are skipped.
+`email-event` is the Any-event trigger (its **Events** param picks any of the message events). The two
+`reject-*-changed` triggers deliver exactly the entries `list-rejects` and `list-whitelist` return, so
+those actions are covered by them. **Not covered:** `list-senders` and `list-tags` return sending
+statistics per sender / tag (analytics output, no records of their own).
+
+**Setup.** Optionally pick the `events` to fire on. Subscribing registers the callback URL with `POST webhooks/add` and keeps the webhook's id, its signing key (`auth_key`) and the URL with the subscription; unsubscribing removes it with `POST webhooks/delete` (a webhook Mandrill no longer has counts as deleted). No key has to be pasted. Mandrill batches events and posts about once a minute, up to 1,000 per request; the trigger emits one run per message event in the batch. The message-event triggers skip sync (allowlist/denylist) items and inbound mail; the `reject-*-changed` triggers take the sync items.
 
 **Trust model.** Every delivery carries `X-Mandrill-Signature`: the base64 HMAC-SHA1, under the webhook's signing key, of the callback URL exactly as registered followed by each POST variable's name and value (the only one is `mandrill_events`). The trigger refuses a delivery whose key is unset, whose header is missing, or that does not match (constant-time compare), before it parses the batch. The signature binds the batch, so tampered data is refused. **Mandrill's scheme has no timestamp**, so an identical delivery replayed later is not detected; de-duplicate on the message id and event time downstream. While Mandrill registers a webhook it probes the URL with a HEAD and then a POST of an empty batch, before the subscription has a stored key; that one shape (an empty `mandrill_events` array, no stored key) is acknowledged and emits nothing, and nothing else is accepted without verification.
 
-Docs (verified 2026-11-10): https://mailchimp.com/developer/transactional/docs/webhooks/, https://mailchimp.com/developer/transactional/guides/track-respond-activity-webhooks/ (Authenticating webhook requests) and https://mailchimp.com/developer/transactional/api/webhooks/add.md
+Docs (verified 2026-11-10): https://mailchimp.com/developer/transactional/api/templates/list/ (`new-template`), https://mailchimp.com/developer/transactional/api/webhooks/add/ (events include `blacklist`, `whitelist`), https://mailchimp.com/developer/transactional/docs/webhooks/, https://mailchimp.com/developer/transactional/guides/track-respond-activity-webhooks/ (Authenticating webhook requests) and https://mailchimp.com/developer/transactional/api/webhooks/add.md
 
 ## Auth
 

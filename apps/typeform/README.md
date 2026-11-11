@@ -5,16 +5,34 @@ Create and manage Typeform forms, responses, workspaces, themes and images via t
 - **Categories** — forms, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 10
-- **Triggers** — 1 (webhook)
+- **Triggers** — 8 (3 webhook, 5 poll)
 - **Egress allowlist** — `api.typeform.com`
 - **Website** — https://www.typeform.com
 - **API docs** — https://www.typeform.com/developers/
 
 ## Triggers
 
-| trigger — title | mechanism | vendor event | what the run gets |
+| trigger — title | mechanism | vendor event or wrapped list action | what the run gets |
 |---|---|---|---|
-| `new-response` — New Response | webhook (API-registered) | a form response is submitted | the response token, submit time, hidden fields and every answer |
+| `new-response` — New Response | webhook (API-registered) | `form_response` | the response token, submit time, hidden fields and every answer |
+| `new-partial-response` — New Partial Response | webhook (API-registered) | `form_response_partial` | the response token, start time and the answers given so far |
+| `any-event` — Any Event | webhook (API-registered) | the `events` param: `form_response`, `form_response_partial` (both when empty) | the event type plus the response, as above |
+| `new-form` — New Form | poll | `form-get-many`, `sort_by=created_at&order_by=desc` | the form's id, title, links and timestamps |
+| `new-or-updated-form` — New or Updated Form | poll | `form-get-many`, `sort_by=last_updated_at&order_by=desc` | the same, once per edit |
+| `new-workspace` — New Workspace | poll (snapshot) | `workspace-get-many` (all pages, 200 each) | the workspace's id, name, account and form count |
+| `new-theme` — New Theme | poll | `theme-get-many` (documented newest-added first) | the theme's id, name, colors and font |
+| `new-image` — New Image | poll | `image-get-many` (documented newest-added first) | the image's id, file name, URL and upload source |
+
+Typeform's webhook catalog has exactly two events (create-or-update-webhook `event_types`):
+`form_response` and `form_response_partial`. `new-response` keeps Typeform's default registration;
+the other two webhook triggers register an explicit `event_types` object. **Any Event** reaches
+both through one subscription and drops a delivery whose event was not asked for. Webhook triggers
+need the form's id; the poll triggers need nothing but the connection (`new-form` and
+`new-or-updated-form` accept an optional workspace id).
+
+**Not a separate poll.** `response-get-many` returns the records `new-response` delivers (the
+same form's submitted responses), so it is covered by that webhook trigger, which needs no dashboard
+setup.
 
 ### Setup
 
@@ -30,7 +48,7 @@ body, keyed by the subscription's secret) is verified before the body is parsed.
 signature, an absent raw body or an unset secret refuses the delivery (one failed row, no run).
 Typeform's signature carries no timestamp, so there is no replay window.
 
-Docs (verified 2026-11-09): https://www.typeform.com/developers/webhooks/, https://www.typeform.com/developers/webhooks/secure-your-webhooks/
+Docs (verified 2026-11-10): https://www.typeform.com/developers/webhooks/, https://www.typeform.com/developers/webhooks/secure-your-webhooks/, https://www.typeform.com/developers/webhooks/reference/create-or-update-webhook/, https://www.typeform.com/developers/create/reference/retrieve-forms/, https://www.typeform.com/developers/create/reference/retrieve-workspaces/, https://www.typeform.com/developers/create/reference/retrieve-themes/, https://www.typeform.com/developers/create/reference/retrieve-images-collection/
 
 ## Health check
 

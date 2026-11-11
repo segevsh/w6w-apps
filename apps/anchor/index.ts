@@ -36,6 +36,13 @@ import apiKey from "./auth/api-key.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 import newInvoice from "./triggers/new-invoice.ts";
+import newPayout from "./triggers/new-payout.ts";
+import newContact from "./triggers/new-contact.ts";
+import newProposal from "./triggers/new-proposal.ts";
+import newAgreement from "./triggers/new-agreement.ts";
+import newProposalDraft from "./triggers/new-proposal-draft.ts";
+import newProposalTemplate from "./triggers/new-proposal-template.ts";
+import newServiceTemplate from "./triggers/new-service-template.ts";
 
 export default {
   actions: [
@@ -75,5 +82,14 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newInvoice],
+  triggers: [
+    newInvoice,
+    newPayout,
+    newContact,
+    newProposal,
+    newAgreement,
+    newProposalDraft,
+    newProposalTemplate,
+    newServiceTemplate,
+  ],
 } satisfies AppDefinition;

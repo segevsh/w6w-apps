@@ -5,6 +5,7 @@ Read teams and channels, and send channel and chat messages, through the Microso
 - **Categories** — communication
 - **Auth methods** — oauth2
 - **Actions** — 16
+- **Triggers** — 8 (poll)
 - **Egress allowlist** — `graph.microsoft.com`
 - **API version** — Microsoft Graph **v1.0** (`https://graph.microsoft.com/v1.0`). `beta` is not
   used. See [v1.0 vs beta](#v10-vs-beta) for what that costs.
@@ -195,8 +196,8 @@ blocked* user answers `404 Not Found`, which reads like "no such team" and is no
 whether a resource has changed "can only do that once per day", and name change notifications as the
 supported alternative; violating it is described as grounds for additional throttling or
 suspension. Repeatedly running List Channel Messages on a schedule is exactly the pattern that rule
-addresses. There is no trigger in this App yet (see [Not implemented](#not-implemented)) — so if you
-build a polling loop, keep it inside that policy.
+addresses. The triggers in this App (see [Triggers](#triggers)) therefore declare a once-a-day poll floor — if you
+build a polling loop of your own, keep it inside that policy.
 
 **And the terms of use say this out loud, so it is repeated here:** "It's a violation of the terms
 of use to use Microsoft Teams as a log file. Only send messages that people will read."
@@ -376,11 +377,47 @@ because neither check makes a request at all.
 
 ## Triggers
 
+Eight poll triggers, each built on the app's own list request (same client, endpoint and auth). All of them declare
+the once-a-day poll floor described under "Polling is capped at once per day" above (one constant,
+`TEAMS_MIN_INTERVAL_MS` in `lib/triggers.ts`).
+
 | Trigger | Poll source | Behaviour |
 | ------- | ----------- | --------- |
-| New Channel Message | `GET /teams/{team-id}/channels/{channel-id}/messages?$top=50` | Seeds the current page on its first check, then emits unseen root messages. The endpoint has no `$orderby`; Graph returns the latest modified conversation first. |
+| New Channel Message (`new-channel-message`) | `GET /teams/{team-id}/channels/{channel-id}/messages?$top=50` | Seeds the current page on its first check, then emits unseen root messages. The endpoint has no `$orderby`; Graph returns the latest modified conversation first. |
+| New Team (`new-team`) | `GET /me/joinedTeams` | Reads the whole list of teams the user has joined each check and emits a team that was not there last time. The first check emits nothing. |
+| New Channel (`new-channel`) | `GET /teams/{team-id}/channels` | Same, for the channels of one team (**Team ID** is required). |
+| New Team Member (`new-team-member`) | `GET /teams/{team-id}/members?$top=500` | Same, for the members of one team (**Team ID** is required). |
+| New Channel Member (`new-channel-member`) | `GET /teams/{team-id}/channels/{channel-id}/members?$top=500` | Same, for the members of one channel (**Team ID** and **Channel ID** are required). |
+| New Chat (`new-chat`) | `GET /me/chats?$orderby=lastMessagePreview/createdDateTime desc&$top=50` | A chat appears here once it has a message. The first check reads nothing and records the moment it ran; a later check emits only chats whose own `createdDateTime` is not before that moment, so an old chat that gets a new message is not a new chat. Reads up to 3 pages of 50. |
+| New Chat Message (`new-chat-message`) | `GET /chats/{chat-id}/messages?$orderby=createdDateTime desc&$top=50` | Seeds the current page on its first check, then emits unseen messages oldest first (**Chat ID** is required). |
+| New or Updated Chat Message (`new-or-updated-chat-message`) | `GET /chats/{chat-id}/messages?$orderby=lastModifiedDateTime desc&$top=50` | Same, but an edited message (a new `lastModifiedDateTime`) is a new event. A reaction also changes the modified time. |
+
+Sources, all verified 2026-11-10: [List chat messages](https://learn.microsoft.com/en-us/graph/api/chat-list-messages?view=graph-rest-1.0)
+(`$orderby` takes `lastModifiedDateTime` (default) and `createdDateTime`, descending only; `$top` at most 50),
+[List chats](https://learn.microsoft.com/en-us/graph/api/chat-list?view=graph-rest-1.0) (`$orderby` takes
+`lastMessagePreview/createdDateTime` descending; `$top` at most 50),
+[List joined teams](https://learn.microsoft.com/en-us/graph/api/user-list-joinedteams?view=graph-rest-1.0) (no OData parameters),
+[List channels](https://learn.microsoft.com/en-us/graph/api/channel-list?view=graph-rest-1.0),
+[List team members](https://learn.microsoft.com/en-us/graph/api/team-list-members?view=graph-rest-1.0) and
+[List channel members](https://learn.microsoft.com/en-us/graph/api/channel-list-members?view=graph-rest-1.0)
+(`$top`; default and maximum page 100 and 999).
+
+The four list triggers (teams, channels, members) compare the whole list with the previous check, because a
+membership or a channel has no sortable creation time on these endpoints; they read up to 10 pages and a longer list
+fails the check with a clear error instead of being half-read. A rename is not an event.
 
 This trigger uses the Graph [List channel messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09). Microsoft permits this polling endpoint no more than once daily, so the trigger declares that vendor interval floor.
+
+**Not covered.** `list-message-replies` (the replies of one channel message): the parent is a single message whose id
+does not exist until it is posted, so there is nothing for a user to pick when setting a trigger up. Read a message's replies with List
+Message Replies.
+
+**Why polls and not webhooks.** Graph change notifications are the vendor's recommended alternative, but a
+subscription expires and must be renewed: the longest lifetime for Teams chat and chat-message subscriptions is
+4,320 minutes (three days), and Teams resources also need a lifecycle notification URL for any lifetime over an hour
+([subscription resource](https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0),
+[change notifications overview](https://learn.microsoft.com/en-us/graph/change-notifications-overview), verified
+2026-11-10). w6w triggers have no renewal step, so a webhook trigger would silently stop firing after three days.
 
 ## Not implemented
 

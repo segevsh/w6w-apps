@@ -8,17 +8,27 @@ unauthenticated probes.
 
 ## Triggers
 
-1 webhook trigger (API-registered, HMAC-signed).
+6 webhook triggers (API-registered, HMAC-signed) and 1 poll trigger.
 
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
-| `signal-received` — Signal Received | webhook (API-registered, signed) | a signal (promotion, job change, company news ...) for a subscribed contact or company | signal type, entity type and id, subscription id, signal time, credits charged, the signal data |
+| `signal-received` — Signal Received (any signal) | webhook (API-registered, signed) | any signal for a subscribed contact or company, narrowed by the optional `signalTypes` list it registers | signal type, entity type and id, subscription id, signal time, credits charged, the signal data |
+| `contact-promotion` — Contact Promoted | webhook (API-registered, signed) | contact signal `promotion` | the same, for a contact id |
+| `contact-company-change` — Contact Changed Company | webhook (API-registered, signed) | contact signal `companyChange` | the same, for a contact id |
+| `company-hiring-surge` — Company Hiring Surge | webhook (API-registered, signed) | company signals `surgeInHiring`, `surgeInHiringByDepartment`, `surgeInHiringByLocation` | the same, for a company id |
+| `company-headcount-change` — Company Headcount Change | webhook (API-registered, signed) | company signals `headcountIncrease1m`/`3m`/`6m`/`12m` and `headcountDecrease1m`/`3m`/`6m`/`12m` | the same, for a company id |
+| `company-news` — Company News | webhook (API-registered, signed) | company signals `commercialActivityNews`, `corporateStrategyNews`, `financialEventsNews`, `marketIntelligenceNews`, `peopleNews`, `productActivityNews`, `riskNews` | the same, for a company id |
+| `new-subscription` — New Webhook Subscription | poll, newest first (`GET /api/subscriptions`, `limit=100`, every 5 minutes) | a webhook subscription created on the account | each new subscription: entity, signal types, callback URL, active flag |
 
-**Setup.** Give the `entityType` (`contact` or `company`) and up to 25 comma-separated `entityIds`; optionally narrow `signalTypes` (the Signal Type List actions list them). Subscribing registers the callback URL with `POST /api/subscriptions` (one Lusha subscription per id) and keeps the created ids; unsubscribing removes them with `POST /api/subscriptions/delete` (a subscription Lusha reports `NOT_FOUND` counts as deleted). If Lusha creates only some of the subscriptions, the ones it created are removed again and the subscribe fails. Lusha signs with your **account webhook secret**: create it with `POST /api/account/secret/regenerate` (Lusha shows it once; there is no action for it here), and paste it into the trigger's `signingSecret` param. A delivery costs Lusha credits (`creditsCharged` in the payload), each signal once.
+The company signals `websiteTrafficIncrease`, `websiteTrafficDecrease`, `itSpendIncrease` and `itSpendDecrease` have no named trigger: use `signal-received` with `entityType` company and those names in `signalTypes`.
+
+**Setup.** For `signal-received`, give the `entityType` (`contact` or `company`) and up to 25 comma-separated `entityIds`; optionally narrow `signalTypes` (the Signal Type List actions list them). The named triggers fix the entity type and the signal types themselves, so they ask only for the `entityIds` and the secret; a verified delivery of any other signal type is acknowledged without starting a run. Subscribing registers the callback URL with `POST /api/subscriptions` (one Lusha subscription per id) and keeps the created ids; unsubscribing removes them with `POST /api/subscriptions/delete` (a subscription Lusha reports `NOT_FOUND` counts as deleted). If Lusha creates only some of the subscriptions, the ones it created are removed again and the subscribe fails. Lusha signs with your **account webhook secret**: create it with `POST /api/account/secret/regenerate` (Lusha shows it once; there is no action for it here), and paste it into the trigger's `signingSecret` param. A delivery costs Lusha credits (`creditsCharged` in the payload), each signal once.
 
 **Trust model.** Every delivery carries `X-Lusha-Signature` (hex HMAC-SHA256) and `X-Lusha-Timestamp`. The trigger refuses a delivery whose secret is unset, whose headers are missing, whose timestamp is more than five minutes from now, or whose signature over `timestamp + "." + the exact received body` does not match (constant-time compare), before it parses the body. Lusha documents the signed text as `JSON.stringify(payload)`; the host verifies the received text itself, so a body re-serialised anywhere in between will fail. The signature binds the body, so tampered data is refused; an identical delivery replayed inside the five-minute window is not detected (use the delivery `id` to de-duplicate downstream). Lusha requires an acknowledgement body `{ received: true, timestamp, webhookId }`; the trigger answers with it.
 
-Docs (verified 2026-11-10): https://docs.lusha.com/v2/webhooks/overview.md, https://docs.lusha.com/v2/webhooks/manage-subscriptions.md and https://docs.lusha.com/v2/webhooks/security.md
+**Not covered as polls.** The six filter and signal-type list actions (`company-filter-list`, `company-filter-value-list`, `company-signal-type-list`, `contact-filter-list`, `contact-filter-value-list`, `contact-signal-type-list`) return reference data (the valid filter and signal names), not records. `contact-search` and `company-search` look up the identifiers you pass in and are billed per successful result ("Search Contacts / Companies is charged per successful result via the `api_search` action"), so there is no feed to poll without spending credits on every check. Signals arrive through the webhook triggers above.
+
+Docs (verified 2026-11-10): https://docs.lusha.com/v2/webhooks/overview.md, https://docs.lusha.com/v2/webhooks/manage-subscriptions.md, https://docs.lusha.com/v2/webhooks/security.md, https://docs.lusha.com/v2/api-reference/signals/get-signal-options.md (signal types), https://docs.lusha.com/api-reference/webhooks/list-subscriptions.md (newest-first order, limit 100) and https://docs.lusha.com/enrichment/search-contacts.md / https://docs.lusha.com/enrichment/search-companies.md (billing)
 
 ## Auth
 

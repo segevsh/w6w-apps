@@ -29,6 +29,12 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 import newProject from "./triggers/new-project.ts";
+import newGoal from "./triggers/new-goal.ts";
+import newOrUpdatedGoal from "./triggers/new-or-updated-goal.ts";
+import newLeaderboard from "./triggers/new-leaderboard.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newDashboard from "./triggers/new-dashboard.ts";
+import newDataDump from "./triggers/new-data-dump.ts";
 
 /**
  * WakaTime — automatic coding-time tracking: stats, summaries, durations, heartbeats, projects,
@@ -70,7 +76,15 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newProject],
+  triggers: [
+    newProject,
+    newGoal,
+    newOrUpdatedGoal,
+    newLeaderboard,
+    newOrganization,
+    newDashboard,
+    newDataDump,
+  ],
 };
 
 export default app;

@@ -5,7 +5,7 @@ Consume Netlify API
 - **Categories** — devops
 - **Auth methods** — personal-access-token
 - **Actions** — 10
-- **Triggers** — 3 (manual webhook)
+- **Triggers** — 7 (4 signed manual webhooks, 1 form-submission webhook, 2 polls)
 - **Egress allowlist** — `api.netlify.com`
 - **Website** — https://www.netlify.com
 - **API docs** — https://docs.netlify.com/api/get-started/
@@ -95,7 +95,17 @@ trigger verifies what it sends.
 | `deploy` — Deploy Event | manual webhook | any deploy event (optional **Only these deploy states** filter) | the deploy, its state and site |
 | `deploy-succeeded` — Deploy Succeeded | manual webhook | Deploy succeeded (`state: ready`) | the deploy, URLs, branch, commit |
 | `deploy-failed` — Deploy Failed | manual webhook | Deploy failed (`state: error`) | the deploy, error message, branch, commit |
+| `deploy-started` — Deploy Started | manual webhook | Deploy started (`state: building`) | the deploy, branch, commit, site |
+| `submission-created` — Form Submission Received | manual webhook | Form submission notification (Outgoing webhook) | the submitter, form fields and submission |
+| `new-site` — New Site | poll (5 min) | `site-list` (`GET /sites`, whole list up to 1000 sites) | the new site |
+| `new-form` — New Form | poll (5 min) | `form-list` (`GET /sites/{site_id}/forms`, one site's whole list) | the new form |
 
+`deploy` is the Any-event trigger: Netlify also sends deploy deleted, locked, unlocked, restored,
+request pending/accepted/rejected, previously-successful-deploy-failed and
+previously-failed-deploy-succeeded; point any of those notifications at it and narrow with **Only
+these deploy states**. `deploy-list` is covered by `deploy` (its records are the deploys these
+notifications deliver; the list endpoint documents no sort order or since filter, so there is no
+safe poll). `submission-created` also delivers what `form-submission-list` lists.
 Every run gets `deployId`, `siteId`, `siteName`, `state`, `context`, `branch`, `commitRef`, `url`,
 `deployUrl`, `errorMessage`, `createdAt` and the full Netlify `deploy` object.
 
@@ -117,7 +127,19 @@ and before the body is read, that its header says `HS256` (never `none`), that t
 claim equals the SHA-256 of the exact request body. Netlify documents no timestamp claim, so a
 captured delivery is replayable; the secret and callback URL limit who could capture one.
 
-Vendor docs (verified 2026-11-09):
+**Form submissions.** In Netlify open *Forms > Submission notifications > Add notification >
+Outgoing webhook*, pick *New form submission* and the form, and paste the callback URL. Netlify's
+form-notification documentation does not describe a payload signature, so the JWS secret token on
+`submission-created` is optional: with one set, every delivery must carry a valid
+`X-Webhook-Signature` (same checks as above); with none, the callback URL is the only secret, so keep
+it private.
+
+**Not covered.** `env-var-list`: environment variable definitions are site configuration (and hold
+secrets), not a record feed.
+
+Vendor docs (verified 2026-11-10):
+[form notifications](https://docs.netlify.com/manage/forms/notifications),
+[Netlify pagination](https://docs.netlify.com/api/get-started/#pagination),
 [deploy notifications and the payload signature](https://docs.netlify.com/deploy/deploy-notifications),
 [Netlify API (`hooks`, `deploy`)](https://open-api.netlify.com/).
 

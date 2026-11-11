@@ -26,6 +26,16 @@ import getPageInsights from "./actions/get-page-insights.ts";
 import listAdCampaigns from "./actions/list-ad-campaigns.ts";
 import newComment from "./triggers/new-comment.ts";
 import pageFeed from "./triggers/page-feed.ts";
+import newPost from "./triggers/new-post.ts";
+import postEdited from "./triggers/post-edited.ts";
+import postRemoved from "./triggers/post-removed.ts";
+import commentEdited from "./triggers/comment-edited.ts";
+import commentRemoved from "./triggers/comment-removed.ts";
+import newPhoto from "./triggers/new-photo.ts";
+import newVideo from "./triggers/new-video.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newPage from "./triggers/new-page.ts";
+import newAdCampaign from "./triggers/new-ad-campaign.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -46,7 +56,20 @@ export default {
     getPageInsights,
     listAdCampaigns,
   ],
-  triggers: [pageFeed, newComment],
+  triggers: [
+    pageFeed,
+    newComment,
+    newPost,
+    postEdited,
+    postRemoved,
+    commentEdited,
+    commentRemoved,
+    newPhoto,
+    newVideo,
+    anyEvent,
+    newPage,
+    newAdCampaign,
+  ],
   auth: [oauth2, pageToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

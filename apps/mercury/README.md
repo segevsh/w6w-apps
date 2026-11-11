@@ -6,6 +6,7 @@ movement, over the **Mercury API**.
 - **Categories** — finance
 - **Auth methods** — api-token (bearer)
 - **Actions** — 30
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.mercury.com` (the `service` check adds `status.mercury.com` to its own
   hook allowlist, never to the app's)
@@ -291,4 +292,18 @@ this app's own, which is a property of how the tool is invoked rather than of th
 
 ## Triggers
 
-- **New Customer** wraps `customer-list` with `order=desc` (the vendor documents only "Sort order asc/desc"; the field sorted is not stated, so newest-created-first is the expected, not a documented, order). [Mercury List Customers](https://docs.mercury.com/reference/listcustomers), verified 2026-11-09.
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-customer` — New Customer | poll | `customer-list` | Each newly created customer |
+| `new-transaction` — New Transaction | poll | `transaction-list` | Each new transaction across every account |
+| `new-account` — New Account | poll | `account-list` | Each newly opened account |
+| `new-card` — New Card | poll | `card-list` | Each newly issued card |
+| `new-recipient` — New Recipient | poll | `recipient-list` | Each newly added payment recipient |
+| `new-invoice` — New Invoice | poll | `invoice-list` | Each newly created accounts-receivable invoice |
+| `new-user` — New User | poll | `user-list` | Each user added to the organization |
+| `new-category` — New Category | poll | `category-list` | Each newly created custom category |
+| `new-account-statement` — New Account Statement | poll | `account-statement-list` | Each new monthly statement of one account (Account ID param) |
+
+Every trigger sends `limit=100&order=desc`. The vendor documents only "Sort order. Can be 'asc' or 'desc'. Defaults to 'asc'" (it does not name the field sorted), so newest-created-first is the expected order, not a documented one; the statements endpoint documents `desc` as its default. Docs: [List Transactions](https://docs.mercury.com/reference/listtransactions), [List Customers](https://docs.mercury.com/reference/listcustomers), [Get Account Statements](https://docs.mercury.com/reference/getaccountstatements), verified 2026-11-10.
+
+Not covered: `webhook-list` (the app's own webhook subscriptions: integration setup, not business records). Mercury also offers signed webhooks; they are not part of this poll set.

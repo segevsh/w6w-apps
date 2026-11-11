@@ -6,7 +6,7 @@ companies, tags and users, on the **CallRail API v3**.
 - **Categories** — marketing, communication, analytics
 - **Auth methods** — api-token
 - **Actions** — 26
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.callrail.com` (the `service` check adds `status.callrail.com` to its
   own hook allowlist, never to the app's)
@@ -216,14 +216,23 @@ Notifications, Caller IDs, Integrations, Integration Triggers, Summary Emails, a
 
 ## Triggers
 
-| Key — title | Mechanism | Wrapped action | What the run gets |
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-call` — New Call | poll | `call-list`, newest-first by `start_time` | Each newly observed CallRail call |
+| `new-call` — New Call | poll | `call-list` (newest-first by `start_time`) | Each newly observed CallRail call |
+| `new-company` — New Company | poll | `company-list` | Each newly created company |
+| `new-tracker` — New Tracker | poll | `tracker-list` | Each newly created tracker |
+| `new-tag` — New Tag | poll | `tag-list` | Each newly created tag |
+| `new-user` — New User | poll | `user-list` | Each newly created user |
+| `new-form-submission` — New Form Submission | poll | `form-submission-list` | Each new form submission |
+| `new-text-conversation` — New Text Message Conversation | poll | `text-message-list` | Each newly started text conversation |
+| `new-or-updated-text-conversation` — New or Updated Text Message Conversation | poll | `text-message-list` | A conversation when it starts and on each new message |
 
-Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
-it accepts no inbound webhook delivery.
+Companies, trackers and tags can only be sorted by name, so those three read the whole set (250 per page) and report ids not seen before. Users sort by `created_at desc`, form submissions by `submitted_at desc`; text conversations arrive newest message first. Source: [CallRail API docs](https://apidocs.callrail.com/) (verified 2026-11-10).
 
-Vendor reference: <https://apidocs.callrail.com/> (verified 2026-11-09).
+Trust model: these poll triggers make authenticated outbound API requests with the app connection;
+they accept no inbound webhook delivery.
+
+Vendor reference: <https://apidocs.callrail.com/> (verified 2026-11-10).
 
 ```bash
 deno task validate   # manifest checks (@w6w/validator)

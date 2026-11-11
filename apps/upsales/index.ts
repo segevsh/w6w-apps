@@ -72,6 +72,22 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 import newContact from "./triggers/new-contact.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newAppointment from "./triggers/new-appointment.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newComment from "./triggers/new-comment.ts";
+import newCompany from "./triggers/new-company.ts";
+import newOrder from "./triggers/new-order.ts";
+import newProduct from "./triggers/new-product.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newTicket from "./triggers/new-ticket.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedActivity from "./triggers/new-or-updated-activity.ts";
+import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
+import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
 
 export default {
   actions: [
@@ -146,5 +162,23 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newActivity,
+    newAppointment,
+    newCampaign,
+    newComment,
+    newCompany,
+    newOrder,
+    newProduct,
+    newSubscription,
+    newTicket,
+    newUser,
+    newOrUpdatedActivity,
+    newOrUpdatedAppointment,
+    newOrUpdatedCompany,
+    newOrUpdatedContact,
+    newOrUpdatedOrder,
+    newOrUpdatedSubscription,
+  ],
 } satisfies AppDefinition;

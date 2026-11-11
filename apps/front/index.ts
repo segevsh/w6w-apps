@@ -103,6 +103,12 @@ import statusList from "./actions/status-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newInbox from "./triggers/new-inbox.ts";
+import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
+import newTag from "./triggers/new-tag.ts";
+import newTeammate from "./triggers/new-teammate.ts";
 
 export default {
   actions: [
@@ -144,7 +150,15 @@ export default {
     tagList,
     statusList,
   ],
-  triggers: [newOrUpdatedContact],
+  triggers: [
+    newOrUpdatedContact,
+    newChannel,
+    newConversation,
+    newInbox,
+    newOrUpdatedConversation,
+    newTag,
+    newTeammate,
+  ],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

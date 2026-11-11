@@ -346,9 +346,21 @@ form would reformat asset files and break that guarantee.
 
 ## Triggers
 
-| Trigger     | Event                                               | Poll source                                    |
-| ----------- | --------------------------------------------------- | ---------------------------------------------- |
-| `new-event` | A new Chargebee event, optionally of one event type | `GET /api/v2/events?sort_by[desc]=occurred_at` |
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | poll | `list-events` | Each new Chargebee event, optionally one event type |
+| `new-customer` — New Customer | poll | `list-customers` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | poll | `list-customers` | Each customer when created and each time it changes |
+| `new-subscription` — New Subscription | poll | `list-subscriptions` | Each newly created subscription |
+| `new-or-updated-subscription` — New or Updated Subscription | poll | `list-subscriptions` | Each subscription when created and each time it changes |
+| `new-invoice` — New Invoice | poll | `list-invoices` | Each newly created invoice |
+| `new-or-updated-invoice` — New or Updated Invoice | poll | `list-invoices` | Each invoice when created and each time it changes |
+| `new-payment-source` — New Payment Source | poll | `list-payment-sources` | Each newly created payment source |
+| `new-or-updated-payment-source` — New or Updated Payment Source | poll | `list-payment-sources` | Each payment source when created and each time it changes |
+| `new-or-updated-item` — New or Updated Item | poll | `list-items` | Each catalog item when created and each time it changes |
+| `new-or-updated-item-price` — New or Updated Item Price | poll | `list-item-prices` | Each item price when created and each time it changes |
+
+Customers, subscriptions and payment sources are read newest-first by `created_at` (and `updated_at` for the new-or-updated twins); invoices by `date`; items and item prices only sort by `id`, `name` or `updated_at`, so they ship the new-or-updated form. Gateway tokens (`reference_id`) are removed from every event. Source: [Chargebee API reference](https://apidocs.chargebee.com/docs/api) (verified 2026-11-10).
 
 The first poll records the current event page without emitting it; later polls deduplicate by event
 id. The trigger requests the documented maximum page size of 100 and sorts `occurred_at` descending.

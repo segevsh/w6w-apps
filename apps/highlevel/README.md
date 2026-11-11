@@ -6,25 +6,54 @@ appointments, conversations and location (sub-account) metadata.
 - **Categories** — crm, marketing
 - **Auth methods** — oauth2
 - **Actions** — 18
-- **Triggers** — 4 (webhook)
+- **Triggers** — 22 (17 webhook, 5 poll)
 - **Egress allowlist** — `services.leadconnectorhq.com`
 - **Website** — https://www.gohighlevel.com
 - **API docs** — https://marketplace.gohighlevel.com/docs/
 
 ## Triggers
 
+Webhook triggers (manual, signed, instant) — one per event users build on, plus an Any-event trigger:
+
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `contact-created` — New Contact | webhook (manual, signed) | `ContactCreate` | location id, contact id, full contact payload |
+| `contact-updated` — Contact Updated | webhook (manual, signed) | `ContactUpdate` | location id, contact id, full contact payload |
+| `contact-deleted` — Contact Deleted | webhook (manual, signed) | `ContactDelete` | location id, id of the deleted contact, its payload |
+| `contact-tag-updated` — Contact Tags Changed | webhook (manual, signed) | `ContactTagUpdate` | location id, contact id, payload with the current tags |
 | `opportunity-created` — New Opportunity | webhook (manual, signed) | `OpportunityCreate` | location id, opportunity id, contact id, full payload |
+| `opportunity-updated` — Opportunity Updated | webhook (manual, signed) | `OpportunityUpdate` | location id, opportunity id, contact id, full payload |
+| `opportunity-deleted` — Opportunity Deleted | webhook (manual, signed) | `OpportunityDelete` | location id, id of the deleted opportunity, its payload |
+| `opportunity-stage-changed` — Opportunity Stage Changed | webhook (manual, signed) | `OpportunityStageUpdate` | location id, opportunity id, payload with the new stage |
+| `opportunity-status-changed` — Opportunity Status Changed | webhook (manual, signed) | `OpportunityStatusUpdate` | location id, opportunity id, payload with the new status |
 | `appointment-created` — New Appointment | webhook (manual, signed) | `AppointmentCreate` | location id, appointment id, contact id, full payload |
+| `appointment-updated` — Appointment Updated | webhook (manual, signed) | `AppointmentUpdate` | location id, appointment id, contact id, full payload |
+| `appointment-deleted` — Appointment Deleted | webhook (manual, signed) | `AppointmentDelete` | location id, id of the deleted appointment, its payload |
 | `inbound-message` — New Inbound Message | webhook (manual, signed) | `InboundMessage` | location, conversation, contact and message ids, full payload |
+| `outbound-message` — New Outbound Message | webhook (manual, signed) | `OutboundMessage` | location, conversation, contact and message ids, full payload |
+| `location-created` — New Location | webhook (manual, signed) | `LocationCreate` | the location id, agency (company) id, name, email |
+| `location-updated` — Location Updated | webhook (manual, signed) | `LocationUpdate` | the location id, agency (company) id, name, email |
+| `any-event` — Any Event | webhook (manual, signed) | any event type, narrowed by the `events` param | event type, location id, record / contact / conversation ids where present, full payload |
 
-**Setup (manual webhook).** HighLevel webhooks are set on the Marketplace app, not through the API. Create the trigger, copy its webhook URL, then in the HighLevel Marketplace app's **Advanced Settings → Webhooks**, turn on the event (`ContactCreate`, `OpportunityCreate`, `AppointmentCreate` or `InboundMessage`) and paste the URL beside it. There is nothing to paste into the trigger: the signature is checked against HighLevel's published public key. A URL pasted beside several events still works: an event of another type is acknowledged without a run, so give each trigger its own URL beside its own event. HighLevel retries a non-2xx answer up to 12 times.
+Poll triggers (no Marketplace setup, checked every 5 minutes):
 
-**Trust model.** HighLevel signs the exact request body with an Ed25519 private key and sends the base64 signature in `X-GHL-Signature`; the trigger verifies it with HighLevel's documented public key (`crypto.subtle`, Ed25519) before it parses anything, and refuses a delivery whose signature is missing, wrong, malformed or whose raw body is unavailable. There is no shared secret, so there is no secret param. The legacy RSA header `X-WH-Signature` was documented as deprecated on 2026-09-01 and is not accepted. HighLevel documents no timestamp in the signed text, so there is no freshness window: keep the URL private.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-opportunity` — New Opportunity (polling) | poll, newest first (`order=added_desc`, 100 per page) | `list-opportunities` | each opportunity added since the last check; optional pipeline filter |
+| `conversation-active` — Conversation Became Active | poll, most recently active first (`sort=desc&sortBy=last_message_date`, 20 per page) | `list-conversations` | a conversation the first time it appears among the most recently active ones |
+| `new-pipeline` — New Pipeline | poll, snapshot of the location's pipelines (one unpaged response) | `list-pipelines` | each pipeline created since the last check |
+| `new-calendar` — New Calendar | poll, snapshot of the location's calendars (one unpaged response, drafts included) | `list-calendars` | each calendar created since the last check; optional calendar-group filter |
+| `new-form` — New Form | poll, snapshot of the location's forms (`skip`/`limit` pages of 50, at most 2000 forms) | `list-forms` | each form created since the last check |
 
-Docs (verified 2026-11-10): https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html and the event pages, e.g. https://marketplace.gohighlevel.com/docs/webhook/ContactCreate/index.html
+`conversation-active` has no activity timestamp to compare (HighLevel's documented conversation fields carry none), so it reports a conversation once, the first time it shows up among the 20 most recently active: a brand-new conversation, or an older one that gets a message after being quiet. Use the message triggers for every message.
+
+**Setup (manual webhook).** HighLevel webhooks are set on the Marketplace app, not through the API. Create the trigger, copy its webhook URL, then in the HighLevel Marketplace app's **Advanced Settings → Webhooks**, turn on the event named in the table and paste the URL beside it. There is nothing to paste into the trigger: the signature is checked against HighLevel's published public key. A URL pasted beside several events still works: an event of another type is acknowledged without a run, so give each named trigger its own URL beside its own event. For events with no named trigger (tasks, notes, invoices, products, users, associations, custom objects and the rest of the catalog) use `any-event`: turn the events on beside its URL and list the ones that should start a run in its **Events** param (comma-separated, e.g. `TaskCreate,NoteCreate`), or leave it empty for every event delivered to that URL. HighLevel retries a non-2xx answer up to 12 times.
+
+**Trust model.** HighLevel signs the exact request body with an Ed25519 private key and sends the base64 signature in `X-GHL-Signature`; the trigger verifies it with HighLevel's documented public key (`crypto.subtle`, Ed25519) before it parses anything, and refuses a delivery whose signature is missing, wrong, malformed or whose raw body is unavailable. There is no shared secret, so there is no secret param. The legacy RSA header `X-WH-Signature` was documented as deprecated on 2026-09-01 and is not accepted. HighLevel documents no timestamp in the signed text, so there is no freshness window: keep the URL private. The `events` filter of `any-event` runs only after the signature has verified.
+
+**Not covered as polls.** `list-contacts` (new contacts come from `contact-created`; the deprecated `GET /contacts/` has no sort or since filter), `list-appointments` (a time-window query with no created filter; `appointment-created` delivers new appointments) and `list-locations` (agency-level; `location-created` delivers new locations) are served by the webhook triggers named; `list-custom-fields` returns field definitions (reference data), not records.
+
+Docs (verified 2026-11-10): https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html (signature headers, public keys, event list), the event pages such as https://marketplace.gohighlevel.com/docs/webhook/ContactCreate/index.html, https://marketplace.gohighlevel.com/docs/ghl/opportunities/search-opportunity (`order`, `limit`), https://marketplace.gohighlevel.com/docs/ghl/conversations/search-conversation (`sort`, `sortBy`), https://marketplace.gohighlevel.com/docs/ghl/forms/get-forms (`skip`, `limit` max 50), https://marketplace.gohighlevel.com/docs/ghl/opportunities/get-pipelines and https://marketplace.gohighlevel.com/docs/ghl/calendars/get-calendars
 
 ## Auth: location scope
 

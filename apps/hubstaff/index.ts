@@ -83,6 +83,12 @@ import projectActivityList from "./actions/project-activity-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newProject from "./triggers/new-project.ts";
+import newClient from "./triggers/new-client.ts";
+import newMember from "./triggers/new-member.ts";
+import newTask from "./triggers/new-task.ts";
+import newTeam from "./triggers/new-team.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newTimesheet from "./triggers/new-timesheet.ts";
 
 export default {
   actions: [
@@ -121,5 +127,5 @@ export default {
   // host and OAuth needs a browser, so neither is offered here.
   auth: [organizationAccessToken],
   healthChecks: [service, quota],
-  triggers: [newProject],
+  triggers: [newProject, newClient, newMember, newTask, newTeam, newOrganization, newTimesheet],
 } satisfies AppDefinition;

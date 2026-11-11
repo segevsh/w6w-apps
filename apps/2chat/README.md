@@ -6,7 +6,7 @@ send WhatsApp Business API (WABA) templates through [2Chat](https://2chat.co).
 - **Categories** — communication, marketing
 - **Auth methods** — api-key (`X-User-API-Key` header)
 - **Actions** — 28
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Egress allowlist** — `api.p.2chat.io` (the only host any hook calls)
 - **Website** — https://2chat.co
 - **API docs** — https://developers.2chat.co (Docusaurus; indexed by https://developers.2chat.co/llms.txt,
@@ -18,8 +18,19 @@ send WhatsApp Business API (WABA) templates through [2Chat](https://2chat.co).
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-message` | poll | `messages-list` | Each new message on a connected number (optionally one conversation). |
+| `new-conversation` | poll | `conversations-list` | Each new conversation on a connected number (param: Channel UUID). |
+| `new-or-updated-conversation` | poll | `conversations-list` | Each conversation that is new or had new activity (id: `session_key` + `last_activity_at`). |
+| `new-group-message` | poll | `group-messages-list` | Each new message in a WhatsApp group (param: Group UUID). |
+| `new-group` | poll | `groups-list` | Each new WhatsApp group a connected number is in (snapshot diff). |
+| `new-number` | poll | `numbers-list` | Each new WhatsApp Web number connected to the account (snapshot diff). |
+| `new-user` | poll | `users-list` | Each new active account user (snapshot diff). |
+| `new-waba-template` | poll | `waba-templates-list` | Each new WABA message template of a WABA number (snapshot diff, up to 200 templates). |
 
 Set **Your number** (the number connected to 2Chat), and optionally **Remote number** to follow one conversation. `GET /whatsapp/messages/{number}` returns "the last or newest 100 messages"; each check reads page 0 and emits the messages it has not seen (id: `uuid`). Source: https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages (verified 2026-11-10).
+
+Conversations: `GET /whatsapp/conversations/{channel-uuid}` "will return the last or newest 10 conversations" (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/list-conversations); each check reads up to 3 pages and stops at the first page holding a conversation it has seen. Group messages: "the last or newest 50 messages" first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-group-messages), id `uuid`. Groups, numbers, users and WABA templates are small per-account lists returned in one request; each check diffs their ids against the previous check, and the first check only records them (https://developers.2chat.co/docs/API/WhatsApp/Web/groups/list-whatsapp-groups, https://developers.2chat.co/docs/API/WhatsApp/Web/list-numbers, https://developers.2chat.co/docs/API/Users/list-users, https://developers.2chat.co/docs/API/WhatsApp/WABA/get-templates; verified 2026-11-10). `new-number` reads the first page of numbers (2Chat's default page size, 50).
+
+Not covered: `contacts-list` and `contacts-search` (2Chat documents no order and no created/updated filter for contacts, and the list is unbounded: https://developers.2chat.co/docs/API/Contacts/list-contacts), `webhooks-list` (webhook subscription configuration, not business records).
 
 2Chat also pushes events (`message.received` and others) through webhooks, listed at https://developers.2chat.co/docs/API/Webhooks/supported-types; no webhook trigger ships here.
 

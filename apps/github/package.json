@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/github",
-  "version": "0.3.0",
-  "description": "Manage GitHub issues, pull requests, releases, files, repositories and Actions workflows, and start workflows on pushes, pull requests, issues, comments, releases and workflow runs.",
+  "version": "0.4.0",
+  "description": "Manage GitHub issues, pull requests, releases, files, repositories and Actions workflows, with triggers on pushes, pull requests, issues, releases, workflow runs, stars and forks, or any event.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.github.com/en/rest"
     ],
-    "longDescription": "GitHub gives a workflow a broad surface across the pieces engineering teams actually script around — reading and writing repository files, creating, commenting on, locking and updating issues, and reviewing and merging pull requests without a human opening a browser.\n\nReleases are fully manageable (created, updated, listed and deleted), and GitHub Actions workflows can be listed, enabled and dispatched, so a process outside GitHub can kick off a CI run or ship a release as one of its own steps. Repository- and organization-level reads — a repository's issues, its license, a user's or an organization's repositories — cover the discovery a workflow needs before acting on a specific one.\n\nA natural fit for release automation, issue triage pulled in from another system, PR review gating, or triggering CI/CD from an event GitHub itself doesn't know about. Triggers start a workflow from a push, pull request, issue, comment, release or Actions run in a repository, with every delivery signature-verified.",
+    "longDescription": "GitHub gives a workflow a broad surface across the pieces engineering teams actually script around — reading and writing repository files, creating, commenting on, locking and updating issues, and reviewing and merging pull requests without a human opening a browser.\n\nReleases are fully manageable (created, updated, listed and deleted), and GitHub Actions workflows can be listed, enabled and dispatched, so a process outside GitHub can kick off a CI run or ship a release as one of its own steps. Repository- and organization-level reads — a repository's issues, its license, a user's or an organization's repositories — cover the discovery a workflow needs before acting on a specific one.\n\nA natural fit for release automation, issue triage pulled in from another system, PR review gating, or triggering CI/CD from an event GitHub itself doesn't know about. Fifteen triggers start a workflow from a push, pull request or review, issue, comment, release, Actions run or job, branch or tag change, repository change, star or fork in a repository, or from any GitHub webhook event you list, with every delivery signature-verified.",
     "categories": [
       "version-control",
       "developer-tools"

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/solapi",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Send SOLAPI messages, manage groups and schedules, inspect delivery data, and trigger on new messages.",
   "license": "MIT",
   "author": {

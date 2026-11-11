@@ -31,6 +31,18 @@ import activityCreate from "./actions/activity-create.ts";
 import noteCreate from "./actions/note-create.ts";
 import leadCreate from "./actions/lead-create.ts";
 import newDeal from "./triggers/new-deal.ts";
+import newPerson from "./triggers/new-person.ts";
+import personUpdated from "./triggers/person-updated.ts";
+import personDeleted from "./triggers/person-deleted.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import organizationUpdated from "./triggers/organization-updated.ts";
+import organizationDeleted from "./triggers/organization-deleted.ts";
+import dealUpdated from "./triggers/deal-updated.ts";
+import dealDeleted from "./triggers/deal-deleted.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newNote from "./triggers/new-note.ts";
+import newLead from "./triggers/new-lead.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -59,6 +71,20 @@ export default {
     leadCreate,
   ],
   auth: [apiToken, oauth2],
-  triggers: [newDeal],
+  triggers: [
+    newDeal,
+    newPerson,
+    personUpdated,
+    personDeleted,
+    newOrganization,
+    organizationUpdated,
+    organizationDeleted,
+    dealUpdated,
+    dealDeleted,
+    newActivity,
+    newNote,
+    newLead,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

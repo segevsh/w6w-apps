@@ -5,7 +5,7 @@ Send messages, media and chat actions through a Telegram bot, and manage chats.
 - **Categories** — communication
 - **Auth methods** — bot-token
 - **Actions** — 21
-- **Triggers** — 2 (webhook)
+- **Triggers** — 11 (webhook)
 - **Egress allowlist** — `api.telegram.org`
 - **Website** — https://telegram.org
 - **API docs** — https://core.telegram.org/bots/api
@@ -15,7 +15,18 @@ Send messages, media and chat actions through a Telegram bot, and manage chats.
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `new-message` — New Message | webhook (API-registered, `setWebhook`) | `message` update | chat id, sender id, text, message id, the raw update |
+| `edited-message` — Edited Message | webhook (API-registered, `setWebhook`) | `edited_message` update | chat id, sender id, new text, message id, the raw update |
+| `channel-post` — Channel Post | webhook (API-registered, `setWebhook`) | `channel_post` update | channel id, text, message id, the raw update |
+| `edited-channel-post` — Edited Channel Post | webhook (API-registered, `setWebhook`) | `edited_channel_post` update | channel id, new text, message id, the raw update |
+| `callback-query` — Button Pressed | webhook (API-registered, `setWebhook`) | `callback_query` update | button data (as text), chat id, sender id, message id, the raw update |
+| `inline-query` — Inline Query | webhook (API-registered, `setWebhook`) | `inline_query` update | sender id and the raw update (the query text is in `update.inline_query.query`) |
+| `shipping-query` — Shipping Query | webhook (API-registered, `setWebhook`) | `shipping_query` update | sender id and the raw update (address and invoice payload) |
+| `pre-checkout-query` — Pre-Checkout Query | webhook (API-registered, `setWebhook`) | `pre_checkout_query` update | sender id and the raw update (currency, total, invoice payload) |
+| `poll` — Poll Changed | webhook (API-registered, `setWebhook`) | `poll` update | the raw update holding the poll and its vote counts |
+| `chat-member-updated` — Chat Member Changed | webhook (API-registered, `setWebhook`) | `chat_member` and `my_chat_member` updates | chat id, the user who made the change, the raw update with old and new status |
 | `update` — Bot Update | webhook (API-registered, `setWebhook`) | any update, optionally narrowed by type | update type, chat/sender ids, text or button data, the raw update |
+
+**Every update type has a trigger, or is reachable through `update`.** `update` is the Any-event trigger: its `updateTypes` field takes any type in the Bot API's `Update` object, including the newer `business_message`, `message_reaction`, `chat_boost` and `managed_bot`; empty means Telegram's default set. `chat_member` (used by `chat-member-updated`) is only delivered when the bot is an administrator of the chat. Each trigger asks Telegram for exactly its own update types, and since a bot has one webhook, only one of these triggers can be subscribed per bot at a time (see below). This app has no list or search actions, so there is nothing to poll.
 
 **Setup.** Nothing to do by hand: subscribing calls `setWebhook` with the trigger's callback URL and a random `secret_token`, and unsubscribing calls `deleteWebhook`.
 
@@ -25,7 +36,7 @@ Send messages, media and chat actions through a Telegram bot, and manage chats.
 
 **Trust model.** Telegram echoes the `secret_token` in the `X-Telegram-Bot-Api-Secret-Token` header of every delivery. The trigger keeps the token in subscription state and compares the header to it in constant time; a missing, empty or wrong header, or a subscription with no stored token, refuses the delivery. The token travels in a header, not the body, so the check does not cover the body itself.
 
-Sources (verified 2026-11-09): https://core.telegram.org/bots/api#setwebhook , https://core.telegram.org/bots/api#getwebhookinfo , https://core.telegram.org/bots/api#deletewebhook
+Sources (verified 2026-11-10): https://core.telegram.org/bots/api#update , https://core.telegram.org/bots/api#setwebhook , https://core.telegram.org/bots/api#getwebhookinfo , https://core.telegram.org/bots/api#deletewebhook
 
 ## Health check
 

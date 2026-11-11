@@ -34,6 +34,14 @@ import workspaceGet from "./actions/workspace-get.ts";
 import workspaceCategoryList from "./actions/workspace-category-list.ts";
 import newArticle from "./triggers/new-article.ts";
 import newOrUpdatedArticle from "./triggers/new-or-updated-article.ts";
+import newArticleVersion from "./triggers/new-article-version.ts";
+import newDriveFolder from "./triggers/new-drive-folder.ts";
+import newProject from "./triggers/new-project.ts";
+import newReader from "./triggers/new-reader.ts";
+import newTeamGroup from "./triggers/new-team-group.ts";
+import newTeamAccount from "./triggers/new-team-account.ts";
+import newWorkspaceCategory from "./triggers/new-workspace-category.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
 import workspaceArticleList from "./actions/workspace-article-list.ts";
 import workspaceSearch from "./actions/workspace-search.ts";
 import documentGetByUrl from "./actions/document-get-by-url.ts";
@@ -115,5 +123,16 @@ export default {
   // acting on behalf of a person; an API key is the integration credential.
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newArticle, newOrUpdatedArticle],
+  triggers: [
+    newArticle,
+    newOrUpdatedArticle,
+    newArticleVersion,
+    newDriveFolder,
+    newProject,
+    newReader,
+    newTeamGroup,
+    newTeamAccount,
+    newWorkspaceCategory,
+    newWorkspace,
+  ],
 } satisfies AppDefinition;

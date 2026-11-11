@@ -49,7 +49,7 @@ test("fixture body has non-canonical whitespace", () => {
 });
 
 test("app declares both webhook triggers with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["video-completed", "video-failed"]);
+  assertEquals(app.triggers.slice(0, 2).map((t) => t.key), ["video-completed", "video-failed"]);
   for (const t of [videoCompleted, videoFailed]) {
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);

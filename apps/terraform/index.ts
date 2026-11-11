@@ -19,6 +19,16 @@ import runCompleted from "./triggers/run-completed.ts";
 import runErrored from "./triggers/run-errored.ts";
 import runNeedsAttention from "./triggers/run-needs-attention.ts";
 import runEvent from "./triggers/run-event.ts";
+import runCreated from "./triggers/run-created.ts";
+import runApplying from "./triggers/run-applying.ts";
+import runCanceled from "./triggers/run-canceled.ts";
+import runPendingApplyApproval from "./triggers/run-pending-apply-approval.ts";
+import workspaceDeleted from "./triggers/workspace-deleted.ts";
+import driftDetected from "./triggers/drift-detected.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newWorkspace from "./triggers/new-workspace.ts";
+import newVariable from "./triggers/new-variable.ts";
 
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
@@ -68,7 +78,22 @@ const app: AppDefinition = {
     variableSet,
     variableDelete,
   ],
-  triggers: [runCompleted, runErrored, runNeedsAttention, runEvent],
+  triggers: [
+    runCompleted,
+    runErrored,
+    runNeedsAttention,
+    runEvent,
+    runCreated,
+    runApplying,
+    runCanceled,
+    runPendingApplyApproval,
+    workspaceDeleted,
+    driftDetected,
+    anyEvent,
+    newOrganization,
+    newWorkspace,
+    newVariable,
+  ],
   auth: [token],
   healthChecks: [service, instance, quota],
 };

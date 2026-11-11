@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cleverreach",
-  "version": "0.2.0",
-  "description": "Manage CleverReach receivers, groups, attributes, tags, mailings, reports and the blacklist. Triggers: new records.",
+  "version": "0.3.0",
+  "description": "Manage CleverReach receivers, groups, attributes, tags, mailings, reports and the blacklist. Triggers: new groups and new receivers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

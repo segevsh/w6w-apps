@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/findymail",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Find and verify work emails, find phone numbers and companies, run Intellimatch, manage lists, monitor signals, read credits, poll for new lists on Findymail.",
   "license": "MIT",
   "author": {
@@ -18,7 +18,7 @@
     "apiDocs": [
       "https://app.findymail.com/docs"
     ],
-    "longDescription": "Findymail is an email finder and verifier for outbound prospecting. This app finds a verified work email from a name and company or from a LinkedIn profile, verifies an address, reverse-looks-up a profile from an email, finds a phone number, finds employees by job title, and looks up company data and technology stacks.\n\nIt runs Intellimatch (plain-language company search with optional contact enrichment, polled by hash), finds lookalike companies, manages contact lists and Intellimatch exclusion lists and their domains, manages signal monitors and reads the signals they raise, and reads credit balances and usage.\n\nHealth checks verify the API key, whether app.findymail.com is answering, and the credit balance. Findymail publishes no status page.\n\nPoll trigger: New Contact List.",
+    "longDescription": "Findymail is an email finder and verifier for outbound prospecting. This app finds a verified work email from a name and company or from a LinkedIn profile, verifies an address, reverse-looks-up a profile from an email, finds a phone number, finds employees by job title, and looks up company data and technology stacks.\n\nIt runs Intellimatch (plain-language company search with optional contact enrichment, polled by hash), finds lookalike companies, manages contact lists and Intellimatch exclusion lists and their domains, manages signal monitors and reads the signals they raise, and reads credit balances and usage.\n\nHealth checks verify the API key, whether app.findymail.com is answering, and the credit balance. Findymail publishes no status page.\n\nPoll triggers: New Contact List, New Signal, New Signal Monitor, New Exclusion List, New Contact in List.",
     "categories": [
       "email",
       "marketing"

@@ -66,6 +66,14 @@ import reminderComplete from "./actions/reminder-complete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newChat from "./triggers/new-chat.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newUser from "./triggers/new-user.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUserTeam from "./triggers/new-user-team.ts";
+import newChannelMember from "./triggers/new-channel-member.ts";
+import newChatMember from "./triggers/new-chat-member.ts";
+import newReminder from "./triggers/new-reminder.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -113,5 +121,15 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
-  triggers: [newChat],
+  triggers: [
+    newChat,
+    newChannel,
+    newUser,
+    newTeam,
+    newUserTeam,
+    newChannelMember,
+    newChatMember,
+    newReminder,
+    newMessage,
+  ],
 } satisfies AppDefinition;

@@ -42,6 +42,11 @@ import getMe from "./actions/get-me.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCustomerInvoice from "./triggers/new-customer-invoice.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newSupplier from "./triggers/new-supplier.ts";
+import newSupplierInvoice from "./triggers/new-supplier-invoice.ts";
+import newProduct from "./triggers/new-product.ts";
+import newTransaction from "./triggers/new-transaction.ts";
 
 export default {
   actions: [
@@ -70,5 +75,12 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newCustomerInvoice],
+  triggers: [
+    newCustomerInvoice,
+    newCustomer,
+    newSupplier,
+    newSupplierInvoice,
+    newProduct,
+    newTransaction,
+  ],
 } satisfies AppDefinition;

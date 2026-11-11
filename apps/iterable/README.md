@@ -2,7 +2,21 @@
 
 ## Triggers
 
-- **New Campaign** (`new-campaign`) polls the newest-first `list-campaigns` action every five minutes.
+Every trigger polls every five minutes (docs: <https://api.iterable.com/api-docs>, verified 2026-11-10).
+
+| Trigger | Wraps | What the run gets |
+| --- | --- | --- |
+| New Campaign (`new-campaign`) | `list-campaigns`, `sort=-createdAt` | each new campaign |
+| New Template (`new-template`) | `list-templates`, `sort=-createdAt` | each new message template |
+| New or Updated Template (`new-or-updated-template`) | `list-templates`, `sort=-updatedAt` | each template created or edited |
+| New Journey (`new-journey`) | `list-journeys`, `sort=-createdAt` | each new non-archived journey |
+| New or Updated Journey (`new-or-updated-journey`) | `list-journeys`, `sort=-updatedAt` | each journey created or edited |
+| New List (`new-list`) | `list-lists` (whole project, one response) | each new list |
+| New Catalog (`new-catalog`) | `list-catalogs` (names, up to 10 pages of 100) | each new catalog |
+
+Not covered: `list-channels` and `list-message-types` (project configuration, not records) and
+`list-catalog-items` (no created/modified filter, and `orderBy` only works on a field the catalog
+marks orderable).
 
 Iterable is a cross-channel marketing platform. This app exposes its server-side REST API: users,
 events, lists, campaigns and journeys, templates, catalogs, channels and message types,

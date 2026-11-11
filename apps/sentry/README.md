@@ -1,14 +1,24 @@
 # Sentry
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 
 ## Triggers
 
 | key — title | mechanism | wrapped action | what the run gets |
 | --- | --- | --- | --- |
 | `new-issue` — New Issue | poll | `issue-list` | Each newly first-seen issue. |
+| `new-release` — New Release | poll | `release-list` | Each new release (newest first). |
+| `new-project` — New Project | poll | `project-list` | Each project newly created in the organization. |
+| `new-team` — New Team | poll | `team-list` | Each team newly created in the organization. |
+| `new-member` — New Member | poll | `member-list` | Each member or approved invite newly added to the organization. |
+| `new-organization` — New Organization | poll | `organization-list` | Each organization newly visible to the credential. |
+| `new-deploy` — New Deploy | poll | `deploy-list` | Each deploy newly recorded against one release (release version is a param). |
+| `new-event` — New Event | poll | `event-list` | Each error event newly received by one project (project slug is a param). |
+| `new-issue-event` — New Issue Event | poll | `issue-event-list` | Each event newly grouped under one issue (issue ID is a param). |
 
-Sentry documents `sort=new` on [List Organization Issues](https://docs.sentry.io/api/events/list-an-organizations-issues/). Verified 2026-11-09.
+Sentry documents `sort=new` on [List Organization Issues](https://docs.sentry.io/api/events/list-an-organizations-issues/) and releases "sorted by most recent" on [List an Organization's Releases](https://docs.sentry.io/api/releases/list-an-organizations-releases/). Projects, teams, members, organizations and one release's deploys are small cursor-paged collections with no sort or date filter ([projects](https://docs.sentry.io/api/organizations/list-an-organizations-projects/), [teams](https://docs.sentry.io/api/teams/list-an-organizations-teams/), [members](https://docs.sentry.io/api/organizations/list-an-organizations-members/), [organizations](https://docs.sentry.io/api/organizations/list-your-organizations/), [deploys](https://docs.sentry.io/api/releases/list-a-releases-deploys/)), so their triggers read the whole list each check and emit ids not seen before; the first check fires nothing. Verified 2026-11-10.
+
+`new-event` and `new-issue-event` use the documented `start` / `end` window ([project events](https://docs.sentry.io/api/events/list-a-projects-error-events/), [issue events](https://docs.sentry.io/api/events/list-an-issues-events/); neither documents a sort order): each check runs the action with `returnAll` over the window from the last check (minus two minutes) to now, the action follows the `Link` cursor so a window is drained inside one check, and events stamped before the first check never fire. Every snapshot trigger above also drains all pages. Verified 2026-11-10.
 
 Triage Sentry issues, read events, and manage projects, releases and deploys.
 

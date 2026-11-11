@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/confluence",
-  "version": "0.2.0",
-  "description": "Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks; includes poll triggers for new and updated pages.",
+  "version": "0.3.0",
+  "description": "Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks; includes poll triggers for pages, blog posts, spaces, comments, attachments and labels.",
   "license": "MIT",
   "author": {
     "name": "w6w"

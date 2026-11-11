@@ -99,6 +99,10 @@ import webhookCreateCallTranscript from "./actions/webhook-create-call-transcrip
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCall from "./triggers/new-call.ts";
+import newMessage from "./triggers/new-message.ts";
+import newPhoneNumber from "./triggers/new-phone-number.ts";
+import newUser from "./triggers/new-user.ts";
 import newConversation from "./triggers/new-conversation.ts";
 import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
 
@@ -150,5 +154,12 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newConversation, newOrUpdatedConversation],
+  triggers: [
+    newConversation,
+    newOrUpdatedConversation,
+    newCall,
+    newMessage,
+    newUser,
+    newPhoneNumber,
+  ],
 } satisfies AppDefinition;

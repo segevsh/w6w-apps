@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/anchor",
-  "version": "0.2.0",
-  "description": "Manage Anchor proposals, agreements, invoices, payouts, contacts and webhooks; includes a poll trigger for new invoices.",
+  "version": "0.3.0",
+  "description": "Manage Anchor proposals, agreements, invoices, payouts, contacts and webhooks; includes poll triggers for new invoices, payouts, contacts, proposals, drafts, agreements and templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"

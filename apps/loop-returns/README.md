@@ -1,6 +1,6 @@
 # Loop Returns
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 
 Drive [Loop Returns](https://www.loopreturns.com) (the Shopify returns and exchanges platform) from a
 workflow, over the Loop API v1 at `https://api.loopreturns.com/api/v1`.
@@ -37,7 +37,16 @@ List actions prefill a small page size (25) and expose `nextCursor` (cursor list
 
 ## Triggers
 
-- **New Order** (`new-order`) polls `order-list` with descending order.
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` | poll | `order-list` (`sort_order=desc`) | Each newly created order |
+| `new-return` | poll | `return-list` (`filter=created_at`, time window) | Each return created since the last check (open, closed and expired: Loop's default states) |
+| `new-or-updated-return` | poll | `return-list` (`filter=updated_at`, time window) | Each return created or changed since the last check |
+| `new-customer` | poll | `customer-list` (`sort_order=desc`) | Each newly created customer |
+| `new-bulk-operation` | poll | `bulk-operation-list` (`sort_order=desc`) | Each newly created bulk operation (file import) |
+| `new-label-request` | poll | `label-request-list` (`from`/`to`, offset paging) | Each label request Loop creates for a return |
+
+The return and label-request triggers ask Loop for a `from`..`to` window (read as UTC, as Loop's own timestamps carry +00:00; the window is capped under Loop's 120-day limit) and resume a multi-page window on the next check. Not covered: `destination-list` (reference data), `webhook-list` (webhook subscription configuration), `return-notes-list` (the notes of one return, not something a workflow picks). Vendor API documentation: https://docs.loopreturns.com/openapi/returns-api.yaml, https://docs.loopreturns.com/openapi/customers-api.yaml, https://docs.loopreturns.com/openapi/bulk-operations-api.yaml and https://docs.loopreturns.com/api-reference/latest/label-requests/list-label-requests (verified 2026-11-10).
 
 - **Failures arrive with HTTP 200.** Cancel, flag, close, remove and process answer `true` on success
   and `{"errors": {"message": …}}` with status 200 on refusal; return details answers

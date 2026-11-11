@@ -89,7 +89,8 @@ const TARGET_ID_PARAM: Param = {
   label: "Folder or file ID",
   type: "string",
   required: true,
-  hint: "The Box id of the item to watch. The root folder is 0.",
+  hint:
+    "The Box id of the item to watch. The root folder (0) cannot have a webhook: pick a folder inside it.",
 };
 
 const TRIGGERS_PARAM: Param = {
@@ -129,7 +130,25 @@ export const FILE_UPLOADED_SAMPLE: BoxEvent = {
   source: { id: "987654321", type: "file", name: "report.pdf" },
 };
 
-const TRIGGER_NAME = /^[A-Z][A-Z_]*\.[A-Z][A-Z_]*$/;
+/** The sample for a fixed-trigger watcher: the upload sample, retargeted at the trigger's item. */
+function sampleFor(trigger: string): BoxEvent {
+  if (trigger === "FILE.UPLOADED") return FILE_UPLOADED_SAMPLE;
+  const folder = trigger.startsWith("FOLDER.");
+  const sourceName = folder ? "Invoices" : "report.pdf";
+  const sourceId = folder ? "55501234" : FILE_UPLOADED_SAMPLE.sourceId;
+  const sourceType = folder ? "folder" : "file";
+  return {
+    ...FILE_UPLOADED_SAMPLE,
+    trigger,
+    sourceType,
+    sourceId,
+    sourceName,
+    source: { id: sourceId, type: sourceType, name: sourceName },
+  };
+}
+
+/** `FILE.UPLOADED` style names, and the dot-less Doc Gen names (`DOCGEN_DOCUMENT_GENERATION_STARTED`). */
+const TRIGGER_NAME = /^(?:[A-Z][A-Z_]*\.[A-Z][A-Z_]*|DOCGEN_[A-Z_]+)$/;
 
 function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
@@ -259,7 +278,7 @@ export function boxTrigger(
         TRIGGERS_PARAM,
       ],
     output: EVENT_OUTPUT,
-    sample: fixed ? FILE_UPLOADED_SAMPLE : {
+    sample: fixed ? sampleFor(fixed) : {
       ...FILE_UPLOADED_SAMPLE,
       trigger: "FILE.DELETED",
     },
