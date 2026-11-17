@@ -1,6 +1,7 @@
 import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import { pollWindow, toMs } from "./window.ts";
+import { eventbriteTime } from "./time.ts";
 
 /**
  * Eventbrite poll triggers (brief 9.1 b, c; 10.1). The webhook triggers in `triggers.ts` cover the
@@ -122,8 +123,6 @@ const SEEN_WINDOW = ATTENDEE_MAX_PAGES * ATTENDEE_PAGE_SIZE + ATTENDEE_PAGE_SIZE
 
 export const clock = { now: (): number => Date.now() };
 
-/** Eventbrite's documented datetime form: UTC, no fractional seconds. */
-const eventbriteTime = (ms: number): string => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
 
 /**
  * `list-attendees` with `changed_since = cursor - overlap`, resumed through `continuation` when a

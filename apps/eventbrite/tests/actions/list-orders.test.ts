@@ -54,3 +54,46 @@ test("list-orders: scope=user routes to /users/{id}/orders/", async () => {
   assertEquals(url.searchParams.get("time_filter"), "past");
   assertEquals(url.searchParams.get("changed_since"), "2026-01-01T00:00:00Z");
 });
+
+test("list-orders: organization 'All orders' sends all_not_deleted (the org endpoint refuses `both`)", async () => {
+  const { ctx, calls } = mockCtx([{ body: { orders: [], pagination: {} } }]);
+  await action.execute!({ scope: "organization", scopeId: "158502474690", status: "both" }, ctx);
+  assertEquals(new URL(calls[0].url).searchParams.get("status"), "all_not_deleted");
+});
+
+test("list-orders: event scope keeps `both` (that endpoint accepts it)", async () => {
+  const { ctx, calls } = mockCtx([{ body: { orders: [], pagination: {} } }]);
+  await action.execute!({ scope: "event", scopeId: "evt-1", status: "both" }, ctx);
+  assertEquals(new URL(calls[0].url).searchParams.get("status"), "both");
+});
+
+test("list-orders: changed_since is rewritten to YYYY-MM-DDThh:mm:ssZ", async () => {
+  for (
+    const [given, sent] of [
+      ["2026-11-17T10:20:30.123Z", "2026-11-17T10:20:30Z"],
+      ["2026-11-17T12:20:30+02:00", "2026-11-17T10:20:30Z"],
+      ["2026-11-17", "2026-11-17T00:00:00Z"],
+      ["1763374830000", "2025-11-17T10:20:30Z"],
+    ]
+  ) {
+    const { ctx, calls } = mockCtx([{ body: { orders: [], pagination: {} } }]);
+    await action.execute!({ scope: "organization", scopeId: "o", changedSince: given }, ctx);
+    assertEquals(new URL(calls[0].url).searchParams.get("changed_since"), sent, given);
+  }
+});
+
+test("list-orders: a blank changed_since is not sent; a non-date is refused before any call", async () => {
+  const { ctx, calls } = mockCtx([{ body: { orders: [], pagination: {} } }]);
+  await action.execute!({ scope: "event", scopeId: "e", changedSince: "  " }, ctx);
+  assertEquals(new URL(calls[0].url).searchParams.get("changed_since"), null);
+
+  const bad = mockCtx([{ body: { orders: [], pagination: {} } }]);
+  let message = "";
+  try {
+    await action.execute!({ scope: "event", scopeId: "e", changedSince: "last tuesday" }, bad.ctx);
+  } catch (err) {
+    message = (err as Error).message;
+  }
+  assertEquals(message.startsWith("Changed since:"), true);
+  assertEquals(bad.calls.length, 0);
+});
