@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { toEventbriteTime } from "../lib/time.ts";
 import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
 import {
   ATTENDEE_SAMPLE,
@@ -26,6 +27,17 @@ interface Input {
 
 const DEFAULT_EXPAND =
   "attendees,ticket_buyer_settings,contact_list_preferences,answers,survey_responses,survey,refund_requests";
+
+/**
+ * The `status` query for the scope. The user endpoint takes none; the organization endpoint
+ * answers 400 `"both" is not a valid choice` (measured 2026-11-17, though the API reference lists
+ * it), so "All orders" reads `all_not_deleted` there.
+ */
+function orderStatus(scope: Input["scope"], status: string | undefined): string | undefined {
+  if (scope === "user" || !status) return undefined;
+  if (scope === "organization" && status === "both") return "all_not_deleted";
+  return status;
+}
 
 const listOrders: ActionDefinition<Input> = {
   key: "list-orders",
@@ -74,7 +86,7 @@ const listOrders: ActionDefinition<Input> = {
         { value: "all_not_deleted", label: "All non-deleted orders" },
       ],
       hint:
-        "Filter by attending orders, non-attending orders, all orders, or all non-deleted orders.",
+        "Filter by attending orders, non-attending orders, all orders, or all non-deleted orders. With Organization scope, All orders reads all non-deleted orders (that endpoint refuses `both`).",
     },
     { key: "changedSince", label: "Changed since (ISO datetime)", type: "string" },
     {
@@ -131,8 +143,8 @@ const listOrders: ActionDefinition<Input> = {
       : `/events/${id}/orders/`;
     return client.request<EventbriteListResponse<"orders">>(path, {
       query: {
-        status: input.scope === "user" ? undefined : input.status,
-        changed_since: input.changedSince,
+        status: orderStatus(input.scope, input.status),
+        changed_since: toEventbriteTime(input.changedSince),
         time_filter: input.scope === "user" ? input.timeFilter : undefined,
         only_emails: input.scope === "user" ? undefined : input.onlyEmails,
         exclude_emails: input.scope === "user" ? undefined : input.excludeEmails,

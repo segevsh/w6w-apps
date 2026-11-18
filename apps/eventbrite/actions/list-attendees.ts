@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { toEventbriteTime } from "../lib/time.ts";
 import {
   ATTENDEE_OUTPUT,
   ATTENDEE_SAMPLE,
@@ -84,7 +85,7 @@ const listAttendees: ActionDefinition<Input> = {
     return client.request<EventbriteListResponse<"attendees">>(path, {
       query: {
         status: input.status,
-        changed_since: input.changedSince,
+        changed_since: toEventbriteTime(input.changedSince),
         continuation: input.continuation,
       },
     });
