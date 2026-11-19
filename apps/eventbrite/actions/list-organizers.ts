@@ -2,10 +2,12 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { ORGANIZER_OUTPUT, PAGINATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
+import { pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   organizationId: string;
   page?: number;
+  continuation?: string;
 }
 
 const listOrganizers: ActionDefinition<Input> = {
@@ -24,7 +26,8 @@ const listOrganizers: ActionDefinition<Input> = {
       options: { source: "resolveFields" },
       config: { allowCustom: true },
     },
-    { key: "page", label: "Page", type: "number", default: 1 },
+    pageParam(),
+    { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
   output: [
@@ -37,7 +40,7 @@ const listOrganizers: ActionDefinition<Input> = {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizers">>(
       `/organizations/${encodeURIComponent(input.organizationId)}/organizers/`,
-      { query: { page: input.page } },
+      { query: { page: pageQuery(input.page), continuation: input.continuation } },
     );
   },
 };

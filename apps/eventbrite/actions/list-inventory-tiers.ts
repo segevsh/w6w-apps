@@ -1,11 +1,13 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { INVENTORY_TIER_LIST_ITEM_OUTPUT, PAGINATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
+import { pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
   seatmapNumber?: number;
   countAgainstEventCapacity?: boolean;
+  page?: number;
 }
 
 const action: ActionDefinition<Input> = {
@@ -34,6 +36,10 @@ const action: ActionDefinition<Input> = {
       "type": "boolean",
       "hint": "When set, filter by whether the tier counts toward event capacity.",
     },
+    pageParam({
+      hint:
+        "Page number to read, starting at 1 (the response's `pagination.page_count` says how many there are).",
+    }),
   ],
   output: [{
     key: "inventory_tiers",
@@ -50,6 +56,7 @@ const action: ActionDefinition<Input> = {
       query: {
         seatmap_number: input.seatmapNumber,
         count_against_event_capacity: input.countAgainstEventCapacity,
+        page: pageQuery(input.page),
       },
     });
   },

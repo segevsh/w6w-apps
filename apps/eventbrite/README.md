@@ -30,10 +30,33 @@ Where the blueprint disagrees with itself, the actions follow the vendor's worki
   finalizes it with the token. A workflow does the middle step with an HTTP step.
 - **Reports** (`get-sales-report`, `get-attendee-report`) send `event_ids` comma-separated.
 - **`update-ticket-class`** sends only the fields you set, though the blueprint marks them all required.
-- **Pagination** uses `continuation` from the previous response. `page_size` in a response
-  does not mean that endpoint accepts it as an input: only organization event listings and
-  discount searches expose Page size. Attendee, order and ticket-class listings ignore legacy
-  saved `pageSize` values so they do not cause `ARGUMENTS_ERROR`.
+- **Pagination.** Every list returns the same `pagination` block (`page_number`, `page_size`,
+  `page_count`, `continuation`), but the inputs each endpoint *accepts* differ, and an unaccepted
+  one is a 400 `ARGUMENTS_ERROR`. The table below was measured against the live API on
+  2026-11-19 with a real organization, and each action offers exactly what its endpoint accepts.
+  The input is `page` (`page_number` is refused); `page_size` caps at 200 (larger values return
+  200) and defaults to 50. Continuation token works everywhere a response carries one.
+
+  | Action (scope) | Page size | Page |
+  |---|---|---|
+  | `list-orders` (event, organization) | yes | yes |
+  | `list-orders` (user) | — (400) | yes |
+  | `list-attendees` (event) | yes | yes |
+  | `list-attendees` (organization) | — (400) | yes |
+  | `list-events` (organization; default 100) | yes | yes |
+  | `list-events` (series) | yes | yes |
+  | `list-events` (venue) | — (400) | yes |
+  | `list-subcategories` | yes | yes |
+  | `search-discounts` | yes | yes |
+  | `list-ticket-classes`, `list-venues`, `list-organizers`, `list-organizations`, `list-custom-questions`, `list-default-questions`, `list-inventory-tiers` | — (400) | yes |
+
+  A saved `pageSize` on a scope that refuses it is dropped rather than sent. Ticket groups,
+  organization members and roles, webhooks and fee rates refuse `page_size`, and either refuse
+  `page` or ignore it (it returned page 1), so those keep Continuation token only. Categories and
+  formats ignore both.
+- **Seat maps** — `GET /organizations/{id}/seatmaps/` answers 400 (`venue_id - MISSING`)
+  without a venue id or a venue name filter, so `list-seat-maps` and the `new-seat-map` trigger
+  require one of them.
 - **Scope-specific filters** stay within their documented endpoints: unpaid attendees require
   Event scope; order status and email filters apply to Event/Organization scopes; sorting
   events by name requires Organization scope.
@@ -125,7 +148,7 @@ was there before the workflow was switched on fires.
 | `new-venue` — New Venue | `list-venues` | each new venue | organization ID |
 | `new-ticket-group` — New Ticket Group | `list-ticket-groups` (live groups) | each new ticket group | organization ID |
 | `new-inventory-tier` — New Inventory Tier | `list-inventory-tiers` | each new tier | event ID |
-| `new-seat-map` — New Seat Map | `list-seat-maps` | each new seat map | organization ID |
+| `new-seat-map` — New Seat Map | `list-seat-maps` | each new seat map | organization ID + venue ID or venue name filter |
 | `new-event-team` — New Event Team | `list-event-teams` (also covers `search-event-teams`) | each new team | event ID |
 | `new-discount` — New Discount | `search-discounts` | each new discount or access code | organization ID, scope, event ID for the one-event scope |
 | `new-custom-question` — New Custom Question | `list-custom-questions` | each new custom question | event ID |

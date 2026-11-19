@@ -3,6 +3,7 @@ import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts"
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { toEventbriteTime } from "../lib/time.ts";
 import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
+import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
 import {
   ATTENDEE_SAMPLE,
   ORDER_LIST_ITEM_OUTPUT,
@@ -20,8 +21,9 @@ interface Input {
   onlyEmails?: string;
   excludeEmails?: string;
   expand?: string;
-  /** Legacy saved input; Eventbrite does not accept page_size on order endpoints. */
+  /** Event and Organization scope only: the user endpoint answers 400 to `page_size`. */
   pageSize?: number;
+  page?: number;
   continuation?: string;
 }
 
@@ -121,6 +123,12 @@ const listOrders: ActionDefinition<Input> = {
       config: { valueFormat: "csv" },
       default: DEFAULT_EXPAND,
     },
+    pageSizeParam({
+      hint:
+        "Orders per page, 1–200. Eventbrite returns 50 when blank. Event and Organization scope.",
+      showIf: { field: "scope", notIn: ["user"] },
+    }),
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
@@ -149,6 +157,8 @@ const listOrders: ActionDefinition<Input> = {
         only_emails: input.scope === "user" ? undefined : input.onlyEmails,
         exclude_emails: input.scope === "user" ? undefined : input.excludeEmails,
         expand: input.expand ?? DEFAULT_EXPAND,
+        page_size: input.scope === "user" ? undefined : pageSizeQuery(input.pageSize),
+        page: pageQuery(input.page),
         continuation: input.continuation,
       },
     });

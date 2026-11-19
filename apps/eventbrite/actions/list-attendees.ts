@@ -2,6 +2,7 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { toEventbriteTime } from "../lib/time.ts";
+import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
 import {
   ATTENDEE_OUTPUT,
   ATTENDEE_SAMPLE,
@@ -14,8 +15,9 @@ interface Input {
   scopeId: string;
   status?: "attending" | "not_attending" | "unpaid";
   changedSince?: string;
-  /** Legacy saved input; Eventbrite does not accept page_size on attendee endpoints. */
+  /** Event scope only: the organization endpoint answers 400 to `page_size`. */
   pageSize?: number;
+  page?: number;
   continuation?: string;
 }
 
@@ -61,6 +63,11 @@ const listAttendees: ActionDefinition<Input> = {
       ],
     },
     { key: "changedSince", label: "Changed since (ISO datetime)", type: "string" },
+    pageSizeParam({
+      hint: "Attendees per page, 1–200. Eventbrite returns 50 when blank. Event scope only.",
+      showIf: { field: "scope", equals: "event" },
+    }),
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
@@ -86,6 +93,8 @@ const listAttendees: ActionDefinition<Input> = {
       query: {
         status: input.status,
         changed_since: toEventbriteTime(input.changedSince),
+        page_size: input.scope === "event" ? pageSizeQuery(input.pageSize) : undefined,
+        page: pageQuery(input.page),
         continuation: input.continuation,
       },
     });

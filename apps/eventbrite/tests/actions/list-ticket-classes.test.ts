@@ -9,7 +9,7 @@ test("list-ticket-classes: default path is /events/{id}/ticket_classes/", async 
   await action.execute!({ eventId: "evt-1" }, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.pathname, "/v3/events/evt-1/ticket_classes/");
-  assertEquals(url.searchParams.get("page_size"), null); // Eventbrite rejects page_size here; never sent, even from legacy saved input
+  assertEquals(url.searchParams.get("page_size"), null); // Eventbrite answers 400 to page_size here
 });
 
 test("list-ticket-classes: forSale=true switches path to /ticket_classes/for_sale/", async () => {

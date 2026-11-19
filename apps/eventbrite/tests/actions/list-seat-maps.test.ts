@@ -1,5 +1,5 @@
 import { test } from "node:test";
-import { assertEquals } from "../_assert.ts";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-seat-maps.ts";
 
@@ -16,4 +16,14 @@ test("list-seat-maps: passes venue filters", async () => {
   assertEquals(url.searchParams.get("venue_id"), "v1");
   assertEquals(url.searchParams.get("venue_name_filter"), "Hall");
   assertEquals(result, { seatmaps: [] });
+});
+
+test("list-seat-maps: refuses a request with neither venue filter before calling Eventbrite", async () => {
+  const { ctx, calls } = mockCtx();
+  await assertRejects(
+    async () => await action.execute!({ organizationId: "o1", venueId: " " }, ctx),
+    Error,
+    "Venue ID or a Venue name filter",
+  );
+  assertEquals(calls.length, 0);
 });

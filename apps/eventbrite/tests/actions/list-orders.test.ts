@@ -13,7 +13,7 @@ test("list-orders: scope=event routes to /events/{id}/orders/", async () => {
 
   const url = new URL(calls[0].url);
   assertEquals(url.pathname, "/v3/events/evt-1/orders/");
-  assertEquals(url.searchParams.get("page_size"), null); // Eventbrite rejects page_size here; never sent, even from legacy saved input
+  assertEquals(url.searchParams.get("page_size"), null); // blank Page size: Eventbrite's default
   assertEquals(url.searchParams.get("expand"), DEFAULT_EXPAND);
 });
 
@@ -39,7 +39,7 @@ test("list-orders: scope=organization routes to /organizations/{id}/orders/", as
   assertEquals(p.get("changed_since"), "2026-01-01T00:00:00Z");
   assertEquals(p.get("only_emails"), "a@x.com,b@x.com");
   assertEquals(p.get("exclude_emails"), "c@x.com");
-  assertEquals(p.get("page_size"), null); // Eventbrite rejects page_size here; never sent, even from legacy saved input
+  assertEquals(p.get("page_size"), "10");
   assertEquals(p.get("continuation"), "c1");
 });
 

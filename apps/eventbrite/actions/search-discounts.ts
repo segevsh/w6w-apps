@@ -7,6 +7,7 @@ import {
 } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
 
 interface Input {
   organizationId: string;
@@ -19,6 +20,7 @@ interface Input {
   orderBy?: string;
   holdIds?: string;
   pageSize?: number;
+  page?: number;
   continuation?: string;
 }
 
@@ -148,7 +150,10 @@ const action: ActionDefinition<Input> = {
       "key": "pageSize",
       "label": "Page size",
       "type": "number",
+      "hint": "Discounts per page, 1–200. Eventbrite returns 50 when blank.",
+      "validation": { "min": 1, "max": 200, "integer": true },
     },
+    pageParam(),
     {
       "key": "continuation",
       "label": "Continuation token",
@@ -175,7 +180,8 @@ const action: ActionDefinition<Input> = {
         ticket_group_id: input.ticketGroupId,
         order_by: input.orderBy,
         hold_ids: input.holdIds,
-        page_size: input.pageSize,
+        page_size: pageSizeQuery(input.pageSize),
+        page: pageQuery(input.page),
         continuation: input.continuation,
       },
     });

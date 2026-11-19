@@ -6,10 +6,12 @@ import {
   PAGINATION_CONTINUATION_OUTPUT,
   PAGINATION_CONTINUATION_SAMPLE,
 } from "../lib/outputs.ts";
+import { pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   userId?: string;
   page?: number;
+  continuation?: string;
 }
 
 const listOrganizations: ActionDefinition<Input> = {
@@ -25,7 +27,8 @@ const listOrganizations: ActionDefinition<Input> = {
       type: "string",
       hint: "Defaults to the connected user (`me`).",
     },
-    { key: "page", label: "Page", type: "number", default: 1 },
+    pageParam(),
+    { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [
     { key: "organizations", type: "array", label: "Organizations", items: ORGANIZATION_OUTPUT },
@@ -40,7 +43,7 @@ const listOrganizations: ActionDefinition<Input> = {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizations">>(
       `/users/${input.userId ? encodeURIComponent(input.userId) : "me"}/organizations/`,
-      { query: { page: input.page } },
+      { query: { page: pageQuery(input.page), continuation: input.continuation } },
     );
   },
 };

@@ -1,9 +1,11 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
 import { PAGINATION_SAMPLE, SUBCATEGORY_LIST_OUTPUT, SUBCATEGORY_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   page?: number;
+  pageSize?: number;
   continuation?: string;
 }
 
@@ -16,6 +18,7 @@ const action: ActionDefinition<Input> = {
   idempotent: true,
   params: [
     { key: "page", label: "Page number", type: "number" },
+    pageSizeParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [...SUBCATEGORY_LIST_OUTPUT],
@@ -24,7 +27,11 @@ const action: ActionDefinition<Input> = {
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request("/subcategories/", {
-      query: { page: input.page, continuation: input.continuation },
+      query: {
+        page: input.page,
+        page_size: pageSizeQuery(input.pageSize),
+        continuation: input.continuation,
+      },
     });
   },
 };
