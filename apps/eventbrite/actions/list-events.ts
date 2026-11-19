@@ -8,6 +8,7 @@ import {
   PAGINATION_OUTPUT,
   PAGINATION_SAMPLE,
 } from "../lib/outputs.ts";
+import { pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
 
 interface Input {
   scope?: "organization" | "venue" | "series";
@@ -23,6 +24,7 @@ interface Input {
   startDateRangeStart?: string;
   startDateRangeEnd?: string;
   pageSize?: number;
+  page?: number;
   continuation?: string;
   expand?: string;
 }
@@ -141,9 +143,12 @@ const listEvents: ActionDefinition<Input> = {
       label: "Page size",
       type: "number",
       default: 100,
-      hint: "Organization scope.",
-      showIf: { field: "scope", equals: "organization" },
+      hint:
+        "Events per page, 1–200. Organization scope defaults to 100; Series scope to Eventbrite's 50. Not accepted with Venue scope.",
+      showIf: { field: "scope", in: ["organization", "series"] },
+      validation: { min: 1, max: 200, integer: true },
     },
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
     {
       key: "expand",
@@ -183,6 +188,7 @@ const listEvents: ActionDefinition<Input> = {
     }
     const common = {
       order_by: input.orderBy,
+      page: pageQuery(input.page),
       continuation: input.continuation,
       expand: input.expand ?? "venue,ticket_classes",
     };
@@ -203,6 +209,7 @@ const listEvents: ActionDefinition<Input> = {
           time_filter: input.timeFilter,
           "start_date.range_start": input.startDateRangeStart,
           "start_date.range_end": input.startDateRangeEnd,
+          page_size: pageSizeQuery(input.pageSize),
         },
       });
     }
@@ -213,7 +220,7 @@ const listEvents: ActionDefinition<Input> = {
         name_filter: input.nameFilter,
         time_filter: input.timeFilter,
         show_series_parent: input.showSeriesParent,
-        page_size: input.pageSize ?? 100,
+        page_size: pageSizeQuery(input.pageSize) ?? 100,
       },
     });
   },

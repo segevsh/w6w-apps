@@ -49,9 +49,9 @@ const ROWS: Row[] = [
   },
   {
     trigger: newSeatMap,
-    params: { organizationId: "org-1" },
+    params: { organizationId: "org-1", venueId: "ven-1" },
     list: "seatmaps",
-    url: `${API}/organizations/org-1/seatmaps/`,
+    url: `${API}/organizations/org-1/seatmaps/?venue_id=ven-1`,
   },
   {
     trigger: newEventTeam,

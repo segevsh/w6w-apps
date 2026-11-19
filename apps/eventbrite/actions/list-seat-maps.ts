@@ -15,7 +15,7 @@ const action: ActionDefinition<Input> = {
   resource: "seat_map",
   title: "List Seat Maps",
   description:
-    "List the Seat Maps of an Organization, optionally filtered by venue. The response is not paginated yet.",
+    "List the Seat Maps of an Organization for a venue (by ID or name filter; Eventbrite requires one). The response is not paginated yet.",
   params: [
     {
       "key": "organizationId",
@@ -29,12 +29,14 @@ const action: ActionDefinition<Input> = {
       "key": "venueId",
       "label": "Venue ID",
       "type": "string",
+      "hint": "Set this or Venue name filter: Eventbrite requires one of them.",
     },
     {
       "key": "venueNameFilter",
       "label": "Venue name filter",
       "type": "string",
-      "hint": "Sub-string match on venue name.",
+      "hint":
+        "Sub-string match on venue name. Set this or Venue ID: Eventbrite requires one of them.",
     },
   ],
   resolveFields: resolveEventbriteFields,
@@ -46,9 +48,16 @@ const action: ActionDefinition<Input> = {
   idempotent: true,
 
   execute(input, ctx) {
+    const venueId = input.venueId?.trim() || undefined;
+    const venueNameFilter = input.venueNameFilter?.trim() || undefined;
+    if (!venueId && !venueNameFilter) {
+      throw new Error(
+        "List Seat Maps needs a Venue ID or a Venue name filter: Eventbrite answers 400 (venue_id MISSING) without one.",
+      );
+    }
     const client = new EventbriteClient(ctx);
     return client.request(`/organizations/${encodeURIComponent(input.organizationId)}/seatmaps/`, {
-      query: { venue_id: input.venueId, venue_name_filter: input.venueNameFilter },
+      query: { venue_id: venueId, venue_name_filter: venueNameFilter },
     });
   },
 };

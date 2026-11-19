@@ -6,10 +6,12 @@ import {
   QUESTION_SAMPLE,
 } from "../lib/outputs.ts";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
   includeAll?: boolean;
+  page?: number;
   continuation?: string;
 }
 
@@ -23,6 +25,7 @@ const listDefaultQuestions: ActionDefinition<Input> = {
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "includeAll", label: "Include whole list", type: "boolean" },
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [
@@ -34,7 +37,13 @@ const listDefaultQuestions: ActionDefinition<Input> = {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"questions">>(
       `/events/${encodeURIComponent(input.eventId)}/canned_questions/`,
-      { query: { include_all: input.includeAll, continuation: input.continuation } },
+      {
+        query: {
+          include_all: input.includeAll,
+          page: pageQuery(input.page),
+          continuation: input.continuation,
+        },
+      },
     );
   },
 };

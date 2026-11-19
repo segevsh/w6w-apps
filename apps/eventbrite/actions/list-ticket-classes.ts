@@ -1,12 +1,14 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE, TICKET_CLASS_OUTPUT } from "../lib/outputs.ts";
+import { pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
   forSale?: boolean;
   /** Legacy saved input; ticket-class endpoints use the API's fixed page size. */
   pageSize?: number;
+  page?: number;
   continuation?: string;
 }
 
@@ -25,6 +27,7 @@ const listTicketClasses: ActionDefinition<Input> = {
       default: false,
       hint: "Uses /ticket_classes/for_sale/ when true.",
     },
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [{
@@ -43,6 +46,7 @@ const listTicketClasses: ActionDefinition<Input> = {
       : `/events/${id}/ticket_classes/`;
     return client.request<EventbriteListResponse<"ticket_classes">>(path, {
       query: {
+        page: pageQuery(input.page),
         continuation: input.continuation,
       },
     });

@@ -10,7 +10,7 @@ test("list-attendees: scope=event routes to /events/{id}/attendees/", async () =
 
   const url = new URL(calls[0].url);
   assertEquals(url.pathname, "/v3/events/evt-1/attendees/");
-  assertEquals(url.searchParams.get("page_size"), null); // Eventbrite rejects page_size here; never sent, even from legacy saved input
+  assertEquals(url.searchParams.get("page_size"), null); // blank Page size: Eventbrite's default
 });
 
 test("list-attendees: scope=organization + full filters", async () => {
@@ -31,6 +31,6 @@ test("list-attendees: scope=organization + full filters", async () => {
   const p = url.searchParams;
   assertEquals(p.get("status"), "attending");
   assertEquals(p.get("changed_since"), "2026-01-01T00:00:00Z");
-  assertEquals(p.get("page_size"), null); // Eventbrite rejects page_size here; never sent, even from legacy saved input
+  assertEquals(p.get("page_size"), null); // the organization endpoint answers 400 to page_size
   assertEquals(p.get("continuation"), "c1");
 });
