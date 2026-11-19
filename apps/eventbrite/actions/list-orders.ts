@@ -50,6 +50,7 @@ const listOrders: ActionDefinition<Input> = {
   params: [
     {
       key: "scope",
+      row: "scope",
       label: "Scope",
       type: "select",
       required: true,
@@ -62,6 +63,7 @@ const listOrders: ActionDefinition<Input> = {
     },
     {
       key: "scopeId",
+      row: "scope",
       label: "Scope ID",
       type: "string",
       required: true,
@@ -105,12 +107,14 @@ const listOrders: ActionDefinition<Input> = {
     },
     {
       key: "onlyEmails",
+      row: "emails",
       label: "Only emails (comma-separated)",
       type: "string",
       showIf: { field: "scope", notIn: ["user"] },
     },
     {
       key: "excludeEmails",
+      row: "emails",
       label: "Exclude emails (comma-separated)",
       type: "string",
       showIf: { field: "scope", notIn: ["user"] },

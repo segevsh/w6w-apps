@@ -86,12 +86,14 @@ const action: ActionDefinition<Input> = {
     },
     {
       "key": "quantityTotal",
+      "row": "totals",
       "label": "Quantity total",
       "type": "number",
       "hint": "Only accepted for general admission tiers.",
     },
     {
       "key": "capacityTotal",
+      "row": "totals",
       "label": "Capacity total",
       "type": "number",
       "hint": "Required whenever hold quantities change.",

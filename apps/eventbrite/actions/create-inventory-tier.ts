@@ -105,11 +105,13 @@ const action: ActionDefinition<Input> = {
     },
     {
       "key": "quantityTotal",
+      "row": "totals",
       "label": "Quantity total",
       "type": "number",
     },
     {
       "key": "capacityTotal",
+      "row": "totals",
       "label": "Capacity total",
       "type": "number",
       "hint": "Required to create or adjust holds; includes quantity_total of all child holds.",

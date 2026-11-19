@@ -148,6 +148,7 @@ const action: ActionDefinition<Input> = {
     },
     {
       "key": "pageSize",
+      "row": "paging",
       "label": "Page size",
       "type": "number",
       "hint": "Discounts per page, 1–200. Eventbrite returns 50 when blank.",
