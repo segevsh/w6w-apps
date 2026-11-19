@@ -30,6 +30,7 @@ const listAttendees: ActionDefinition<Input> = {
   params: [
     {
       key: "scope",
+      row: "scope",
       label: "Scope",
       type: "select",
       required: true,
@@ -41,6 +42,7 @@ const listAttendees: ActionDefinition<Input> = {
     },
     {
       key: "scopeId",
+      row: "scope",
       label: "Scope ID",
       type: "string",
       required: true,

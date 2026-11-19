@@ -80,8 +80,20 @@ export function eventFieldParams(opts: { create: boolean }): Param[] {
       required: opts.create,
       hint: "ISO 4217, e.g. `USD`.",
     },
-    { key: "hideStartDate", label: "Hide start date", type: "boolean", advanced: true },
-    { key: "hideEndDate", label: "Hide end date", type: "boolean", advanced: true },
+    {
+      key: "hideStartDate",
+      row: "hideDates",
+      label: "Hide start date",
+      type: "boolean",
+      advanced: true,
+    },
+    {
+      key: "hideEndDate",
+      row: "hideDates",
+      label: "Hide end date",
+      type: "boolean",
+      advanced: true,
+    },
     { key: "onlineEvent", label: "Online event", type: "boolean" },
     opts.create
       ? {

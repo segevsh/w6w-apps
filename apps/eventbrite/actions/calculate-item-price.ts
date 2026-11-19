@@ -36,6 +36,7 @@ const action: ActionDefinition<Input> = {
     },
     {
       "key": "scopeType",
+      "row": "scope",
       "label": "Scope type",
       "type": "select",
       "required": true,
@@ -61,6 +62,7 @@ const action: ActionDefinition<Input> = {
     },
     {
       "key": "scopeIdentifier",
+      "row": "scope",
       "label": "Scope identifier",
       "type": "string",
       "required": true,

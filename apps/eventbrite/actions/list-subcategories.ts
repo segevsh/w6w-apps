@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
-import { pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
+import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
 import { PAGINATION_SAMPLE, SUBCATEGORY_LIST_OUTPUT, SUBCATEGORY_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
@@ -17,8 +17,8 @@ const action: ActionDefinition<Input> = {
   description: "List all available subcategories. Paginated.",
   idempotent: true,
   params: [
-    { key: "page", label: "Page number", type: "number" },
     pageSizeParam(),
+    pageParam(),
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [...SUBCATEGORY_LIST_OUTPUT],
@@ -28,7 +28,7 @@ const action: ActionDefinition<Input> = {
     const client = new EventbriteClient(ctx);
     return client.request("/subcategories/", {
       query: {
-        page: input.page,
+        page: pageQuery(input.page),
         page_size: pageSizeQuery(input.pageSize),
         continuation: input.continuation,
       },

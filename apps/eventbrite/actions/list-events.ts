@@ -39,6 +39,7 @@ const listEvents: ActionDefinition<Input> = {
   params: [
     {
       key: "scope",
+      row: "scope",
       label: "Scope",
       type: "select",
       default: "organization",
@@ -50,6 +51,7 @@ const listEvents: ActionDefinition<Input> = {
     },
     {
       key: "scopeId",
+      row: "scope",
       label: "Scope ID",
       type: "string",
       hint: "Organization, venue or event series ID depending on scope.",
@@ -128,18 +130,21 @@ const listEvents: ActionDefinition<Input> = {
     { key: "onlyPublic", label: "Only public events", type: "boolean", hint: "Venue scope only." },
     {
       key: "startDateRangeStart",
+      row: "startRange",
       label: "Start date range start",
       type: "string",
       hint: "ISO datetime. Series scope only.",
     },
     {
       key: "startDateRangeEnd",
+      row: "startRange",
       label: "Start date range end",
       type: "string",
       hint: "ISO datetime. Series scope only.",
     },
     {
       key: "pageSize",
+      row: "paging",
       label: "Page size",
       type: "number",
       default: 100,

@@ -28,8 +28,8 @@ const action: ActionDefinition<Input> = {
     "Update the display settings of an event on Eventbrite (changes what the public event listing shows).",
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
-    { key: "showStartDate", label: "Show start date", type: "boolean" },
-    { key: "showEndDate", label: "Show end date", type: "boolean" },
+    { key: "showStartDate", row: "showDates", label: "Show start date", type: "boolean" },
+    { key: "showEndDate", row: "showDates", label: "Show end date", type: "boolean" },
     { key: "showStartEndTime", label: "Show start/end time", type: "boolean" },
     { key: "showTimezone", label: "Show timezone", type: "boolean" },
     { key: "showMap", label: "Show map", type: "boolean" },
