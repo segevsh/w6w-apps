@@ -187,13 +187,9 @@ test("a non-POST call is refused", async () => {
   );
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await verifierBulk.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await verifierBulk.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Clearout steps; no hook registers anything", () => {
+  assertEquals(verifierBulk.webhook?.registration, "manual");
+  assert(verifierBulk.webhook?.instructions?.includes("Developers, Webhook"));
+  assertEquals(verifierBulk.onSubscribe, undefined);
+  assertEquals(verifierBulk.onUnsubscribe, undefined);
 });

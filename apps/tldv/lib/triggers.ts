@@ -4,8 +4,10 @@ import type { OutputField, TriggerDefinition } from "@w6w/types";
  * tl;dv webhook triggers (rfcs/trigger.md, webhook form, manual receiver, UNSIGNED).
  *
  *   - tl;dv webhooks are set up in tl;dv itself (per user, team or organization), not through the
- *     public API, so `onSubscribe` makes no tl;dv call: it hands back the `callbackUrl` the user
- *     pastes there, and `onUnsubscribe` is a no-op.
+ *     public API, so the trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ *     Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the user
+ *     pastes it there. No hook registers anything. tl;dv's documentation does not name the
+ *     settings screen, so the instructions say "webhook settings" rather than a menu path.
  *   - `handleIngest` has nothing to verify: tl;dv's webhook documentation describes no signature,
  *     secret or signing header, so none is invented. The delivery is a JSON POST
  *     `{ id, event, data, executedAt }`; the trigger checks the method and the shape, and emits it
@@ -128,19 +130,24 @@ export interface WebhookTriggerSpec {
 /** Build one tl;dv webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<Record<string, never>, TldvEvent, { callbackUrl: string }> {
+): TriggerDefinition<Record<string, never>, TldvEvent> {
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In tl;dv's webhook settings, add a webhook for your user, a team or the whole organization.",
+        "Paste the URL above as the webhook's URL.",
+        `Enable the ${spec.event} trigger on that webhook.`,
+        ...(spec.event === "MeetingReady"
+          ? ["To receive the transcript in the payload too, tick Include meeting transcript."]
+          : []),
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     handleIngest({ raw }) {
       if (raw.method.toUpperCase() !== "POST") {

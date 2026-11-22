@@ -7,8 +7,10 @@ import type { OutputField, TriggerDefinition } from "@w6w/types";
  * Advanced Notification Settings) whenever a run of that agent ends. That covers every run, not only
  * ones started through this app (the docs: called "at the end of an agent's execution").
  *
- *   - `onSubscribe` makes no PhantomBuster call (the URL is entered by hand per agent; the docs
- *     describe no registration endpoint) and hands back the `callbackUrl` the user pastes there.
+ *   - The URL is entered by hand per agent (the docs describe no registration endpoint), so this is
+ *     a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints
+ *     the URL and shows it with `instructions`, and the user pastes it there. No hook registers
+ *     anything.
  *   - `handleIngest` turns the POST into one event.
  *
  * Trust model: PhantomBuster does not sign deliveries and cannot send custom request headers; the
@@ -100,23 +102,21 @@ export function normalizeDelivery(body: unknown): AgentRunEvent {
   };
 }
 
-const agentRunFinished: TriggerDefinition<
-  Record<string, never>,
-  AgentRunEvent,
-  { callbackUrl: string }
-> = {
+const agentRunFinished: TriggerDefinition<Record<string, never>, AgentRunEvent> = {
   key: "agent-run-finished",
   title: "Agent Run Finished",
   description:
     "Fires when a run of a PhantomBuster agent ends, whether it finished, failed or was killed. The run gets the agent and container ids, script, durations, exit code and message, and the result object.",
   output: OUTPUT,
   sample: SAMPLE,
-
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
+  webhook: {
+    registration: "manual",
+    instructions: [
+      "In PhantomBuster, open the agent's setup page, then Settings, Advanced Notification Settings.",
+      "Paste the URL above into the webhook field.",
+      "Repeat for every agent you want to watch, because each agent has its own webhook field.",
+    ].join("\n"),
   },
-
-  onUnsubscribe() {},
 
   handleIngest({ raw }) {
     if (raw.method.toUpperCase() !== "POST") {

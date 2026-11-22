@@ -5,8 +5,9 @@ import { requireRawBody, requireSecret, timingSafeEqual } from "../../_shared/we
  * Payhip webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
  *   - Payhip webhooks are configured in the seller's own Settings, Developer tab, not through the
- *     API, so `onSubscribe` makes no Payhip call: it hands back the `callbackUrl` the user pastes
- *     there and `onUnsubscribe` is a no-op. One endpoint receives every event the seller ticked;
+ *     API, so each trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment
+ *     2026-11-22): W6W mints the URL and shows it with `instructions`, and the user pastes it
+ *     there. No hook registers anything. One endpoint receives every event the seller ticked;
  *     each trigger acknowledges the deliveries of the other types without a run.
  *   - Trust model: every delivery body carries a `signature` field that Payhip documents as
  *     `sha256(<the seller's API key>)`. That is a static shared token, NOT an HMAC of the body and
@@ -186,7 +187,7 @@ export interface WebhookTriggerSpec<E> {
 /** Build one Payhip event webhook trigger. */
 export function webhookTrigger<E extends { type: string }>(
   spec: WebhookTriggerSpec<E>,
-): TriggerDefinition<TriggerParams, E, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, E> {
   return {
     key: spec.key,
     title: spec.title,
@@ -194,10 +195,15 @@ export function webhookTrigger<E extends { type: string }>(
     params: [API_KEY_PARAM],
     output: spec.output,
     sample: spec.sample,
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Payhip, open Settings, Developer.",
+        "Paste the URL above into the webhook endpoint field.",
+        `Tick the ${spec.type} event.`,
+        "Copy the API key from the same Developer tab into this trigger's Payhip API Key.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Payhip delivers webhooks with POST, not ${raw.method}.`);

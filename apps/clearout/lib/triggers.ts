@@ -11,9 +11,10 @@ import {
 /**
  * Clearout webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
- *   - Clearout webhooks are created in the app (Developers, Webhook), not through the API, so
- *     `onSubscribe` makes no Clearout call: it hands back the `callbackUrl` the user pastes there
- *     and `onUnsubscribe` is a no-op.
+ *   - Clearout webhooks are created in the app (Developers, Webhook), not through the API, so the
+ *     trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22):
+ *     W6W mints the URL and shows it with `instructions`, and the user pastes it there. No hook
+ *     registers anything.
  *   - Clearout signs each delivery with the ACCOUNT-level secret token (D5 (2): the user pastes
  *     it): `x-co-webhook-signature: t=<unix seconds>,v1=<hex>`, the hex HMAC-SHA256 of
  *     `<t>.<raw body>`. `handleIngest` verifies it, and that `t` is within five minutes of now
@@ -170,7 +171,7 @@ export interface WebhookTriggerSpec {
 /** Build one Clearout event-type webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, ClearoutEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, ClearoutEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -178,12 +179,15 @@ export function webhookTrigger(
     params: spec.anyEvent ? [SIGNING_SECRET_PARAM, EVENTS_PARAM] : [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Clearout app, open Developers, Webhook, and choose Create Webhook.",
+        "Paste the URL above as its URL and select this trigger's event (for Any Event, select every event you want).",
+        "Under Secret Token, click Generate Token and copy it into this trigger's Secret Token.",
+        "Clearout shows the token only when it is generated or rotated, and every Clearout trigger takes the same account-wide one.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

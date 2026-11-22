@@ -16,8 +16,10 @@ import {
  * A subscription lives on a HubSpot app, either a legacy private app (Development, Legacy apps,
  * the app's Webhooks tab: `.../private-apps/create-and-edit-webhook-subscriptions-in-private-apps`)
  * or a public app, so a w6w user sets the Target URL and the event subscriptions in HubSpot by
- * hand; there is no API a connection can use to do it. `onSubscribe` therefore makes no HubSpot
- * call and hands back the `callbackUrl` to paste.
+ * hand; there is no API a connection can use to do it. Each trigger is therefore a MANUAL webhook
+ * (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it
+ * with `instructions`, and the user pastes it there. `onSubscribe` still makes no HubSpot call; it
+ * stays only to record the `callbackUrl` that the v3 signature check below needs.
  *
  * Signing (https://developers.hubspot.com/docs/apps/legacy-apps/authentication/validating-requests),
  * keyed by the app's client secret, which is not part of the connection, so the trigger takes it
@@ -280,6 +282,15 @@ export function hubspotWebhookTrigger(
     params,
     output: EVENT_OUTPUT,
     sample: normalizeEvent(spec.sampleEvent),
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In HubSpot, open the app that will send events: for a legacy private app, Development, Legacy apps, the app, its Webhooks tab, Edit webhooks; for a public app, its Webhooks page.",
+        "Paste the URL above as the Target URL, exactly as shown (HubSpot signs it).",
+        "Create a subscription for the objects and events this trigger should receive, then Commit changes.",
+        "Copy the app's client secret (its Auth tab) into this trigger's App client secret.",
+      ].join("\n"),
+    },
 
     onSubscribe({ callbackUrl }) {
       return { callbackUrl };

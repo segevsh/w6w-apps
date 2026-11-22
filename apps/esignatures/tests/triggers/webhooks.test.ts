@@ -203,13 +203,9 @@ test("a signed body that is not a notification → refused", async () => {
   );
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await signerSigned.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await signerSigned.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the eSignatures.com steps; no hook registers anything", () => {
+  assertEquals(signerSigned.webhook?.registration, "manual");
+  assert(signerSigned.webhook?.instructions?.includes("API page"));
+  assertEquals(signerSigned.onSubscribe, undefined);
+  assertEquals(signerSigned.onUnsubscribe, undefined);
 });

@@ -49,15 +49,12 @@ const event = {
   updates: {},
 };
 
-test("strava: onSubscribe is a no-call manual receiver and unsubscribe is a no-op", async () => {
-  const m = mockCtx();
-  const state = await activityCreated.onSubscribe!(
-    { params: { verifyToken: TOKEN }, callbackUrl, subscriptionId: "sub", hostUrl: "https://h" },
-    m.ctx,
-  );
-  assertEquals(state, { callbackUrl });
-  await activityCreated.onUnsubscribe!({ params: {}, state, subscriptionId: "sub" }, m.ctx);
-  assertEquals(m.calls.length, 0);
+test("strava: a manual webhook: W6W shows the URL with the Strava steps; no hook registers anything", () => {
+  assertEquals(activityCreated.webhook?.registration, "manual");
+  assertEquals(activityCreated.webhook?.instructions?.includes("/api/v3/push_subscriptions"), true);
+  assertEquals(activityCreated.webhook?.instructions?.includes("Verify token"), true);
+  assertEquals(activityCreated.onSubscribe, undefined);
+  assertEquals(activityCreated.onUnsubscribe, undefined);
 });
 
 test("strava: handshake echoes hub.challenge as JSON only after the verify token matches", async () => {

@@ -62,18 +62,12 @@ test("app declares the triggers with output and sample", () => {
   }
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const state = await T.onSubscribe!(
-    {
-      params: PARAMS,
-      subscriptionId: "sub_1",
-      callbackUrl: CALLBACK,
-      hostUrl: "https://api.example.test",
-    },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await T.onUnsubscribe!({ params: PARAMS, state, subscriptionId: "sub_1" }, ctx);
+test("a manual webhook: W6W shows the URL with the Meta dashboard steps; no hook registers anything", () => {
+  assertEquals(T.webhook?.registration, "manual");
+  assert(T.webhook?.instructions?.includes("Meta app dashboard, open Webhooks"));
+  assert(T.webhook?.instructions?.includes("feed"));
+  assertEquals(T.onSubscribe, undefined);
+  assertEquals(T.onUnsubscribe, undefined);
 });
 
 test("valid signature over the exact raw body emits the events", async () => {

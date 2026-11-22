@@ -1,4 +1,4 @@
-import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
+import type { OutputField, Param, TriggerDefinition, WebhookSetup } from "@w6w/types";
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
 
@@ -7,8 +7,9 @@ import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
  * ASYMMETRIC key).
  *
  *   - HighLevel webhooks are configured on the Marketplace app (Advanced Settings, Webhooks: turn an
- *     event on and paste the URL beside it), not through the API, so `onSubscribe` makes no HighLevel
- *     call: it hands back the `callbackUrl` the user pastes there and `onUnsubscribe` is a no-op.
+ *     event on and paste the URL beside it), not through the API, so every webhook trigger is a
+ *     MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the
+ *     URL and shows it with `instructions`, and the user pastes it there. No hook registers anything.
  *   - `handleIngest` verifies `X-GHL-Signature` BEFORE it parses anything: an Ed25519 signature
  *     (base64) over the exact request body, checked with HighLevel's published public key. There is
  *     no shared secret, so there is no `signingSecret` param and no `requireSecret`/HMAC compare:
@@ -148,11 +149,23 @@ async function verifiedEvent(
   return normalizeDelivery(parsed);
 }
 
+/** The manual-webhook setup shown under the URL; `eventStep` says which events to turn on. */
+function manualWebhook(eventStep: string): WebhookSetup {
+  return {
+    registration: "manual",
+    instructions: [
+      "In your HighLevel Marketplace app, open Advanced Settings, Webhooks.",
+      eventStep,
+      "There is nothing to copy back: the signature is checked against HighLevel's published public key.",
+    ].join("\n"),
+  };
+}
+
 /** Build one HighLevel event webhook trigger. `publicKey` is for tests only. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
   publicKey: string = GHL_PUBLIC_KEY_SPKI,
-): TriggerDefinition<TriggerParams, HighLevelEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, HighLevelEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -160,12 +173,9 @@ export function webhookTrigger(
     params: [],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-
-    onUnsubscribe() {},
+    webhook: manualWebhook(
+      `Turn on the ${spec.eventType} event and paste the URL above beside it.`,
+    ),
 
     async handleIngest({ raw }) {
       const event = await verifiedEvent(raw, publicKey);
@@ -198,7 +208,7 @@ export function eventFilter(v: unknown): string[] {
 export function anyEventTrigger(
   spec: { key: string; title: string; description: string; sample: HighLevelEvent },
   publicKey: string = GHL_PUBLIC_KEY_SPKI,
-): TriggerDefinition<TriggerParams, HighLevelEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, HighLevelEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -206,12 +216,9 @@ export function anyEventTrigger(
     params: [EVENTS_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-
-    onUnsubscribe() {},
+    webhook: manualWebhook(
+      "Turn on every event this trigger should receive and paste the URL above beside each one.",
+    ),
 
     async handleIngest({ raw, params }) {
       const event = await verifiedEvent(raw, publicKey);

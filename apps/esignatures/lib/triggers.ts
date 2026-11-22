@@ -11,8 +11,9 @@ import {
  * eSignatures.com webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
  *   - eSignatures.com has no webhook-management API: one URL is set in the account's API settings
- *     (or per contract with `custom_webhook_url`). `onSubscribe` therefore makes no vendor call: it
- *     hands back the `callbackUrl` the user pastes there, and `onUnsubscribe` is a no-op.
+ *     (or per contract with `custom_webhook_url`). The trigger is therefore a MANUAL webhook
+ *     (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows
+ *     it with `instructions`, and the user pastes it there. No hook registers anything.
  *   - Every delivery carries `X-Signature-SHA256`: "an HMAC-SHA256 signature of the request body,
  *     generated using your secret token" (D5 (2): the account's Secret Token, pasted by the user).
  *     The vendor's reference does not say how the digest is encoded, so the lower-case hex form and
@@ -152,7 +153,7 @@ export interface WebhookTriggerSpec {
 /** Build one eSignatures.com notification webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, ContractEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, ContractEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -160,12 +161,14 @@ export function webhookTrigger(
     params: spec.anyEvent ? [SIGNING_SECRET_PARAM, EVENTS_PARAM] : [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In eSignatures.com, open the API page of your account.",
+        "Paste the URL above as the Webhook URL; the account holds one, so it replaces any URL already there.",
+        "Copy the account's Secret Token from the same page into this trigger's Secret Token.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

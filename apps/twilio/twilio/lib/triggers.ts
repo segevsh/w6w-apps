@@ -13,9 +13,12 @@ import {
  * Twilio signs a webhook with `X-Twilio-Signature`: base64 HMAC-SHA1, keyed by the account Auth
  * Token, over the FULL request URL followed by every POST parameter as `name` + `value`, sorted by
  * name. The signature therefore covers the URL, so:
- *   - `onSubscribe` makes no Twilio call (the URL is pasted into the number's or the messaging
- *     service's webhook field by hand) and returns the exact `callbackUrl` it must be;
- *   - `handleIngest` signs `state.callbackUrl` + the sorted form parameters of the RAW body.
+ *   - the trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment
+ *     2026-11-22): W6W mints the URL and shows it with `instructions`, and the user pastes it into
+ *     the number's or the messaging service's webhook field by hand;
+ *   - `onSubscribe` still makes no Twilio call but is KEPT: it records the exact `callbackUrl` on
+ *     the subscription state, and `handleIngest` signs `state.callbackUrl` + the sorted form
+ *     parameters of the RAW body.
  * The Auth Token is not readable by a hook (the connection only signs outgoing requests), so the
  * trigger takes it as a secret param (D5 (2)). Only form-encoded webhooks (SMS, MMS, status
  * callbacks) are accepted; a JSON body cannot match the form scheme and is refused.
@@ -30,6 +33,10 @@ export interface TriggerParams {
 export interface TriggerState {
   callbackUrl: string;
 }
+
+/** The last manual-webhook step every Twilio trigger shares: the Auth Token param. */
+export const AUTH_TOKEN_STEP =
+  "Copy your Auth Token (Twilio Console, Account info) into this trigger's Auth Token.";
 
 export interface MessageEvent {
   messageSid: string | null;
@@ -172,6 +179,20 @@ export function twilioTrigger(
     params: [AUTH_TOKEN_PARAM],
     output: EVENT_OUTPUT,
     sample: spec.kind === "incoming" ? INCOMING_SAMPLE : STATUS_SAMPLE,
+    webhook: {
+      registration: "manual",
+      instructions: [
+        ...(spec.kind === "incoming"
+          ? [
+            "Open the Twilio phone number or messaging service that receives the messages.",
+            "Paste the URL above, exactly as shown, into its A message comes in webhook, with method POST.",
+          ]
+          : [
+            "Use the URL above, exactly as shown, as the Status Callback URL of the messages you send (for example the Send SMS action's Status Callback URL).",
+          ]),
+        AUTH_TOKEN_STEP,
+      ].join("\n"),
+    },
 
     onSubscribe({ callbackUrl }) {
       return { callbackUrl };

@@ -1,4 +1,4 @@
-import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
+import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
 import {
   header,
   hmac,
@@ -15,9 +15,9 @@ import {
  * `POST /api/projects/:project_id/hog_functions/` can create destinations,
  * https://posthog.com/docs/api/hog-functions, but registering through it is not built here): the
  * user adds an "HTTP Webhook" realtime destination in the PostHog UI (Data pipelines, + New,
- * Destination) and pastes the callback URL. `onSubscribe` therefore makes no vendor call and
- * returns the callback URL; `onUnsubscribe` is a no-op (the user disables the destination in
- * PostHog).
+ * Destination) and pastes the URL there. The trigger is therefore a MANUAL webhook
+ * (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it
+ * with `instructions`. No hook registers anything (the user disables the destination in PostHog).
  *
  * Signing: that destination has an optional "Signing secret" input which, when set, signs every
  * request per the Standard Webhooks spec. This trigger REQUIRES it (a vendor that can sign is
@@ -44,11 +44,6 @@ export interface TriggerParams {
   signingSecret?: string;
   /** Comma-separated PostHog event names (`$pageview`, `signed_up`); empty = every event. */
   events?: string;
-}
-
-/** What `onSubscribe` returns and the host persists on the subscription. */
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 /** The run's `trigger.event`: one PostHog event, as the destination's body template sent it. */
@@ -206,7 +201,7 @@ export interface WebhookTriggerSpec {
 /** Build the PostHog event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, PostHogEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, PostHogEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -217,13 +212,17 @@ export function webhookTrigger(
     output: OUTPUT,
     sample: { ...SAMPLE, ...spec.sample },
 
-    // Manual webhook: nothing to register at PostHog. The user pastes this URL into the
-    // destination; it is kept in state so the README/UI can show it.
-    onSubscribe({ callbackUrl }, _ctx: HookContext) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In PostHog, open Data pipelines, + New, Destination, and create the HTTP Webhook destination.",
+        "Paste the URL above as its Webhook URL and keep the method POST.",
+        spec.events
+          ? `Use the destination's Filters to send only the ${spec.events.join(", ")} event.`
+          : "Use the destination's Filters to choose the events to send.",
+        "Set the destination's Signing secret to a base64 string of at least 24 bytes, and paste the same value into this trigger's Signing secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

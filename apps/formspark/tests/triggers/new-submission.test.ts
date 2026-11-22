@@ -164,13 +164,9 @@ test("a body with leading and trailing whitespace is verified over the exact byt
   await assertRejects(() => ingest(call(b, { headers: headers(b, NOW, sign(NOW, b.trim())) })));
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await trigger.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await trigger.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Formspark steps; no hook registers anything", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("Webhook row under Integrations"));
+  assertEquals(trigger.onSubscribe, undefined);
+  assertEquals(trigger.onUnsubscribe, undefined);
 });

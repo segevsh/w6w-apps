@@ -14,8 +14,10 @@ import transferList from "../actions/transfer-list.ts";
  * Wise subscriptions are application-level (client credentials from a Wise Platform partner
  * agreement) or profile-level (a user token); this app's personal API token reaches neither,
  * so w6w cannot register the webhook for the user. They create the subscription themselves, in
- * Developer Hub, pointing at the callback URL this trigger shows. `onSubscribe` therefore makes
- * no Wise call and `onUnsubscribe` is a no-op.
+ * Developer Hub, pointing at the URL W6W shows: every trigger is a MANUAL webhook
+ * (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22), W6W mints the URL and shows it
+ * with `instructions`. No hook registers anything; only Any Event keeps an `onSubscribe` (no Wise
+ * call), to refuse an event list it could not deliver up front.
  *
  * Wise signs every request (`X-Signature-SHA256`: Base64 RSA-SHA256, PKCS#1 v1.5, over the
  * request body) with a key pair whose public half it PUBLISHES, one for production and one for
@@ -82,7 +84,7 @@ export interface TriggerParams {
   profileId?: string;
 }
 
-/** What `onSubscribe` returns: the URL the user pastes into Wise's Developer Hub. */
+/** What Any Event's validating `onSubscribe` returns (nothing reads it back). */
 export interface TriggerState {
   callbackUrl: string;
 }
@@ -325,7 +327,7 @@ export interface WebhookTriggerSpec {
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
   keys: PublicKeys = WISE_PUBLIC_KEYS,
-): TriggerDefinition<TriggerParams, WiseEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, WiseEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -340,13 +342,15 @@ export function webhookTrigger(
       sentAt: "2026-11-09T10:12:50.123Z",
       data: spec.sampleData,
     } satisfies WiseEvent,
-
-    // Manual webhook: nothing to register with Wise; hand back the URL to paste in Developer Hub.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Wise's Developer Hub, open Webhooks, Subscriptions, Create Subscription.",
+        "Paste the URL above as the notification URL.",
+        `Pick the ${spec.eventType} event type, schema version ${spec.schemaVersion ?? "4.0.0"}.`,
+        "Set this trigger's Wise profile ID to the profile whose events you want, and its Wise environment to match the subscription (live or sandbox).",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       const { event, eventType } = await verifyDelivery(raw, params, keys);
@@ -450,7 +454,16 @@ export function anyEventTrigger(
       },
     } satisfies WiseEvent,
 
-    // Manual webhook: refuse an event list this trigger could not deliver, then hand back the URL.
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Wise's Developer Hub, open Webhooks, Subscriptions, Create Subscription.",
+        "Create one subscription per event type in this trigger's Events param (every listed type when it is empty), each with the URL above as its notification URL.",
+        "Set this trigger's Wise profile ID to the profile whose events you want, and its Wise environment to match the subscriptions (live or sandbox).",
+      ].join("\n"),
+    },
+
+    // Nothing to register with Wise: refuse an event list this trigger could not deliver.
     onSubscribe({ params, callbackUrl }) {
       chooseEvents(params?.events);
       return { callbackUrl };

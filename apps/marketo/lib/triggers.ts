@@ -9,7 +9,9 @@ import { requireRawBody } from "../../_shared/webhook/mod.ts";
  * encoding (JSON or Form/Url) under Admin, Webhooks. There is no registration API and no signature,
  * so the payload is whatever the template produces. This trigger accepts that payload (a JSON object
  * or a form-encoded body), lifts the common lead keys (`leadId`, `email`, `campaign`) and passes the
- * whole payload through as `data`.
+ * whole payload through as `data`. The trigger is a MANUAL webhook (`webhook.registration`,
+ * rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the
+ * user enters it in the Marketo webhook. No hook registers anything.
  *
  * Trust model: Marketo does NOT sign webhook calls and offers no shared secret field. The callback
  * URL is the secret; keep it private.
@@ -83,7 +85,7 @@ export interface WebhookTriggerSpec {
 /** Build the Marketo "Call Webhook" trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<Record<string, never>, MarketoLeadEvent, { callbackUrl: string }> {
+): TriggerDefinition<Record<string, never>, MarketoLeadEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -91,12 +93,16 @@ export function webhookTrigger(
     params: [],
     output: OUTPUT,
     sample: SAMPLE,
-
-    // Manual webhook: the URL is entered in a Marketo webhook; nothing to register.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Marketo, open Admin, Webhooks, New Webhook.",
+        "Set its URL to the URL above, Request Type to POST, Request Token Encoding to JSON and Response type to JSON.",
+        "Write its Template with the lead tokens the workflow needs (Insert Token), for example {{lead.Id}} and {{lead.Email Address}}.",
+        "Add a Call Webhook flow step that uses it to a trigger Smart Campaign whose smart list holds the lead event you care about.",
+        "Keep the URL private: Marketo signs nothing, so the URL is the only credential.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
 
     handleIngest({ raw }) {
       const method = raw.method.toUpperCase();

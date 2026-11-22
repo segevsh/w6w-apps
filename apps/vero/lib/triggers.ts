@@ -4,8 +4,11 @@ import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
  * Vero webhook trigger (rfcs/trigger.md, webhook form, manual receiver, UNSIGNED).
  *
  *   - Vero webhooks are set up in Vero (Settings, Integrations, Webhooks), not through the Track API,
- *     and Vero sends every event to ONE notification address, so `onSubscribe` makes no Vero call:
- *     it hands back the `callbackUrl` the user pastes there, and `onUnsubscribe` is a no-op.
+ *     and Vero sends every event to ONE notification address, so the trigger is a MANUAL webhook
+ *     (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows
+ *     it with `instructions`, and the user pastes it there. `onSubscribe` makes no Vero call; it
+ *     is kept only to refuse an unknown name in the `events` param up front, and `onUnsubscribe`
+ *     is a no-op.
  *   - `handleIngest` has nothing to verify: Vero's webhook documentation describes no signature,
  *     secret or signing header, so none is invented. The delivery is a JSON POST whose `type` names
  *     the event; the trigger checks the method and the shape and drops types the `events` param
@@ -178,6 +181,14 @@ export function webhookTrigger(
     params: [EVENTS_PARAM],
     output: OUTPUT,
     sample: SAMPLE,
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Vero, open Settings, Integrations, Webhooks.",
+        "Paste the URL above as the notification address.",
+        "Choose which webhook events Vero sends; this trigger's Events param can narrow them further.",
+      ].join("\n"),
+    },
 
     onSubscribe({ params, callbackUrl }) {
       chooseEvents(params?.events); // refuse an unknown event name up front

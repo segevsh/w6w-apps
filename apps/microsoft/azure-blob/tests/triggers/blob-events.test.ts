@@ -74,14 +74,14 @@ test("app declares two webhook triggers with output and sample, no poll", () => 
   }
 });
 
-test("manual webhook: onSubscribe makes no vendor call and returns the callback URL", async () => {
-  const m = mockCtx([]);
-  const state = await blobCreated.onSubscribe!(
-    { params: {}, callbackUrl: CALLBACK, subscriptionId: "s" } as never,
-    m.ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  assertEquals(m.calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Azure portal steps; no hook registers anything", () => {
+  for (const t of [blobCreated, blobDeleted]) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Events, Event Subscription"));
+    assert(t.webhook?.instructions?.includes(`Pick the ${t.title} event type`));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
+  }
 });
 
 test("a notification is parsed: each trigger gets only its own event type", async () => {

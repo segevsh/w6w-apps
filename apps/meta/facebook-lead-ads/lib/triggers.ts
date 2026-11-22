@@ -1,7 +1,10 @@
 /**
  * facebook-lead-ads webhook triggers (manual webhook). Meta signs every delivery with the app secret
  * (X-Hub-Signature-256 = sha256 HMAC over the exact body bytes) and confirms a subscription with a
- * one-time GET carrying hub.verify_token and hub.challenge. Docs, verified 2026-11-09:
+ * one-time GET carrying hub.verify_token and hub.challenge. The subscription is made by hand in the
+ * Meta app dashboard, so the webhook trigger is a MANUAL webhook (`webhook.registration`,
+ * rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the
+ * user pastes it there. No hook registers anything. Docs, verified 2026-11-09:
  * https://developers.facebook.com/docs/graph-api/webhooks/getting-started
  */
 import type {
@@ -10,6 +13,7 @@ import type {
   Param,
   TriggerCall,
   TriggerDefinition,
+  WebhookSetup,
 } from "@w6w/types";
 import {
   header,
@@ -20,9 +24,17 @@ import {
 } from "../../_shared/webhook/mod.ts";
 import { pollNewItems } from "../../_shared/poll/mod.ts";
 
-/** What `onSubscribe` returns and the host persists: Meta is registered by hand in the dashboard. */
-export interface TriggerState {
-  callbackUrl: string;
+/** The Meta app dashboard steps W6W shows under the URL; `fieldStep` names the fields to tick. */
+export function metaWebhook(fieldStep: string): WebhookSetup {
+  return {
+    registration: "manual",
+    instructions: [
+      "First fill in this trigger's App Secret (Meta app dashboard, App settings, Basic) and a Verify Token of your choosing; Meta checks the token when you save the URL.",
+      "In the Meta app dashboard, open Webhooks and add a subscription for Page.",
+      "Paste the URL above as its callback URL and enter the same value as this trigger's Verify Token.",
+      fieldStep,
+    ].join("\n"),
+  };
 }
 
 export interface MetaParams {
@@ -190,7 +202,7 @@ export function leadEvents(payload: MetaPayload): LeadEvent[] {
 }
 
 /** New Lead Ads submission (manual webhook, signed with the App Secret). */
-export const newLeadTrigger: TriggerDefinition<MetaParams, LeadEvent, TriggerState> = {
+export const newLeadTrigger: TriggerDefinition<MetaParams, LeadEvent> = {
   key: "new-lead",
   title: "New Lead",
   description:
@@ -198,10 +210,9 @@ export const newLeadTrigger: TriggerDefinition<MetaParams, LeadEvent, TriggerSta
   params: META_PARAMS,
   output: OUTPUT,
   sample: SAMPLE,
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
-  },
-  onUnsubscribe() {},
+  webhook: metaWebhook(
+    "Subscribe to the leadgen field; the app needs leads_retrieval and the Page subscribed to the app.",
+  ),
   handleIngest({ raw, params }) {
     return ingestMeta(raw, params, leadEvents);
   },

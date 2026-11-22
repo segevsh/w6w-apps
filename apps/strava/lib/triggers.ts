@@ -6,10 +6,10 @@ import { requireSecret, timingSafeEqual } from "../../_shared/webhook/mod.ts";
  *
  * Strava allows ONE push subscription per API application and creates it with the application's
  * `client_id` + `client_secret`, neither of which a connection holds (the connection carries an
- * athlete's access token). So this is a manual-webhook receiver: `onSubscribe` makes no vendor
- * call and just keeps the host's `callbackUrl`; the user registers that URL with Strava once
- * (see the README) using the SAME `verify_token` they paste into the trigger's `verifyToken`
- * parameter.
+ * athlete's access token). So this is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ * Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the user
+ * registers it with Strava once (see the README) using the SAME `verify_token` they paste into the
+ * trigger's `verifyToken` parameter. No hook registers anything.
  *
  *   - GET (the subscription handshake): Strava sends `hub.mode=subscribe`, `hub.challenge` and
  *     `hub.verify_token`. The challenge is echoed as `{"hub.challenge": "<challenge>"}` ONLY
@@ -21,11 +21,6 @@ import { requireSecret, timingSafeEqual } from "../../_shared/webhook/mod.ts";
 export interface TriggerParams {
   verifyToken?: string;
   ownerId?: string;
-}
-
-/** What `onSubscribe` returns and the host persists on the subscription. */
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 /** A Strava push event, camelCased. */
@@ -99,13 +94,13 @@ export interface WebhookTriggerSpec {
 }
 
 type Ingest = NonNullable<
-  TriggerDefinition<TriggerParams, StravaEvent, TriggerState>["handleIngest"]
+  TriggerDefinition<TriggerParams, StravaEvent>["handleIngest"]
 >;
 
 /** Build one Strava webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, StravaEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, StravaEvent> {
   const handleIngest: Ingest = ({ raw, params }) => {
     const method = String(raw.method).toUpperCase();
 
@@ -172,10 +167,14 @@ export function webhookTrigger(
     output: EVENT_OUTPUT,
     sample: spec.sample,
 
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "Set this trigger's Verify token to a long random string you choose.",
+        "Register the URL above with Strava with a POST to https://www.strava.com/api/v3/push_subscriptions that carries your Strava API application's client_id and client_secret, the URL above as callback_url, and the same Verify token as verify_token.",
+        "A Strava application has at most one push subscription, so delete the old one (DELETE /push_subscriptions/{id}) before registering a new URL.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
     handleIngest,
   };
 }

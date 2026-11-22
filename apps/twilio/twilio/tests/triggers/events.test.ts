@@ -126,6 +126,20 @@ test("onSubscribe returns the callback URL it must be pasted as, and calls nothi
   }
 });
 
+test("a manual webhook: W6W shows the URL with the Twilio steps (hooks kept: they record the URL)", () => {
+  for (const t of [callStatus, callSummary, anyEvent]) {
+    assert.equal(t.webhook?.registration, "manual");
+    assert.ok(t.webhook?.instructions?.includes("Auth Token (Twilio Console, Account info)"));
+    assert.equal(typeof t.onSubscribe, "function");
+  }
+  assert.ok(callStatus.webhook?.instructions?.includes("Status Callback URL"));
+  assert.ok(callSummary.webhook?.instructions?.includes("Event Streams webhook sink"));
+  assert.ok(
+    callSummary.webhook?.instructions?.includes("com.twilio.voice.insights.call-summary.complete"),
+  );
+  assert.ok(anyEvent.webhook?.instructions?.includes("Event types"));
+});
+
 // ------------------------------------------------------------------ call-status
 
 test("call-status: a valid signature yields the normalized call event", async () => {

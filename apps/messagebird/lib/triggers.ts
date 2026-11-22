@@ -11,9 +11,12 @@ import {
  * MessageBird inbound SMS trigger (rfcs/trigger.md, webhook form, manual setup, signed).
  *
  * MessageBird forwards a message received on a virtual mobile number to a URL set in Flow Builder
- * ("Forward to URL" step) or by MessageBird support; there is no registration API. Every request
- * MessageBird sends carries `MessageBird-Signature-JWT`, a JWT signed HS256 with the account's
- * SIGNING KEY (D5 (2): pasted as `signingKey`). Verified before the body is parsed:
+ * ("Forward to URL" step) or by MessageBird support; there is no registration API, so the trigger is
+ * a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL
+ * and shows it with `instructions`. `onSubscribe` still makes no vendor call; it stays only to record
+ * the callback URL that the `url_hash` check below needs. Every request MessageBird sends carries
+ * `MessageBird-Signature-JWT`, a JWT signed HS256 with the account's SIGNING KEY (D5 (2): pasted
+ * as `signingKey`). Verified before the body is parsed:
  *
  *   - header `alg` must be `HS256`; the HMAC-SHA256 of `header.payload` under the signing key must
  *     match the JWT signature (constant time);
@@ -203,8 +206,16 @@ export function webhookTrigger(
     params: [SIGNING_KEY_PARAM],
     output: OUTPUT,
     sample: SAMPLE,
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In MessageBird's Flow Builder, open the flow of your number and add a Forward to URL step (or ask MessageBird support to set the URL).",
+        "Paste the URL above exactly as shown (the signature covers it) and choose POST as the method.",
+        "Copy your MessageBird signing key (the one the Dashboard lets you regenerate) into this trigger's Signing key.",
+      ].join("\n"),
+    },
 
-    // Manual webhook whose signature covers the URL: remember the URL, make no vendor call.
+    // The signature covers the URL: remember it, make no vendor call.
     onSubscribe({ callbackUrl }) {
       return { callbackUrl };
     },

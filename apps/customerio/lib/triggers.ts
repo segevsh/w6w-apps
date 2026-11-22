@@ -14,9 +14,9 @@ import {
  * A reporting webhook is configured by hand in Customer.io (Integrations > Reporting webhooks);
  * this app's credentials are Track API credentials, which cannot register one, so:
  *
- *   - `onSubscribe` makes no Customer.io call. It checks that the pasted signing key is present
- *     and returns the callback URL to paste into Customer.io; `onUnsubscribe` is a no-op (the
- *     user removes the reporting webhook in Customer.io).
+ *   - The trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment
+ *     2026-11-22): W6W mints the URL and shows it with `instructions`, and the user pastes it into
+ *     Customer.io (and removes the reporting webhook there). No hook registers anything.
  *   - `handleIngest` verifies `X-CIO-Signature` — lowercase hex HMAC-SHA256 of
  *     `v0:<X-CIO-Timestamp>:<raw body>` under the reporting webhook's signing key (D5 (2): a
  *     secret-typed `signingSecret` param) — BEFORE it parses anything. Customer.io always
@@ -33,12 +33,6 @@ export interface TriggerParams {
   objectType?: string;
   /** Generic trigger only: keep events of this metric (`opened`, `bounced`, …). */
   metric?: string;
-}
-
-/** What `onSubscribe` returns and the host persists on the subscription. */
-export interface TriggerState {
-  mode: "manual";
-  callbackUrl: string;
 }
 
 /** The stored event: one verified delivery. */
@@ -116,7 +110,7 @@ export interface WebhookTriggerSpec {
 /** Build one Customer.io reporting-webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, CustomerIoEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, CustomerIoEvent> {
   const fixed = spec.objectType !== undefined;
   return {
     key: spec.key,
@@ -127,13 +121,15 @@ export function webhookTrigger(
     sample: spec.sample,
     // Customer.io is configured by hand; no Customer.io API call (so no Connection) is made.
     requiresAuth: false,
-
-    onSubscribe({ params, callbackUrl }) {
-      requireSecret(params?.signingSecret);
-      return { mode: "manual", callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Customer.io, open Integrations > Reporting webhooks.",
+        "Add a reporting webhook and paste the URL above as its endpoint.",
+        "Select the events to send (email events and/or customer subscription events).",
+        "On the same page, copy the webhook's signing key into this trigger's Signing Key.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

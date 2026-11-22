@@ -81,22 +81,13 @@ test("fixture body is not canonical JSON", () => {
   assert(JSON.stringify(JSON.parse(body("x"))) !== body("x"));
 });
 
-test("onSubscribe hands back the callback URL and makes no request", async () => {
-  const { ctx, calls } = mockCtx();
-  const t = byKey("issue-created");
-  assertEquals(
-    await t.onSubscribe!(
-      {
-        params: {},
-        subscriptionId: "s",
-        callbackUrl: CALLBACK,
-        hostUrl: "https://api.example.test",
-      } as never,
-      ctx,
-    ),
-    { callbackUrl: CALLBACK },
-  );
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Jira steps; no hook registers anything", () => {
+  for (const t of app.triggers.filter((t) => t.key !== "new-issue")) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("System, WebHooks"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
+  }
 });
 
 for (const [key, ev] of NAMED) {

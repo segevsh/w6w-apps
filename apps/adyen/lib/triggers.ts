@@ -5,8 +5,9 @@ import { hmac, requireRawBody, requireSecret, timingSafeEqual } from "../../_sha
  * Adyen webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
  *   - Adyen webhooks are created per company or merchant account in the Customer Area (Developers,
- *     Webhooks), so `onSubscribe` makes no Adyen call: it hands back the `callbackUrl` the user
- *     pastes there and `onUnsubscribe` is a no-op.
+ *     Webhooks), so the trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ *     Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the user
+ *     pastes it there. No hook registers anything.
  *   - A Standard webhook (JSON method) carries `notificationItems[].NotificationRequestItem`, each
  *     with `additionalData.hmacSignature`: base64 HMAC-SHA256 under the binary form of the
  *     hex-encoded HMAC key (D5 (2): the user pastes the key) over eight fields joined with ":":
@@ -192,7 +193,7 @@ export interface WebhookTriggerSpec {
 /** Build one Adyen event-code webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, AdyenEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, AdyenEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -200,12 +201,15 @@ export function webhookTrigger(
     params: [HMAC_KEY_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Adyen Customer Area, open Developers, Webhooks.",
+        "Add or edit a Standard webhook, paste the URL above as its URL and set its Method to JSON.",
+        "Under Events, make sure this trigger's event code is enabled.",
+        "Under Security, generate an HMAC key and copy it into this trigger's HMAC Key.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

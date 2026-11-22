@@ -12,8 +12,9 @@ import {
  * Formspark webhook trigger (rfcs/trigger.md, webhook form, manual receiver).
  *
  *   - Formspark has no webhook API: the URL is set per form in the dashboard (Integrations, Webhook
- *     row). `onSubscribe` therefore makes no Formspark call: it hands back the `callbackUrl` the
- *     user pastes there, and `onUnsubscribe` is a no-op (clearing the URL in the dashboard stops
+ *     row). The trigger is therefore a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ *     Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the user
+ *     pastes it there. No hook registers anything (clearing the URL in the dashboard stops
  *     deliveries).
  *   - Signing is OPTIONAL on Formspark's side ("Sign deliveries" in the Webhook row). This trigger
  *     requires it (D5 (2): the user pastes the secret the dashboard shows): an unsigned delivery is
@@ -121,7 +122,7 @@ export interface WebhookTriggerSpec {
 /** Build the Formspark submission webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, SubmissionEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, SubmissionEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -129,12 +130,14 @@ export function webhookTrigger(
     params: [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Formspark, open the form's settings, find the Webhook row under Integrations and click Connect.",
+        "Paste the URL above into the URL field, turn on Sign deliveries and save.",
+        "Copy the signing secret the row shows into this trigger's Signing Secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

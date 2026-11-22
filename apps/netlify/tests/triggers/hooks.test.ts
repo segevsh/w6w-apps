@@ -12,7 +12,6 @@ import deployFailed from "../../triggers/deploy-failed.ts";
 const assert = (cond: unknown, msg?: string) => assertEquals(!!cond, true, msg);
 
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
-const HOST = "https://api.example.test";
 const SECRET = "jws-secret-token-for-tests-0123456789";
 
 /** Narrow the `E[] | { events, response? }` union (brief §3) before indexing. */
@@ -76,7 +75,8 @@ test("app: the signed deploy webhook triggers each carry output and sample", () 
   for (const t of app.triggers.filter((t) => t.key.startsWith("deploy"))) {
     assert(t.output!.length > 0, `${t.key} output`);
     assert(t.sample !== undefined, `${t.key} sample`);
-    assert(typeof t.onSubscribe === "function" && typeof t.onUnsubscribe === "function");
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.onSubscribe === undefined && t.onUnsubscribe === undefined);
     assert(typeof t.handleIngest === "function");
     assertEquals(typeof (t as { poll?: unknown }).poll, "undefined");
     assertEquals(t.params!.find((p) => p.key === "signingSecret")!.type, "secret");
@@ -290,13 +290,16 @@ test("deploy-succeeded keeps ready; deploy-failed keeps error", async () => {
   assertEquals(evs(await ingest(deployFailed, call(failed, good(failed)))).length, 1);
 });
 
-test("manual webhook: onSubscribe makes no Netlify call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await deploy.onSubscribe!(
-    { params: {}, subscriptionId: "sub_abc", callbackUrl: CALLBACK, hostUrl: HOST },
-    ctx,
+test("a manual webhook: W6W shows the URL with the Netlify notification steps; no hook registers anything", () => {
+  assertEquals(deploy.webhook?.registration, "manual");
+  assert(
+    deploy.webhook?.instructions?.includes(
+      "Deploy notifications > Add notification > Outgoing webhook",
+    ),
   );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await deploy.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_abc" }, ctx);
-  assertEquals(calls.length, 0);
+  assert(deploy.webhook?.instructions?.includes("JWS secret token"));
+  assert(deploySucceeded.webhook?.instructions?.includes("Choose the Deploy succeeded event."));
+  assert(deployFailed.webhook?.instructions?.includes("Choose the Deploy failed event."));
+  assertEquals(deploy.onSubscribe, undefined);
+  assertEquals(deploy.onUnsubscribe, undefined);
 });

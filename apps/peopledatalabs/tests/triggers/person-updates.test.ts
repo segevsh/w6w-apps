@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import personUpdates from "../../triggers/person-updates.ts";
 
-const CALLBACK = "https://w6w.example/triggers/webhooks/sub_123";
 const KEY = "Bearer test-shared-key";
 // Non-canonical whitespace: JSON.stringify(JSON.parse(BODY)) !== BODY.
 const BODY = '[ "9adnit66-hdZ5lkBbq-AOQ_0000",\n  "YraxDoP16jzyjfxtn-1XJQ_0000" ]';
@@ -26,16 +25,12 @@ test("fixture really has non-canonical whitespace", () => {
   assert.notEqual(JSON.stringify(JSON.parse(BODY)), BODY);
 });
 
-test("onSubscribe makes no vendor call and hands back the callback URL; onUnsubscribe is a no-op", async () => {
-  const state = await personUpdates.onSubscribe!(
-    { params: {}, callbackUrl: CALLBACK },
-    {} as never,
-  );
-  assert.deepEqual(state, { callbackUrl: CALLBACK });
-  assert.equal(
-    await personUpdates.onUnsubscribe!({ params: {}, state } as never, {} as never),
-    undefined,
-  );
+test("a manual webhook: W6W shows the URL with the PDL steps; no hook registers anything", () => {
+  assert.equal(personUpdates.webhook?.registration, "manual");
+  assert.ok(personUpdates.webhook?.instructions?.includes("PDL team"));
+  assert.ok(personUpdates.webhook?.instructions?.includes("Shared Key (header value)"));
+  assert.equal(personUpdates.onSubscribe, undefined);
+  assert.equal(personUpdates.onUnsubscribe, undefined);
 });
 
 test("a delivery with the matching shared key becomes one batch event", async () => {

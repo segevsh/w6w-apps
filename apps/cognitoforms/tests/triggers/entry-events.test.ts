@@ -83,13 +83,18 @@ test("a non-POST call is refused", async () => {
   await assertRejects(() => ingest(submitted, call(ENTRY, "GET")), Error, "POST");
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await submitted.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await submitted.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Cognito Forms steps; no hook registers anything", () => {
+  for (
+    const [t, endpoint] of [
+      [submitted, "Submit Entry Endpoint"],
+      [updated, "Update Entry Endpoint"],
+      [deleted, "Delete Entry Endpoint"],
+    ] as const
+  ) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Post JSON Data to a Website"));
+    assert(t.webhook?.instructions?.includes(endpoint));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
+  }
 });

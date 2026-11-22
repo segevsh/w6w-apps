@@ -37,8 +37,7 @@ test("app declares the webhook trigger with output and sample, no poll, no secre
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(trigger.poll, undefined);
-  assertEquals(typeof trigger.onSubscribe, "function");
-  assertEquals(typeof trigger.onUnsubscribe, "function");
+  assertEquals(trigger.webhook?.registration, "manual");
   assert(!(trigger.params ?? []).some((p) => p.type === "secret"));
 });
 
@@ -107,15 +106,12 @@ test("methods rest_command does not offer are refused", async () => {
   await assertRejects(async () => await run(call({}, { method: "TRACE" })), Error, "rest_command");
 });
 
-test("onSubscribe hands back the callback URL and makes no Home Assistant call", async () => {
-  const { ctx, calls } = mockCtx([]);
-  const state = await trigger.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await trigger.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the rest_command steps; no hook registers anything", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("rest_command"));
+  assert(trigger.webhook?.instructions?.includes("configuration.yaml"));
+  assertEquals(trigger.onSubscribe, undefined);
+  assertEquals(trigger.onUnsubscribe, undefined);
 });
 
 test("README states that Home Assistant does not sign and the callback URL is the secret", () => {

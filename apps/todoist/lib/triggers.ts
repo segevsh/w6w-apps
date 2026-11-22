@@ -10,9 +10,10 @@ import {
 /**
  * Todoist webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
- *   - Todoist webhooks are configured per app in the App Console, not through the REST API, so
- *     `onSubscribe` makes no Todoist call: it hands back the `callbackUrl` the user pastes there and
- *     `onUnsubscribe` is a no-op.
+ *   - Todoist webhooks are configured per app in the App Console, not through the REST API, so the
+ *     trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22):
+ *     W6W mints the URL and shows it with `instructions`, and the user pastes it there. No hook
+ *     registers anything.
  *   - `handleIngest` verifies `X-Todoist-Hmac-SHA256` (base64 HMAC-SHA256 of the exact request body
  *     under the app's client secret, D5 (2)) BEFORE it parses anything, then emits one event.
  *
@@ -109,7 +110,7 @@ export interface WebhookTriggerSpec {
 /** Build one Todoist event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, TodoistEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, TodoistEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -117,12 +118,16 @@ export function webhookTrigger(
     params: [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Todoist App Console, open your app, then Webhooks.",
+        "Paste the URL above as the webhook's callback URL.",
+        `Tick the ${spec.eventName} event.`,
+        "Activate the webhook for your user through OAuth consent with the data:read scope.",
+        "Copy the app's Client Secret (App Management) into this trigger's Client Secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

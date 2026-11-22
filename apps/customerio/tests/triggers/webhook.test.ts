@@ -205,12 +205,11 @@ test("handleIngest: a verified body that is not JSON throws a body error", async
   await assertRejects(() => ingest(raw), Error, "not valid JSON");
 });
 
-test("triggers: each declares a required secret param, output, sample and webhook hooks", () => {
+test("triggers: each declares a required secret param, output, sample and a manual webhook", () => {
   for (const t of [reportingEvent, emailOpened, emailClicked, customerUnsubscribed]) {
     assert((t.output as unknown[]).length > 0, `${t.key} output`);
     assert(t.sample !== undefined, `${t.key} sample`);
-    assertEquals(typeof t.onSubscribe, "function");
-    assertEquals(typeof t.onUnsubscribe, "function");
+    assertEquals(t.webhook?.registration, "manual");
     assertEquals(typeof t.handleIngest, "function");
     assertEquals(t.poll, undefined);
     const secret = t.params!.find((p) => p.key === "signingSecret")!;
@@ -218,33 +217,11 @@ test("triggers: each declares a required secret param, output, sample and webhoo
   }
 });
 
-test("onSubscribe: makes no Customer.io call and returns the callback URL for the dashboard", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await emailOpened.onSubscribe!(
-    {
-      params: PARAMS,
-      subscriptionId: "s",
-      callbackUrl: "https://w6w.example/hook/abc",
-      hostUrl: "",
-    },
-    ctx,
-  );
-  assertEquals(state, { mode: "manual", callbackUrl: "https://w6w.example/hook/abc" });
-  await emailOpened.onUnsubscribe!({ params: PARAMS, state, subscriptionId: "s" }, ctx);
-  assertEquals(calls.length, 0);
-});
-
-test("onSubscribe: a missing or empty signing key is refused up front", async () => {
-  const { ctx } = mockCtx();
-  for (const params of [{}, { signingSecret: "" }]) {
-    await assertRejects(
-      async () =>
-        await emailOpened.onSubscribe!(
-          { params, subscriptionId: "s", callbackUrl: "https://w6w.example/h", hostUrl: "" },
-          ctx,
-        ),
-      Error,
-      "secret",
-    );
+test("a manual webhook: W6W shows the URL with the Customer.io steps; no hook registers anything", () => {
+  for (const t of [reportingEvent, emailOpened, emailClicked, customerUnsubscribed]) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Integrations > Reporting webhooks"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   }
 });

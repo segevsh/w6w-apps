@@ -19,8 +19,9 @@ import {
  *
  * 1. Webhook triggers (`webhookTrigger`): Notion webhooks are configured by hand in the
  *    integration settings (Webhooks tab); no API registers a subscription. So:
- *      - `onSubscribe` makes no Notion call; it returns the callback URL to paste into Notion and
- *        `onUnsubscribe` is a no-op (the user deletes the subscription in Notion).
+ *      - Each is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22):
+ *        W6W mints the URL and shows it with `instructions`, and no hook registers anything (the
+ *        user deletes the subscription in Notion).
  *      - Notion signs every event with `X-Notion-Signature: sha256=<hex HMAC-SHA256 of the exact
  *        request body>` keyed by the subscription's `verification_token` (D5 (2): a secret-typed
  *        `signingSecret` param). The signature carries no timestamp, so there is no replay window
@@ -52,12 +53,6 @@ export interface WebhookParams {
   signingSecret?: string;
   /** Any-event trigger only: comma-separated Notion event types; empty = every event. */
   events?: string;
-}
-
-/** What `onSubscribe` returns and the host persists on the subscription. */
-export interface WebhookState {
-  mode: "manual";
-  callbackUrl: string;
 }
 
 /** The stored event: one verified delivery (or the setup `verification` handshake). */
@@ -206,7 +201,7 @@ export interface WebhookTriggerSpec {
 /** Build one Notion webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<WebhookParams, NotionEvent, WebhookState> {
+): TriggerDefinition<WebhookParams, NotionEvent> {
   const fixed = spec.eventTypes;
   return {
     key: spec.key,
@@ -217,11 +212,17 @@ export function webhookTrigger(
     sample: spec.sample,
     requiresAuth: false,
 
-    onSubscribe({ callbackUrl }) {
-      return { mode: "manual", callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "Leave this trigger's Verification Token empty for now.",
+        "In Notion, open the integration, then Webhooks, Create a subscription.",
+        "Paste the URL above as the webhook URL and pick " +
+        (fixed ? `the ${fixed.join(", ")} event type.` : "the event types you want."),
+        "Notion sends a one-time verification_token to this trigger as a run whose event type is verification; copy it from that run.",
+        "Paste the token into Notion's Verify dialog and into this trigger's Verification Token.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

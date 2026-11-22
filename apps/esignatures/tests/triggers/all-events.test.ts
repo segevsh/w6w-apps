@@ -233,16 +233,12 @@ test("a non-POST call is refused", async () => {
   );
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
+test("a manual webhook: W6W shows the URL with the eSignatures.com steps; no hook registers anything", () => {
   for (const key of Object.keys(STATUS_OF)) {
     const t = trigger(key);
-    const { ctx, calls } = mockCtx();
-    const state = await t.onSubscribe!(
-      { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-      ctx,
-    );
-    assertEquals(state, { callbackUrl: CALLBACK });
-    await t.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-    assertEquals(calls.length, 0);
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("API page"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   }
 });

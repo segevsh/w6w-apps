@@ -188,3 +188,9 @@ test("errors never contain the key, the token or the body", async () => {
     assert(!m.includes(KEY) && !m.includes(token) && !m.includes("hello there"));
   }
 });
+
+test("a manual webhook: W6W shows the URL with the Flow Builder steps", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("Forward to URL"));
+  assert(trigger.webhook?.instructions?.includes("POST"));
+});

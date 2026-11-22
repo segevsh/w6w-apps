@@ -79,14 +79,12 @@ test("app declares the webhook trigger with output and sample, no poll", () => {
   assertEquals(trigger.poll, undefined);
 });
 
-test("manual webhook: onSubscribe makes no vendor call and returns the callback URL", async () => {
-  const m = mockCtx([]);
-  const state = await newMessage.onSubscribe!(
-    { params: {}, callbackUrl: "https://api.example.test/x", subscriptionId: "s" } as never,
-    m.ctx,
-  );
-  assertEquals(state, { callbackUrl: "https://api.example.test/x" });
-  assertEquals(m.calls.length, 0);
+test("a manual webhook: W6W shows the URL with the App Dashboard steps; no hook registers anything", () => {
+  assertEquals(newMessage.webhook?.registration, "manual");
+  assert(newMessage.webhook?.instructions?.includes("App Dashboard, open Webhooks"));
+  assert(newMessage.webhook?.instructions?.includes("Verify token"));
+  assertEquals(newMessage.onSubscribe, undefined);
+  assertEquals(newMessage.onUnsubscribe, undefined);
 });
 
 test("valid signature (node:crypto) → every kind in order; echoes are skipped", async () => {

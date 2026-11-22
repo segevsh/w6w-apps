@@ -7,7 +7,9 @@ import { header, requireRawBody, timingSafeEqual } from "../../_shared/webhook/m
  * Blob events reach a webhook through Azure Event Grid. Creating the Event Grid subscription takes
  * an Azure Resource Manager call under Microsoft Entra authentication, which this app's storage
  * credential (shared key) cannot make, so the callback URL is entered in Azure once (portal, CLI or
- * IaC), and the endpoint answers Event Grid's validation handshake itself:
+ * IaC): the trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment
+ * 2026-11-22), W6W mints the URL and shows it with `instructions`, and no hook registers anything.
+ * The endpoint answers Event Grid's validation handshake itself:
  *
  *   - Validation (`aeg-event-type: SubscriptionValidation`): the delivery holds one
  *     `Microsoft.EventGrid.SubscriptionValidationEvent` whose `data.validationCode` the endpoint
@@ -139,7 +141,7 @@ export interface WebhookTriggerSpec {
 /** Build one Azure Blob event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, BlobEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, BlobEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -148,11 +150,15 @@ export function webhookTrigger(
     output: OUTPUT,
     sample: spec.sample,
 
-    // Manual webhook: the Event Grid subscription is created in Azure, pointing at this URL.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Azure portal, open the storage account, then Events, Event Subscription.",
+        "Choose Web Hook as the endpoint type and paste the URL above as its endpoint.",
+        `Pick the ${spec.title} event type and select the Event Grid Event Schema (not CloudEvents).`,
+        "Optionally enter the event subscription's name in this trigger's Event Grid subscription name to refuse deliveries from any other subscription.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
 
     handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

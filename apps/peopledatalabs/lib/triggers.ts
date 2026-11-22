@@ -10,8 +10,10 @@ import {
  * People Data Labs "person records updated" webhook (rfcs/trigger.md, webhook form, manual).
  *
  * PDL pushes webhooks only to enterprise API and Data License customers, and only after the PDL
- * team registers the endpoint (target URL, headers, filters): there is no registration API. So
- * `onSubscribe` makes no PDL call and hands back the `callbackUrl` the user gives their PDL team.
+ * team registers the endpoint (target URL, headers, filters): there is no registration API. So the
+ * trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W
+ * mints the URL and shows it with `instructions`, and the user gives it to their PDL team. No hook
+ * registers anything.
  *
  * Trust model: PDL does not sign deliveries. Its docs say the registered headers should "at a
  * minimum" carry "a shared key for secure authorization", e.g. `"Authorization": "Bearer ..."`.
@@ -110,11 +112,7 @@ export function verifyDelivery(
   return { pdlIds: parsed as string[], count: parsed.length };
 }
 
-export const personUpdates: TriggerDefinition<
-  TriggerParams,
-  PersonUpdatesEvent,
-  { callbackUrl: string }
-> = {
+export const personUpdates: TriggerDefinition<TriggerParams, PersonUpdatesEvent> = {
   key: "person-updates",
   title: "Person Records Updated",
   description:
@@ -122,12 +120,15 @@ export const personUpdates: TriggerDefinition<
   params: [SHARED_KEY_PARAM, HEADER_NAME_PARAM],
   output: OUTPUT,
   sample: SAMPLE,
-
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
+  webhook: {
+    registration: "manual",
+    instructions: [
+      "People Data Labs has no webhook settings page, so give the URL above to your PDL team as the webhook's Target URL.",
+      "Choose a long random shared key, for example Bearer followed by a random string, and paste it into this trigger's Shared Key (header value).",
+      "Ask your PDL team to send that exact value in the Authorization header of every delivery.",
+      "Tell your PDL team which updates to send, for example job_change, work_email or location.",
+    ].join("\n"),
   },
-
-  onUnsubscribe() {},
 
   handleIngest({ raw, params }) {
     return [verifyDelivery(raw, params)];

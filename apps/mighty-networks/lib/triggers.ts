@@ -14,7 +14,9 @@ import { pollSnapshot } from "../../_shared/poll/mod.ts";
  * the events and sets an API key for the webhook in the Network settings. Each delivery is a JSON
  * POST `{ event_id, event_timestamp, event_type, payload }` carrying `Authorization: Bearer <that
  * key>`. There is NO signature: the key travels with every delivery, so the check is a shared-secret
- * compare, not a proof over the body. The callback URL should stay private as well.
+ * compare, not a proof over the body. The callback URL should stay private as well. So each
+ * trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W
+ * mints the URL and shows it with `instructions`, and no hook registers anything.
  *
  * `handleIngest` therefore: requires the pasted key (`requireSecret`) and the raw body, compares the
  * bearer token in constant time, and only then parses. A failure throws and never echoes the key.
@@ -124,7 +126,7 @@ export interface WebhookTriggerSpec {
 /** Build one Mighty Networks webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, NetworkEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, NetworkEvent> {
   const generic = spec.eventTypes.length === 0;
   return {
     key: spec.key,
@@ -143,11 +145,16 @@ export function webhookTrigger(
     output: OUTPUT,
     sample: spec.sample,
 
-    // Manual webhook: nothing to register, the Network owner pastes the callback URL.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In your Mighty Networks Network settings, add a webhook and paste the URL above as its address.",
+        generic
+          ? "Pick the events you want it to send."
+          : `Pick the ${spec.eventTypes.join(", ")} event.`,
+        "Set an API key on the webhook and enter the same key in this trigger's Webhook API key.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
 
     handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

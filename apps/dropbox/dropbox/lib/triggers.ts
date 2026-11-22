@@ -11,8 +11,9 @@ import {
  * Dropbox webhook trigger (rfcs/trigger.md, webhook form).
  *
  * Dropbox webhooks are registered by hand in the app's page of the App Console (there is no API
- * to register one) and cover every account that authorized the app, so this is a manual-webhook
- * receiver: `onSubscribe` makes no vendor call and `onUnsubscribe` is a no-op.
+ * to register one) and cover every account that authorized the app, so the trigger is a MANUAL
+ * webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and
+ * shows it with `instructions`, and the user pastes it there. No hook registers anything.
  *
  *   - GET (the verification request made when the URI is saved): Dropbox sends a `challenge`
  *     query parameter that must be echoed back as `text/plain`.
@@ -28,10 +29,6 @@ const MAX_CHALLENGE_LENGTH = 256;
 export interface TriggerParams {
   appSecret?: string;
   accountId?: string;
-}
-
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 export interface FilesChangedEvent {
@@ -59,7 +56,7 @@ export const FILES_CHANGED_OUTPUT: OutputField[] = [
 ];
 
 type Ingest = NonNullable<
-  TriggerDefinition<TriggerParams, FilesChangedEvent, TriggerState>["handleIngest"]
+  TriggerDefinition<TriggerParams, FilesChangedEvent>["handleIngest"]
 >;
 
 /**
@@ -123,7 +120,7 @@ export interface FilesChangedSpec {
 
 export function filesChangedTrigger(
   spec: FilesChangedSpec,
-): TriggerDefinition<TriggerParams, FilesChangedEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, FilesChangedEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -131,11 +128,14 @@ export function filesChangedTrigger(
     params: [APP_SECRET_PARAM, ACCOUNT_PARAM],
     output: FILES_CHANGED_OUTPUT,
     sample: { accountId: "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc" },
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Dropbox App Console, open your app, then Webhooks.",
+        "Add the URL above as a webhook URI; Dropbox checks it at once and the trigger answers that check.",
+        "Copy the app's App secret (your app, Settings) into this trigger's App secret.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
     handleIngest,
     parseOutput({ normalized }) {
       return normalized as FilesChangedEvent;

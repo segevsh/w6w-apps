@@ -2,20 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import agentRunFinished from "../../triggers/agent-run-finished.ts";
 
-const CALLBACK = "https://w6w.example/triggers/webhooks/sub_123";
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 const post = (body: unknown) => ({ method: "POST", path: "/", query: {}, headers: {}, body });
 
-test("onSubscribe makes no vendor call and hands back the callback URL; onUnsubscribe is a no-op", async () => {
-  const state = await agentRunFinished.onSubscribe!(
-    { params: {}, callbackUrl: CALLBACK },
-    {} as never,
-  );
-  assert.deepEqual(state, { callbackUrl: CALLBACK });
-  assert.equal(
-    await agentRunFinished.onUnsubscribe!({ params: {}, state } as never, {} as never),
-    undefined,
-  );
+test("a manual webhook: W6W shows the URL with the PhantomBuster steps; no hook registers anything", () => {
+  assert.equal(agentRunFinished.webhook?.registration, "manual");
+  assert.ok(agentRunFinished.webhook?.instructions?.includes("Advanced Notification Settings"));
+  assert.equal(agentRunFinished.onSubscribe, undefined);
+  assert.equal(agentRunFinished.onUnsubscribe, undefined);
 });
 
 test("handleIngest parses a successful run summary (the vendor's documented payload)", async () => {
