@@ -140,14 +140,14 @@ test("posthog: a named trigger ignores other events; any-event filters on its Ev
   assertEquals(evs(await ingest(anyEvent, call(nameless, headersFor(nameless), only))), []);
 });
 
-test("posthog: manual webhook onSubscribe makes no vendor call and returns the callback URL", () => {
+test("posthog: every webhook trigger is a manual webhook with no hooks; named ones name their event", () => {
   for (const t of [pageview, personIdentified, featureFlagCalled, anyEvent]) {
-    const out = t.onSubscribe!(
-      { params: {}, callbackUrl: "https://cb.example/x", subscriptionId: "s", hostUrl: "h" },
-      mockCtx().ctx,
-    );
-    assertEquals(out, { callbackUrl: "https://cb.example/x" });
+    assertEquals(t.webhook?.registration, "manual");
+    nodeAssert.ok(t.webhook?.instructions?.includes("Data pipelines, + New, Destination"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   }
+  nodeAssert.ok(pageview.webhook?.instructions?.includes("only the $pageview event"));
 });
 
 const conn = { display: { region: "us", projectId: "999" } };

@@ -16,8 +16,9 @@ import {
  *
  * Zoom event subscriptions are configured on the Marketplace app (Feature, Event Subscriptions),
  * not through the REST API this app calls, so the trigger is a manual webhook:
- *   - `onSubscribe` makes no Zoom call and returns the `callbackUrl` to paste as the Event
- *     Notification Endpoint URL;
+ *   - `webhook.registration` is `"manual"` (rfcs/trigger.md Amendment 2026-11-22): W6W mints the
+ *     URL and shows it with `instructions`, and the user pastes it as the Event Notification
+ *     Endpoint URL. No hook registers anything;
  *   - the app's Secret Token is a secret param (D5 (2));
  *   - `handleIngest` verifies `x-zm-signature` = `v0=` + hex HMAC-SHA256, keyed by the Secret
  *     Token, of `v0:<x-zm-request-timestamp>:<raw body>`, over the raw bytes, BEFORE parsing. Zoom
@@ -34,10 +35,6 @@ export interface TriggerParams {
   secretToken?: string;
   /** Any Event only: comma-separated Zoom event names, empty = every event. */
   events?: string;
-}
-
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 /** The run's `trigger.event`: the delivery with its payload lifted out. */
@@ -149,7 +146,7 @@ export interface ZoomTriggerSpec {
 /** Build one Zoom event trigger. */
 export function zoomTrigger(
   spec: ZoomTriggerSpec,
-): TriggerDefinition<TriggerParams, ZoomEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, ZoomEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -171,12 +168,18 @@ export function zoomTrigger(
       },
       oldObject: null,
     } satisfies ZoomEvent,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Zoom Marketplace, open your app, then Features, Event Subscriptions.",
+        "Add a subscription and paste the URL above as its Event notification endpoint URL.",
+        spec.event
+          ? `Tick the ${spec.event} event.`
+          : "Tick the events you want; this trigger's Event names param can narrow them further.",
+        "Copy the app's Secret Token (Features) into this trigger's Secret Token.",
+        "Click Validate in Zoom; the trigger answers Zoom's URL validation itself.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       const { body, secret } = await verifiedBody(raw, params?.secretToken);

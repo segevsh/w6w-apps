@@ -12,8 +12,9 @@ import {
  *
  *   - Jira's admin webhooks are created in Jira Administration (System, WebHooks). Registering one
  *     through the REST API (`/rest/webhooks/1.0/webhook`) lives outside the `/rest/api/3` client this
- *     app wraps, so `onSubscribe` makes no Jira call: it hands back the `callbackUrl` the user pastes
- *     there and `onUnsubscribe` is a no-op.
+ *     app wraps, so the trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ *     Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the user
+ *     pastes it there. No hook registers anything.
  *   - `handleIngest` verifies `X-Hub-Signature` (`sha256=` + hex HMAC-SHA256 of the exact request
  *     body under the webhook's secret, D5 (2)) BEFORE it parses anything. Jira signs only when the
  *     webhook has a secret, so the secret is required here: an unsigned delivery is refused.
@@ -145,7 +146,7 @@ export interface WebhookTriggerSpec {
 /** Build one Jira webhook trigger: a named event, or (no `event`) the Any Event filter. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, JiraEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, JiraEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -153,12 +154,15 @@ export function webhookTrigger(
     params: spec.event ? [SIGNING_SECRET_PARAM] : [SIGNING_SECRET_PARAM, EVENTS_PARAM],
     output: spec.event ? OUTPUT : ANY_OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Jira, open Jira Administration, System, WebHooks, and choose Create a WebHook.",
+        "Paste the URL above as its URL.",
+        "Tick the event this trigger names (for Any Event, tick whichever events you want).",
+        "Use Generate secret to create the webhook's secret and copy it into this trigger's Webhook secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

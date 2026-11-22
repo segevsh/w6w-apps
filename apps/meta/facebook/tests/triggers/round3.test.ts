@@ -183,28 +183,25 @@ test("facebook: the new triggers answer Meta's one-time GET handshake only with 
   }
 });
 
-test("facebook: every new webhook trigger is a manual webhook with secret-typed App Secret and Verify Token", async () => {
+test("facebook: every new webhook trigger is a manual webhook with secret-typed App Secret and Verify Token", () => {
   for (const t of [...cases.map((c) => c.t), anyEvent]) {
     const tt = t as unknown as {
       params: Array<{ key: string; type: string; required?: boolean }>;
       output: unknown[];
       sample: unknown;
-      onSubscribe: (i: unknown, c: unknown) => unknown;
+      webhook?: { registration: string; instructions?: string };
+      onSubscribe?: unknown;
+      onUnsubscribe?: unknown;
     };
     assert(tt.output.length > 0 && tt.sample !== undefined);
     for (const k of ["appSecret", "verifyToken"]) {
       const p = tt.params.find((x) => x.key === k);
       assertEquals([p?.type, p?.required], ["secret", true]);
     }
-    assertEquals(
-      await tt.onSubscribe({
-        params: PARAMS,
-        subscriptionId: "s",
-        callbackUrl: CALLBACK,
-        hostUrl: "https://h",
-      }, {}),
-      { callbackUrl: CALLBACK },
-    );
+    assertEquals(tt.webhook?.registration, "manual");
+    assert(tt.webhook?.instructions?.includes("Meta app dashboard, open Webhooks"));
+    assertEquals(tt.onSubscribe, undefined);
+    assertEquals(tt.onUnsubscribe, undefined);
   }
 });
 

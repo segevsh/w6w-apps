@@ -5,8 +5,9 @@ import type { OutputField, TriggerDefinition } from "@w6w/types";
  *
  *   - Cognito Forms webhooks are set per form, in the form's Settings ("Post JSON Data to a
  *     Website"), with one endpoint each for new, updated and deleted entries. They are not
- *     reachable through the REST API this app calls, so `onSubscribe` makes no Cognito call: it
- *     hands back the `callbackUrl` the user pastes there and `onUnsubscribe` is a no-op.
+ *     reachable through the REST API this app calls, so the trigger is a MANUAL webhook
+ *     (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows
+ *     it with `instructions`, and the user pastes it there. No hook registers anything.
  *   - Cognito Forms documents NO delivery signature, header secret or timestamp, so there is
  *     nothing to verify and none is invented: the callback URL is the only credential. Anyone who
  *     learns it can post an entry to the workflow.
@@ -64,10 +65,17 @@ export interface WebhookTriggerSpec {
   sample: CognitoEvent;
 }
 
+/** The form-settings endpoint Cognito Forms posts each entry event to. */
+const ENDPOINT: Record<CognitoEvent["event"], string> = {
+  "entry.submitted": "Submit Entry Endpoint",
+  "entry.updated": "Update Entry Endpoint",
+  "entry.deleted": "Delete Entry Endpoint",
+};
+
 /** Build one Cognito Forms entry webhook trigger (the callback URL is the only credential). */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<Record<string, never>, CognitoEvent, { callbackUrl: string }> {
+): TriggerDefinition<Record<string, never>, CognitoEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -75,12 +83,14 @@ export function webhookTrigger(
     params: [],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Cognito Forms, open the form in the form builder, then Settings, and tick Post JSON Data to a Website.",
+        `Paste the URL above into the ${ENDPOINT[spec.event]} field and save the form.`,
+        "Keep the URL private: Cognito Forms signs nothing, so the URL is the only credential.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     handleIngest({ raw }) {
       if (raw.method.toUpperCase() !== "POST") {

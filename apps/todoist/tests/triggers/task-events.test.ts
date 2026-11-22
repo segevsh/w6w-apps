@@ -132,15 +132,20 @@ test("a non-POST call is refused", async () => {
   await assertRejects(() => ingest(added, call(ADDED, { method: "GET" })), Error, "POST");
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await added.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await added.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Todoist steps; no hook registers anything", () => {
+  for (
+    const [t, event] of [[added, "item:added"], [completed, "item:completed"], [
+      updated,
+      "item:updated",
+    ]] as const
+  ) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Todoist App Console, open your app, then Webhooks"));
+    assert(t.webhook?.instructions?.includes(`Tick the ${event} event.`));
+    assert(t.webhook?.instructions?.includes("Client Secret"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
+  }
 });
 
 test("a body with leading and trailing whitespace is verified over the exact bytes", async () => {

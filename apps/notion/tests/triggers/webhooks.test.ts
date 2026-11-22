@@ -123,14 +123,13 @@ describe("notion webhook triggers (named)", () => {
         assertEquals(trigger.params?.[0].type, "secret");
       });
 
-      test("onSubscribe makes no Notion call and returns the callback URL", async () => {
-        const m = mockCtx();
-        const state = await trigger.onSubscribe!(
-          { params: PARAMS, callbackUrl: "https://w6w.example/hook/abc", subscriptionId: "s" },
-          m.ctx,
-        );
-        assertEquals(state, { mode: "manual", callbackUrl: "https://w6w.example/hook/abc" });
-        assertEquals(m.calls.length, 0);
+      test("a manual webhook: W6W shows the URL with the Notion steps; no hook registers anything", () => {
+        assertEquals(trigger.webhook?.registration, "manual");
+        assert(trigger.webhook?.instructions?.includes("Webhooks, Create a subscription"));
+        assert(trigger.webhook?.instructions?.includes(`the ${type} event type.`));
+        assert(trigger.webhook?.instructions?.includes("Verification Token"));
+        assertEquals(trigger.onSubscribe, undefined);
+        assertEquals(trigger.onUnsubscribe, undefined);
       });
 
       test("a valid signature over the exact raw body yields the normalized event", async () => {
@@ -234,6 +233,12 @@ describe("any-event", () => {
   test("declares signingSecret and events params", () => {
     assertEquals(anyEvent.key, "any-event");
     assertEquals(anyEvent.params?.map((p) => p.key), ["signingSecret", "events"]);
+  });
+
+  test("a manual webhook whose steps ask for the event types the user wants", () => {
+    assertEquals(anyEvent.webhook?.registration, "manual");
+    assert(anyEvent.webhook?.instructions?.includes("pick the event types you want."));
+    assertEquals(anyEvent.onSubscribe, undefined);
   });
 
   test("empty events passes every signed event type", async () => {

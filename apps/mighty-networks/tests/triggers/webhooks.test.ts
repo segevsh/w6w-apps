@@ -68,14 +68,14 @@ test("the original three webhook triggers keep their keys, output, sample and ha
   }
 });
 
-test("manual webhook: onSubscribe makes no vendor call and returns the callback URL", async () => {
-  const m = mockCtx([]);
-  const state = await memberJoined.onSubscribe!(
-    { params: { webhookKey: KEY }, callbackUrl: CALLBACK, subscriptionId: "sub_1" } as never,
-    m.ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  assertEquals(m.calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Network settings steps; no hook registers anything", () => {
+  assertEquals(memberJoined.webhook?.registration, "manual");
+  assert(memberJoined.webhook?.instructions?.includes("Network settings"));
+  assert(memberJoined.webhook?.instructions?.includes("Webhook API key"));
+  assertEquals(memberJoined.onSubscribe, undefined);
+  assertEquals(memberJoined.onUnsubscribe, undefined);
+  assertEquals(networkEvent.webhook?.registration, "manual");
+  assert(networkEvent.webhook?.instructions?.includes("Pick the events you want"));
 });
 
 test("valid bearer token → one event, both event_type spellings", async () => {

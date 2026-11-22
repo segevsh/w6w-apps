@@ -170,13 +170,19 @@ test("a non-POST call is refused", async () => {
   await assertRejects(() => ingest(newSale, call(sale("paid"), { method: "GET" })), Error, "POST");
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await newSale.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await newSale.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Payhip steps; no hook registers anything", () => {
+  for (
+    const [t, type] of [
+      [newSale, "paid"],
+      [saleRefunded, "refunded"],
+      [newSubscription, "subscription.created"],
+      [subscriptionCancelled, "subscription.deleted"],
+    ] as const
+  ) {
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Settings, Developer"));
+    assert(t.webhook?.instructions?.includes(`Tick the ${type} event.`));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
+  }
 });

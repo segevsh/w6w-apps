@@ -65,8 +65,7 @@ test("app declares the webhook trigger with output and sample, no poll", () => {
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(trigger.poll, undefined);
-  assertEquals(typeof trigger.onSubscribe, "function");
-  assertEquals(typeof trigger.onUnsubscribe, "function");
+  assertEquals(trigger.webhook?.registration, "manual");
   assertEquals(trigger.params!.find((p) => p.key === "signingSecret")!.type, "secret");
 });
 
@@ -180,14 +179,9 @@ test("event normalisation: group source, redelivery flag, message object", async
   assertEquals(e.timestamp, 1762683400123);
 });
 
-test("onSubscribe hands back the callback URL and makes no vendor call", async () => {
-  const { ctx, calls } = mockCtx([]);
-  const state = await trigger.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  assertEquals(calls.length, 0);
-  await trigger.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the LINE Developers Console steps; no hook registers anything", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("Messaging API tab"));
+  assertEquals(trigger.onSubscribe, undefined);
+  assertEquals(trigger.onUnsubscribe, undefined);
 });

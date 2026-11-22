@@ -133,13 +133,9 @@ test("a non-POST call is refused", async () => {
   await assertRejects(() => ingest(call(BODY, { method: "GET" })), Error, "POST");
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await documentParsed.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await documentParsed.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Airparser steps; no hook registers anything", () => {
+  assertEquals(documentParsed.webhook?.registration, "manual");
+  assert(documentParsed.webhook?.instructions?.includes("Integrations, Webhooks"));
+  assertEquals(documentParsed.onSubscribe, undefined);
+  assertEquals(documentParsed.onUnsubscribe, undefined);
 });

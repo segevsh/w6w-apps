@@ -300,14 +300,14 @@ test("url_verification is answered only with a valid signature on a named trigge
   await assert.rejects(ingest("reaction-added", call(body, {})), /signature headers are missing/);
 });
 
-test("onSubscribe makes no Slack call and returns the callback URL for every named trigger", async () => {
+test("every named trigger is a manual webhook with no hooks", () => {
   for (const [key] of CASES) {
-    const m = mockCtx();
-    const state = await trigger(key).onSubscribe!(
-      { params: {}, subscriptionId: "s", callbackUrl: "https://h/t/s", hostUrl: "https://h" },
-      m.ctx,
-    );
-    assert.deepEqual(state, { callbackUrl: "https://h/t/s" });
-    assert.equal(m.calls.length, 0);
+    const t = trigger(key);
+    assert.equal(t.webhook?.registration, "manual");
+    assert.ok(t.webhook?.instructions?.includes("Event Subscriptions"));
+    assert.equal(t.onSubscribe, undefined);
+    assert.equal(t.onUnsubscribe, undefined);
   }
+  assert.ok(trigger("reaction-added").webhook?.instructions?.includes("add reaction_added,"));
+  assert.ok(trigger("message-edited").webhook?.instructions?.includes("message.channels"));
 });

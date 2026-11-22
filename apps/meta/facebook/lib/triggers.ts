@@ -1,7 +1,10 @@
 /**
  * facebook webhook triggers (manual webhook). Meta signs every delivery with the app secret
  * (X-Hub-Signature-256 = sha256 HMAC over the exact body bytes) and confirms a subscription with a
- * one-time GET carrying hub.verify_token and hub.challenge. Docs, verified 2026-11-09:
+ * one-time GET carrying hub.verify_token and hub.challenge. The subscription is made by hand in the
+ * Meta app dashboard, so each webhook trigger is a MANUAL webhook (`webhook.registration`,
+ * rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and the
+ * user pastes it there. No hook registers anything. Docs, verified 2026-11-09:
  * https://developers.facebook.com/docs/graph-api/webhooks/getting-started
  */
 import type {
@@ -10,6 +13,7 @@ import type {
   Param,
   TriggerCall,
   TriggerDefinition,
+  WebhookSetup,
 } from "@w6w/types";
 import {
   header,
@@ -19,9 +23,17 @@ import {
   timingSafeEqual,
 } from "../../_shared/webhook/mod.ts";
 
-/** What `onSubscribe` returns and the host persists: Meta is registered by hand in the dashboard. */
-export interface TriggerState {
-  callbackUrl: string;
+/** The Meta app dashboard steps W6W shows under the URL; `fieldStep` names the fields to tick. */
+export function metaWebhook(fieldStep: string): WebhookSetup {
+  return {
+    registration: "manual",
+    instructions: [
+      "First fill in this trigger's App Secret (Meta app dashboard, App settings, Basic) and a Verify Token of your choosing; Meta checks the token when you save the URL.",
+      "In the Meta app dashboard, open Webhooks and add a subscription for Page.",
+      "Paste the URL above as its callback URL and enter the same value as this trigger's Verify Token.",
+      fieldStep,
+    ].join("\n"),
+  };
 }
 
 export interface MetaParams {
@@ -231,7 +243,7 @@ export interface FeedTriggerSpec {
 /** Build one Page-feed webhook trigger (manual webhook, signed with the App Secret). */
 export function feedTrigger(
   spec: FeedTriggerSpec,
-): TriggerDefinition<MetaParams, FeedEvent, TriggerState> {
+): TriggerDefinition<MetaParams, FeedEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -239,10 +251,7 @@ export function feedTrigger(
     params: META_PARAMS,
     output: OUTPUT,
     sample: SAMPLE,
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-    onUnsubscribe() {},
+    webhook: metaWebhook("Subscribe to the feed field, and subscribe your app to the Page."),
     handleIngest({ raw, params }) {
       return ingestMeta(raw, params, (p) => feedEvents(p).filter(spec.keep ?? (() => true)));
     },
@@ -308,7 +317,7 @@ export function anyEventTrigger(spec: {
   title: string;
   description: string;
   sample: FeedEvent;
-}): TriggerDefinition<AnyEventParams, FeedEvent, TriggerState> {
+}): TriggerDefinition<AnyEventParams, FeedEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -323,10 +332,9 @@ export function anyEventTrigger(spec: {
     }],
     output: OUTPUT,
     sample: spec.sample,
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-    onUnsubscribe() {},
+    webhook: metaWebhook(
+      "Subscribe to the Page fields this trigger should receive (list them in its Fields to narrow it), and subscribe your app to the Page.",
+    ),
     handleIngest({ raw, params }) {
       return ingestMeta(raw, params, (p) => changeEvents(p, wantedFields(params.events)));
     },

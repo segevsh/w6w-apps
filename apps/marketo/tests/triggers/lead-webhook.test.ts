@@ -47,17 +47,15 @@ test("app declares the webhook trigger with output and sample, no poll", () => {
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
   assertEquals(trigger.poll, undefined);
-  assertEquals(typeof trigger.onSubscribe, "function");
+  assertEquals(trigger.webhook?.registration, "manual");
 });
 
-test("manual webhook: onSubscribe makes no vendor call and returns the callback URL", async () => {
-  const m = mockCtx([]);
-  const state = await trigger.onSubscribe!(
-    { params: {}, callbackUrl: CALLBACK, subscriptionId: "s" } as never,
-    m.ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  assertEquals(m.calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Marketo Admin steps; no hook registers anything", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("Admin, Webhooks"));
+  assert(trigger.webhook?.instructions?.includes("Call Webhook"));
+  assertEquals(trigger.onSubscribe, undefined);
+  assertEquals(trigger.onUnsubscribe, undefined);
 });
 
 test("a JSON payload is parsed from the raw body, lifting leadId, email and campaign", async () => {

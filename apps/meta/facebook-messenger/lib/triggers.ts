@@ -12,7 +12,9 @@ import {
  *
  * Meta has no per-trigger registration call the Page token can make (subscribing a webhook to an app
  * takes an app access token), so the callback URL, the verify token and the subscribed fields are set
- * once in the App Dashboard (Webhooks, "Page"). Two checks then protect the endpoint:
+ * once in the App Dashboard (Webhooks, "Page"). The trigger is a MANUAL webhook (`webhook.registration`,
+ * rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`, and no
+ * hook registers anything. Two checks then protect the endpoint:
  *
  *   - Verification request (GET): `hub.mode=subscribe`, `hub.verify_token`, `hub.challenge`. The
  *     handler compares `hub.verify_token` with the `verifyToken` param (constant time, after
@@ -244,7 +246,7 @@ export interface WebhookTriggerSpec {
 /** Build one Messenger webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, MessengerEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, MessengerEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -253,11 +255,16 @@ export function webhookTrigger(
     output: OUTPUT,
     sample: spec.sample,
 
-    // Manual webhook: the callback URL is entered in the Meta App Dashboard; nothing to register.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Meta App Dashboard, open Webhooks and choose the Page object.",
+        "Paste the URL above as the callback URL.",
+        "Enter a verify token you choose there and the same value in this trigger's Verify token before you save, because Meta checks the URL with it.",
+        "Copy the app's App Secret (App settings, Basic) into this trigger's App Secret.",
+        "Subscribe the Page object to the messages, messaging_postbacks and message_deliveries fields you want, and subscribe your Page to the app.",
+      ].join("\n"),
     },
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       const method = raw.method.toUpperCase();

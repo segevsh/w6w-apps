@@ -69,6 +69,12 @@ test("manual receiver: onSubscribe hands back the callback URL and calls nothing
   assertEquals(calls.length, 0);
 });
 
+test("a manual webhook: W6W shows the URL with the Vero steps", () => {
+  assertEquals(veroEvent.webhook?.registration, "manual");
+  assert(veroEvent.webhook?.instructions?.includes("Settings, Integrations, Webhooks"));
+  assert(veroEvent.webhook?.instructions?.includes("notification address"));
+});
+
 test("onSubscribe refuses an unknown event name", async () => {
   await assertRejects(async () =>
     await veroEvent.onSubscribe!(

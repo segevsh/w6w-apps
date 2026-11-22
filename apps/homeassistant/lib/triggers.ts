@@ -9,9 +9,9 @@ import { header } from "../../_shared/webhook/mod.ts";
  * (`action: rest_command.<name>`) with a `url`, `method`, `content_type` and `payload` template
  * the user writes. So this trigger is a receiver for whatever such an automation sends:
  *
- *   - `onSubscribe` makes no Home Assistant call (the instance is configured by the user in
- *     YAML): it hands back the `callbackUrl` to put in the `rest_command` and `onUnsubscribe` is a
- *     no-op.
+ *   - The trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment
+ *     2026-11-22; the instance is configured by the user in YAML): W6W mints the URL and shows it
+ *     with `instructions`, and the user puts it in the `rest_command`. No hook registers anything.
  *   - Home Assistant signs nothing: `rest_command` has no signing option, only whatever static
  *     `headers` the user adds. There is nothing to verify and no scheme is invented. The trust
  *     model is the callback URL: the host issues it per subscription as an unguessable id; anyone
@@ -91,7 +91,7 @@ export interface WebhookTriggerSpec {
 /** Build the Home Assistant automation-event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, HomeAssistantEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, HomeAssistantEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -99,12 +99,15 @@ export function webhookTrigger(
     params: [],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Home Assistant's configuration.yaml, define a rest_command whose url is the URL above, with the method, content_type and payload template your workflow needs.",
+        "Restart Home Assistant or reload its configuration.",
+        "Call the command (action: rest_command.<name>) from the automation you want to react to.",
+        "Keep the URL private (use !secret in configuration.yaml): Home Assistant signs nothing, so the URL is the only credential.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     handleIngest({ raw }) {
       const method = raw.method.toUpperCase();

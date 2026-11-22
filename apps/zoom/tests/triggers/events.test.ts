@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { createHmac } from "node:crypto";
-import { assertEquals, assertRejects } from "../_assert.ts";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { TriggerCall } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import app from "../../index.ts";
@@ -88,15 +88,18 @@ test("the app declares 22 triggers: 18 webhook and 4 poll, each with output and 
   }
 });
 
-test("onSubscribe returns the callback URL to paste, makes no Zoom call; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await (meetingStarted as T).onSubscribe(
-    { params: {}, callbackUrl: CALLBACK, subscriptionId: "s" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await (meetingStarted as T).onUnsubscribe({ params: {}, state, subscriptionId: "s" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Marketplace steps; no hook registers anything", () => {
+  const webhooks = (app.triggers ?? []).filter((t) => typeof t.handleIngest === "function");
+  assertEquals(webhooks.length, 18);
+  for (const t of webhooks) {
+    assertEquals(t.webhook?.registration, "manual", t.key);
+    assert(t.webhook?.instructions?.includes("Features, Event Subscriptions"), t.key);
+    assert(t.webhook?.instructions?.includes("Secret Token"), t.key);
+    assertEquals(t.onSubscribe, undefined, t.key);
+    assertEquals(t.onUnsubscribe, undefined, t.key);
+  }
+  assert(meetingStarted.webhook?.instructions?.includes("Tick the meeting.started event."));
+  assert(anyEvent.webhook?.instructions?.includes("Event names"));
 });
 
 test("handleIngest: a valid signature over the exact bytes yields the normalized event", async () => {

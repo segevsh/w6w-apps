@@ -50,15 +50,11 @@ describe("files-changed (signed manual webhook)", () => {
     assert.equal(t.params!.find((p) => p.key === "appSecret")!.type, "secret");
   });
 
-  test("onSubscribe makes no vendor call and keeps the callback URL; onUnsubscribe is a no-op", async () => {
-    const m = mockCtx();
-    const state = await trigger.onSubscribe!(
-      { params: {}, subscriptionId: "s", callbackUrl: "https://api.example.test/h", hostUrl: "h" },
-      m.ctx,
-    );
-    assert.deepEqual(state, { callbackUrl: "https://api.example.test/h" });
-    await trigger.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, m.ctx);
-    assert.equal(m.calls.length, 0);
+  test("a manual webhook: W6W shows the URL with the App Console steps; no hook registers anything", () => {
+    assert.equal(trigger.webhook?.registration, "manual");
+    assert.ok(trigger.webhook?.instructions?.includes("App Console"));
+    assert.equal(trigger.onSubscribe, undefined);
+    assert.equal(trigger.onUnsubscribe, undefined);
   });
 
   test("a valid signature -> one event per account", async () => {

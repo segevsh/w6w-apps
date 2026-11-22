@@ -102,15 +102,11 @@ test("the app lists 3 + 14 webhook triggers and 4 polls, in order, with output a
 for (const [key, evt] of NAMED) {
   test(`${key}: manual webhook, ${evt} → one event; another type → none; spelling with Hook suffix accepted`, async () => {
     const t = byKey(key);
-    const m = mockCtx([]);
-    assertEquals(
-      await t.onSubscribe!(
-        { params: { webhookKey: KEY }, callbackUrl: CALLBACK, subscriptionId: "sub_1" } as never,
-        m.ctx,
-      ),
-      { callbackUrl: CALLBACK },
-    );
-    assertEquals(m.calls.length, 0);
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Network settings"));
+    assert(t.webhook?.instructions?.includes(`Pick the ${evt} event.`));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
 
     const out = evs(await ingest(t, call(bodyFor(evt)))) as Array<Record<string, unknown>>;
     assertEquals(out.length, 1);

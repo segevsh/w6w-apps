@@ -11,8 +11,9 @@ import {
  * Airparser webhook trigger (rfcs/trigger.md, webhook form, manual receiver).
  *
  *   - Airparser webhooks are created in the dashboard (Integrations, Webhooks), not through the
- *     Public API this app calls, so `onSubscribe` makes no Airparser call: it hands back the
- *     `callbackUrl` the user pastes there and `onUnsubscribe` is a no-op.
+ *     Public API this app calls, so the trigger is a MANUAL webhook (`webhook.registration`,
+ *     rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL and shows it with `instructions`,
+ *     and the user pastes it there. No hook registers anything.
  *   - Airparser signs each delivery with the webhook's own Signing Secret (D5 (2): the user pastes
  *     it): `airparser-signature` is the base64 HMAC-SHA256 of the exact request body.
  *     `handleIngest` verifies it BEFORE it parses anything, then emits one event.
@@ -127,7 +128,7 @@ export interface WebhookTriggerSpec {
 /** Build the Airparser parsed-document webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, AirparserEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, AirparserEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -135,12 +136,14 @@ export function webhookTrigger(
     params: [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Airparser, open the inbox, then Integrations, Webhooks.",
+        "Add a webhook and paste the URL above as its address.",
+        "Copy the webhook's Signing Secret into this trigger's Signing Secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

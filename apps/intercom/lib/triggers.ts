@@ -1,4 +1,4 @@
-import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
+import type { OutputField, Param, TriggerDefinition, WebhookSetup } from "@w6w/types";
 import {
   header,
   hmac,
@@ -10,9 +10,10 @@ import {
 /**
  * Intercom webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
- *   - Intercom webhooks are configured per app in the Developer Hub, not through the API, so
- *     `onSubscribe` makes no Intercom call: it hands back the `callbackUrl` the user pastes there
- *     and `onUnsubscribe` is a no-op.
+ *   - Intercom webhooks are configured per app in the Developer Hub, not through the API, so each
+ *     trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22):
+ *     W6W mints the URL and shows it with `instructions`, and the user pastes it there. No hook
+ *     registers anything.
  *   - `handleIngest` verifies `X-Hub-Signature` (`sha1=` + hex HMAC-SHA1 of the exact request body
  *     under the app's client secret, D5 (2)) BEFORE it parses anything, then emits one event.
  *
@@ -139,10 +140,20 @@ async function verifiedEvent(
   return normalizeDelivery(parsed);
 }
 
+/** The Developer Hub steps W6W shows under the trigger's URL. */
+const MANUAL_WEBHOOK: WebhookSetup = {
+  registration: "manual",
+  instructions: [
+    "In the Intercom Developer Hub, open your app, then Webhooks.",
+    "Paste the URL above as the endpoint and tick the topics this trigger fires on.",
+    "Copy the app's Client secret (Basic information) into this trigger's Client Secret.",
+  ].join("\n"),
+};
+
 /** Build one Intercom topic webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, IntercomEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, IntercomEvent> {
   const topics = Array.isArray(spec.topic) ? spec.topic : [spec.topic];
   return {
     key: spec.key,
@@ -151,12 +162,7 @@ export function webhookTrigger(
     params: [SIGNING_SECRET_PARAM],
     output: spec.output ?? OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-
-    onUnsubscribe() {},
+    webhook: MANUAL_WEBHOOK,
 
     async handleIngest({ raw, params }) {
       const event = await verifiedEvent(raw, params?.signingSecret);
@@ -183,7 +189,7 @@ const EVENTS_PARAM: Param = {
 /** The Any event trigger: every verified topic, optionally narrowed by the `events` list. */
 export function anyEventTrigger(
   spec: { key: "any-event"; sample: IntercomEvent },
-): TriggerDefinition<AnyEventParams, IntercomEvent, { callbackUrl: string }> {
+): TriggerDefinition<AnyEventParams, IntercomEvent> {
   return {
     key: spec.key,
     title: "Any Event",
@@ -192,12 +198,7 @@ export function anyEventTrigger(
     params: [SIGNING_SECRET_PARAM, EVENTS_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
-    },
-
-    onUnsubscribe() {},
+    webhook: MANUAL_WEBHOOK,
 
     async handleIngest({ raw, params }) {
       const event = await verifiedEvent(raw, params?.signingSecret);

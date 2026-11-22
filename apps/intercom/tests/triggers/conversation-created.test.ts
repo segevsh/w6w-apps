@@ -142,15 +142,11 @@ test("a non-POST call is refused", async () => {
   await assertRejects(() => ingest(conversation, call(CONV, { method: "GET" })), Error, "POST");
 });
 
-test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await conversation.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await conversation.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Developer Hub steps; no hook registers anything", () => {
+  assertEquals(conversation.webhook?.registration, "manual");
+  assert(conversation.webhook?.instructions?.includes("Developer Hub"));
+  assertEquals(conversation.onSubscribe, undefined);
+  assertEquals(conversation.onUnsubscribe, undefined);
 });
 
 test("a body with leading and trailing whitespace is verified over the exact bytes", async () => {

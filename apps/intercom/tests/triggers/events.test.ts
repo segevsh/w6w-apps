@@ -38,8 +38,9 @@ const trigger = (key: string) => {
     output: unknown[];
     sample: unknown;
     poll?: unknown;
-    onSubscribe: (i: unknown, c: unknown) => Promise<unknown>;
-    onUnsubscribe: (i: unknown, c: unknown) => Promise<void>;
+    webhook?: { registration: string; instructions?: string };
+    onSubscribe?: unknown;
+    onUnsubscribe?: unknown;
     handleIngest: (i: unknown, c: unknown) => Promise<unknown>;
   };
 };
@@ -180,22 +181,16 @@ for (const [key, topics] of Object.entries(TOPICS)) {
     assertEquals(evs(await ingest(key, input(other))), []);
   });
 
-  test(`${key}: webhook shape (output, sample, manual subscribe, no poll)`, async () => {
+  test(`${key}: webhook shape (output, sample, manual webhook, no hooks, no poll)`, () => {
     const t = trigger(key);
     assert(t.output.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);
     assertEquals(t.params.map((p) => p.key), ["signingSecret"]);
-    const { ctx, calls } = mockCtx();
-    const state = await t.onSubscribe({
-      params: {},
-      subscriptionId: "sub_1",
-      callbackUrl: CALLBACK,
-      hostUrl: "",
-    }, ctx);
-    assertEquals(state, { callbackUrl: CALLBACK });
-    await t.onUnsubscribe({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-    assertEquals(calls.length, 0);
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Developer Hub"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   });
 }
 
@@ -269,4 +264,12 @@ test("any-event: declares signingSecret (required secret) and an optional events
   assert(t.output.length > 0);
   assert(t.sample !== undefined);
   assertEquals(t.poll, undefined);
+});
+
+test("any-event: a manual webhook with the Developer Hub steps; no hook registers anything", () => {
+  const t = trigger("any-event");
+  assertEquals(t.webhook?.registration, "manual");
+  assert(t.webhook?.instructions?.includes("Developer Hub"));
+  assertEquals(t.onSubscribe, undefined);
+  assertEquals(t.onUnsubscribe, undefined);
 });

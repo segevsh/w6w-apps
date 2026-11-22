@@ -57,8 +57,7 @@ test("app declares the manual webhook trigger with output and sample", () => {
   assertEquals(app.triggers.map((t) => t.key).slice(0, 1), ["event-captured"]);
   assert(trigger.output!.length > 0);
   assert(trigger.sample !== undefined);
-  assertEquals(typeof trigger.onSubscribe, "function");
-  assertEquals(typeof trigger.onUnsubscribe, "function");
+  assertEquals(trigger.webhook?.registration, "manual");
   assertEquals(trigger.poll, undefined);
 });
 
@@ -173,13 +172,10 @@ test("a non-POST delivery is refused", async () => {
   await assertRejects(() => ingest(call({ method: "GET" })), Error, "POST");
 });
 
-test("manual webhook: onSubscribe makes no vendor call and returns the callback URL", async () => {
-  const { ctx, calls } = mockCtx([]);
-  const state = await trigger.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await trigger.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the PostHog steps; no hook registers anything", () => {
+  assertEquals(trigger.webhook?.registration, "manual");
+  assert(trigger.webhook?.instructions?.includes("Data pipelines, + New, Destination"));
+  assert(trigger.webhook?.instructions?.includes("this trigger's Signing secret"));
+  assertEquals(trigger.onSubscribe, undefined);
+  assertEquals(trigger.onUnsubscribe, undefined);
 });

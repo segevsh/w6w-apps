@@ -10,9 +10,10 @@ import {
 /**
  * LINE Messaging API webhook triggers (rfcs/trigger.md, webhook form, manual receiver).
  *
- *   - The webhook URL is set per channel in the LINE Developers Console (Messaging API tab), so
- *     `onSubscribe` makes no LINE call: it hands back the `callbackUrl` the user pastes there and
- *     `onUnsubscribe` is a no-op.
+ *   - The webhook URL is set per channel in the LINE Developers Console (Messaging API tab), so the
+ *     trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22):
+ *     W6W mints the URL and shows it with `instructions`, and the user pastes it there. No hook
+ *     registers anything.
  *   - `handleIngest` verifies `x-line-signature` (base64 HMAC-SHA256 of the exact request body under
  *     the channel secret, D5 (2)) BEFORE it parses anything. LINE documents no timestamp in the
  *     signature scheme and redelivers failed webhooks, so there is no freshness window; each event
@@ -159,7 +160,7 @@ export interface WebhookTriggerSpec {
 /** Build the LINE event webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, LineEvent, { callbackUrl: string }> {
+): TriggerDefinition<TriggerParams, LineEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -167,12 +168,14 @@ export function webhookTrigger(
     params: [SIGNING_SECRET_PARAM, EVENT_TYPES_PARAM],
     output: OUTPUT,
     sample: spec.sample,
-
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the LINE Developers Console, open your channel, then the Messaging API tab.",
+        "Paste the URL above as the Webhook URL, turn on Use webhook and press Verify (LINE's empty test delivery starts no run).",
+        "Copy the channel's Channel secret (Basic settings) into this trigger's Channel Secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

@@ -74,6 +74,16 @@ test("onSubscribe makes no Twilio call and returns the exact callback URL", asyn
   await incoming.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, m.ctx);
 });
 
+test("a manual webhook: W6W shows the URL with the Twilio steps (hooks kept: they record the URL)", () => {
+  for (const t of [incoming, status]) {
+    assert.equal(t.webhook?.registration, "manual");
+    assert.ok(t.webhook?.instructions?.includes("Auth Token (Twilio Console, Account info)"));
+    assert.equal(typeof t.onSubscribe, "function");
+  }
+  assert.ok(incoming.webhook?.instructions?.includes("A message comes in webhook"));
+  assert.ok(status.webhook?.instructions?.includes("Status Callback URL"));
+});
+
 test("known-answer vector from Twilio's documentation scheme", async () => {
   // https://www.twilio.com/docs/usage/security#validating-requests (URL + sorted name/value pairs).
   const url = "https://mycompany.com/myapp.php?foo=1&bar=2";

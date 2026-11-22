@@ -111,8 +111,7 @@ test("app declares the four webhook triggers with output and sample, no poll, no
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);
-    assertEquals(typeof t.onSubscribe, "function");
-    assertEquals(typeof t.onUnsubscribe, "function");
+    assertEquals(t.webhook?.registration, "manual");
     assert(!(t.params ?? []).some((p) => p.type === "secret"));
   }
 });
@@ -223,13 +222,10 @@ test("errors never echo the signature or the body", async () => {
   }
 });
 
-test("onSubscribe hands back the callback URL and makes no vendor call", async () => {
-  const { ctx, calls } = mockCtx([]);
-  const state = await contactCreated.onSubscribe!(
-    { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await contactCreated.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the HighLevel steps; no hook registers anything", () => {
+  assertEquals(contactCreated.webhook?.registration, "manual");
+  assert(contactCreated.webhook?.instructions?.includes("Advanced Settings, Webhooks"));
+  assert(contactCreated.webhook?.instructions?.includes("ContactCreate"));
+  assertEquals(contactCreated.onSubscribe, undefined);
+  assertEquals(contactCreated.onUnsubscribe, undefined);
 });

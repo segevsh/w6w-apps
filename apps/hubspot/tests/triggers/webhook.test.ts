@@ -342,3 +342,12 @@ test("onSubscribe makes no HubSpot call and records the target URL; onUnsubscrib
     assert.equal(m.calls.length, 0);
   }
 });
+
+test("a manual webhook: W6W shows the URL with the HubSpot app steps", () => {
+  for (const key of [...NAMED.map(([k]) => k), "any-event"]) {
+    const t = trigger(key);
+    assert.equal(t.webhook?.registration, "manual", key);
+    assert.ok(t.webhook?.instructions?.includes("Target URL"), key);
+    assert.ok(t.webhook?.instructions?.includes("Webhooks tab"), key);
+  }
+});

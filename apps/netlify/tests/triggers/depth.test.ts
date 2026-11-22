@@ -222,3 +222,18 @@ test("new-form: seed, one new form, idempotent, literal request, siteId required
   assertEquals(a, await run());
   await assertRejects(() => newForm.poll!({ ...input, state: {} }, mockCtx().ctx), Error, "siteId");
 });
+
+test("deploy-started and submission-created are manual webhooks: W6W shows the URL with the Netlify steps", () => {
+  assertEquals(deployStarted.webhook?.registration, "manual");
+  assertEquals(
+    deployStarted.webhook?.instructions?.includes("Choose the Deploy started event."),
+    true,
+  );
+  assertEquals(submissionCreated.webhook?.registration, "manual");
+  assertEquals(
+    submissionCreated.webhook?.instructions?.includes("Forms > Submission notifications"),
+    true,
+  );
+  assertEquals(submissionCreated.onSubscribe, undefined);
+  assertEquals(submissionCreated.onUnsubscribe, undefined);
+});

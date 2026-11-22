@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { createSign, generateKeyPairSync } from "node:crypto";
-import { assertEquals, assertRejects } from "../_assert.ts";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { TriggerCall } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import app from "../../index.ts";
@@ -324,26 +324,28 @@ test("the app declares nine webhook triggers, each with output and a sample", ()
   assertEquals(triggers.length, 9);
   for (const t of triggers) {
     assertEquals(typeof t.handleIngest, "function", t.key);
-    assertEquals(typeof t.onSubscribe, "function", t.key);
-    assertEquals(typeof t.onUnsubscribe, "function", t.key);
+    assertEquals(t.webhook?.registration, "manual", t.key);
+    assert(t.webhook?.instructions?.includes("Developer Hub"), t.key);
     assertEquals(typeof t.poll, "undefined", t.key);
     assertEquals((t.output?.length ?? 0) > 0, true, t.key);
     assertEquals(t.sample !== undefined, true, t.key);
   }
 });
 
-test("onSubscribe makes no Wise call and returns the callback URL; onUnsubscribe is a no-op", async () => {
-  const { ctx, calls } = mockCtx();
-  const state = await transferStateChanged.onSubscribe!(
-    { params: {}, subscriptionId: "sub_abc", callbackUrl: CALLBACK, hostUrl: HOST },
-    ctx,
-  );
-  assertEquals(state, { callbackUrl: CALLBACK });
-  await transferStateChanged.onUnsubscribe!(
-    { params: {}, state: { callbackUrl: CALLBACK }, subscriptionId: "sub_abc" },
-    ctx,
-  );
-  assertEquals(calls.length, 0);
+test("a manual webhook: W6W shows the URL with the Developer Hub steps; no hook registers anything", () => {
+  const named = webhookTriggers().filter((t) => t.key !== "any-event");
+  assertEquals(named.length, 8);
+  for (const t of named) {
+    assertEquals(t.webhook?.registration, "manual", t.key);
+    assert(
+      t.webhook?.instructions?.includes("Developer Hub, open Webhooks, Subscriptions"),
+      t.key,
+    );
+    assert(t.webhook?.instructions?.includes("Wise profile ID"), t.key);
+    assertEquals(t.onSubscribe, undefined, t.key);
+    assertEquals(t.onUnsubscribe, undefined, t.key);
+  }
+  assert(transferStateChanged.webhook?.instructions?.includes("transfers#state-change"));
 });
 
 test("handleIngest: a Wise-signed delivery of another event type is acknowledged with none", async () => {

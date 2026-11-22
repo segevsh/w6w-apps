@@ -54,25 +54,22 @@ test("app declares the two webhook triggers with output and sample, no poll", ()
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);
-    assertEquals(typeof t.onSubscribe, "function");
-    assertEquals(typeof t.onUnsubscribe, "function");
+    assertEquals(t.webhook?.registration, "manual");
     assertEquals(typeof t.handleIngest, "function");
     // unsigned vendor: no secret param, no invented signature
     assert(!(t.params ?? []).some((p) => p.type === "secret"));
   }
 });
 
-test("manual receiver: onSubscribe hands back the callback URL and calls nothing; onUnsubscribe is a no-op", async () => {
+test("a manual webhook: W6W shows the URL with the tl;dv steps; no hook registers anything", () => {
   for (const t of [meetingReady, transcriptReady]) {
-    const { ctx, calls } = mockCtx([]);
-    const state = await t.onSubscribe!(
-      { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-      ctx,
-    );
-    assertEquals(state, { callbackUrl: CALLBACK });
-    await t.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-    assertEquals(calls.length, 0);
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("tl;dv's webhook settings"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   }
+  assert(meetingReady.webhook?.instructions?.includes("Enable the MeetingReady trigger"));
+  assert(transcriptReady.webhook?.instructions?.includes("Enable the TranscriptReady trigger"));
 });
 
 test("a MeetingReady delivery is parsed into one event", async () => {

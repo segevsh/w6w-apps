@@ -14,8 +14,9 @@ import {
  * Notifications > Deploy notifications > Outgoing webhook): you pick the deploy event, paste the
  * URL to notify and an optional **JWS secret token**. The REST `hooks` resource exists, but its
  * `data` object, and so the field that carries the secret, is not documented, so this app does not
- * register anything: `onSubscribe` makes no Netlify call and hands back the callback URL to paste
- * (D5 (2)); the trigger's `signingSecret` param holds the same JWS secret token.
+ * register anything: each trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md
+ * Amendment 2026-11-22), W6W mints the URL and shows it with `instructions`, and no hook registers
+ * anything (D5 (2)); the trigger's `signingSecret` param holds the same JWS secret token.
  *
  * `handleIngest` verifies `X-Webhook-Signature` BEFORE parsing the body. Netlify signs a compact JWS
  * (HS256, keyed with the secret) whose claims are `iss: "netlify"` and `sha256`, the hex SHA-256 of
@@ -34,11 +35,6 @@ export interface TriggerParams {
   siteId?: string;
   /** Comma-separated deploy states to keep (`ready,error`); blank keeps every state. */
   states?: string;
-}
-
-/** What `onSubscribe` returns and the host persists on the subscription. */
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 /** The run's `trigger.event`. */
@@ -194,7 +190,7 @@ export interface WebhookTriggerSpec {
 /** Build one Netlify deploy-notification trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<TriggerParams, NetlifyDeployEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, NetlifyDeployEvent> {
   const fixed = spec.states;
   const sampleState = fixed?.[0] ?? "ready";
   const sample: NetlifyDeployEvent = {
@@ -219,13 +215,17 @@ export function webhookTrigger(
     output: OUTPUT,
     sample,
 
-    // Manual webhook: nothing to register at Netlify. The user pastes this URL into the
-    // notification; the host shows it from the subscription state.
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Netlify, open Project configuration > Notifications > Deploy notifications > Add notification > Outgoing webhook.",
+        fixed
+          ? `Choose the ${spec.title[0]}${spec.title.slice(1).toLowerCase()} event.`
+          : "Choose the deploy event to send; add one notification per event you want, and narrow them with this trigger's Only these deploy states.",
+        "Paste the URL above as the URL to notify.",
+        "Enter a long random string as the JWS secret token there and the same string in this trigger's JWS secret token.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {
@@ -295,11 +295,7 @@ const SUBMISSION_OUTPUT: OutputField[] = [
 /** The Netlify form-submission notification (Forms > Submission notifications > Outgoing webhook). */
 export function submissionTrigger(
   spec: { key: string; title: string; description: string },
-): TriggerDefinition<
-  { signingSecret?: string; formName?: string },
-  NetlifySubmissionEvent,
-  TriggerState
-> {
+): TriggerDefinition<{ signingSecret?: string; formName?: string }, NetlifySubmissionEvent> {
   return {
     key: spec.key,
     title: spec.title,
@@ -327,11 +323,14 @@ export function submissionTrigger(
       submission: { id: "5d6e7f8a9b0c1d2e3f4a5b6c", form_name: "contact" },
     },
 
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In Netlify, open Forms > Submission notifications > Add notification > Outgoing webhook.",
+        "Pick New form submission and the form, and paste the URL above as the URL to notify.",
+        "If the notification lets you set a JWS secret token, enter the same string in this trigger's JWS secret token (optional).",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       if (raw.method.toUpperCase() !== "POST") {

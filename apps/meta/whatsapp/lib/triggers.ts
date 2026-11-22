@@ -1,5 +1,8 @@
 /**
- * whatsapp webhook triggers (manual webhook). Meta signs every delivery with the app secret
+ * whatsapp webhook triggers. The subscription is made by hand in the Meta app dashboard, so each
+ * trigger is a MANUAL webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W
+ * mints the URL and shows it with `instructions`; no hook registers anything. Meta signs every
+ * delivery with the app secret
  * (X-Hub-Signature-256 = sha256 HMAC over the exact body bytes) and confirms a subscription with a
  * one-time GET carrying hub.verify_token and hub.challenge. Docs, verified 2026-11-09:
  * https://developers.facebook.com/docs/graph-api/webhooks/getting-started
@@ -19,10 +22,17 @@ import {
   timingSafeEqual,
 } from "../../_shared/webhook/mod.ts";
 
-/** What `onSubscribe` returns and the host persists: Meta is registered by hand in the dashboard. */
-export interface TriggerState {
-  callbackUrl: string;
-}
+/** Where the user pastes the URL (README "Setup"): shared by both triggers. */
+export const META_WEBHOOK = {
+  registration: "manual",
+  instructions: [
+    "In the Meta app dashboard, open Webhooks and add a subscription for WhatsApp Business Account.",
+    "Paste the URL above as its callback URL.",
+    "Enter a verify token you choose there and the same value in this trigger's Verify Token, because Meta checks the URL with it.",
+    "Copy the app's App Secret (App settings, Basic) into this trigger's App Secret.",
+    "Subscribe to the messages field.",
+  ].join("\n"),
+} as const;
 
 export interface MetaParams {
   /** The Meta app's App Secret — signs every delivery. */
@@ -274,7 +284,7 @@ export function statusEvents(payload: MetaPayload): StatusEvent[] {
 }
 
 /** Inbound customer messages (manual webhook, signed with the App Secret). */
-export const messageReceivedTrigger: TriggerDefinition<MetaParams, MessageEvent, TriggerState> = {
+export const messageReceivedTrigger: TriggerDefinition<MetaParams, MessageEvent> = {
   key: "message-received",
   title: "Message Received",
   description:
@@ -282,17 +292,14 @@ export const messageReceivedTrigger: TriggerDefinition<MetaParams, MessageEvent,
   params: META_PARAMS,
   output: MESSAGE_OUTPUT,
   sample: MESSAGE_SAMPLE,
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
-  },
-  onUnsubscribe() {},
+  webhook: META_WEBHOOK,
   handleIngest({ raw, params }) {
     return ingestMeta(raw, params, messageEvents);
   },
 };
 
 /** Delivery receipts for messages you sent. */
-export const messageStatusTrigger: TriggerDefinition<MetaParams, StatusEvent, TriggerState> = {
+export const messageStatusTrigger: TriggerDefinition<MetaParams, StatusEvent> = {
   key: "message-status",
   title: "Message Status Changed",
   description:
@@ -300,10 +307,7 @@ export const messageStatusTrigger: TriggerDefinition<MetaParams, StatusEvent, Tr
   params: META_PARAMS,
   output: STATUS_OUTPUT,
   sample: STATUS_SAMPLE,
-  onSubscribe({ callbackUrl }) {
-    return { callbackUrl };
-  },
-  onUnsubscribe() {},
+  webhook: META_WEBHOOK,
   handleIngest({ raw, params }) {
     return ingestMeta(raw, params, statusEvents);
   },

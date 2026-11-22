@@ -6,7 +6,7 @@ import {
   requireSecret,
   timingSafeEqual,
 } from "../../_shared/webhook/mod.ts";
-import { verifyTwilioSignature } from "./triggers.ts";
+import { AUTH_TOKEN_STEP, verifyTwilioSignature } from "./triggers.ts";
 
 /**
  * Twilio call-status and Event Streams triggers (rfcs/trigger.md, manual-webhook form).
@@ -18,9 +18,11 @@ import { verifyTwilioSignature } from "./triggers.ts";
  *   - Signature scheme, incl. the `bodySHA256` rule for JSON bodies:
  *     https://www.twilio.com/docs/usage/webhooks/webhooks-security
  *
- * Both reuse the message triggers' trust model: the callback URL is on record in the subscription
- * state (`onSubscribe` makes no Twilio call), the Auth Token is a secret param, and a delivery is
- * verified over its RAW body before anything is parsed. The Event Streams sink is created in the
+ * Both reuse the message triggers' trust model: they are MANUAL webhooks (`webhook.registration`,
+ * rfcs/trigger.md Amendment 2026-11-22; W6W mints and shows the URL with `instructions`), the
+ * callback URL is still on record in the subscription state (`onSubscribe` makes no Twilio call
+ * and is kept because `handleIngest` signs over it), the Auth Token is a secret param, and a
+ * delivery is verified over its RAW body before anything is parsed. The Event Streams sink is created in the
  * Twilio Console or CLI (it needs `events.twilio.com`, a host this app does not call).
  */
 
@@ -126,6 +128,13 @@ export function callStatusTrigger(
     params: [AUTH_TOKEN],
     output: CALL_OUTPUT,
     sample: CALL_SAMPLE,
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "Use the URL above, exactly as shown, as the Status Callback URL of the calls you place (for example the Make Call action's Status Callback URL).",
+        AUTH_TOKEN_STEP,
+      ].join("\n"),
+    },
 
     onSubscribe({ callbackUrl }) {
       return { callbackUrl };
@@ -260,6 +269,16 @@ export function eventStreamTrigger(
     params: spec.type ? [AUTH_TOKEN] : [AUTH_TOKEN, EVENTS_PARAM],
     output: STREAM_OUTPUT,
     sample: spec.type ? { ...STREAM_SAMPLE, type: spec.type } : STREAM_SAMPLE,
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In the Twilio Console (or the Twilio CLI), create an Event Streams webhook sink whose destination is the URL above, exactly as shown, with method POST.",
+        spec.type
+          ? `Subscribe the sink to the ${spec.type} event type.`
+          : "Subscribe the sink to the event types you want; this trigger's Event types param can narrow them further.",
+        AUTH_TOKEN_STEP,
+      ].join("\n"),
+    },
 
     onSubscribe({ callbackUrl }) {
       return { callbackUrl };

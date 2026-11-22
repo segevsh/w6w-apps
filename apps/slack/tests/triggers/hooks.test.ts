@@ -61,20 +61,13 @@ test("app: declares both triggers with output and sample, no unsigned path", () 
   }
 });
 
-test("onSubscribe makes no Slack call and returns the callback URL", async () => {
-  const m = mockCtx();
-  const state = await newMessage.onSubscribe!(
-    {
-      params: {},
-      subscriptionId: "s",
-      callbackUrl: "https://h/triggers/webhooks/s",
-      hostUrl: "https://h",
-    },
-    m.ctx,
-  );
-  assert.deepEqual(state, { callbackUrl: "https://h/triggers/webhooks/s" });
-  assert.equal(m.calls.length, 0);
-  await newMessage.onUnsubscribe!({ params: {}, state, subscriptionId: "s" }, m.ctx);
+test("a manual webhook: W6W shows the URL with the Slack steps; no hook registers anything", () => {
+  assert.equal(newMessage.webhook?.registration, "manual");
+  assert.ok(newMessage.webhook?.instructions?.includes("Event Subscriptions"));
+  assert.ok(newMessage.webhook?.instructions?.includes("Request URL"));
+  assert.ok(newMessage.webhook?.instructions?.includes("this trigger's Signing Secret"));
+  assert.equal(newMessage.onSubscribe, undefined);
+  assert.equal(newMessage.onUnsubscribe, undefined);
 });
 
 test("valid signature over the raw body -> one event", async () => {

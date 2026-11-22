@@ -16,8 +16,9 @@ import {
  * keyed by the Slack app's Signing Secret (not in the connection, so the trigger takes it as a
  * secret param, D5 (2)). A delivery more than five minutes from now is refused.
  *
- *   - `onSubscribe` makes no Slack call (an Events API URL is set by hand in the app's settings);
- *     it hands back the `callbackUrl` the user pastes there.
+ *   - An Events API URL is set by hand in the app's settings, so every trigger here is a MANUAL
+ *     webhook (`webhook.registration`, rfcs/trigger.md Amendment 2026-11-22): W6W mints the URL
+ *     and shows it with `instructions`, and the user pastes it there. No hook registers anything.
  *   - `handleIngest` verifies the signature over the raw body FIRST, then answers the
  *     `url_verification` handshake with its `challenge`, or turns an `event_callback` into one event.
  *
@@ -33,10 +34,6 @@ export interface TriggerParams {
   eventTypes?: string;
   channelId?: string;
   ignoreBotMessages?: boolean;
-}
-
-export interface TriggerState {
-  callbackUrl: string;
 }
 
 export interface SlackEvent {
@@ -194,7 +191,7 @@ export interface SlackTriggerSpec {
 
 export function slackTrigger(
   spec: SlackTriggerSpec,
-): TriggerDefinition<TriggerParams, SlackEvent, TriggerState> {
+): TriggerDefinition<TriggerParams, SlackEvent> {
   const isMessage = spec.kind === "message";
   const named = spec.kind === "named" ? spec.named : undefined;
   const params: Param[] = [SIGNING_SECRET_PARAM];
@@ -251,11 +248,19 @@ export function slackTrigger(
       event: { type: "reaction_added", user: "U2147483697", reaction: "thumbsup" },
     },
 
-    onSubscribe({ callbackUrl }) {
-      return { callbackUrl };
+    webhook: {
+      registration: "manual",
+      instructions: [
+        "In your Slack app's settings, open Event Subscriptions and switch it on.",
+        "Paste the URL above into Request URL.",
+        named && !named.types.includes("message")
+          ? `Under Subscribe to bot events, add ${named.types.join(", ")}, then reinstall the app.`
+          : named || isMessage
+          ? "Under Subscribe to bot events, add the message events you want, for example message.channels, then reinstall the app."
+          : "Under Subscribe to bot events, add the events you want, then reinstall the app.",
+        "Copy the Signing Secret from Basic Information, App Credentials into this trigger's Signing Secret.",
+      ].join("\n"),
     },
-
-    onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
       const body = await verifySlackSignature(raw, params?.signingSecret);

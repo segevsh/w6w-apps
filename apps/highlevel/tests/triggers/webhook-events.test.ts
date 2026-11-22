@@ -233,8 +233,7 @@ test("app wires every new webhook trigger, each with output, sample, no poll and
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);
-    assertEquals(typeof t.onSubscribe, "function");
-    assertEquals(typeof t.onUnsubscribe, "function");
+    assertEquals(t.webhook?.registration, "manual");
     assert(!(t.params ?? []).some((p) => p.type === "secret"));
   }
   assert(keys.includes("any-event"));
@@ -308,17 +307,14 @@ test("a GET is refused", async () => {
   );
 });
 
-test("onSubscribe hands back the callback URL and makes no vendor call (new triggers)", async () => {
+test("a manual webhook: W6W shows the URL with the HighLevel steps; no hook registers anything (new triggers)", () => {
   for (const t of [contactUpdated, locationUpdated, anyEvent]) {
-    const { ctx, calls } = mockCtx([]);
-    const state = await t.onSubscribe!(
-      { params: {}, subscriptionId: "sub_1", callbackUrl: CALLBACK, hostUrl: "" },
-      ctx,
-    );
-    assertEquals(state, { callbackUrl: CALLBACK });
-    await t.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
-    assertEquals(calls.length, 0);
+    assertEquals(t.webhook?.registration, "manual");
+    assert(t.webhook?.instructions?.includes("Advanced Settings, Webhooks"));
+    assertEquals(t.onSubscribe, undefined);
+    assertEquals(t.onUnsubscribe, undefined);
   }
+  assert(contactUpdated.webhook?.instructions?.includes("ContactUpdate"));
 });
 
 // ---- Any event ----
