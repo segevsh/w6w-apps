@@ -1,7 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE, TICKET_CLASS_OUTPUT } from "../lib/outputs.ts";
-import { pageParam, pageQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
@@ -28,7 +28,7 @@ const listTicketClasses: ActionDefinition<Input> = {
       hint: "Uses /ticket_classes/for_sale/ when true.",
     },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [{
     key: "ticket_classes",

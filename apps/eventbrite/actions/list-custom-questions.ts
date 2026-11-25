@@ -6,7 +6,7 @@ import {
   QUESTION_SAMPLE,
 } from "../lib/outputs.ts";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
-import { pageParam, pageQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
@@ -31,7 +31,7 @@ const listCustomQuestions: ActionDefinition<Input> = {
       hint: "Return private events and fields.",
     },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [
     { key: "questions", type: "array", label: "Questions", items: QUESTION_LIST_ITEM_OUTPUT },

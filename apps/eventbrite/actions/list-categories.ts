@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { CATEGORY_LIST_OUTPUT, CATEGORY_SAMPLE, PAGINATION_SAMPLE } from "../lib/outputs.ts";
+import { continuationParam } from "../lib/paging.ts";
 
 interface Input {
   page?: number;
@@ -15,8 +16,8 @@ const action: ActionDefinition<Input> = {
   description: "List all event categories, with subcategories nested. Paginated.",
   idempotent: true,
   params: [
-    { key: "page", label: "Page number", type: "number" },
-    { key: "continuation", label: "Continuation token", type: "string" },
+    { key: "page", label: "Page number", row: "paging", type: "number" },
+    continuationParam(),
   ],
   output: [...CATEGORY_LIST_OUTPUT],
   sample: { locale: "en_US", categories: [CATEGORY_SAMPLE], pagination: PAGINATION_SAMPLE },

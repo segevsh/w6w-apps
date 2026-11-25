@@ -6,6 +6,7 @@ import {
   PAGINATION_CONTINUATION_SAMPLE,
 } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
+import { continuationParam } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
@@ -23,7 +24,7 @@ const listTeamAttendees: ActionDefinition<Input> = {
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "teamId", label: "Team ID", type: "string", required: true },
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [
     { key: "attendees", type: "array", label: "Attendees", items: ATTENDEE_OUTPUT },

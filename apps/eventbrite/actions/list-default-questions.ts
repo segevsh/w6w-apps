@@ -6,7 +6,7 @@ import {
   QUESTION_SAMPLE,
 } from "../lib/outputs.ts";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
-import { pageParam, pageQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
@@ -26,7 +26,7 @@ const listDefaultQuestions: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "includeAll", label: "Include whole list", type: "boolean" },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [
     { key: "questions", type: "array", label: "Questions", items: QUESTION_LIST_ITEM_OUTPUT },

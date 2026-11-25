@@ -2,6 +2,7 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { MEMBER_OUTPUT, PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
+import { continuationParam } from "../lib/paging.ts";
 
 interface Input {
   organizationId: string;
@@ -24,7 +25,7 @@ const action: ActionDefinition<Input> = {
       options: { source: "resolveFields" },
       config: { allowCustom: true },
     },
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   resolveFields: resolveEventbriteFields,
   output: [

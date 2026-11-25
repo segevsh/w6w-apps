@@ -8,7 +8,7 @@ import {
   PAGINATION_OUTPUT,
   PAGINATION_SAMPLE,
 } from "../lib/outputs.ts";
-import { pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
 
 interface Input {
   scope?: "organization" | "venue" | "series";
@@ -154,7 +154,7 @@ const listEvents: ActionDefinition<Input> = {
       validation: { min: 1, max: 200, integer: true },
     },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
     {
       key: "expand",
       label: "Expand",

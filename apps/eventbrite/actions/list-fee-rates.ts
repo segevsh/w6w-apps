@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { continuationParam } from "../lib/paging.ts";
 import { FEE_RATE_OUTPUT, PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
@@ -146,11 +147,7 @@ const action: ActionDefinition<Input> = {
         },
       ],
     },
-    {
-      "key": "continuation",
-      "label": "Continuation token",
-      "type": "string",
-    },
+    continuationParam(),
   ],
   output: [
     { key: "fee_rates", type: "array", label: "Fee rates", items: FEE_RATE_OUTPUT },

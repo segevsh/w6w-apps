@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { TEAM_LIST_OUTPUT, TEAM_LIST_SAMPLE } from "../lib/outputs.ts";
+import { continuationParam } from "../lib/paging.ts";
 
 interface Input {
   eventId: string;
@@ -18,7 +19,7 @@ const searchEventTeams: ActionDefinition<Input> = {
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "term", label: "Search term", type: "string", required: true },
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: TEAM_LIST_OUTPUT,
   sample: TEAM_LIST_SAMPLE,
