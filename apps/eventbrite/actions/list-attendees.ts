@@ -2,7 +2,13 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { toEventbriteTime } from "../lib/time.ts";
-import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
+import {
+  continuationParam,
+  pageParam,
+  pageQuery,
+  pageSizeParam,
+  pageSizeQuery,
+} from "../lib/paging.ts";
 import {
   ATTENDEE_OUTPUT,
   ATTENDEE_SAMPLE,
@@ -70,7 +76,7 @@ const listAttendees: ActionDefinition<Input> = {
       showIf: { field: "scope", equals: "event" },
     }),
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   resolveFields: resolveEventbriteFields,
   output: [

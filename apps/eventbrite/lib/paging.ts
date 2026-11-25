@@ -8,7 +8,8 @@ import type { Param } from "@w6w/types";
  * ACCEPTS differs per endpoint, and an unknown one is a 400 `ARGUMENTS_ERROR`. Each action
  * offers only what its endpoint was measured to accept (live API, 2026-11-19; README §Pagination).
  * The query parameter is `page` — `page_number` exists only in the response and is refused.
- * Page size and Page share the `paging` row, so the editor lays them side by side.
+ * Page size, Page and Continuation token share the `paging` row, so the editor lays them side by
+ * side.
  */
 
 /** Eventbrite caps `page_size` at 200 (a larger value silently returns 200). */
@@ -54,4 +55,18 @@ export function pageQuery(value: number | string | undefined | null): number | u
   if (value === undefined || value === null || value === "") return undefined;
   const n = Math.trunc(Number(value));
   return Number.isFinite(n) && n >= 1 ? n : undefined;
+}
+
+/**
+ * The continuation token from the previous response's `pagination.continuation` — the cursor
+ * alternative to Page, on the same row.
+ */
+export function continuationParam(overrides: Partial<Param> = {}): Param {
+  return {
+    key: "continuation",
+    label: "Continuation token",
+    row: "paging",
+    type: "string",
+    ...overrides,
+  };
 }

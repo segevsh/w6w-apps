@@ -3,7 +3,13 @@ import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts"
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { toEventbriteTime } from "../lib/time.ts";
 import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
-import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
+import {
+  continuationParam,
+  pageParam,
+  pageQuery,
+  pageSizeParam,
+  pageSizeQuery,
+} from "../lib/paging.ts";
 import {
   ATTENDEE_SAMPLE,
   ORDER_LIST_ITEM_OUTPUT,
@@ -133,7 +139,7 @@ const listOrders: ActionDefinition<Input> = {
       showIf: { field: "scope", notIn: ["user"] },
     }),
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   resolveFields: resolveEventbriteFields,
   output: [

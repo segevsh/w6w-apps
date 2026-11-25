@@ -23,16 +23,20 @@ function checkError<E extends Error>(
 ): E {
   const suffix = msg ? `: ${msg}` : ".";
   if (!(error instanceof Error)) {
-    throw new nodeAssert.AssertionError({ message: `Expected "error" to be an Error object${suffix}` });
+    throw new nodeAssert.AssertionError({
+      message: `Expected "error" to be an Error object${suffix}`,
+    });
   }
   if (ErrorClass && !(error instanceof ErrorClass)) {
     throw new nodeAssert.AssertionError({
-      message: `Expected error to be instance of "${ErrorClass.name}", but was "${error.constructor?.name}"${suffix}`,
+      message:
+        `Expected error to be instance of "${ErrorClass.name}", but was "${error.constructor?.name}"${suffix}`,
     });
   }
   if (msgIncludes !== undefined && !error.message.includes(msgIncludes)) {
     throw new nodeAssert.AssertionError({
-      message: `Expected error message to include "${msgIncludes}", but got "${error.message}"${suffix}`,
+      message:
+        `Expected error message to include "${msgIncludes}", but got "${error.message}"${suffix}`,
     });
   }
   return error as E;

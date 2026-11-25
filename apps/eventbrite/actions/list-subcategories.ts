@@ -1,6 +1,12 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
-import { pageParam, pageQuery, pageSizeParam, pageSizeQuery } from "../lib/paging.ts";
+import {
+  continuationParam,
+  pageParam,
+  pageQuery,
+  pageSizeParam,
+  pageSizeQuery,
+} from "../lib/paging.ts";
 import { PAGINATION_SAMPLE, SUBCATEGORY_LIST_OUTPUT, SUBCATEGORY_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
@@ -19,7 +25,7 @@ const action: ActionDefinition<Input> = {
   params: [
     pageSizeParam(),
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [...SUBCATEGORY_LIST_OUTPUT],
   sample: { locale: "en_US", subcategories: [SUBCATEGORY_SAMPLE], pagination: PAGINATION_SAMPLE },

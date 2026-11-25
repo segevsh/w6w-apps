@@ -6,7 +6,7 @@ import {
   PAGINATION_CONTINUATION_OUTPUT,
   PAGINATION_CONTINUATION_SAMPLE,
 } from "../lib/outputs.ts";
-import { pageParam, pageQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   userId?: string;
@@ -28,7 +28,7 @@ const listOrganizations: ActionDefinition<Input> = {
       hint: "Defaults to the connected user (`me`).",
     },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   output: [
     { key: "organizations", type: "array", label: "Organizations", items: ORGANIZATION_OUTPUT },

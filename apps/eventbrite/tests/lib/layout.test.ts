@@ -33,3 +33,17 @@ test("Page size and Page share a row wherever both are offered", () => {
     }
   }
 });
+
+test("Continuation token joins the paging row on every list that offers it", () => {
+  let n = 0;
+  for (const a of app.actions ?? []) {
+    const params = a.params ?? [];
+    const at = params.findIndex((p) => p.key === "continuation");
+    if (at < 0) continue;
+    n++;
+    assertEquals(params[at].row, "paging", a.key);
+    const prev = params[at - 1];
+    if (prev?.key === "page" || prev?.key === "pageSize") assertEquals(prev.row, "paging", a.key);
+  }
+  assert(n >= 18, `expected every list with a continuation token, saw ${n}`);
+});

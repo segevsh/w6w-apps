@@ -2,7 +2,7 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { ORGANIZER_OUTPUT, PAGINATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
-import { pageParam, pageQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery } from "../lib/paging.ts";
 
 interface Input {
   organizationId: string;
@@ -27,7 +27,7 @@ const listOrganizers: ActionDefinition<Input> = {
       config: { allowCustom: true },
     },
     pageParam(),
-    { key: "continuation", label: "Continuation token", type: "string" },
+    continuationParam(),
   ],
   resolveFields: resolveEventbriteFields,
   output: [

@@ -7,7 +7,7 @@ import {
 } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
-import { pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
+import { continuationParam, pageParam, pageQuery, pageSizeQuery } from "../lib/paging.ts";
 
 interface Input {
   organizationId: string;
@@ -155,11 +155,7 @@ const action: ActionDefinition<Input> = {
       "validation": { "min": 1, "max": 200, "integer": true },
     },
     pageParam(),
-    {
-      "key": "continuation",
-      "label": "Continuation token",
-      "type": "string",
-    },
+    continuationParam(),
   ],
   resolveFields: resolveEventbriteFields,
   output: [
