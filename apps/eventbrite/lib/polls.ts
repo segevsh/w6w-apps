@@ -2,6 +2,7 @@ import type { ActionDefinition, OutputField, Param, TriggerDefinition } from "@w
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import { pollWindow, toMs } from "./window.ts";
 import { eventbriteTime } from "./time.ts";
+import { resolveEventbriteFields, withPickers } from "./fields.ts";
 
 /**
  * Eventbrite poll triggers (brief 9.1 b, c; 10.1). The webhook triggers in `triggers.ts` cover the
@@ -85,7 +86,8 @@ export function snapshotTrigger(spec: SnapshotSpec): TriggerDefinition {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: spec.params,
+    params: withPickers(spec.params),
+    resolveFields: resolveEventbriteFields,
     output: spec.output,
     sample: spec.sample,
     minIntervalMs: 300_000,
@@ -123,7 +125,6 @@ const SEEN_WINDOW = ATTENDEE_MAX_PAGES * ATTENDEE_PAGE_SIZE + ATTENDEE_PAGE_SIZE
 
 export const clock = { now: (): number => Date.now() };
 
-
 /**
  * `list-attendees` with `changed_since = cursor - overlap`, resumed through `continuation` when a
  * window holds more than {@link ATTENDEE_MAX_PAGES} pages. An attendee is announced again each time
@@ -144,7 +145,8 @@ export function newOrUpdatedAttendeeTrigger(spec: {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: spec.params,
+    params: withPickers(spec.params),
+    resolveFields: resolveEventbriteFields,
     output: spec.output,
     sample: spec.sample,
     minIntervalMs: 300_000,

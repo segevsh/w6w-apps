@@ -7,7 +7,13 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { fromFileUrl } from "jsr:@std/path@^1.0.0";
-import { invokeTriggerHook, loadApp, type SignableRequest, type WireResponse } from "@w6w/runtime";
+import {
+  invokeTriggerHook,
+  invokeTriggerResolveFields,
+  loadApp,
+  type SignableRequest,
+  type WireResponse,
+} from "@w6w/runtime";
 import { WEBHOOK_ACTIONS } from "../../lib/triggers.ts";
 
 const APP_DIR = fromFileUrl(new URL("../../", import.meta.url));
@@ -45,11 +51,53 @@ test("runtime: every trigger loads as a webhook with the full hook set, or as a 
   for (const [key, t] of webhooks) {
     assertEquals(
       [...t.hooks].sort(),
-      ["handleIngest", "onSubscribe", "onUnsubscribe", "parseOutput"],
+      ["handleIngest", "onSubscribe", "onUnsubscribe", "parseOutput", "resolveFields"],
       key,
     );
   }
-  for (const [key, t] of polls) assertEquals([...t.hooks], ["poll"], key);
+  for (const [key, t] of polls) assertEquals([...t.hooks].sort(), ["poll", "resolveFields"], key);
+});
+
+test("runtime: a trigger's organization and event pickers resolve through the sandbox", async () => {
+  const app = await loadApp(APP_DIR);
+  const { transport, seen } = eventbrite([
+    {
+      organizations: [{ id: "389957889113", name: "Acme" }],
+      pagination: { has_more_items: false },
+    },
+    {
+      events: [{ id: "e1", name: { text: "Gala" }, start: { local: "2026-12-01T19:00:00" } }],
+      pagination: { has_more_items: false },
+    },
+  ]);
+  const out = await invokeTriggerResolveFields(
+    app,
+    "activity",
+    {
+      fields: ["organizationId", "eventId"],
+      form: { organizationId: "389957889113" },
+      unresolved: [],
+      reason: "init",
+    },
+    {
+      egressTransport: transport,
+      connection: {
+        manifestVersion: "1",
+        id: "conn_rt",
+        app: "eventbrite",
+        owner: "user_1",
+        state: "connected",
+        createdAt: "2026-11-25T00:00:00Z",
+        auth: "personal-token",
+      },
+    },
+  );
+  assertEquals(out.fields.organizationId?.options, [{ value: "389957889113", label: "Acme" }]);
+  assertEquals(out.fields.eventId?.options, [{ value: "e1", label: "Gala · 2026-12-01" }]);
+  assertEquals(seen.map((r) => new URL(r.url).pathname), [
+    "/v3/users/me/organizations/",
+    "/v3/organizations/389957889113/events/",
+  ]);
 });
 
 test("runtime: register, receive, enrich and destroy through the sandbox", async () => {
