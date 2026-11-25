@@ -1,6 +1,7 @@
 import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import { API_URL, EventbriteClient, EventbriteError } from "./client.ts";
 import { DELIVERY_SAMPLE, RESOURCE_OUTPUT, RESOURCE_SAMPLE } from "./outputs.ts";
+import { resolveEventbriteFields, withPickers } from "./fields.ts";
 
 /**
  * Eventbrite webhook triggers (rfcs/trigger.md, webhook form).
@@ -301,9 +302,10 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: fixed
-      ? [ORGANIZATION_PARAM, EVENT_PARAM]
-      : [ORGANIZATION_PARAM, ACTIONS_PARAM, EVENT_PARAM],
+    params: withPickers(
+      fixed ? [ORGANIZATION_PARAM, EVENT_PARAM] : [ORGANIZATION_PARAM, ACTIONS_PARAM, EVENT_PARAM],
+    ),
+    resolveFields: resolveEventbriteFields,
     output: [
       ...DELIVERY_OUTPUT,
       ...(resource

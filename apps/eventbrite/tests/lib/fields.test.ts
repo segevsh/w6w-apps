@@ -223,8 +223,8 @@ test("scopeId: organization scope lists the user's organizations", async () => {
   assertEquals(out.fields.scopeId?.options, [{ value: "o1", label: "Acme" }]);
 });
 
-test("scopeId: non-organization scopes yield no options and make no request", async () => {
-  for (const scope of ["event", "venue", "series", "user"]) {
+test("scopeId: venue, series and user scopes yield no options and make no request", async () => {
+  for (const scope of ["venue", "series", "user"]) {
     const { ctx, calls } = mockCtx([]);
     const out = await resolveEventbriteFields(input(["scopeId"], { scope }), ctx);
     assertEquals(calls.length, 0, scope);
@@ -250,4 +250,88 @@ test("scopeId + organizationId requested together fetch organizations once", asy
   );
   assertEquals(calls.length, 1);
   assertEquals(out.fields.organizationId?.options, out.fields.scopeId?.options);
+});
+
+const EVENTS_Q = "status=draft%2Clive%2Cstarted%2Cended&order_by=start_desc";
+const ev = (id: string, name: string, day: string, status = "live") => ({
+  id,
+  name: { text: name, html: name },
+  start: { local: `${day}T19:00:00` },
+  status,
+});
+
+test("eventId: the chosen organization's events, labelled with their start date", async () => {
+  const { ctx, calls } = mockCtx([{
+    body: { events: [ev("e1", "Gala", "2026-12-01")], pagination: { has_more_items: false } },
+  }]);
+  const out = await resolveEventbriteFields(input(["eventId"], { organizationId: "o/1" }), ctx);
+  assertEquals(calls.map((c) => c.url), [`${B}/organizations/o%2F1/events/?${EVENTS_Q}`]);
+  assertEquals(out.fields.eventId?.options, [
+    { value: "e1", label: "Gala · 2026-12-01", description: "live" },
+  ]);
+});
+
+test("eventId: continuation pages keep the status and order filters", async () => {
+  const { ctx, calls } = mockCtx([
+    {
+      body: {
+        events: [ev("e1", "A", "2026-12-01")],
+        pagination: { has_more_items: true, continuation: "tok" },
+      },
+    },
+    { body: { events: [ev("e2", "B", "2026-11-01")], pagination: { has_more_items: false } } },
+  ]);
+  const out = await resolveEventbriteFields(input(["eventId"], { organizationId: "5" }), ctx);
+  assertEquals(calls[1].url, `${B}/organizations/5/events/?${EVENTS_Q}&continuation=tok`);
+  assertEquals(out.fields.eventId?.options?.map((o) => o.value), ["e1", "e2"]);
+});
+
+test("eventId: no organization -> every organization's events, each tagged with its org", async () => {
+  const noMore = { has_more_items: false };
+  const { ctx, calls } = mockCtx([
+    { body: { organizations: [{ id: "1", name: "One" }, { id: "2" }], pagination: noMore } },
+    { body: { events: [ev("a", "A", "2026-12-01")], pagination: noMore } },
+    { body: { events: [{ id: "b", name: null }], pagination: noMore } },
+  ]);
+  const out = await resolveEventbriteFields(input(["eventId"], {}), ctx);
+  assertEquals(calls.map((c) => c.url), [
+    `${B}/users/me/organizations/`,
+    `${B}/organizations/1/events/?${EVENTS_Q}`,
+    `${B}/organizations/2/events/?${EVENTS_Q}`,
+  ]);
+  assertEquals(out.fields.eventId?.options, [
+    { value: "a", label: "A · 2026-12-01", description: "One · live" },
+    { value: "b", label: "b", description: "2" },
+  ]);
+});
+
+test("eventId: an unresolved organizationId leaves eventId out", async () => {
+  const { ctx, calls } = mockCtx([]);
+  const out = await resolveEventbriteFields(input(["eventId"], {}, ["organizationId"]), ctx);
+  assertEquals(calls.length, 0);
+  assertEquals("eventId" in out.fields, false);
+});
+
+test("eventId + organizationId together fetch organizations once", async () => {
+  const noMore = { has_more_items: false };
+  const { ctx, calls } = mockCtx([
+    { body: { organizations: [{ id: "1", name: "One" }], pagination: noMore } },
+    { body: { events: [ev("a", "A", "2026-12-01")], pagination: noMore } },
+  ]);
+  const out = await resolveEventbriteFields(input(["organizationId", "eventId"], {}), ctx);
+  assertEquals(calls.length, 2);
+  assertEquals(out.fields.organizationId?.options, [{ value: "1", label: "One" }]);
+  assertEquals(out.fields.eventId?.options?.length, 1);
+});
+
+test("scopeId: event scope lists events of the form's organization", async () => {
+  const { ctx, calls } = mockCtx([{
+    body: { events: [ev("e1", "Gala", "2026-12-01")], pagination: { has_more_items: false } },
+  }]);
+  const out = await resolveEventbriteFields(
+    input(["scopeId"], { scope: "event", organizationId: "9" }),
+    ctx,
+  );
+  assertEquals(calls.map((c) => c.url), [`${B}/organizations/9/events/?${EVENTS_Q}`]);
+  assertEquals(out.fields.scopeId?.options?.map((o) => o.value), ["e1"]);
 });
